@@ -163,5 +163,10 @@ namespace StaxLang.Tests {
             RunProgram("1 2=", "", "0");
             RunProgram("1 1=", "", "1");
         }
+
+        [TestMethod]
+        public void BigXTest() {
+
+        }
     }
 }
