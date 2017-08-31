@@ -268,7 +268,7 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsArray(a)) Swap(ref a, ref b);
+            if (IsArray(a)) (a, b) = (b, a);
 
             if (IsBlock(a) && IsArray(b)) {
                 var result = new List<object>();
@@ -334,7 +334,7 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsInt(a)) Swap(ref a, ref b); 
+            if (IsInt(a)) (a, b) = (b, a);
 
             if (IsInt(b)) {
                 if (IsString(a)) {
@@ -388,12 +388,6 @@ namespace StaxLang {
             }
             if (ip < program.Length) ++ip; // final quote
             return result;
-        }
-
-        private void Swap(ref object a, ref object b) {
-            var temp = a;
-            a = b;
-            b = temp;
         }
     }
 }
