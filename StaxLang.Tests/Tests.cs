@@ -147,5 +147,21 @@ namespace StaxLang.Tests {
             RunProgram("1snR{*F", "5", "120");
             RunProgram("1snX{*xiXxwd", "5", "120");
         }
+
+        [TestMethod]
+        public void ListifyTest() {
+            RunProgram("1 2 3 L-", "", "3", "2", "1");
+        }
+
+        [TestMethod]
+        public void ReverseTest() {
+            RunProgram("-", "asdf", "fdsa");
+        }
+
+        [TestMethod]
+        public void EqualTest() {
+            RunProgram("1 2=", "", "0");
+            RunProgram("1 1=", "", "1");
+        }
     }
 }

@@ -77,6 +77,10 @@ namespace StaxLang {
                             ++ip;
                             DoPercent(stack);
                             break;
+                        case '=':
+                            ++ip;
+                            DoEqual(stack);
+                            break;
                         case '?': // if
                             ++ip;
                             DoIf(stack);
@@ -120,6 +124,12 @@ namespace StaxLang {
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
                             if (IsArray(stack.Peek())) stack.Peek().RemoveAt(stack.Peek().Count() - 1); // drop-last
+                            break;
+                        case 'L':
+                            ++ip;
+                            var newList = stack.Reverse().ToList();
+                            stack.Clear();
+                            stack.Push(newList);
                             break;
                         case 'm': // do map
                             ++ip;
@@ -299,6 +309,18 @@ namespace StaxLang {
 
         private void DoMinus(Stack<dynamic> stack) {
             var b = stack.Pop();
+            if (IsString(b)) {
+                string reversed = string.Concat(((string)b).Reverse());
+                stack.Push(reversed);
+                return;
+            }
+
+            if (IsArray(b)) {
+                b.Reverse();
+                stack.Push(b);
+                return;
+            }
+
             var a = stack.Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -357,6 +379,23 @@ namespace StaxLang {
             }
 
             throw new Exception("Bad types for *");
+        }
+
+        private void DoEqual(Stack<dynamic> stack) {
+            var b = stack.Pop();
+            var a = stack.Pop();
+
+            if (IsNumber(a) && IsNumber(b) || IsString(a) && IsString(b)) {
+                stack.Push(a == b ? 1L : 0L);
+                return;
+            }
+
+            if (IsArray(a) && IsArray(b)) {
+                stack.Push(Enumerable.SequenceEqual(a, b) ? 1L : 0L);
+                return;
+            }
+
+            throw new Exception("Bad types for =");
         }
 
         private bool IsInt(object b) => b is long;
