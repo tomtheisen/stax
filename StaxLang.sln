@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaxLang", "StaxLang\StaxLang.csproj", "{B5D7331C-78E2-42B0-AB46-F98966184C59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaxLang.Tests", "StaxLang.Tests\StaxLang.Tests.csproj", "{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{B5D7331C-78E2-42B0-AB46-F98966184C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5D7331C-78E2-42B0-AB46-F98966184C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5D7331C-78E2-42B0-AB46-F98966184C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
