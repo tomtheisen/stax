@@ -8,7 +8,7 @@ namespace StaxLang.Tests {
     [TestClass]
     public class Tests {
         internal static string[] MultiLineStrip(string arg) {
-            var result = arg.Trim().Split('\n')
+            var result = arg.Trim().Split(new[] { Environment.NewLine }, 0)
                 .Select(line => line.TrimStart())
                 .ToArray();
 
@@ -150,7 +150,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void ListifyTest() {
-            RunProgram("1 2 3 L-", "", "3", "2", "1");
+            RunProgram("1 2 3 L-", "", "1", "2", "3");
         }
 
         [TestMethod]
@@ -210,7 +210,23 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DigitTallyTest() {
             RunProgram("d10r{$ys/#i$me*", "176093677603", "2102003301");
-            RunProgram("L-{Xd10r{$`xs/#i$m e*F", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("L{Xd10r{$xs/#i$me*F", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Xd10r{$xs/#i$me*PD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#i$me*PdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#i$OFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#iOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/#iOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+        }
+
+        [TestMethod]
+        public void SmileyTest() {
+            RunProgram("':\":-\"{c')+}3*", "", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("':c'-+{c')+}3*", "", ":", ":-", ":-)", ":-))", ":-)))");
+        }
+
+        [TestMethod]
+        public void DeleteBlanksTest() {
+            RunProgram("L{f", "1" + Environment.NewLine + Environment.NewLine + "2" + Environment.NewLine + Environment.NewLine + Environment.NewLine + "3", "1", "2", "3");
         }
     }
 }

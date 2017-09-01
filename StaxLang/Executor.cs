@@ -33,7 +33,9 @@ namespace StaxLang {
             try {
                 Run(program, stack);
                 stack.Reverse().ToList().ForEach(e => Print(e));
-            } catch (InvalidOperationException) { }
+            } 
+            catch (InvalidOperationException) { } 
+            catch (ArgumentOutOfRangeException) { }
         }
 
         private void Run(string program, Stack<dynamic> stack) {
@@ -83,6 +85,14 @@ namespace StaxLang {
                             ++ip;
                             DoPercent(stack);
                             break;
+                        case ':': // copy 2nd
+                            ++ip; 
+                            {
+                                var top = stack.Pop();
+                                stack.Push(stack.Peek());
+                                stack.Push(top);
+                            }
+                            break;
                         case '#': // to number
                             ++ip;
                             stack.Push(ToNumber(stack.Pop()));
@@ -107,6 +117,10 @@ namespace StaxLang {
                             ++ip;
                             DoIf(stack);
                             break;
+                        case 'A': // 10
+                            ++ip;
+                            stack.Push(10L);
+                            break;
                         case 'c': // copy
                             ++ip;
                             stack.Push(stack.Peek());
@@ -115,13 +129,16 @@ namespace StaxLang {
                             ++ip;
                             stack.Push(stack.ElementAt((int)stack.Pop()));
                             break;
-                        case 'e': // empty string
-                            ++ip;
-                            stack.Push("");
-                            break;
                         case 'd': // discard
                             ++ip;
                             stack.Pop();
+                            break;
+                        case 'D': // do-over
+                            ip = 0;
+                            break;
+                        case 'e': // empty string
+                            ++ip;
+                            stack.Push("");
                             break;
                         case 'f': // filter
                             ++ip;
@@ -144,12 +161,14 @@ namespace StaxLang {
                         case 'i': 
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
-                            if (IsArray(stack.Peek())) stack.Peek().RemoveAt(0); // drop-first
+                            else if (IsArray(stack.Peek())) stack.Peek().RemoveAt(0); // drop-first
+                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] - 1));
                             break;
                         case 'I': 
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
                             if (IsArray(stack.Peek())) stack.Peek().RemoveAt(stack.Peek().Count() - 1); // drop-last
+                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] + 1));
                             break;
                         case 'l': // listify string or n elements
                             ++ip;
@@ -166,9 +185,17 @@ namespace StaxLang {
                             break;
                         case 'L': // listify stack
                             ++ip;
-                            var newList = stack.Reverse().ToList();
+                            var newList = stack.ToList();
                             stack.Clear();
                             stack.Push(newList);
+                            break;
+                        case 'n': // push newline
+                            ++ip;
+                            stack.Push("\n");
+                            break;
+                        case 'N': // print newline
+                            ++ip;
+                            Output.WriteLine();
                             break;
                         case 'm': // do map
                             ++ip;
@@ -199,11 +226,13 @@ namespace StaxLang {
                             stack.Push(Enumerable.Range(1, (int)stack.Pop()).Select(Convert.ToInt64).Cast<object>().ToList());
                             break;
                         case 's': // swap
-                            ++ip;
-                            var top = stack.Pop();
-                            var bottom = stack.Pop();
-                            stack.Push(top);
-                            stack.Push(bottom);
+                            ++ip; 
+                            {
+                                var top = stack.Pop();
+                                var bottom = stack.Pop();
+                                stack.Push(top);
+                                stack.Push(bottom);
+                            }
                             break;
                         case 'S': // space
                             ++ip;
@@ -512,7 +541,7 @@ namespace StaxLang {
         private bool IsString(object b) => b is string;
         private bool IsArray(object b) => b is List<object>;
         private bool IsBlock(object b) => b is Block;
-        private bool IsTruthy(dynamic b) => b != 0;
+        private bool IsTruthy(dynamic b) => (!IsNumber(b) || b != 0) && (b as string)?.Length != 0 && (b as IList<object>)?.Count != 0;
 
         private object ParseNumber(string program, ref int ip) {
             long value = 0;
