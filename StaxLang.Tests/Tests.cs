@@ -108,32 +108,32 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void WhileTest() {
-            RunProgram("3{cic}w", "", "3", "2", "1", "0");
+            RunProgram("3{cvc}w", "", "3", "2", "1", "0");
         }
 
         [TestMethod]
         public void CollatzTest() {
-            RunProgram("#{ch1C3*I2C2%?ci}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
-            RunProgram("#{cXhx3*Ix2%?ci}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
-            RunProgram("#{cXhx3*Ix2%?ciw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("#{ch1C3*^2C2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("#{cXhx3*^x2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("#{cXhx3*^x2%?cvw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
         }
 
         [TestMethod]
-        public void MyTestMethod() {
-            RunProgram("4Ri", "", "2", "3", "4");
+        public void DropFirstMethod() {
+            RunProgram("4R^", "", "2", "3", "4");
         }
 
         [TestMethod]
         public void DivisorsTest() {
-            RunProgram("#XiR{xs%!f", "12", "1", "2", "3", "4", "6");
-            RunProgram("#XiR{xs%!fi#", "12", "4");
+            RunProgram("#XvR{xs%!f", "12", "1", "2", "3", "4", "6");
+            RunProgram("#XvR{xs%!fv#", "12", "4");
         }
 
         [TestMethod]
         public void PrimeTest() {
-            RunProgram("1{IXiRi{xs%!f#!{x}*xc20-wd", "", "2", "3", "5", "7", "11", "13", "17", "19");
-            RunProgram("2Xd{xiRi{xs%!f#!{x}*xIX20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
-            RunProgram("d2Zd{ziRi{zs%!f#!{z}*zIZx-w", "15", "2", "3", "5", "7", "11", "13");
+            RunProgram("1{^XvR^{xs%!f#!{x}*xc20-wd", "", "2", "3", "5", "7", "11", "13", "17", "19");
+            RunProgram("2Xd{xvR^{xs%!f#!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
+            RunProgram("d2Zd{zvR^{zs%!f#!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
         }
 
         [TestMethod]
@@ -145,7 +145,7 @@ namespace StaxLang.Tests {
         public void FactorialTest() {
             RunProgram("1s#R{*cmd", "5", "120");
             RunProgram("1s#R{*F", "5", "120");
-            RunProgram("1s#X{*xiXxwd", "5", "120");
+            RunProgram("1s#X{*xvXxwd", "5", "120");
         }
 
         [TestMethod]
@@ -172,15 +172,15 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void BigVTest() {
-            RunProgram(@"#XR{c'\)sxs-HI'/)+PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{c'\)Oxs-HI'/)PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{'\)Ox_-HI'/)PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{'\)x_-HI'/)+m", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{c'\)sxs-H^'/)+PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{c'\)Oxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{'\)Ox_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{'\)x_-H^'/)+m", "3", @"\    /", @" \  /", @"  \/");
         }
 
         [TestMethod]
         public void BigXTest() {
-            RunProgram(@"#XR{'\)x_i-H'/)+mxI'X)xR-{'/)x_i-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#XR{'\)x_v-H'/)+mx^'X)xR-{'/)x_v-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -209,13 +209,13 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DigitTallyTest() {
-            RunProgram("d10r{$ys/#i$me*", "176093677603", "2102003301");
-            RunProgram("L{Xd10r{$xs/#i$me*F", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Xd10r{$xs/#i$me*PD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#i$me*PdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#i$OFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#iOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/#iOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("d10r{$ys/#v$me*", "176093677603", "2102003301");
+            RunProgram("L{Xd10r{$xs/#v$me*F", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Xd10r{$xs/#v$me*PD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#v$me*PdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#v$OFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#vOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/#vOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]

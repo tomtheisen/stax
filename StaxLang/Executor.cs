@@ -105,6 +105,18 @@ namespace StaxLang {
                             ++ip;
                             DoEqual(stack);
                             break;
+                        case 'v':
+                            ++ip;
+                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
+                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] - 1)); // dec char
+                            else if (IsArray(stack.Peek())) stack.Peek().RemoveAt(stack.Peek().Count - 1); // drop-last
+                            break;
+                        case '^':
+                            ++ip;
+                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
+                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] + 1)); // inc char
+                            else if (IsArray(stack.Peek())) stack.Peek().RemoveAt(0); // drop-first
+                            break;
                         case '(':
                             ++ip;
                             PadRight(stack);
@@ -157,18 +169,6 @@ namespace StaxLang {
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() * 2); // double
                             if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // tail
-                            break;
-                        case 'i': 
-                            ++ip;
-                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
-                            else if (IsArray(stack.Peek())) stack.Peek().RemoveAt(0); // drop-first
-                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] - 1));
-                            break;
-                        case 'I': 
-                            ++ip;
-                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
-                            if (IsArray(stack.Peek())) stack.Peek().RemoveAt(stack.Peek().Count() - 1); // drop-last
-                            else if (IsString(stack.Peek())) stack.Push("" + (char)(stack.Pop()[0] + 1));
                             break;
                         case 'l': // listify string or n elements
                             ++ip;
