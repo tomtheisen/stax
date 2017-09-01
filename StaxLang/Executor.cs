@@ -9,6 +9,8 @@ using System.Text;
 namespace StaxLang {
     public class Executor {
         public TextWriter Output { get; private set; }
+
+        private long Index = 0L; // loop iteration
         private dynamic X = 0L; // register
         private dynamic Y = 0L; // register
         private dynamic Z = 0L; // register
@@ -62,7 +64,7 @@ namespace StaxLang {
                             stack.Push(ParseBlock(program, ref ip));
                             break;
                         case '!': // not
-                            ip++;
+                            ++ip;
                             stack.Push(IsTruthy(stack.Pop()) ? 0L : 1L);
                             break;
                         case '+':
@@ -84,6 +86,14 @@ namespace StaxLang {
                         case '%':
                             ++ip;
                             DoPercent(stack);
+                            break;
+                        case '@': // read index
+                            ++ip;
+                            DoReadIndex(stack);
+                            break;
+                        case '&': // assign index
+                            ++ip;
+                            DoAssignIndex(stack);
                             break;
                         case ':': // copy 2nd
                             ++ip; 
@@ -129,6 +139,10 @@ namespace StaxLang {
                             ++ip;
                             DoIf(stack);
                             break;
+                        case 'a':
+                            ++ip;
+                            stack.Push("abcdefghijklmnopqrstuvwxyz");
+                            break;
                         case 'A': // 10
                             ++ip;
                             stack.Push(10L);
@@ -152,6 +166,10 @@ namespace StaxLang {
                             ++ip;
                             stack.Push("");
                             break;
+                        case 'E': // explode (de-listify)
+                            ++ip;
+                            DoExplode(stack);
+                            break;
                         case 'f': // filter
                             ++ip;
                             DoFilter(stack);
@@ -163,25 +181,26 @@ namespace StaxLang {
                         case 'h': 
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() / 2); // half
+                            if (IsString(stack.Peek())) stack.Push(stack.Pop().ToLower()); // lower
                             if (IsArray(stack.Peek())) stack.Push(stack.Pop()[0]); // head
                             break;
                         case 'H': 
                             ++ip;
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() * 2); // double
+                            if (IsString(stack.Peek())) stack.Push(stack.Pop().ToUpper()); // upper
                             if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // tail
+                            break;
+                        case 'i': // iteration index
+                            ++ip;
+                            stack.Push(this.Index);
+                            break;
+                        case 'I': // get index
+                            ++ip;
+                            DoGetIndex(stack);
                             break;
                         case 'l': // listify string or n elements
                             ++ip;
-                            if (IsInt(stack.Peek())) {
-                                var list = new List<object>();
-                                long count = stack.Pop();
-                                for (int i = 0; i < count; i++) list.Insert(0, stack.Pop());
-                                stack.Push(list);
-                            } else if (IsString(stack.Peek())) {
-                                stack.Push(((string)stack.Pop()).Cast<object>().ToList());
-                            } else {
-                                throw new Exception("Bad type for listify");
-                            }
+                            DoListify(stack);
                             break;
                         case 'L': // listify stack
                             ++ip;
@@ -205,7 +224,7 @@ namespace StaxLang {
                             ++ip;
                             Print(stack.Peek(), false);
                             break;
-                        case 'O':
+                        case 'O': // output
                             ++ip;
                             Print(stack.Pop(), false);
                             break;
@@ -280,6 +299,86 @@ namespace StaxLang {
                             break;
                         default: throw new Exception($"Unknown character '{program[ip]}'");
                     }
+            }
+        }
+
+        private void DoGetIndex(Stack<dynamic> stack) {
+            var element = stack.Pop();
+            var list = stack.Pop();
+
+            if (IsString(list) || IsArray(list)) {
+                stack.Push((long)list.IndexOf(element));
+            }
+            else {
+                throw new Exception("Bad types for get-index");
+            }
+        }
+
+        private void DoExplode(Stack<dynamic> stack) {
+            var arg = stack.Pop();
+
+            if (IsString(arg)) arg = String2Array(arg);
+
+            if (IsArray(arg)) {
+                foreach (var item in arg) stack.Push(item);
+            }
+        }
+
+        private List<object> String2Array(string arg)  => arg.ToCharArray().Select(c => c + "" as object).ToList();
+
+        private void DoAssignIndex(Stack<dynamic> stack) {
+            var element = stack.Pop();
+            var index = (int)stack.Pop();
+            var list = stack.Pop();
+
+            if (IsArray(list)) {
+                var result = new List<object>(list);
+                index = ((index % result.Count) + result.Count) % result.Count;
+                result[index] = element;
+                stack.Push(result);
+            }
+            else if (IsString(list)) {
+                string toEmbed = element.ToString();
+                index = ((index % list.Length) + list.Length) % list.Length;
+                string result = list.Substring(0, index);
+                result += toEmbed.Length + index > list.Length ? toEmbed.Substring(0, list.Length - index) : toEmbed;
+                if (result.Length < list.Length) result += list.Substring(result.Length);
+                stack.Push(result);
+            }
+            else {
+                throw new Exception("Bad type for index assign");
+            }
+
+        }
+
+        private void DoReadIndex(Stack<dynamic> stack) {
+            int index = (int)stack.Pop();
+            var list = stack.Pop();
+
+            if (IsArray(list)) {
+                stack.Push(list[index]);
+            }
+            else if (IsString(list)) {
+                stack.Push(list[index].ToString());
+            }
+            else {
+                throw new Exception("Bad type for index");
+            }
+        }
+
+        private void DoListify(Stack<dynamic> stack) {
+            var arg = stack.Pop();
+            if (IsInt(arg)) {
+                var list = new List<object>();
+                long count = arg;
+                for (int i = 0; i < count; i++) list.Insert(0, stack.Pop());
+                stack.Push(list);
+            }
+            else if (IsString(arg)) {
+                stack.Push(String2Array(arg));
+            }
+            else {
+                throw new Exception("Bad type for listify");
             }
         }
 
@@ -371,14 +470,18 @@ namespace StaxLang {
             var a = stack.Pop();
 
             if (IsArray(a) && IsBlock(b)) {
+                var initial = (this._, this.Index);
+                long i = 0;
                 var result = new List<object>();
                 foreach (var e in a) {
                     stack.Push(e);
                     this._ = e;
+                    this.Index = i++;
                     Run(b.Program, stack);
                     if (IsTruthy(stack.Pop())) result.Add(e);
                 }
                 stack.Push(result);
+                (this._, this.Index) = initial;
             } else {
                 throw new Exception("Bad types for filter");
             }
@@ -388,13 +491,20 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
+            if (IsString(a)) a = String2Array(a);
+
             if (IsArray(a) && IsBlock(b)) {
+                var initial = (this._, this.Index);
+                long i = 0;
                 foreach (var e in a) {
                     stack.Push(e);
                     this._ = e;
+                    this.Index = i++;
                     Run(b.Program, stack);
                 }
-            } else {
+                (this._, this.Index) = initial;
+            }
+            else {
                 throw new Exception("Bad types for for");
             }
         }
@@ -403,17 +513,26 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsArray(a)) (a, b) = (b, a);
+            if (IsArray(b)) (a, b) = (b, a);
 
-            if (IsBlock(a) && IsArray(b)) {
+            if (IsString(a)) a = String2Array(a);
+
+            if (IsArray(a) && IsBlock(b)) {
+                var initial = (this._, this.Index);
+                long i = 0;
                 var result = new List<object>();
-                foreach (var e in b) {
+                foreach (var e in a) {
                     stack.Push(e);
                     this._ = e;
-                    Run(a.Program, stack);
+                    this.Index = i++;
+                    Run(b.Program, stack);
                     result.Add(stack.Pop());
                 }
                 stack.Push(result);
+                (this._, this.Index) = initial;
+            }
+            else {
+                throw new Exception("bad type for map");
             }
         }
 
@@ -500,7 +619,9 @@ namespace StaxLang {
                     stack.Push(result);
                     return;
                 } else if (IsBlock(a)) {
-                    for (int i = 0; i < b; i++) Run(a.Program, stack);
+                    var initial = this.Index;
+                    for (this.Index = 0; this.Index < b; this.Index++) Run(a.Program, stack);
+                    this.Index = initial;
                     return;
                 }
             }

@@ -8,7 +8,7 @@ namespace StaxLang.Tests {
     [TestClass]
     public class Tests {
         internal static string[] MultiLineStrip(string arg) {
-            var result = arg.Trim().Split(new[] { Environment.NewLine }, 0)
+            var result = arg.Trim().Split('\n')
                 .Select(line => line.TrimStart())
                 .ToArray();
 
@@ -179,8 +179,14 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
+        public void IndexAssignMethod() {
+            RunProgram("3'x&", "12345", "123x5");
+        }
+
+        [TestMethod]
         public void BigXTest() {
             RunProgram(@"#XR{'\)x_v-H'/)+mx^'X)xR-{'/)x_v-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xr-{d' x*i'\&_""/X""i_=@&Tm", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -210,12 +216,12 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DigitTallyTest() {
             RunProgram("d10r{$ys/#v$me*", "176093677603", "2102003301");
-            RunProgram("L{Xd10r{$xs/#v$me*F", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Xd10r{$xs/#v$me*PD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#v$me*PdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#v$OFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#vOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/#vOFNdD", "27204322879364" + Environment.NewLine + "82330228112748", "1042201211", "1242100130");
+            RunProgram("L{Xd10r{$xs/#v$me*F", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Xd10r{$xs/#v$me*PD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#v$me*PdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#v$OFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#vOFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/#vOFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -226,7 +232,34 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DeleteBlanksTest() {
-            RunProgram("L{f", "1" + Environment.NewLine + Environment.NewLine + "2" + Environment.NewLine + Environment.NewLine + Environment.NewLine + "3", "1", "2", "3");
+            RunProgram("L{f", "1\n\n2\n\n\n3", "1", "2", "3");
+        }
+
+        [TestMethod]
+        public void ScopeTest() {
+            RunProgram("2R{d 9R{dF _F", "", "1", "2");
+            RunProgram("2R{d 9R{dF iF", "", "0", "1");
+        }
+
+        [TestMethod]
+        public void AllDigitsTest() {
+            RunProgram("Ar{$m'A{c^}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Are*'A{c^}25*26le*+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Ar'A{c^}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("ArE'A{c^}25*L-e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Are*aH+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        }
+
+        [TestMethod]
+        public void FindIndexTest() {
+            RunProgram("' a+hsIPD", "d\nz\n_", "4", "26", "-1");
+        }
+
+        [TestMethod]
+        public void ShiftingDigitsTest() {
+            // https://codegolf.stackexchange.com/questions/141225/shifting-digits
+
+            RunProgram("s#Xd{`^m", "5f69\n16", "607A");
         }
     }
 }
