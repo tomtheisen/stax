@@ -11,6 +11,7 @@ namespace StaxLang {
         private dynamic X = 0L; // register
         private dynamic Y = 0L; // register
         private dynamic Z = 0L; // register
+        private dynamic _ = 0L; // implicit iterator
 
         public Executor(TextWriter output = null) {
             this.Output = output ?? Console.Out;
@@ -30,7 +31,7 @@ namespace StaxLang {
             var stack = new Stack<dynamic>(input.Reverse());
             try {
                 Run(program, stack);
-                stack.Reverse().ToList().ForEach(Print);
+                stack.Reverse().ToList().ForEach(e => Print(e));
             } catch (InvalidOperationException) { }
         }
 
@@ -81,6 +82,14 @@ namespace StaxLang {
                             ++ip;
                             DoEqual(stack);
                             break;
+                        case '(':
+                            ++ip;
+                            PadRight(stack);
+                            break;
+                        case ')':
+                            ++ip;
+                            PadLeft(stack);
+                            break;
                         case '?': // if
                             ++ip;
                             DoIf(stack);
@@ -112,7 +121,7 @@ namespace StaxLang {
                             break;
                         case 'H': 
                             ++ip;
-                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() / 2); // double
+                            if (IsNumber(stack.Peek())) stack.Push(stack.Pop() * 2); // double
                             if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // tail
                             break;
                         case 'i': 
@@ -138,6 +147,14 @@ namespace StaxLang {
                         case 'n': // to number
                             ++ip;
                             stack.Push(ToNumber(stack.Pop()));
+                            break;
+                        case 'o': // shy output
+                            ++ip;
+                            Print(stack.Peek(), false);
+                            break;
+                        case 'O':
+                            ++ip;
+                            Print(stack.Pop(), false);
                             break;
                         case 'p': // shy print
                             ++ip;
@@ -165,6 +182,10 @@ namespace StaxLang {
                         case 'w': // while
                             ++ip;
                             DoWhile(stack);
+                            break;
+                        case '_':
+                            ++ip;
+                            stack.Push(this._);
                             break;
                         case 'x': // read;
                             ++ip;
@@ -195,6 +216,50 @@ namespace StaxLang {
             }
         }
 
+        private void PadLeft(Stack<dynamic> stack) {
+            var b = stack.Pop();
+            var a = stack.Pop();
+
+            if (IsNumber(a)) (a, b) = (b, a);
+
+            if (IsString(a) && IsInt(b)) {
+                var result = ((string)a).PadLeft((int)b);
+                stack.Push(result.Substring(result.Length - (int)b));
+                return;
+            }
+
+            if (IsArray(a) && IsInt(b)) {
+                if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)0L, b - a.Count));
+                if (a.Count > b) a.RemoveRange(0, a.Count - (int)b);
+                stack.Push(a);
+                return;
+            }
+
+            throw new Exception("bad types for padleft");
+        }
+
+        private void PadRight(Stack<dynamic> stack) {
+            var b = stack.Pop();
+            var a = stack.Pop();
+
+            if (IsNumber(a)) (a, b) = (b, a);
+
+            if (IsString(a) && IsInt(b)) {
+                var result = ((string)a).PadRight((int)b);
+                stack.Push(result.Substring(0, (int)b));
+                return;
+            }
+
+            if (IsArray(a) && IsInt(b)) {
+                if (a.Count < b) a.AddRange(Enumerable.Repeat((object)0L, b - a.Count));
+                if (a.Count > b) a.RemoveRange((int)b, a.Count - (int)b);
+                stack.Push(a);
+                return;
+            }
+
+            throw new Exception("bad types for padright");
+        }
+
         private void DoWhile(Stack<dynamic> stack) {
             Block block = stack.Pop();
             do Run(block.Program, stack); while (IsTruthy(stack.Pop()));
@@ -222,24 +287,15 @@ namespace StaxLang {
             }
         }
 
-        private Block ParseBlock(string program, ref int ip) {
-            int depth = 0;
-            int start = ip + 1;
-            do {
-                if (program[ip] == '{') ++depth;
-                if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
-
-                // shortcut block terminators
-                if ((program[ip] == 'w' || program[ip] == 'm' || program[ip] == 'f' || program[ip] == 'F') && --depth == 0) return new Block(program.Substring(start, ip - start));
-            } while (++ip < program.Length);
-            return new Block(program.Substring(start));
-        }
-
-        private void Print(object arg) {
+        private void Print(object arg, bool newline = true) {
             if (IsArray(arg)) {
-                foreach (var e in (IEnumerable)arg) Output.WriteLine(e);
-            } else {
+                foreach (var e in (IEnumerable)arg) Print(e, newline);
+            }
+            else if (newline) {
                 Output.WriteLine(arg);
+            }
+            else {
+                Output.Write(arg);
             }
         }
 
@@ -251,6 +307,7 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in a) {
                     stack.Push(e);
+                    this._ = e;
                     Run(b.Program, stack);
                     if (IsTruthy(stack.Pop())) result.Add(e);
                 }
@@ -267,6 +324,7 @@ namespace StaxLang {
             if (IsArray(a) && IsBlock(b)) {
                 foreach (var e in a) {
                     stack.Push(e);
+                    this._ = e;
                     Run(b.Program, stack);
                 }
             } else {
@@ -284,6 +342,7 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in b) {
                     stack.Push(e);
+                    this._ = e;
                     Run(a.Program, stack);
                     result.Add(stack.Pop());
                 }
@@ -427,6 +486,19 @@ namespace StaxLang {
             }
             if (ip < program.Length) ++ip; // final quote
             return result;
+        }
+
+        private Block ParseBlock(string program, ref int ip) {
+            int depth = 0;
+            int start = ip + 1;
+            do {
+                if (program[ip] == '{') ++depth;
+                if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
+
+                // shortcut block terminators
+                if ((program[ip] == 'w' || program[ip] == 'm' || program[ip] == 'f' || program[ip] == 'F') && --depth == 0) return new Block(program.Substring(start, ip - start));
+            } while (++ip < program.Length);
+            return new Block(program.Substring(start));
         }
     }
 }

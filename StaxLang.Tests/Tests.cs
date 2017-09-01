@@ -165,8 +165,22 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        public void BigXTest() {
+        public void DiagonalTest() {
+            RunProgram(@"nR{'\)m", "3", @"\", @" \", @"  \");
+            RunProgram(@"nR{'\)PF", "3", @"\", @" \", @"  \");
+        }
 
+        [TestMethod]
+        public void BigVTest() {
+            RunProgram(@"nXR{c'\)sxs-HI'/)+PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"nXR{c'\)Oxs-HI'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"nXR{'\)Ox_-HI'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"nXR{'\)x_-HI'/)+m", "3", @"\    /", @" \  /", @"  \/");
+        }
+
+        [TestMethod]
+        public void BigXTest() {
+            RunProgram(@"nXR{'\)x_i-H'/)+mxI'X)xR-{'/)x_i-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
     }
 }
