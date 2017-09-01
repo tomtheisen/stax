@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,6 +45,10 @@ namespace StaxLang {
                 } else if (char.IsWhiteSpace(program[ip])) {
                     ++ip;
                 } else switch (program[ip]) {
+                        case '`':
+                            ++ip;
+                            Debugger.Break();
+                            break;
                         case '"': // "literal"
                             stack.Push(ParseString(program, ref ip));
                             break;
@@ -78,6 +83,14 @@ namespace StaxLang {
                             ++ip;
                             DoPercent(stack);
                             break;
+                        case '#': // to number
+                            ++ip;
+                            stack.Push(ToNumber(stack.Pop()));
+                            break;
+                        case '$': // to string
+                            ++ip;
+                            stack.Push(stack.Pop().ToString());
+                            break;
                         case '=':
                             ++ip;
                             DoEqual(stack);
@@ -98,9 +111,13 @@ namespace StaxLang {
                             ++ip;
                             stack.Push(stack.Peek());
                             break;
-                        case 'C': //dig
+                        case 'C': // dig
                             ++ip;
                             stack.Push(stack.ElementAt((int)stack.Pop()));
+                            break;
+                        case 'e': // empty string
+                            ++ip;
+                            stack.Push("");
                             break;
                         case 'd': // discard
                             ++ip;
@@ -134,7 +151,20 @@ namespace StaxLang {
                             if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
                             if (IsArray(stack.Peek())) stack.Peek().RemoveAt(stack.Peek().Count() - 1); // drop-last
                             break;
-                        case 'L':
+                        case 'l': // listify string or n elements
+                            ++ip;
+                            if (IsInt(stack.Peek())) {
+                                var list = new List<object>();
+                                long count = stack.Pop();
+                                for (int i = 0; i < count; i++) list.Insert(0, stack.Pop());
+                                stack.Push(list);
+                            } else if (IsString(stack.Peek())) {
+                                stack.Push(((string)stack.Pop()).Cast<object>().ToList());
+                            } else {
+                                throw new Exception("Bad type for listify");
+                            }
+                            break;
+                        case 'L': // listify stack
                             ++ip;
                             var newList = stack.Reverse().ToList();
                             stack.Clear();
@@ -143,10 +173,6 @@ namespace StaxLang {
                         case 'm': // do map
                             ++ip;
                             DoMap(stack);
-                            break;
-                        case 'n': // to number
-                            ++ip;
-                            stack.Push(ToNumber(stack.Pop()));
                             break;
                         case 'o': // shy output
                             ++ip;
@@ -178,6 +204,18 @@ namespace StaxLang {
                             var bottom = stack.Pop();
                             stack.Push(top);
                             stack.Push(bottom);
+                            break;
+                        case 'S': // space
+                            ++ip;
+                            stack.Push(" ");
+                            break;
+                        case 't': // trim left
+                            ++ip;
+                            stack.Push(((string)stack.Pop()).TrimStart());
+                            break;
+                        case 'T': // trim right
+                            ++ip;
+                            stack.Push(((string)stack.Pop()).TrimEnd());
                             break;
                         case 'w': // while
                             ++ip;
@@ -395,6 +433,12 @@ namespace StaxLang {
 
             if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(a / b);
+            } else if (IsString(a) && IsInt(b)) {
+                var result = new List<object>();
+                for (int i = 0; i < a.Length; i += (int)b) result.Add(a.Substring(i, Math.Min((int)b, a.Length - i)));
+                stack.Push(result);
+            } else if (IsString(a) && IsString(b)) {
+                stack.Push(((string)a).Split(new string[] { b }, 0).Cast<object>().ToList());
             } else {
                 throw new Exception("Bad types for /");
             }
@@ -430,6 +474,11 @@ namespace StaxLang {
                     for (int i = 0; i < b; i++) Run(a.Program, stack);
                     return;
                 }
+            }
+
+            if (IsArray(a) && IsString(b)) {
+                stack.Push(string.Join(b, a));
+                return;
             }
 
             if (IsNumber(a) && IsNumber(b)) {
