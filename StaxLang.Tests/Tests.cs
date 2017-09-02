@@ -281,5 +281,11 @@ namespace StaxLang.Tests {
             // http://golf.shinh.org/p.rb?even+lines
             RunProgram("dPD", "qw\nas\nzx\nwe", "as", "we");
         }
+
+        [TestMethod]
+        public void SortCharsTest() {
+            // http://golf.shinh.org/p.rb?sort+characters
+            RunProgram("l{oOe*", "Hello, world!", " !,Hdellloorw");
+        }
     }
 }
