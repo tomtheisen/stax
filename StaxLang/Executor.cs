@@ -11,9 +11,9 @@ namespace StaxLang {
         public TextWriter Output { get; private set; }
 
         private long Index = 0L; // loop iteration
-        private dynamic X = 0L; // register
-        private dynamic Y = 0L; // register
-        private dynamic Z = 0L; // register
+        private dynamic X = 0L; // register - default to numeric value of first input
+        private dynamic Y = 0L; // register - default to first input
+        private dynamic Z = 0L; // register - default to number of input lines
         private dynamic _ = 0L; // implicit iterator
 
         public Executor(TextWriter output = null) {
@@ -147,6 +147,10 @@ namespace StaxLang {
                             ++ip;
                             stack.Push(10L);
                             break;
+                        case 'b': // base convert
+                            ++ip;
+                            DoBaseConvert(stack);
+                            break;
                         case 'c': // copy
                             ++ip;
                             stack.Push(stack.Peek());
@@ -220,17 +224,9 @@ namespace StaxLang {
                             ++ip;
                             DoMap(stack);
                             break;
-                        case 'o': // shy output
-                            ++ip;
-                            Print(stack.Peek(), false);
-                            break;
-                        case 'O': // output
+                        case 'p': // print inline
                             ++ip;
                             Print(stack.Pop(), false);
-                            break;
-                        case 'p': // shy print
-                            ++ip;
-                            Print(stack.Peek());
                             break;
                         case 'P': // print
                             ++ip;
@@ -299,6 +295,31 @@ namespace StaxLang {
                             break;
                         default: throw new Exception($"Unknown character '{program[ip]}'");
                     }
+            }
+        }
+
+        private void DoBaseConvert(Stack<dynamic> stack) {
+            int @base = (int)stack.Pop();
+            var number = stack.Pop();
+
+            if (IsNumber(number)) {
+                long n = number;
+                string result = "";
+                while (n > 0) {
+                    result = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)(n % @base)] + result;
+                    n /= @base;
+                }
+                if (result == "") result = "0";
+                stack.Push(result);
+            } 
+            else if (IsString(number)) {
+                string s = number.ToLower();
+                long result = 0;
+                foreach (var c in s) result = result * @base + "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
+                stack.Push(result);
+            } 
+            else {
+                throw new Exception("Bad types for base convert");
             }
         }
 

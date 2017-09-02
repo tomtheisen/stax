@@ -173,8 +173,8 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BigVTest() {
             RunProgram(@"#XR{c'\)sxs-H^'/)+PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{c'\)Oxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{'\)Ox_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{c'\)pxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{'\)px_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#XR{'\)x_-H^'/)+m", "3", @"\    /", @" \  /", @"  \/");
         }
 
@@ -187,16 +187,18 @@ namespace StaxLang.Tests {
         public void BigXTest() {
             RunProgram(@"#XR{'\)x_v-H'/)+mx^'X)xR-{'/)x_v-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#H^Xr-{d' x*i'\&_""/X""i_=@&Tm", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xr-{dSx*i'\&_""/X""i_=@&Tm", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
         public void SplitTest() {
-            RunProgram("l", "asdf", "a", "s", "d", "f");
+            RunProgram("l", "asdf\nxxx", "xxx", "a", "s", "d", "f");
         }
 
         [TestMethod]
         public void PairSpacingTest() {
             RunProgram("2/' *", "sequencespacingtest", "se qu en ce sp ac in gt es t");
+            RunProgram("2/S*", "sequencespacingtest", "se qu en ce sp ac in gt es t");
         }
 
         [TestMethod]
@@ -204,6 +206,7 @@ namespace StaxLang.Tests {
             RunProgram("2/{t' s+m\"\"*t", "Sequence spacing sample", "Se qu en ce s pa ci ng s am pl e");
             RunProgram("2/{t' s+me*t", "Sequence spacing sample", "Se qu en ce s pa ci ng s am pl e");
             RunProgram("2/{tm' *", "Sequence spacing sample", "Se qu en ce s pa ci ng s am pl e");
+            RunProgram("2/{tmS*", "Sequence spacing sample", "Se qu en ce s pa ci ng s am pl e");
         }
 
         [TestMethod]
@@ -219,9 +222,9 @@ namespace StaxLang.Tests {
             RunProgram("L{Xd10r{$xs/#v$me*F", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Xd10r{$xs/#v$me*PD", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Cs/#v$me*PdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#v$OFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#vOFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/#vOFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#v$pFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/#vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/#vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -256,10 +259,27 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
+        public void BaseConversionTest() {
+            RunProgram("#16bc4b", "291", "123", "27");
+        }
+
+        [TestMethod]
         public void ShiftingDigitsTest() {
             // https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
-            RunProgram("s#Xd{Are*a+sYI^x%ys@m", "5f69\n16", "607A");
+            RunProgram("s#Xd{Are*a+YsI^x%ys@pFN", "5f69\n16", "607a");
+            RunProgram("s#Xd{xb^x%xbpFN", "5f69\n16", "607a");
+        }
+
+        [TestMethod]
+        public void FibTest() {
+            RunProgram("#vv1s1s{c2C+}*", "7", "1", "1", "2", "3", "5", "8", "13");
+        }
+
+        [TestMethod]
+        public void EvenLinesTest() {
+            // http://golf.shinh.org/p.rb?even+lines
+            RunProgram("dPD", "qw\nas\nzx\nwe", "as", "we");
         }
     }
 }
