@@ -252,14 +252,14 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void FindIndexTest() {
-            RunProgram("' a+hsIPD", "d\nz\n_", "4", "26", "-1");
+            RunProgram("Sa+sIPD", "d\nz\n_", "4", "26", "-1");
         }
 
         [TestMethod]
         public void ShiftingDigitsTest() {
             // https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
-            RunProgram("s#Xd{`^m", "5f69\n16", "607A");
+            RunProgram("s#Xd{Are*a+sYI^x%ys@m", "5f69\n16", "607A");
         }
     }
 }
