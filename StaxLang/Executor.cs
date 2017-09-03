@@ -113,6 +113,14 @@ namespace StaxLang {
                             ++ip;
                             stack.Push(ToString(stack.Pop()));
                             break;
+                        case '<':
+                            ++ip;
+                            DoLessThan(stack);
+                            break;
+                        case '>':
+                            ++ip;
+                            DoGreaterThan(stack);
+                            break;
                         case '=':
                             ++ip;
                             DoEqual(stack);
@@ -246,6 +254,14 @@ namespace StaxLang {
                             ++ip;
                             Print(stack.Pop());
                             break;
+                        case 'q': // min
+                            ++ip;
+                            stack.Push(((List<object>)stack.Pop()).Min() ?? double.MaxValue);
+                            break;
+                        case 'Q': // max
+                            ++ip;
+                            stack.Push(((List<object>)stack.Pop()).Max() ?? double.MinValue);
+                            break;
                         case 'r': // 0 range
                             ++ip;
                             stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
@@ -306,9 +322,42 @@ namespace StaxLang {
                             ++ip;
                             Z = stack.Peek();
                             break;
+                        case '|': // extended operations
+                            switch (program[++ip]) {
+                                case '/': // div mod
+                                    ++ip;
+                                    {
+                                        double b = stack.Pop();
+                                        double a = stack.Pop();
+                                        stack.Push(Math.Floor(a / b));
+                                        stack.Push(a % b);
+                                    }
+                                    break;
+                                case 'f': // prime factorize
+                                    ++ip;
+                                    stack.Push(PrimeFactors(stack.Pop()));
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
                         default: throw new Exception($"Unknown character '{program[ip]}'");
                     }
             }
+        }
+
+        private void DoLessThan(Stack<dynamic> stack) {
+            var b = stack.Pop();
+            var a = stack.Pop();
+
+            stack.Push(a < b ? 1.0 : 0.0);
+        }
+
+        private void DoGreaterThan(Stack<dynamic> stack) {
+            var b = stack.Pop();
+            var a = stack.Pop();
+
+            stack.Push(a > b ? 1.0 : 0.0);
         }
 
         private void DoOrder(Stack<dynamic> stack) {
@@ -506,7 +555,6 @@ namespace StaxLang {
             throw new Exception("Bad type for ToString");
         }
 
-
         private void Print(object arg, bool newline = true) {
             if (IsArray(arg)) {
                 Print(A2S((List<object>)arg), newline);
@@ -698,16 +746,17 @@ namespace StaxLang {
             throw new Exception("Bad types for *");
         }
 
-        private bool AreEqual(dynamic a, dynamic b) {
-            if (IsFloat(a) && IsFloat(b)) return a == b;
-            if (IsArray(a) && IsArray(b)) return Enumerable.SequenceEqual(a, b);
-            throw new Exception("Bad types for =");
-        }
-
         private void DoEqual(Stack<dynamic> stack) {
             var b = stack.Pop();
             var a = stack.Pop();
             stack.Push(AreEqual(a, b) ? 1.0 : 0.0);
+        }
+
+        #region support
+        private bool AreEqual(dynamic a, dynamic b) {
+            if (IsFloat(a) && IsFloat(b)) return a == b;
+            if (IsArray(a) && IsArray(b)) return Enumerable.SequenceEqual(a, b);
+            throw new Exception("Bad types for =");
         }
 
         private bool IsFloat(object b) => b is double;
@@ -750,6 +799,8 @@ namespace StaxLang {
             int depth = 0;
             int start = ip + 1;
             do {
+                if (program[ip] == '|') ip += 2; // extended
+
                 if (program[ip] == '{') ++depth;
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
@@ -758,5 +809,22 @@ namespace StaxLang {
             } while (++ip < program.Length);
             return new Block(program.Substring(start));
         }
+        #endregion
+
+        #region extended
+        private List<object> PrimeFactors(double n) {
+            var result = new List<object>();
+            double d = 2;
+            n = Math.Floor(n);
+            while (n > 1) {
+                while (n % d == 0) {
+                    result.Add(d);
+                    n /= d;
+                }
+                ++d;
+            }
+            return result;
+        }
+        #endregion
     }
 }

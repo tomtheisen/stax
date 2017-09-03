@@ -286,7 +286,16 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SortCharsTest() {
             // http://golf.shinh.org/p.rb?sort+characters
-            RunProgram("{O", "Hello, world!", " !,Hdellloorw");
+            RunProgram("O", "Hello, world!", " !,Hdellloorw");
+        }
+
+        [TestMethod]
+        public void RegularTest() {
+            http://golf.shinh.org/p.rb?Hamming+Numbers
+            RunProgram("20R{5R~{*{_/c_%!wF1=fE", "", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12", "15", "16", "18", "20");
+            RunProgram("#c*R{5R~{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|fQ6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{|fQ6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
     }
 }
