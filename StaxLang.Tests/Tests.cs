@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using StaxLang;
 using System.IO;
 
 namespace StaxLang.Tests {
@@ -80,13 +79,13 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void RangeTest() {
-            RunProgram("5r", "", "0", "1", "2", "3", "4");
-            RunProgram("5R", "", "1", "2", "3", "4", "5");
+            RunProgram("5rE", "", "0", "1", "2", "3", "4");
+            RunProgram("5RE", "", "1", "2", "3", "4", "5");
         }
 
         [TestMethod]
         public void StarOverloadsTest() {
-            RunProgram("2r3*", "", "0", "1", "0", "1", "0", "1");
+            RunProgram("2r3*E", "", "0", "1", "0", "1", "0", "1");
             RunProgram("4\"abc\"*", "", "abcabcabcabc");
             RunProgram("{1}3*", "", "1", "1", "1");
         }
@@ -103,7 +102,8 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void SquaresTest() {
-            RunProgram("5R{c*}m", "", "1", "4", "9", "16", "25");
+            RunProgram("5R{c*mE", "", "1", "4", "9", "16", "25");
+            RunProgram("5R{c*PF", "", "1", "4", "9", "16", "25");
         }
 
         [TestMethod]
@@ -119,26 +119,26 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        public void DropFirstMethod() {
-            RunProgram("4R^", "", "2", "3", "4");
+        public void DropFirstTest() {
+            RunProgram("4R`~n*", "", "2", "3", "4");
         }
 
         [TestMethod]
         public void DivisorsTest() {
-            RunProgram("#XvR{xs%!f", "12", "1", "2", "3", "4", "6");
-            RunProgram("#XvR{xs%!fv#", "12", "4");
+            RunProgram("#XvR{`xs%!fE", "12", "1", "2", "3", "4", "6");
+            RunProgram("#XvR{xs%!f%v", "12", "4");
         }
 
         [TestMethod]
         public void PrimeTest() {
-            RunProgram("1{^XvR^{xs%!f#!{x}*xc20-wd", "", "2", "3", "5", "7", "11", "13", "17", "19");
-            RunProgram("2Xd{xvR^{xs%!f#!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
-            RunProgram("d2Zd{zvR^{zs%!f#!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
+            RunProgram("1{^XvR~{xs%!f%!{x}*xc20-wd", "", "2", "3", "5", "7", "11", "13", "17", "19");
+            RunProgram("2Xd{xvR~{xs%!f%!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
+            RunProgram("d2Zd{zvR~{zs%!f%!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
         }
 
         [TestMethod]
         public void TriangleTest() {
-            RunProgram("#R{'**m", "4", "*", "**", "***", "****");
+            RunProgram("#R{'**mE", "4", "*", "**", "***", "****");
         }
 
         [TestMethod]
@@ -150,7 +150,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void ListifyTest() {
-            RunProgram("1 2 3 L-", "", "1", "2", "3");
+            RunProgram("1 2 3 L-E", "", "1", "2", "3");
         }
 
         [TestMethod]
@@ -166,7 +166,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DiagonalTest() {
-            RunProgram(@"#R{'\)m", "3", @"\", @" \", @"  \");
+            RunProgram(@"#R{'\)mE", "3", @"\", @" \", @"  \");
             RunProgram(@"#R{'\)PF", "3", @"\", @" \", @"  \");
         }
 
@@ -175,7 +175,7 @@ namespace StaxLang.Tests {
             RunProgram(@"#XR{c'\)sxs-H^'/)+PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#XR{c'\)pxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#XR{'\)px_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#XR{'\)x_-H^'/)+m", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#XR{'\)x_-H^'/)+mE", "3", @"\    /", @" \  /", @"  \/");
         }
 
         [TestMethod]
@@ -185,14 +185,14 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void BigXTest() {
-            RunProgram(@"#XR{'\)x_v-H'/)+mx^'X)xR-{'/)x_v-H'\)+m", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#H^Xr-{d' x*i'\&_""/X""i_=@&Tm", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#H^Xr-{dSx*i'\&_""/X""i_=@&Tm", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#XR{'\)x_v-H'/)+mEx^'X)xR-{'/)x_v-H'\)+mE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xr-{d' x*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xr-{dSx*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
         public void SplitTest() {
-            RunProgram("l", "asdf\nxxx", "xxx", "a", "s", "d", "f");
+            RunProgram("{]mE", "asdf\nxxx", "xxx", "a", "s", "d", "f");
         }
 
         [TestMethod]
@@ -218,13 +218,13 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DigitTallyTest() {
-            RunProgram("d10r{$ys/#v$me*", "176093677603", "2102003301");
-            RunProgram("L{Xd10r{$xs/#v$me*F", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Xd10r{$xs/#v$me*PD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#v$me*PdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#v$pFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/#vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/#vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("d10r{$ys/%v$me*", "176093677603", "2102003301");
+            RunProgram("L{Xd10r{$xs/%v$me*F", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Xd10r{$xs/%v$me*PD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%v$me*PdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%v$pFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/%vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -235,7 +235,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DeleteBlanksTest() {
-            RunProgram("L{f", "1\n\n2\n\n\n3", "1", "2", "3");
+            RunProgram("L{fE", "1\n\n2\n\n\n3", "1", "2", "3");
         }
 
         [TestMethod]
@@ -246,11 +246,12 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void AllDigitsTest() {
-            RunProgram("Ar{$m'A{c^}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("Are*'A{c^}25*26le*+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("Ar'A{c^}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("ArE'A{c^}25*L-e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("Are*aH+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Ar{$m'A{ch^1l}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Are*'A{ch^1l}25*26le*+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Ar'A{ch^1l}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("ArE'A{ch^1l}25*L-e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Ar26r{65+1lm+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("Are*a^+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         }
 
         [TestMethod]
@@ -267,8 +268,8 @@ namespace StaxLang.Tests {
         public void ShiftingDigitsTest() {
             // https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
-            RunProgram("s#Xd{Are*a+YsI^x%ys@pFN", "5f69\n16", "607a");
-            RunProgram("s#Xd{xb^x%xbpFN", "5f69\n16", "607a");
+            RunProgram("s#Xd{Are*a+YsI^x%ys@]pFN", "5f69\n16", "607a");
+            RunProgram("s#Xd{]x`b^x%xbpFN", "5f69\n16", "607a");
         }
 
         [TestMethod]
@@ -285,7 +286,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SortCharsTest() {
             // http://golf.shinh.org/p.rb?sort+characters
-            RunProgram("l{oOe*", "Hello, world!", " !,Hdellloorw");
+            RunProgram("{O", "Hello, world!", " !,Hdellloorw");
         }
     }
 }
