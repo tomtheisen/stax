@@ -296,6 +296,7 @@ namespace StaxLang.Tests {
             RunProgram("#c*R{5R~{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{H|fQ6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|fQ6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|f`H6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|f5R-!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
 
@@ -334,7 +335,19 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DeleteDupesTest() {
             http://golf.shinh.org/p.rb?delete+duplicate+lines
-            RunProgram("Les{:I`^!{_P}*_+Fd", "a\nb\na\nc", "a", "b", "c");
+            RunProgram("Les{:I^!{_P}*_+Fd", "a\nb\na\nc", "a", "b", "c");
+            RunProgram("LuE", "a\nb\na\nc", "a", "b", "c");
+        }
+
+        [TestMethod]
+        public void PalindromizeTest() {
+            http://golf.shinh.org/p.rb?palindromize
+            RunProgram("c{dci(r:+m{cr=fhPdD", "test\nNISIOISIN", "testset", "NISIOISIN");
+        }
+
+        [TestMethod]
+        public void BracketMatching() {
+            //http://golf.shinh.org/p.rb?Bracket+Matching
         }
     }
 }

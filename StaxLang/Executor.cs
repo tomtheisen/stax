@@ -294,6 +294,10 @@ namespace StaxLang {
                             ++ip;
                             stack.Push(S2A(A2S(stack.Pop()).TrimEnd()));
                             break;
+                        case 'u': // unique
+                            ++ip;
+                            DoUnique(stack);
+                            break;
                         case 'w': // while
                             ++ip;
                             DoWhile(stack);
@@ -351,6 +355,26 @@ namespace StaxLang {
                             break;
                         default: throw new Exception($"Unknown character '{program[ip]}'");
                     }
+            }
+        }
+
+        private void DoUnique(Stack<dynamic> stack) {
+            var arg = stack.Pop();
+
+            if (IsArray(arg)) {
+                var result = new List<object>();
+                var seen = new HashSet<object>();
+                foreach (var e in arg) {
+                    var key = IsArray(e) ? A2S(e) : e;
+                    if (!seen.Contains(key)) {
+                        result.Add(e);
+                        seen.Add(key);
+                    }
+                }
+                stack.Push(result);
+            }
+            else {
+                throw new Exception("Bad type for unique");
             }
         }
 
@@ -649,8 +673,9 @@ namespace StaxLang {
                 stack.Push(a + b);
             }
             else if (IsArray(a) && IsArray(b)) {
-                a.AddRange(b);
-                stack.Push(a);
+                var result = new List<object>(a);
+                result.AddRange(b);
+                stack.Push(result);
             }
             else {
                 throw new Exception("Bad types for +");
