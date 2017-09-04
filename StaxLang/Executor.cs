@@ -44,10 +44,12 @@ namespace StaxLang {
                 if (char.IsDigit(program[ip])) {
                     stack.Push(ParseNumber(program, ref ip));
                 }
-                else if (char.IsWhiteSpace(program[ip])) {
-                    ++ip;
-                }
                 else switch (program[ip]) {
+                        case ' ':
+                        case '\n':
+                        case '\r':
+                            ++ip;
+                            break;
                         case '`':
                             ++ip;
                             Debugger.Break();
@@ -264,7 +266,9 @@ namespace StaxLang {
                             break;
                         case 'r': // 0 range
                             ++ip;
-                            stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                            if (IsFloat(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                            else if (IsArray(stack.Peek())) stack.Peek().Reverse();
+                            else throw new Exception("Bad type for r");
                             break;
                         case 'R': // 1 range
                             ++ip;
@@ -336,6 +340,10 @@ namespace StaxLang {
                                 case 'f': // prime factorize
                                     ++ip;
                                     stack.Push(PrimeFactors(stack.Pop()));
+                                    break;
+                                case 'g':
+                                    ++ip;
+                                    DoGCD(stack);
                                     break;
                                 default:
                                     break;
@@ -651,14 +659,13 @@ namespace StaxLang {
 
         private void DoMinus(Stack<dynamic> stack) {
             var b = stack.Pop();
-            if (IsArray(b)) {
-                b.Reverse();
-                stack.Push(b);
-                return;
-            }
-
             var a = stack.Pop();
-            if (IsFloat(a) && IsFloat(b)) {
+
+            if (IsArray(a) && IsArray(b)) {
+                a.RemoveAll((Predicate<object>)(e => b.Contains(e)));
+                stack.Push(a);
+            }
+            else if (IsFloat(a) && IsFloat(b)) {
                 stack.Push(a - b);
             }
             else {
@@ -801,6 +808,8 @@ namespace StaxLang {
             do {
                 if (program[ip] == '|') ip += 2; // extended
 
+                if (program[ip] == '"') ParseString(program, ref ip);
+
                 if (program[ip] == '{') ++depth;
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
@@ -824,6 +833,30 @@ namespace StaxLang {
                 ++d;
             }
             return result;
+        }
+
+        private void DoGCD(Stack<dynamic> stack) {
+            var b = stack.Pop();
+
+            if (IsArray(b)) {
+                double result = 0;
+                foreach (double e in b) result = GCD(result, e);
+                stack.Push(result);
+                return;
+            }
+
+            var a = stack.Pop();
+            if (IsFloat(a) && IsFloat(b)) {
+                stack.Push(GCD(a, b));
+                return;
+            }
+
+            throw new Exception("Bad types for GCD");
+        }
+
+        private double GCD(double a, double b) {
+            if (a == 0 || b == 0) return a + b;
+            return GCD(b, a % b);
         }
         #endregion
     }

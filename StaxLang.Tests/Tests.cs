@@ -150,12 +150,12 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void ListifyTest() {
-            RunProgram("1 2 3 L-E", "", "1", "2", "3");
+            RunProgram("1 2 3 LrE", "", "1", "2", "3");
         }
 
         [TestMethod]
         public void ReverseTest() {
-            RunProgram("-", "asdf", "fdsa");
+            RunProgram("r", "asdf", "fdsa");
         }
 
         [TestMethod]
@@ -185,9 +185,9 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void BigXTest() {
-            RunProgram(@"#XR{'\)x_v-H'/)+mEx^'X)xR-{'/)x_v-H'\)+mE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#H^Xr-{d' x*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#H^Xr-{dSx*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#XR{'\)x_v-H'/)+mEx^'X)xRr{'/)x_v-H'\)+mE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xrr{dSx*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -249,7 +249,7 @@ namespace StaxLang.Tests {
             RunProgram("Ar{$m'A{ch^1l}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Are*'A{ch^1l}25*26le*+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Ar'A{ch^1l}25*26l+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("ArE'A{ch^1l}25*L-e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("ArE'A{ch^1l}25*Lre*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Ar26r{65+1lm+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Are*a^+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         }
@@ -266,7 +266,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void ShiftingDigitsTest() {
-            // https://codegolf.stackexchange.com/questions/141225/shifting-digits
+            https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
             RunProgram("s#Xd{Are*a+YsI^x%ys@]pFN", "5f69\n16", "607a");
             RunProgram("s#Xd{]x`b^x%xbpFN", "5f69\n16", "607a");
@@ -279,13 +279,13 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void EvenLinesTest() {
-            // http://golf.shinh.org/p.rb?even+lines
+            http://golf.shinh.org/p.rb?even+lines
             RunProgram("dPD", "qw\nas\nzx\nwe", "as", "we");
         }
 
         [TestMethod]
         public void SortCharsTest() {
-            // http://golf.shinh.org/p.rb?sort+characters
+            http://golf.shinh.org/p.rb?sort+characters
             RunProgram("O", "Hello, world!", " !,Hdellloorw");
         }
 
@@ -296,6 +296,45 @@ namespace StaxLang.Tests {
             RunProgram("#c*R{5R~{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{H|fQ6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|fQ6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{|f5R-!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+        }
+
+        [TestMethod]
+        public void DeleteLastLineTest() {
+            http://golf.shinh.org/p.rb?delete+last+line
+            RunProgram("Lzv(E", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("Lr~rE", "foo\nbar\nbaz", "foo", "bar");
+        }
+
+        [TestMethod]
+        public void RotateLinesTest() {
+            http://golf.shinh.org/p.rb?rotate+lines
+            RunProgram("dLEy", "foo\nbar\nbaz", "bar", "baz", "foo");
+        }
+
+        [TestMethod]
+        public void FizzBuzzTest() {
+            RunProgram("#R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mE", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("#R{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?mE", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+        }
+
+        [TestMethod]
+        public void GCDTest() {
+            http://golf.shinh.org/p.rb?Greatest+Common+Divisor
+            RunProgram("#s#|g", "42\n56", "14");
+        }
+
+        [TestMethod]
+        public void LCMTest() {
+            http://golf.shinh.org/p.rb?Least+Common+Multiple
+            RunProgram("' /{#mXE*xE|g/PD", "195 548\n965 981", "106860", "946665");
+            RunProgram("' /E#Xs#Y*xy|g/PD", "195 548\n965 981", "106860", "946665");
+        }
+
+        [TestMethod]
+        public void DeleteDupesTest() {
+            http://golf.shinh.org/p.rb?delete+duplicate+lines
+            RunProgram("Les{:I`^!{_P}*_+Fd", "a\nb\na\nc", "a", "b", "c");
         }
     }
 }
