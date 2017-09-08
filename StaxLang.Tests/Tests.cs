@@ -120,12 +120,12 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DropFirstTest() {
-            RunProgram("4R`~n*", "", "2", "3", "4");
+            RunProgram("4R~n*", "", "2", "3", "4");
         }
 
         [TestMethod]
         public void DivisorsTest() {
-            RunProgram("#XvR{`xs%!fE", "12", "1", "2", "3", "4", "6");
+            RunProgram("#XvR{xs%!fE", "12", "1", "2", "3", "4", "6");
             RunProgram("#XvR{xs%!f%v", "12", "4");
         }
 
@@ -269,7 +269,7 @@ namespace StaxLang.Tests {
             https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
             RunProgram("s#Xd{Are*a+YsI^x%ys@]pFN", "5f69\n16", "607a");
-            RunProgram("s#Xd{]x`b^x%xbpFN", "5f69\n16", "607a");
+            RunProgram("s#Xd{]xb^x%xbpFN", "5f69\n16", "607a");
         }
 
         [TestMethod]
@@ -296,7 +296,7 @@ namespace StaxLang.Tests {
             RunProgram("#c*R{5R~{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{H|fQ6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|fQ6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("#c*R{H|f`H6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|fH6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|f5R-!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
 
@@ -345,9 +345,33 @@ namespace StaxLang.Tests {
             RunProgram("c{dci(r:+m{cr=fhPdD", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
+        //[TestMethod]
+        //public void BracketMatching() {
+        //    http://golf.shinh.org/p.rb?Bracket+Matching
+        //    RunProgram("X c0s{1+FYd 0Zd Ss {4%v {dcH_-4/ `z!*!! {i^Zd}* } {d_]+} 2C? F \"yes\" \"failed at: \"xy^z-)+ z? P dD", ")", "failed at: )");
+        //    RunProgram("X 0Zd Ss {4%v {dcH_-4/ z!* {iZ}* } {d_]+} 2C? F \"yes\" \"failed at: \"xz0v*)+ z? P dD", "()", "yes");
+        //    RunProgram("X 0Zd Ss {4%v {dcH_-4/ z!* {iZ}* } {d_]+} 2C? F \"yes\" \"failed at: \"xz0v*)+ z? P dD", "()\n{()[]}\n()}()", "yes", "yes", "failed at: }()");
+        ////    RunProgram("X 0Zd es { {4%v {d_]+} {dcH_-4/ z!* {iZ}* } 2C? F \"yes\" \"failed at: \"`xz0v*)+ z? P D", "()[]", "yes");
+        ////    RunProgram("X 0Zd es { {4%v {d_]+} {dcH_-4/ z!* {iZ}* } 2C? F \"yes\" \"failed at: \"`xz0v*)+ z? P D", "[]<[]>(){}<>{}{}(<>)\n{([[((([[{>]])))]])}", "yes", "failed at: >]])))]])}");
+        //}
+
         [TestMethod]
-        public void BracketMatching() {
-            //http://golf.shinh.org/p.rb?Bracket+Matching
+        public void GoogleTest() {
+            RunProgram("#'o*'gs+\"gle\"+", "2", "google");
+            RunProgram("#'o*'gs+\"gle\"+", "10", "goooooooooogle");
+            RunProgram("'gp#'o*p\"gle", "10", "goooooooooogle");
+        }
+
+        [TestMethod]
+        public void SummationTest() {
+            http://golf.shinh.org/p.rb?Summation
+            RunProgram(":#c^*hPdD", "1\n2\n3\n0", "1", "3", "6");
+        }
+
+        [TestMethod]
+        public void Rule30Test() {
+            http://golf.shinh.org/p.rb?Rule+30
+            RunProgram("SS+s+X{2%H xi^@2% xi^^@2% `++ \" ##  \"s@ m", "##  #   #", "## #### ###");
         }
     }
 }

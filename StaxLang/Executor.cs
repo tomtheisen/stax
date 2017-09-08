@@ -507,6 +507,9 @@ namespace StaxLang {
             var list = stack.Pop();
 
             if (IsArray(list)) {
+                index %= list.Count;
+                index += list.Count;
+                index %= list.Count;
                 stack.Push(list[index]);
             }
             else {
@@ -571,6 +574,8 @@ namespace StaxLang {
                 stack.Pop();
                 stack.Push(then);
             }
+
+            if (IsBlock(stack.Peek())) Run(stack.Pop().Program, stack);
         }
 
         private object ToNumber(dynamic arg) {
