@@ -371,7 +371,14 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void Rule30Test() {
             http://golf.shinh.org/p.rb?Rule+30
-            RunProgram("SS+s+X{2%H xi^@2% xi^^@2% `++ \" ##  \"s@ m", "##  #   #", "## #### ###");
+            RunProgram("SS+s+X{2%Hxi^@2%xi^^@2%++\" ## \"s@m", "##  #   #", "## #### ###");
+            RunProgram("SS++{cSs+}2*cLM{0s{2%+F\" ## \"s@m", "##  #   #", "## #### ###");
+            RunProgram("SS++{cSs+}2*cLM{\" ## \"s{2%m|s@m", "##  #   #", "## #### ###");
+        }
+
+        [TestMethod]
+        public void TransposeTest() {
+            RunProgram("LME", "abc\ndef\nghi", "adg", "beh", "cfi");
         }
     }
 }

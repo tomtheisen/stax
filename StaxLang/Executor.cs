@@ -201,13 +201,11 @@ namespace StaxLang {
                         case 'h':
                             ++ip;
                             if (IsFloat(stack.Peek())) stack.Push(Math.Floor(stack.Pop() / 2)); // half
-                            //if (IsString(stack.Peek())) stack.Push(stack.Pop().ToLower()); // lower
                             if (IsArray(stack.Peek())) stack.Push(stack.Pop()[0]); // head
                             break;
                         case 'H':
                             ++ip;
                             if (IsFloat(stack.Peek())) stack.Push(stack.Pop() * 2); // double
-                            //if (IsString(stack.Peek())) stack.Push(stack.Pop().ToUpper()); // upper
                             if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // last
                             break;
                         case 'i': // iteration index
@@ -231,6 +229,10 @@ namespace StaxLang {
                         case 'm': // do map
                             ++ip;
                             DoMap(stack);
+                            break;
+                        case 'M': // transpose
+                            ++ip;
+                            DoTranspose(stack);
                             break;
                         case 'n': // push newline
                             ++ip;
@@ -348,6 +350,10 @@ namespace StaxLang {
                                 case 'g':
                                     ++ip;
                                     DoGCD(stack);
+                                    break;
+                                case 's':
+                                    ++ip;
+                                    DoSum(stack);
                                     break;
                                 default:
                                     break;
@@ -645,6 +651,22 @@ namespace StaxLang {
             }
         }
 
+        private void DoTranspose(Stack<dynamic> stack) {
+            var list = stack.Pop();
+            var result = new List<object>();
+
+            int? count = null;
+            foreach (var series in list) count = Math.Min(count ?? int.MaxValue, series.Count);
+
+            for (int i = 0; i < (count ?? 0); i++) {
+                var tuple = new List<object>();
+                foreach (var series in list) tuple.Add(series[i]);
+                result.Add(tuple);
+            }
+
+            stack.Push(result);
+        }
+
         private void DoMap(Stack<dynamic> stack) {
             var b = stack.Pop();
             var a = stack.Pop();
@@ -863,6 +885,15 @@ namespace StaxLang {
                 ++d;
             }
             return result;
+        }
+
+        private void DoSum(Stack<dynamic> stack) {
+            var list = stack.Pop();
+            double result = 0;
+
+            foreach (var e in list) result += e;
+
+            stack.Push(result);
         }
 
         private void DoGCD(Stack<dynamic> stack) {
