@@ -108,7 +108,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void WhileTest() {
-            RunProgram("3{cvc}w", "", "3", "2", "1", "0");
+            RunProgram("3{cvcw", "", "3", "2", "1", "0");
         }
 
         [TestMethod]
@@ -131,7 +131,6 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void PrimeTest() {
-            RunProgram("1{^XvR~{xs%!f%!{x}*xc20-wd", "", "2", "3", "5", "7", "11", "13", "17", "19");
             RunProgram("2Xd{xvR~{xs%!f%!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
             RunProgram("d2Zd{zvR~{zs%!f%!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
         }
@@ -220,11 +219,11 @@ namespace StaxLang.Tests {
         public void DigitTallyTest() {
             RunProgram("d10r{$ys/%v$me*", "176093677603", "2102003301");
             RunProgram("L{Xd10r{$xs/%v$me*F", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Xd10r{$xs/%v$me*PD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%v$me*PdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%v$pFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/%vpFNdD", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Xd10r{$xs/%v$me*P}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%v$me*Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%v$pFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Cs/%vpFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$:/%vpFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -256,20 +255,20 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void FindIndexTest() {
-            RunProgram("Sa+sIPD", "d\nz\n_", "4", "26", "-1");
+            RunProgram("Sa+sIP}", "d\nz\n_", "4", "26", "-1");
         }
 
         [TestMethod]
         public void BaseConversionTest() {
-            RunProgram("#16bc4b", "291", "123", "27");
+            RunProgram("#16|bc4|b", "291", "123", "27");
         }
 
         [TestMethod]
         public void ShiftingDigitsTest() {
             https://codegolf.stackexchange.com/questions/141225/shifting-digits
 
-            RunProgram("s#Xd{Are*a+YsI^x%ys@]pFN", "5f69\n16", "607a");
-            RunProgram("s#Xd{]xb^x%xbpFN", "5f69\n16", "607a");
+            RunProgram("s#Xd{Are*a+YsI^x%ys@]pFe", "5f69\n16", "607a");
+            RunProgram("s#Xd{]x|b^x%x|bpFe", "5f69\n16", "607a");
         }
 
         [TestMethod]
@@ -280,7 +279,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void EvenLinesTest() {
             http://golf.shinh.org/p.rb?even+lines
-            RunProgram("dPD", "qw\nas\nzx\nwe", "as", "we");
+            RunProgram("dP}", "qw\nas\nzx\nwe", "as", "we");
         }
 
         [TestMethod]
@@ -328,32 +327,33 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void LCMTest() {
             http://golf.shinh.org/p.rb?Least+Common+Multiple
-            RunProgram("' /{#mXE*xE|g/PD", "195 548\n965 981", "106860", "946665");
-            RunProgram("' /E#Xs#Y*xy|g/PD", "195 548\n965 981", "106860", "946665");
+            RunProgram("' /{#mXE*xE|g/P}", "195 548\n965 981", "106860", "946665");
+            RunProgram("' /E#Xs#Y*xy|g/P}", "195 548\n965 981", "106860", "946665");
         }
 
         [TestMethod]
         public void DeleteDupesTest() {
             http://golf.shinh.org/p.rb?delete+duplicate+lines
-            RunProgram("Les{:I^!{_P}*_+Fd", "a\nb\na\nc", "a", "b", "c");
             RunProgram("LuE", "a\nb\na\nc", "a", "b", "c");
         }
 
         [TestMethod]
         public void PalindromizeTest() {
             http://golf.shinh.org/p.rb?palindromize
-            RunProgram("c{dci(r:+m{cr=fhPdD", "test\nNISIOISIN", "testset", "NISIOISIN");
+            RunProgram("c{dci(r:+m{cr=fhPd}", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
-        //[TestMethod]
-        //public void BracketMatching() {
-        //    http://golf.shinh.org/p.rb?Bracket+Matching
-        //    RunProgram("X c0s{1+FYd 0Zd Ss {4%v {dcH_-4/ `z!*!! {i^Zd}* } {d_]+} 2C? F \"yes\" \"failed at: \"xy^z-)+ z? P dD", ")", "failed at: )");
-        //    RunProgram("X 0Zd Ss {4%v {dcH_-4/ z!* {iZ}* } {d_]+} 2C? F \"yes\" \"failed at: \"xz0v*)+ z? P dD", "()", "yes");
-        //    RunProgram("X 0Zd Ss {4%v {dcH_-4/ z!* {iZ}* } {d_]+} 2C? F \"yes\" \"failed at: \"xz0v*)+ z? P dD", "()\n{()[]}\n()}()", "yes", "yes", "failed at: }()");
-        ////    RunProgram("X 0Zd es { {4%v {d_]+} {dcH_-4/ z!* {iZ}* } 2C? F \"yes\" \"failed at: \"`xz0v*)+ z? P D", "()[]", "yes");
-        ////    RunProgram("X 0Zd es { {4%v {d_]+} {dcH_-4/ z!* {iZ}* } 2C? F \"yes\" \"failed at: \"`xz0v*)+ z? P D", "[]<[]>(){}<>{}{}(<>)\n{([[((([[{>]])))]])}", "yes", "failed at: >]])))]])}");
-        //}
+        [TestMethod]
+        public void BracketMatching() {
+            http://golf.shinh.org/p.rb?Bracket+Matching
+            // x - bracket type
+            // y - input
+            // z - temp storage for outer i
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyPeh}*}{dx[}\"({[\"3CI^X?y~YdF\"yes", ")", "failed at: )");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyPeh}*}{dx[}\"({[\"3CI^X?y~YdF\"yes", "()", "yes");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyPeh}*}{dx[}\"({[\"3CI^X?y~YdF\"yes", "{()[]}", "yes");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyPeh}*}{dx[}\"({[\"3CI^X?y~YdF\"yes", "()}()", "failed at: }()");
+        }
 
         [TestMethod]
         public void GoogleTest() {
@@ -365,7 +365,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
-            RunProgram(":#c^*hPdD", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram(":#c^*hPd}", "1\n2\n3\n0", "1", "3", "6");
         }
 
         [TestMethod]

@@ -30,338 +30,375 @@ namespace StaxLang {
 
             var stack = new Stack<dynamic>(input.Reverse().Select(S2A));
             try {
-                Run(program, stack);
+                Run(program, stack, new Stack<dynamic>());
                 stack.Reverse().ToList().ForEach(e => Print(e));
             }
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
         }
 
-        private void Run(string program, Stack<dynamic> stack) {
+        /* To add:
+         *     negate
+         *     count
+         *     slice
+         *  
+         * To downgrade:
+         *     do over
+         *     head/tail
+         *     
+         */
+
+        private void Run(string program, Stack<dynamic> stack, Stack<dynamic> side) {
             int ip = 0;
 
             while (ip < program.Length) {
-                if (char.IsDigit(program[ip])) {
-                    stack.Push(ParseNumber(program, ref ip));
+                switch (program[ip]) {
+                    case '`':
+                        ++ip;
+                        DoDump(program, ip, stack);
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        stack.Push(ParseNumber(program, ref ip));
+                        break;
+                    case ' ':
+                    case '\n':
+                    case '\r':
+                        ++ip;
+                        break;
+                    case ';': // peek from side stack
+                        ++ip;
+                        stack.Push(side.Peek());
+                        break;
+                    case ',': // pop from side stack
+                        ++ip;
+                        stack.Push(side.Pop());
+                        break;
+                    case '[': // push to side stack
+                        ++ip;
+                        side.Push(stack.Pop());
+                        break;
+                    case '"': // "literal"
+                        stack.Push(ParseString(program, ref ip));
+                        break;
+                    case '\'': // single char 'x
+                        ++ip;
+                        stack.Push(S2A(program.Substring(ip++, 1)));
+                        break;
+                    case '{': // block
+                        stack.Push(ParseBlock(program, ref ip));
+                        break;
+                    case '}': // do-over
+                        ip = 0;
+                        break;
+                    case '!': // not
+                        ++ip;
+                        stack.Push(IsTruthy(stack.Pop()) ? 0.0 : 1.0);
+                        break;
+                    case '+':
+                        ++ip;
+                        DoPlus(stack);
+                        break;
+                    case '-':
+                        ++ip;
+                        DoMinus(stack);
+                        break;
+                    case '*':
+                        ++ip;
+                        DoStar(stack, side);
+                        break;
+                    case '/':
+                        ++ip;
+                        DoSlash(stack);
+                        break;
+                    case '%':
+                        ++ip;
+                        DoPercent(stack);
+                        break;
+                    case '@': // read index
+                        ++ip;
+                        DoReadIndex(stack);
+                        break;
+                    case '&': // assign index
+                        ++ip;
+                        DoAssignIndex(stack);
+                        break;
+                    case ':': // copy 2nd
+                        ++ip; {
+                            var top = stack.Pop();
+                            stack.Push(stack.Peek());
+                            stack.Push(top);
+                        }
+                        break;
+                    case '~':
+                        ++ip;
+                        stack.Peek().RemoveAt(0); // tail
+                        break;
+                    case '#': // to number
+                        ++ip;
+                        stack.Push(ToNumber(stack.Pop()));
+                        break;
+                    case '$': // to string
+                        ++ip;
+                        stack.Push(ToString(stack.Pop()));
+                        break;
+                    case '<':
+                        ++ip;
+                        DoLessThan(stack);
+                        break;
+                    case '>':
+                        ++ip;
+                        DoGreaterThan(stack);
+                        break;
+                    case '=':
+                        ++ip;
+                        DoEqual(stack);
+                        break;
+                    case 'v':
+                        ++ip;
+                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
+                        else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToLower())); // lower
+                        else throw new Exception("Bad type for v");
+                        break;
+                    case '^':
+                        ++ip;
+                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
+                        else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToUpper())); // uppper
+                        else throw new Exception("Bad type for ^");
+                        break;
+                    case '(':
+                        ++ip;
+                        PadRight(stack);
+                        break;
+                    case ')':
+                        ++ip;
+                        PadLeft(stack);
+                        break;
+                    case ']': // singleton
+                        ++ip;
+                        stack.Push(new List<object> { stack.Pop() });
+                        break;
+                    case '?': // if
+                        ++ip;
+                        DoIf(stack, side);
+                        break;
+                    case 'a': // alphabet
+                        ++ip;
+                        stack.Push(S2A("abcdefghijklmnopqrstuvwxyz"));
+                        break;
+                    case 'A': // 10 (0xA)
+                        ++ip;
+                        stack.Push(10.0);
+                        break;
+                    case 'c': // copy
+                        ++ip;
+                        stack.Push(Clone(stack.Peek()));
+                        break;
+                    case 'C': // dig
+                        ++ip;
+                        stack.Push(Clone(stack.ElementAt((int)stack.Pop())));
+                        break;
+                    case 'd': // discard
+                        ++ip;
+                        stack.Pop();
+                        break;
+                    case 'e': // empty array
+                        ++ip;
+                        stack.Push(S2A(""));
+                        break;
+                    case 'E': // explode (de-listify)
+                        ++ip;
+                        DoExplode(stack);
+                        break;
+                    case 'f': // filter
+                        ++ip;
+                        DoFilter(stack, side);
+                        break;
+                    case 'F': // for loop
+                        ++ip;
+                        DoFor(stack, side);
+                        break;
+                    case 'h':
+                        ++ip;
+                        if (IsFloat(stack.Peek())) stack.Push(Math.Floor(stack.Pop() / 2)); // half
+                        if (IsArray(stack.Peek())) stack.Push(stack.Pop()[0]); // head
+                        break;
+                    case 'H':
+                        ++ip;
+                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() * 2); // double
+                        if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // last
+                        break;
+                    case 'i': // iteration index
+                        ++ip;
+                        stack.Push(Index);
+                        break;
+                    case 'I': // get index
+                        ++ip;
+                        DoGetIndex(stack);
+                        break;
+                    case 'l': // listify string or n elements
+                        ++ip;
+                        DoListify(stack);
+                        break;
+                    case 'L': // listify stack
+                        ++ip;
+                        var newList = stack.ToList();
+                        stack.Clear();
+                        stack.Push(newList);
+                        break;
+                    case 'm': // do map
+                        ++ip;
+                        DoMap(stack, side);
+                        break;
+                    case 'M': // transpose
+                        ++ip;
+                        DoTranspose(stack);
+                        break;
+                    case 'n': // push newline
+                        ++ip;
+                        stack.Push(S2A(Environment.NewLine));
+                        break;
+                    case 'O': // order
+                        ++ip;
+                        DoOrder(stack, side);
+                        break;
+                    case 'p': // print inline
+                        ++ip;
+                        Print(stack.Pop(), false);
+                        break;
+                    case 'P': // print
+                        ++ip;
+                        Print(stack.Pop());
+                        break;
+                    case 'q': // min
+                        ++ip;
+                        stack.Push(((List<object>)stack.Pop()).Min() ?? double.MaxValue);
+                        break;
+                    case 'Q': // max
+                        ++ip;
+                        stack.Push(((List<object>)stack.Pop()).Max() ?? double.MinValue);
+                        break;
+                    case 'r': // 0 range
+                        ++ip;
+                        if (IsFloat(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                        else if (IsArray(stack.Peek())) stack.Peek().Reverse();
+                        else throw new Exception("Bad type for r");
+                        break;
+                    case 'R': // 1 range
+                        ++ip;
+                        stack.Push(Enumerable.Range(1, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                        break;
+                    case 's': // swap
+                        ++ip; {
+                            var top = stack.Pop();
+                            var bottom = stack.Pop();
+                            stack.Push(top);
+                            stack.Push(bottom);
+                        }
+                        break;
+                    case 'S': // space
+                        ++ip;
+                        stack.Push(S2A(" "));
+                        break;
+                    case 't': // trim left
+                        ++ip;
+                        stack.Push(S2A(A2S(stack.Pop()).TrimStart()));
+                        break;
+                    case 'T': // trim right
+                        ++ip;
+                        stack.Push(S2A(A2S(stack.Pop()).TrimEnd()));
+                        break;
+                    case 'u': // unique
+                        ++ip;
+                        DoUnique(stack);
+                        break;
+                    case 'w': // while
+                        ++ip;
+                        DoWhile(stack, side);
+                        break;
+                    case '_':
+                        ++ip;
+                        stack.Push(Clone(_));
+                        break;
+                    case 'x': // read;
+                        ++ip;
+                        stack.Push(Clone(X));
+                        break;
+                    case 'X': // write
+                        ++ip;
+                        X = stack.Peek();
+                        break;
+                    case 'y': // read;
+                        ++ip;
+                        stack.Push(Clone(Y));
+                        break;
+                    case 'Y': // write
+                        ++ip;
+                        Y = stack.Peek();
+                        break;
+                    case 'z': // read;
+                        ++ip;
+                        stack.Push(Clone(Z));
+                        break;
+                    case 'Z': // write
+                        ++ip;
+                        Z = stack.Peek();
+                        break;
+                    case '|': // extended operations
+                        switch (program[++ip]) {
+                            case '/': // div mod
+                                ++ip; {
+                                    double b = stack.Pop();
+                                    double a = stack.Pop();
+                                    stack.Push(Math.Floor(a / b));
+                                    stack.Push(a % b);
+                                }
+                                break;
+                            case 'b': // base convert
+                                ++ip;
+                                DoBaseConvert(stack);
+                                break;
+                            case 'f': // prime factorize
+                                ++ip;
+                                stack.Push(PrimeFactors(stack.Pop()));
+                                break;
+                            case 'g':
+                                ++ip;
+                                DoGCD(stack);
+                                break;
+                            case 's':
+                                ++ip;
+                                DoSum(stack);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default: throw new Exception($"Unknown character '{program[ip]}'");
                 }
-                else switch (program[ip]) {
-                        case ' ':
-                        case '\n':
-                        case '\r':
-                            ++ip;
-                            break;
-                        case '`':
-                            ++ip;
-                            Debugger.Break();
-                            break;
-                        case '"': // "literal"
-                            stack.Push(ParseString(program, ref ip));
-                            break;
-                        case '\'': // single char 'x
-                            ++ip;
-                            stack.Push(S2A(program.Substring(ip++, 1)));
-                            break;
-                        case '{': // block
-                            stack.Push(ParseBlock(program, ref ip));
-                            break;
-                        case '!': // not
-                            ++ip;
-                            stack.Push(IsTruthy(stack.Pop()) ? 0.0 : 1.0);
-                            break;
-                        case '+':
-                            ++ip;
-                            DoPlus(stack);
-                            break;
-                        case '-':
-                            ++ip;
-                            DoMinus(stack);
-                            break;
-                        case '*':
-                            ++ip;
-                            DoStar(stack);
-                            break;
-                        case '/':
-                            ++ip;
-                            DoSlash(stack);
-                            break;
-                        case '%':
-                            ++ip;
-                            DoPercent(stack);
-                            break;
-                        case '@': // read index
-                            ++ip;
-                            DoReadIndex(stack);
-                            break;
-                        case '&': // assign index
-                            ++ip;
-                            DoAssignIndex(stack);
-                            break;
-                        case ':': // copy 2nd
-                            ++ip; {
-                                var top = stack.Pop();
-                                stack.Push(stack.Peek());
-                                stack.Push(top);
-                            }
-                            break;
-                        case '~':
-                            ++ip;
-                            stack.Peek().RemoveAt(0); // tail
-                            break;
-                        case '#': // to number
-                            ++ip;
-                            stack.Push(ToNumber(stack.Pop()));
-                            break;
-                        case '$': // to string
-                            ++ip;
-                            stack.Push(ToString(stack.Pop()));
-                            break;
-                        case '<':
-                            ++ip;
-                            DoLessThan(stack);
-                            break;
-                        case '>':
-                            ++ip;
-                            DoGreaterThan(stack);
-                            break;
-                        case '=':
-                            ++ip;
-                            DoEqual(stack);
-                            break;
-                        case 'v':
-                            ++ip;
-                            if (IsFloat(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
-                            else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToLower())); // lower
-                            else throw new Exception("Bad type for v");
-                            break;
-                        case '^':
-                            ++ip;
-                            if (IsFloat(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
-                            else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToUpper())); // uppper
-                            else throw new Exception("Bad type for ^");
-                            break;
-                        case '(':
-                            ++ip;
-                            PadRight(stack);
-                            break;
-                        case ')':
-                            ++ip;
-                            PadLeft(stack);
-                            break;
-                        case ']': // singleton
-                            ++ip;
-                            stack.Push(new List<object> { stack.Pop() });
-                            break;
-                        case '?': // if
-                            ++ip;
-                            DoIf(stack);
-                            break;
-                        case 'a': // alphabet
-                            ++ip;
-                            stack.Push(S2A("abcdefghijklmnopqrstuvwxyz"));
-                            break;
-                        case 'A': // 10 (0xA)
-                            ++ip;
-                            stack.Push(10.0);
-                            break;
-                        case 'b': // base convert
-                            ++ip;
-                            DoBaseConvert(stack);
-                            break;
-                        case 'c': // copy
-                            ++ip;
-                            stack.Push(Clone(stack.Peek()));
-                            break;
-                        case 'C': // dig
-                            ++ip;
-                            stack.Push(Clone(stack.ElementAt((int)stack.Pop())));
-                            break;
-                        case 'd': // discard
-                            ++ip;
-                            stack.Pop();
-                            break;
-                        case 'D': // do-over
-                            ip = 0;
-                            break;
-                        case 'e': // empty string
-                            ++ip;
-                            stack.Push(S2A(""));
-                            break;
-                        case 'E': // explode (de-listify)
-                            ++ip;
-                            DoExplode(stack);
-                            break;
-                        case 'f': // filter
-                            ++ip;
-                            DoFilter(stack);
-                            break;
-                        case 'F': // for loop
-                            ++ip;
-                            DoFor(stack);
-                            break;
-                        case 'h':
-                            ++ip;
-                            if (IsFloat(stack.Peek())) stack.Push(Math.Floor(stack.Pop() / 2)); // half
-                            if (IsArray(stack.Peek())) stack.Push(stack.Pop()[0]); // head
-                            break;
-                        case 'H':
-                            ++ip;
-                            if (IsFloat(stack.Peek())) stack.Push(stack.Pop() * 2); // double
-                            if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // last
-                            break;
-                        case 'i': // iteration index
-                            ++ip;
-                            stack.Push(Index);
-                            break;
-                        case 'I': // get index
-                            ++ip;
-                            DoGetIndex(stack);
-                            break;
-                        case 'l': // listify string or n elements
-                            ++ip;
-                            DoListify(stack);
-                            break;
-                        case 'L': // listify stack
-                            ++ip;
-                            var newList = stack.ToList();
-                            stack.Clear();
-                            stack.Push(newList);
-                            break;
-                        case 'm': // do map
-                            ++ip;
-                            DoMap(stack);
-                            break;
-                        case 'M': // transpose
-                            ++ip;
-                            DoTranspose(stack);
-                            break;
-                        case 'n': // push newline
-                            ++ip;
-                            stack.Push(S2A(Environment.NewLine));
-                            break;
-                        case 'N': // print newline
-                            ++ip;
-                            Output.WriteLine();
-                            break;
-                        case 'o': // ord
-                            ++ip;
-                            stack.Push((long)stack.Pop()[0]);
-                            break;
-                        case 'O': // order
-                            ++ip;
-                            DoOrder(stack);
-                            break;
-                        case 'p': // print inline
-                            ++ip;
-                            Print(stack.Pop(), false);
-                            break;
-                        case 'P': // print
-                            ++ip;
-                            Print(stack.Pop());
-                            break;
-                        case 'q': // min
-                            ++ip;
-                            stack.Push(((List<object>)stack.Pop()).Min() ?? double.MaxValue);
-                            break;
-                        case 'Q': // max
-                            ++ip;
-                            stack.Push(((List<object>)stack.Pop()).Max() ?? double.MinValue);
-                            break;
-                        case 'r': // 0 range
-                            ++ip;
-                            if (IsFloat(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
-                            else if (IsArray(stack.Peek())) stack.Peek().Reverse();
-                            else throw new Exception("Bad type for r");
-                            break;
-                        case 'R': // 1 range
-                            ++ip;
-                            stack.Push(Enumerable.Range(1, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
-                            break;
-                        case 's': // swap
-                            ++ip; {
-                                var top = stack.Pop();
-                                var bottom = stack.Pop();
-                                stack.Push(top);
-                                stack.Push(bottom);
-                            }
-                            break;
-                        case 'S': // space
-                            ++ip;
-                            stack.Push(S2A(" "));
-                            break;
-                        case 't': // trim left
-                            ++ip;
-                            stack.Push(S2A(A2S(stack.Pop()).TrimStart()));
-                            break;
-                        case 'T': // trim right
-                            ++ip;
-                            stack.Push(S2A(A2S(stack.Pop()).TrimEnd()));
-                            break;
-                        case 'u': // unique
-                            ++ip;
-                            DoUnique(stack);
-                            break;
-                        case 'w': // while
-                            ++ip;
-                            DoWhile(stack);
-                            break;
-                        case '_':
-                            ++ip;
-                            stack.Push(Clone(_));
-                            break;
-                        case 'x': // read;
-                            ++ip;
-                            stack.Push(Clone(X));
-                            break;
-                        case 'X': // write
-                            ++ip;
-                            X = stack.Peek();
-                            break;
-                        case 'y': // read;
-                            ++ip;
-                            stack.Push(Clone(Y));
-                            break;
-                        case 'Y': // write
-                            ++ip;
-                            Y = stack.Peek();
-                            break;
-                        case 'z': // read;
-                            ++ip;
-                            stack.Push(Clone(Z));
-                            break;
-                        case 'Z': // write
-                            ++ip;
-                            Z = stack.Peek();
-                            break;
-                        case '|': // extended operations
-                            switch (program[++ip]) {
-                                case '/': // div mod
-                                    ++ip;
-                                    {
-                                        double b = stack.Pop();
-                                        double a = stack.Pop();
-                                        stack.Push(Math.Floor(a / b));
-                                        stack.Push(a % b);
-                                    }
-                                    break;
-                                case 'f': // prime factorize
-                                    ++ip;
-                                    stack.Push(PrimeFactors(stack.Pop()));
-                                    break;
-                                case 'g':
-                                    ++ip;
-                                    DoGCD(stack);
-                                    break;
-                                case 's':
-                                    ++ip;
-                                    DoSum(stack);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            break;
-                        default: throw new Exception($"Unknown character '{program[ip]}'");
-                    }
             }
+        }
+
+        private void DoDump(string program, int ip, Stack<dynamic> stack) {
+            int i = 0;
+            this.Output.WriteLine("program: {0}", program.Substring(ip));
+            foreach (var e in stack) {
+                var formatted = e;
+                if (IsArray(e)) {
+                    formatted = '"' + A2S(e) + '"';
+                    if (((string)formatted).Any(char.IsControl)) formatted = '[' + string.Join(", ", e) + ']';
+                }
+                this.Output.WriteLine("{0:##0}: {1}", i++, formatted);
+            }
+            this.Output.WriteLine();
         }
 
         private void DoUnique(Stack<dynamic> stack) {
@@ -398,7 +435,7 @@ namespace StaxLang {
             stack.Push(a > b ? 1.0 : 0.0);
         }
 
-        private void DoOrder(Stack<dynamic> stack) {
+        private void DoOrder(Stack<dynamic> stack, Stack<dynamic> side) {
             var arg = stack.Pop();
 
             if (IsArray(arg)) {
@@ -414,7 +451,7 @@ namespace StaxLang {
                 foreach (var e in list) {
                     _ = e;
                     stack.Push(e);
-                    Run(arg.Program, stack);
+                    Run(arg.Program, stack, side);
                     combined.Add((e, stack.Pop()));
                     ++Index;
                 }
@@ -470,7 +507,8 @@ namespace StaxLang {
                             stack.Push((double)i);
                             return;
                         }
-                    } else if (AreEqual(element, list[i])) {
+                    }
+                    else if (AreEqual(element, list[i])) {
                         stack.Push((double)i);
                         return;
                     }
@@ -567,12 +605,12 @@ namespace StaxLang {
             }
         }
 
-        private void DoWhile(Stack<dynamic> stack) {
+        private void DoWhile(Stack<dynamic> stack, Stack<dynamic> side) {
             Block block = stack.Pop();
-            do Run(block.Program, stack); while (IsTruthy(stack.Pop()));
+            do Run(block.Program, stack, side); while (IsTruthy(stack.Pop()));
         }
 
-        private void DoIf(Stack<dynamic> stack) {
+        private void DoIf(Stack<dynamic> stack, Stack<dynamic> side) {
             bool condition = IsTruthy(stack.Pop());
 
             var then = stack.Pop();
@@ -581,7 +619,7 @@ namespace StaxLang {
                 stack.Push(then);
             }
 
-            if (IsBlock(stack.Peek())) Run(stack.Pop().Program, stack);
+            if (IsBlock(stack.Peek())) Run(stack.Pop().Program, stack, side);
         }
 
         private object ToNumber(dynamic arg) {
@@ -608,7 +646,7 @@ namespace StaxLang {
             else Output.Write(arg);
         }
 
-        private void DoFilter(Stack<dynamic> stack) {
+        private void DoFilter(Stack<dynamic> stack, Stack<dynamic> side) {
             var b = stack.Pop();
             var a = stack.Pop();
 
@@ -620,7 +658,7 @@ namespace StaxLang {
                     stack.Push(e);
                     _ = e;
                     Index = i++;
-                    Run(b.Program, stack);
+                    Run(b.Program, stack, side);
                     if (IsTruthy(stack.Pop())) result.Add(e);
                 }
                 stack.Push(result);
@@ -631,7 +669,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoFor(Stack<dynamic> stack) {
+        private void DoFor(Stack<dynamic> stack, Stack<dynamic> side) {
             var b = stack.Pop();
             var a = stack.Pop();
 
@@ -642,7 +680,7 @@ namespace StaxLang {
                     stack.Push(e);
                     _ = e;
                     Index = i++;
-                    Run(b.Program, stack);
+                    Run(b.Program, stack, side);
                 }
                 (_, Index) = initial;
             }
@@ -667,7 +705,7 @@ namespace StaxLang {
             stack.Push(result);
         }
 
-        private void DoMap(Stack<dynamic> stack) {
+        private void DoMap(Stack<dynamic> stack, Stack<dynamic> side) {
             var b = stack.Pop();
             var a = stack.Pop();
 
@@ -681,7 +719,7 @@ namespace StaxLang {
                     stack.Push(e);
                     _ = e;
                     Index = i++;
-                    Run(b.Program, stack);
+                    Run(b.Program, stack, side);
                     result.Add(stack.Pop());
                 }
                 stack.Push(result);
@@ -765,7 +803,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoStar(Stack<dynamic> stack) {
+        private void DoStar(Stack<dynamic> stack, Stack<dynamic> side) {
             var b = stack.Pop();
             var a = stack.Pop();
 
@@ -780,7 +818,7 @@ namespace StaxLang {
                 }
                 else if (IsBlock(a)) {
                     var initial = Index;
-                    for (Index = 0; Index < b; Index++) Run(a.Program, stack);
+                    for (Index = 0; Index < b; Index++) Run(a.Program, stack, side);
                     Index = initial;
                     return;
                 }
@@ -825,7 +863,7 @@ namespace StaxLang {
 
         private List<object> S2A(string arg) => arg.ToCharArray().Select(c => (double)(int)c as object).ToList();
         private string A2S(List<object> arg) {
-            return string.Concat(arg.Select(e => IsFloat(e) 
+            return string.Concat(arg.Select(e => IsFloat(e)
                 ? ((char)(double)e).ToString()
                 : A2S((List<object>)e)));
         }
