@@ -72,12 +72,6 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
-        public void BadPlusTest() {
-            RunProgram("\"abc\"123+", "");
-        }
-
-        [TestMethod]
         public void RangeTest() {
             RunProgram("5rE", "", "0", "1", "2", "3", "4");
             RunProgram("5RE", "", "1", "2", "3", "4", "5");
@@ -388,6 +382,21 @@ namespace StaxLang.Tests {
         public void NegateTest() {
             RunProgram("#N", "13", "-13");
             RunProgram("#N", "-14", "14");
+        }
+
+        [TestMethod]
+        public void NegativePadTest() {
+            RunProgram("1N(P}", "abc\nzxcvb", "ab", "zxcv");
+        }
+
+        [TestMethod]
+        public void OverlappingTriplesTest() {
+            RunProgram("c%R~~{:(3)msdE", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("c%R~~{:(3)PFd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("[;%R~~{;(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("X%R~~{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("%R~~{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("2(y2N){+cP~Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
     }
 }

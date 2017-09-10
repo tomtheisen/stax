@@ -38,10 +38,11 @@ namespace StaxLang {
         }
 
         /* To add:
-         *     slice
          *     exponent
          *     log
          *     invert
+         *     regex
+         *     arbitrary range
          *  
          * To downgrade:
          *     head/tail
@@ -600,6 +601,8 @@ namespace StaxLang {
             if (IsFloat(a)) (a, b) = (b, a);
 
             if (IsArray(a) && IsFloat(b)) {
+                a = new List<object>(a);
+                if (b < 0) b += a.Count;
                 if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)32.0, (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange(0, a.Count - (int)b);
                 stack.Push(a);
@@ -616,6 +619,8 @@ namespace StaxLang {
             if (IsFloat(a)) (a, b) = (b, a);
 
             if (IsArray(a) && IsFloat(b)) {
+                a = new List<object>(a);
+                if (b < 0) b += a.Count;
                 if (a.Count < b) a.AddRange(Enumerable.Repeat((object)32.0, (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange((int)b, a.Count - (int)b);
                 stack.Push(a);
@@ -759,6 +764,16 @@ namespace StaxLang {
             }
             else if (IsArray(a) && IsArray(b)) {
                 var result = new List<object>(a);
+                result.AddRange(b);
+                stack.Push(result);
+            }
+            else if (IsArray(a)) {
+                var result = new List<object>(a);
+                result.Add(b);
+                stack.Push(result);
+            }
+            else if (IsArray(b)) {
+                var result = new List<object> { a };
                 result.AddRange(b);
                 stack.Push(result);
             }
