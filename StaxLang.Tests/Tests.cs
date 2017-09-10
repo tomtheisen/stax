@@ -133,6 +133,7 @@ namespace StaxLang.Tests {
         public void PrimeTest() {
             RunProgram("2Xd{xvR~{xs%!f%!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
             RunProgram("d2Zd{zvR~{zs%!f%!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
+            RunProgram("#R~{|f%1=fE", "15", "2", "3", "5", "7", "11", "13");
         }
 
         [TestMethod]
@@ -175,6 +176,7 @@ namespace StaxLang.Tests {
             RunProgram(@"#XR{c'\)pxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#XR{'\)px_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#XR{'\)x_-H^'/)+mE", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#R{' xH*i'\&sN'/&TmE", "3", @"\    /", @" \  /", @"  \/");
         }
 
         [TestMethod]
@@ -192,6 +194,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SplitTest() {
             RunProgram("{]mE", "asdf\nxxx", "xxx", "a", "s", "d", "f");
+            RunProgram("1/E", "asdf\nxxx", "xxx", "a", "s", "d", "f");
         }
 
         [TestMethod]
@@ -379,6 +382,12 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void TransposeTest() {
             RunProgram("LME", "abc\ndef\nghi", "adg", "beh", "cfi");
+        }
+
+        [TestMethod]
+        public void NegateTest() {
+            RunProgram("#N", "13", "-13");
+            RunProgram("#N", "-14", "14");
         }
     }
 }

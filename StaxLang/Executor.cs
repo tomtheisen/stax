@@ -38,12 +38,12 @@ namespace StaxLang {
         }
 
         /* To add:
-         *     negate
-         *     count
          *     slice
+         *     exponent
+         *     log
+         *     invert
          *  
          * To downgrade:
-         *     do over
          *     head/tail
          *     
          */
@@ -266,6 +266,10 @@ namespace StaxLang {
                         ++ip;
                         stack.Push(S2A(Environment.NewLine));
                         break;
+                    case 'N': // negate / reverse
+                        ++ip;
+                        DoNegate(stack);
+                        break;
                     case 'O': // order
                         ++ip;
                         DoOrder(stack, side);
@@ -384,6 +388,22 @@ namespace StaxLang {
                         break;
                     default: throw new Exception($"Unknown character '{program[ip]}'");
                 }
+            }
+        }
+
+        private void DoNegate(Stack<dynamic> stack) {
+            var arg = stack.Pop();
+
+            if (IsArray(arg)) {
+                var result = new List<object>(arg);
+                result.Reverse();
+                stack.Push(result);
+            }
+            else if (IsFloat(arg)) {
+                stack.Push(-arg);
+            }
+            else {
+                throw new Exception("Bad type for negate");
             }
         }
 
@@ -896,7 +916,7 @@ namespace StaxLang {
             int depth = 0;
             int start = ip + 1;
             do {
-                if (program[ip] == '|') ip += 2; // extended
+                if (program[ip] == '|' || program[ip] == '\'') ip += 2; // extended and char
 
                 if (program[ip] == '"') ParseString(program, ref ip);
 
