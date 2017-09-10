@@ -301,6 +301,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?delete+last+line
             RunProgram("Lzv(E", "foo\nbar\nbaz", "foo", "bar");
             RunProgram("Lr~rE", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("L1N(E", "foo\nbar\nbaz", "foo", "bar");
         }
 
         [TestMethod]
