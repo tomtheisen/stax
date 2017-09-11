@@ -299,15 +299,16 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DeleteLastLineTest() {
             http://golf.shinh.org/p.rb?delete+last+line
-            RunProgram("Lzv(E", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("Lc%v(E", "foo\nbar\nbaz", "foo", "bar");
             RunProgram("Lr~rE", "foo\nbar\nbaz", "foo", "bar");
             RunProgram("L1N(E", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("LEd", "foo\nbar\nbaz", "foo", "bar");
         }
 
         [TestMethod]
         public void RotateLinesTest() {
             http://golf.shinh.org/p.rb?rotate+lines
-            RunProgram("dLEy", "foo\nbar\nbaz", "bar", "baz", "foo");
+            RunProgram("[LE,", "foo\nbar\nbaz", "bar", "baz", "foo");
         }
 
         [TestMethod]
@@ -327,6 +328,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Least+Common+Multiple
             RunProgram("' /{#mXE*xE|g/P}", "195 548\n965 981", "106860", "946665");
             RunProgram("' /E#Xs#Y*xy|g/P}", "195 548\n965 981", "106860", "946665");
+            RunProgram("S/{#mXE*xE|g/P}", "195 548\n965 981", "106860", "946665");
         }
 
         [TestMethod]
@@ -398,6 +400,23 @@ namespace StaxLang.Tests {
             RunProgram("X%R~~{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("%R~~{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("2(y2N){+cP~Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("es{+3)cm2N)sdn*", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("{zs+3)Zm2N)n*", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+        }
+
+        [TestMethod]
+        public void TwinPrimesTest() {
+            http://golf.shinh.org/p.rb?Twin+primes
+            RunProgram("#R~{|f%_2+|f%*1=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("#R~{c2+*|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("#R~{^c*v|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("#R~{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+        }
+
+        [TestMethod]
+        public void BronspeakTest() {
+            http://golf.shinh.org/p.rb?Bronspeak
+            RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[S/{1(;N|t_1N(1N)x|t_1);|t++mS*", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
     }
 }

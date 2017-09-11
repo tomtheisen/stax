@@ -13,7 +13,7 @@ namespace StaxLang {
         private double Index = 0; // loop iteration
         private dynamic X = 0.0; // register - default to numeric value of first input
         private dynamic Y = 0.0; // register - default to first input
-        private dynamic Z = 0.0; // register - default to number of input lines
+        private dynamic Z = 0.0; // register - default to empty string
         private dynamic _ = 0.0; // implicit iterator
 
         public Executor(TextWriter output = null) {
@@ -21,7 +21,7 @@ namespace StaxLang {
         }
 
         public void Run(string program, string[] input) {
-            Z = (double)input.Length;
+            Z = S2A("");
 
             if (input.Length > 0) {
                 Y = S2A(input[0]);
@@ -43,6 +43,7 @@ namespace StaxLang {
          *     invert
          *     regex
          *     arbitrary range
+         *     char map
          *  
          * To downgrade:
          *     head/tail
@@ -383,12 +384,33 @@ namespace StaxLang {
                                 ++ip;
                                 DoSum(stack);
                                 break;
-                            default:
+                            case 't':
+                                ++ip;
+                                DoTranslate(stack);
                                 break;
+                            default: throw new Exception($"Unknown extended character '{program[ip]}'");
                         }
                         break;
                     default: throw new Exception($"Unknown character '{program[ip]}'");
                 }
+            }
+        }
+
+        private void DoTranslate(Stack<dynamic> stack) {
+            var translation = stack.Pop();
+            var input = stack.Pop();
+
+            if (IsArray(input) && IsArray(translation)) {
+                var result = new List<object>();
+                var map = new Dictionary<char, char>();
+                var ts = A2S(translation);
+
+                for (int i = 0; i < ts.Length; i += 2) map[ts[i]] = ts[i + 1];
+                foreach (var e in A2S(input)) result.AddRange(S2A("" + (map.ContainsKey(e) ? map[e] : e)));
+                stack.Push(result);
+            }
+            else {
+                throw new Exception("Bad types for translate");
             }
         }
 
