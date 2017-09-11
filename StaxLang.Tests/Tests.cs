@@ -414,9 +414,14 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
+        public void RegexTest() {
+            RunProgram("\"x+\"{%$}|r", "axbxxcxxxd", "a1b2c3d");
+        }
+
+        [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[S/{1(;N|t_1N(1N)x|t_1);|t++mS*", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[\"\\\\w+\"{1(;N|t_1N(1N)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
     }
 }

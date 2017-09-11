@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
@@ -41,9 +41,8 @@ namespace StaxLang {
          *     exponent
          *     log
          *     invert
-         *     regex
          *     arbitrary range
-         *     char map
+         *     better escape char (not used for regex)
          *  
          * To downgrade:
          *     head/tail
@@ -380,6 +379,10 @@ namespace StaxLang {
                                 ++ip;
                                 DoGCD(stack);
                                 break;
+                            case 'r': // regex replace
+                                ++ip;
+                                DoReplace(stack, side);
+                                break;
                             case 's':
                                 ++ip;
                                 DoSum(stack);
@@ -393,6 +396,43 @@ namespace StaxLang {
                         break;
                     default: throw new Exception($"Unknown character '{program[ip]}'");
                 }
+            }
+        }
+
+        private void DoReplace(Stack<dynamic> stack, Stack<dynamic> side) {
+            var replace = stack.Pop();
+            var search = stack.Pop();
+            var text = stack.Pop();
+
+            if (IsArray(text) && IsArray(search)) {
+                string ts = A2S(text), ss = A2S(search);
+                if (IsArray(replace)) {
+                    stack.Push(S2A(ts.Replace(ss, A2S(replace))));
+                    return;
+                }
+                else if (IsBlock(replace)) {
+                    var initial = _;
+                    string result = "";
+                    var matches = Regex.Matches(ts, ss);
+                    int consumed = 0;
+                    foreach (Match match in matches) {
+                        result += ts.Substring(consumed, match.Index - consumed);
+                        stack.Push(_ = S2A(match.Value));
+                        Run(replace.Program, stack, side);
+                        result += A2S(stack.Pop());
+                        consumed = match.Index + match.Length;
+                    }
+                    result += ts.Substring(consumed);
+                    stack.Push(S2A(result));
+                    _ = initial;
+                    return;
+                }
+                else {
+                    throw new Exception("Bad types for replace");
+                }
+            }
+            else {
+                throw new Exception("Bad types for replace");
             }
         }
 
