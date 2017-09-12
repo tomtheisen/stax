@@ -1,12 +1,22 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace StaxLang {
+    /* To add:
+     *     exponent
+     *     log
+     *     invert
+     *     arbitrary range
+     *     bitwise ops on int32 (&, |, ^, ~)
+     *  
+     * To downgrade:
+     *     head/tail
+     *     
+     */
+
     public class Executor {
         public TextWriter Output { get; private set; }
 
@@ -36,18 +46,6 @@ namespace StaxLang {
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
         }
-
-        /* To add:
-         *     exponent
-         *     log
-         *     invert
-         *     arbitrary range
-         *     better escape char (not used for regex)
-         *  
-         * To downgrade:
-         *     head/tail
-         *     
-         */
 
         private void Run(string program, Stack<dynamic> stack, Stack<dynamic> side) {
             int ip = 0;
@@ -982,7 +980,7 @@ namespace StaxLang {
         private List<object> ParseString(string program, ref int ip) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
-                if (program[ip] == '\\') ++ip;
+                if (program[ip] == '`') ++ip;
                 result += program[ip];
             }
             if (ip < program.Length) ++ip; // final quote
