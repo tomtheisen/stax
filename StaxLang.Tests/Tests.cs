@@ -110,6 +110,7 @@ namespace StaxLang.Tests {
             RunProgram("#{ch1C3*^2C2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
             RunProgram("#{cXhx3*^x2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
             RunProgram("#{cXhx3*^x2%?cvw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("#{cXhx3*^2lx@cvw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
         }
 
         [TestMethod]
