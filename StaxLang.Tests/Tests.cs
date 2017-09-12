@@ -429,5 +429,23 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Bronspeak
             RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[\"\\w+\"{1(;r|t_1N(1N)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
+
+        [TestMethod]
+        public void CheckersPatternTest() {
+            http://golf.shinh.org/p.rb?checkers+pattern
+
+            RunProgram("S/E#[#{;{R}{r}i2%?{2%mS*P}*", "3 19",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
+                "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
+            RunProgram("S/E#[#{i2%{!cpSp};v*!P}*", "3 19",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
+                "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
+            RunProgram("S/E#R{2%mS*s#{cP1001$|t}*d", "3 19",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
+                "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
+        }
     }
 }
