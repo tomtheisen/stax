@@ -14,6 +14,7 @@ namespace StaxLang {
      *  
      * To downgrade:
      *     head/tail
+     *     min/max
      *     
      */
 
@@ -265,7 +266,7 @@ namespace StaxLang {
                         ++ip;
                         stack.Push(S2A(Environment.NewLine));
                         break;
-                    case 'N': // negate / reverse
+                    case 'N': // negate
                         ++ip;
                         DoNegate(stack);
                         break;
@@ -292,7 +293,11 @@ namespace StaxLang {
                     case 'r': // 0 range
                         ++ip;
                         if (IsFloat(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
-                        else if (IsArray(stack.Peek())) stack.Peek().Reverse();
+                        else if (IsArray(stack.Peek())) {
+                            var result = new List<object>(stack.Pop());
+                            result.Reverse();
+                            stack.Push(result); 
+                        }
                         else throw new Exception("Bad type for r");
                         break;
                     case 'R': // 1 range
@@ -455,12 +460,7 @@ namespace StaxLang {
         private void DoNegate(Stack<dynamic> stack) {
             var arg = stack.Pop();
 
-            if (IsArray(arg)) {
-                var result = new List<object>(arg);
-                result.Reverse();
-                stack.Push(result);
-            }
-            else if (IsFloat(arg)) {
+            if (IsFloat(arg)) {
                 stack.Push(-arg);
             }
             else {

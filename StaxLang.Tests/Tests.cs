@@ -141,6 +141,7 @@ namespace StaxLang.Tests {
             RunProgram("1s#R{*cmd", "5", "120");
             RunProgram("1s#R{*F", "5", "120");
             RunProgram("1s#X{*xvXxwd", "5", "120");
+            RunProgram("d1xR{*F", "5", "120");
         }
 
         [TestMethod]
@@ -184,6 +185,7 @@ namespace StaxLang.Tests {
             RunProgram(@"#XR{'\)x_v-H'/)+mEx^'X)xRr{'/)x_v-H'\)+mE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#H^Xrr{dSx*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#{xH^S*i'\&iNv'/&c[TP}*'Xx^)P{,rTP}x*", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -272,6 +274,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void FibTest() {
             RunProgram("#vv1s1s{c2C+}*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("d1cxvv{c2C+}*", "7", "1", "1", "2", "3", "5", "8", "13");
         }
 
         [TestMethod]
@@ -342,6 +345,7 @@ namespace StaxLang.Tests {
         public void PalindromizeTest() {
             http://golf.shinh.org/p.rb?palindromize
             RunProgram("c{dci(r:+m{cr=fhPd}", "test\nNISIOISIN", "testset", "NISIOISIN");
+            RunProgram("X{dxxi(r+m{cr=fhP}", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
         [TestMethod]
@@ -412,6 +416,7 @@ namespace StaxLang.Tests {
             RunProgram("#R~{c2+*|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("#R~{^c*v|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("#R~{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("#R~{c2+*|f%2=f{c2+2l',*mE", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
@@ -422,7 +427,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[\"\\w+\"{1(;N|t_1N(1N)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("a\"aeeiioouua\"c^+X-{]2*me*~'b+c^+x+[\"\\w+\"{1(;r|t_1N(1N)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
     }
 }
