@@ -447,5 +447,13 @@ namespace StaxLang.Tests {
                 "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
                 "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
         }
+
+        [TestMethod]
+        public void IsFibTest() {
+            https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
+            RunProgram("#1N[1{c;+s[cx<w=", "0", "1");
+            RunProgram("#1N[1{c;+s[cx<w=", "13", "1");
+            RunProgram("#1N[1{c;+s[cx<w=", "14", "0");
+        }
     }
 }

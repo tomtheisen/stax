@@ -11,6 +11,7 @@ namespace StaxLang {
      *     invert
      *     arbitrary range
      *     bitwise ops on int32 (&, |, ^, ~)
+     *     -1 constant
      *  
      * To downgrade:
      *     head/tail
