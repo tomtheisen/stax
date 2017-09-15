@@ -306,6 +306,10 @@ namespace StaxLang {
                         ++ip;
                         DoUnique(stack);
                         break;
+                    case 'U': // negative Unit
+                        ++ip;
+                        stack.Push(BigInteger.MinusOne);
+                        break;
                     case 'V': // constant value
                         stack.Push(Constants[program[++ip]]);
                         ++ip;
@@ -397,6 +401,8 @@ namespace StaxLang {
                                 ++ip;
                                 DoGCD(stack);
                                 break;
+                            case 'p': // palindromize
+
                             case 'P': // print blank newline
                                 ++ip;
                                 Output.WriteLine();

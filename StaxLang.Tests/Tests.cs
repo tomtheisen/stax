@@ -116,7 +116,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DropFirstTest() {
-            RunProgram("4R1N)E", "", "2", "3", "4");
+            RunProgram("4RU)E", "", "2", "3", "4");
         }
 
         [TestMethod]
@@ -296,7 +296,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Hamming+Numbers
             RunProgram("20R{5R1]-{*{_/c_%!wF1=fE", "", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12", "15", "16", "18", "20");
             RunProgram("#c*R{5R1]-{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("#c*R{H|f1N@6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|fU@6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{H|fH6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("#c*R{|f5R-!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
@@ -305,7 +305,7 @@ namespace StaxLang.Tests {
         public void DeleteLastLineTest() {
             http://golf.shinh.org/p.rb?delete+last+line
             RunProgram("Lc%v(E", "foo\nbar\nbaz", "foo", "bar");
-            RunProgram("L1N(E", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("LU(E", "foo\nbar\nbaz", "foo", "bar");
             RunProgram("LEd", "foo\nbar\nbaz", "foo", "bar");
         }
 
@@ -352,10 +352,10 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?y1N)YdF\"yes", ")", "failed at: )");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?y1N)YdF\"yes", "()", "yes");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?y1N)YdF\"yes", "{()[]}", "yes");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?y1N)YdF\"yes", "()}()", "failed at: }()");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", ")", "failed at: )");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "()", "yes");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "{()[]}", "yes");
+            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "()}()", "failed at: }()");
         }
 
         [TestMethod]
@@ -392,7 +392,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void NegativePadTest() {
-            RunProgram("1N(P}", "abc\nzxcvb", "ab", "zxcv");
+            RunProgram("U(P}", "abc\nzxcvb", "ab", "zxcv");
         }
 
         [TestMethod]
@@ -423,7 +423,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$1N)'b+c^+x+[\"\\w+\"{1(;r|t_1N(1N)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+[\"\\w+\"{1(;r|t_U(U)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
 
         [TestMethod]
@@ -443,7 +443,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void IsFibTest() {
             https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
-            RunProgram("#X1N[1{c;+s[cx<w=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("#XU[1{c;+s[cx<w=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
         }
 
         [TestMethod]
@@ -460,7 +460,6 @@ namespace StaxLang.Tests {
             RunProgram("0[{0{#H$,^[1}Vd3C-?wd,", "617283945", "1");
             RunProgram("{0{#H$0[1}Vd3C-?wd|D", "66833", "44");
             RunProgram("{0{#H$0[1}Vd3C-?wd|D", "617283945", "1");
-
         }
 
         [TestMethod]
@@ -492,9 +491,9 @@ namespace StaxLang.Tests {
                 "       121",
                 "        1" };
             RunProgram("9R8Rr+{R$9)_vRr$+PF", "", expected);
+            RunProgram("9R8Rr+{9s-' *_R_vRr+$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *_|A9/c*$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *'1_*#c*$+PF", "", expected);
-
         }
     }
 }
