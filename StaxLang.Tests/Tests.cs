@@ -28,6 +28,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void IntLiteral() {
             RunProgram("123", "", "123");
+            RunProgram("999999999999999999999999999999999999999", "", "999999999999999999999999999999999999999");
         }
 
         [TestMethod]
@@ -58,7 +59,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void EscapedString() {
-            RunProgram("\"x`\"x\"", "", "x\"x");
+            RunProgram("\"a`\"b\"", "", "a\"b");
         }
 
         [TestMethod]
@@ -223,7 +224,7 @@ namespace StaxLang.Tests {
             RunProgram("Ar{$1Cs/%v$me*Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Cs/%v$pFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Cs/%vpFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$:/%vpFePd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("[Ar{$;s/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -352,7 +353,6 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void PalindromizeTest() {
             http://golf.shinh.org/p.rb?palindromize
-            RunProgram("c{dci(r:+m{cr=fhPd}", "test\nNISIOISIN", "testset", "NISIOISIN");
             RunProgram("X{dxxi(r+m{cr=fhP}", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
@@ -378,7 +378,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
-            RunProgram(":#c^*hPd}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("1Cd#c^*hP}", "1\n2\n3\n0", "1", "3", "6");
         }
 
         [TestMethod]
@@ -407,8 +407,6 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void OverlappingTriplesTest() {
-            RunProgram("c%R~~{:(3)msdE", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("c%R~~{:(3)PFd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("[;%R~~{;(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("X%R~~{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("%R~~{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
@@ -461,10 +459,8 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
-            
-            // this test needs bigints
-            //RunProgram("0[cAre*s-%!!{{#H$,^[cAre*s-%w}*d,", "66833", "44");
 
+            RunProgram("0[cAre*s-%!!{{#H$,^[cAre*s-%w}*d,", "66833", "44");
             RunProgram("0[cAre*s-%!!{{#H$,^[cAre*s-%w}*d,", "617283945", "1");
             RunProgram("0[cAre*Zs-%!!{{#H$,^[czs-%w}*d,", "617283945", "1");
             RunProgram("0[{cAre*s-%}Z1*!!{{#H$,^[z1*w}*d,", "617283945", "1");

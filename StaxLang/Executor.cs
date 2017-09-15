@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace StaxLang {
@@ -14,6 +15,7 @@ namespace StaxLang {
      *     bigint
      *     pre-condition loop (...; conditional break; ...)
      *     get size of side stack
+     *     eval
      *  
      * To downgrade:
      *     head/tail
@@ -24,11 +26,11 @@ namespace StaxLang {
     public class Executor {
         public TextWriter Output { get; private set; }
 
-        private double Index = 0; // loop iteration
-        private dynamic X = 0.0; // register - default to numeric value of first input
-        private dynamic Y = 0.0; // register - default to first input
-        private dynamic Z = 0.0; // register - default to empty string
-        private dynamic _ = 0.0; // implicit iterator
+        private BigInteger Index = BigInteger.Zero; // loop iteration
+        private dynamic X = BigInteger.Zero; // register - default to numeric value of first input
+        private dynamic Y = BigInteger.Zero; // register - default to first input
+        private dynamic Z = BigInteger.Zero; // register - default to empty string
+        private dynamic _ = BigInteger.Zero; // implicit iterator
 
         public Executor(TextWriter output = null) {
             Output = output ?? Console.Out;
@@ -39,7 +41,7 @@ namespace StaxLang {
 
             if (input.Length > 0) {
                 Y = S2A(input[0]);
-                if (double.TryParse(input[0], out var d)) X = d;
+                if (BigInteger.TryParse(input[0], out var d)) X = d;
             }
 
             var stack = new Stack<dynamic>(input.Reverse().Select(S2A));
@@ -104,7 +106,7 @@ namespace StaxLang {
                         break;
                     case '!': // not
                         ++ip;
-                        stack.Push(IsTruthy(stack.Pop()) ? 0.0 : 1.0);
+                        stack.Push(IsTruthy(stack.Pop()) ? BigInteger.Zero : BigInteger.One);
                         break;
                     case '+':
                         ++ip;
@@ -134,13 +136,6 @@ namespace StaxLang {
                         ++ip;
                         DoAssignIndex(stack);
                         break;
-                    case ':': // copy 2nd
-                        ++ip; {
-                            var top = stack.Pop();
-                            stack.Push(stack.Peek());
-                            stack.Push(top);
-                        }
-                        break;
                     case '~':
                         ++ip;
                         stack.Peek().RemoveAt(0); // tail
@@ -167,13 +162,13 @@ namespace StaxLang {
                         break;
                     case 'v':
                         ++ip;
-                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
+                        if (IsNumber(stack.Peek())) stack.Push(stack.Pop() - 1); // decrement
                         else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToLower())); // lower
                         else throw new Exception("Bad type for v");
                         break;
                     case '^':
                         ++ip;
-                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
+                        if (IsNumber(stack.Peek())) stack.Push(stack.Pop() + 1); // increment
                         else if (IsArray(stack.Peek())) stack.Push(S2A(A2S(stack.Pop()).ToUpper())); // uppper
                         else throw new Exception("Bad type for ^");
                         break;
@@ -199,7 +194,7 @@ namespace StaxLang {
                         break;
                     case 'A': // 10 (0xA)
                         ++ip;
-                        stack.Push(10.0);
+                        stack.Push(BigInteger.One * 10);
                         break;
                     case 'c': // copy
                         ++ip;
@@ -231,12 +226,12 @@ namespace StaxLang {
                         break;
                     case 'h':
                         ++ip;
-                        if (IsFloat(stack.Peek())) stack.Push(Math.Floor(stack.Pop() / 2)); // half
+                        if (IsNumber(stack.Peek())) stack.Push(stack.Pop() / 2); // half
                         if (IsArray(stack.Peek())) stack.Push(stack.Pop()[0]); // head
                         break;
                     case 'H':
                         ++ip;
-                        if (IsFloat(stack.Peek())) stack.Push(stack.Pop() * 2); // double
+                        if (IsNumber(stack.Peek())) stack.Push(stack.Pop() * 2); // BigInteger
                         if (IsArray(stack.Peek())) stack.Push(stack.Peek()[stack.Pop().Count - 1]); // last
                         break;
                     case 'i': // iteration index
@@ -287,15 +282,15 @@ namespace StaxLang {
                         break;
                     case 'q': // min
                         ++ip;
-                        stack.Push(((List<object>)stack.Pop()).Min() ?? double.MaxValue);
+                        stack.Push(((List<object>)stack.Pop()).Min() ?? BigInteger.Zero);
                         break;
                     case 'Q': // max
                         ++ip;
-                        stack.Push(((List<object>)stack.Pop()).Max() ?? double.MinValue);
+                        stack.Push(((List<object>)stack.Pop()).Max() ?? BigInteger.Zero);
                         break;
                     case 'r': // 0 range
                         ++ip;
-                        if (IsFloat(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                        if (IsNumber(stack.Peek())) stack.Push(Enumerable.Range(0, (int)stack.Pop()).Select(i => new BigInteger(i)).Cast<object>().ToList());
                         else if (IsArray(stack.Peek())) {
                             var result = new List<object>(stack.Pop());
                             result.Reverse();
@@ -305,7 +300,7 @@ namespace StaxLang {
                         break;
                     case 'R': // 1 range
                         ++ip;
-                        stack.Push(Enumerable.Range(1, (int)stack.Pop()).Select(Convert.ToDouble).Cast<object>().ToList());
+                        stack.Push(Enumerable.Range(1, (int)stack.Pop()).Select(i => new BigInteger(i)).Cast<object>().ToList());
                         break;
                     case 's': // swap
                         ++ip; {
@@ -367,31 +362,31 @@ namespace StaxLang {
                         switch (program[++ip]) {
                             case '%': // div mod
                                 ++ip; {
-                                    double b = stack.Pop();
-                                    double a = stack.Pop();
-                                    stack.Push(Math.Floor(a / b));
+                                    BigInteger b = stack.Pop();
+                                    BigInteger a = stack.Pop();
+                                    stack.Push(a / b);
                                     stack.Push(a % b);
                                 }
                                 break;
                             case '&': // bitwise and
                                 ++ip; {
-                                    double b = stack.Pop();
-                                    double a = stack.Pop();
-                                    stack.Push((double)((long)a & (long)b));
+                                    BigInteger b = stack.Pop();
+                                    BigInteger a = stack.Pop();
+                                    stack.Push((BigInteger)((long)a & (long)b));
                                 }
                                 break;
                             case '|': // bitwise or
                                 ++ip; {
-                                    double b = stack.Pop();
-                                    double a = stack.Pop();
-                                    stack.Push((double)((long)a | (long)b));
+                                    BigInteger b = stack.Pop();
+                                    BigInteger a = stack.Pop();
+                                    stack.Push((BigInteger)((long)a | (long)b));
                                 }
                                 break;
                             case '^': // bitwise xor
                                 ++ip; {
-                                    double b = stack.Pop();
-                                    double a = stack.Pop();
-                                    stack.Push((double)((long)a ^ (long)b));
+                                    BigInteger b = stack.Pop();
+                                    BigInteger a = stack.Pop();
+                                    stack.Push((BigInteger)((long)a ^ (long)b));
                                 }
                                 break;
                             case 'b': // base convert
@@ -484,7 +479,7 @@ namespace StaxLang {
         private void DoNegate(Stack<dynamic> stack) {
             var arg = stack.Pop();
 
-            if (IsFloat(arg)) {
+            if (IsNumber(arg)) {
                 stack.Push(-arg);
             }
             else {
@@ -530,14 +525,14 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            stack.Push(a < b ? 1.0 : 0.0);
+            stack.Push(a < b ? BigInteger.One : BigInteger.Zero);
         }
 
         private void DoGreaterThan(Stack<dynamic> stack) {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            stack.Push(a > b ? 1.0 : 0.0);
+            stack.Push(a > b ? BigInteger.One : BigInteger.Zero);
         }
 
         private void DoOrder(Stack<dynamic> stack, Stack<dynamic> side) {
@@ -573,7 +568,7 @@ namespace StaxLang {
             int @base = (int)stack.Pop();
             var number = stack.Pop();
 
-            if (IsFloat(number)) {
+            if (IsNumber(number)) {
                 long n = (long)number;
                 string result = "";
                 while (n > 0) {
@@ -585,7 +580,7 @@ namespace StaxLang {
             }
             else if (IsArray(number)) {
                 string s = A2S(number).ToLower();
-                double result = 0;
+                BigInteger result = 0;
                 foreach (var c in s) result = result * @base + "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
                 stack.Push(result);
             }
@@ -611,16 +606,16 @@ namespace StaxLang {
                             }
                         }
                         if (match) {
-                            stack.Push((double)i);
+                            stack.Push((BigInteger)i);
                             return;
                         }
                     }
                     else if (AreEqual(element, list[i])) {
-                        stack.Push((double)i);
+                        stack.Push((BigInteger)i);
                         return;
                     }
                 }
-                stack.Push(-1.0);
+                stack.Push(BigInteger.MinusOne);
                 return;
             }
             else {
@@ -673,7 +668,7 @@ namespace StaxLang {
 
         private void DoListify(Stack<dynamic> stack) {
             var arg = stack.Pop();
-            if (IsFloat(arg)) {
+            if (IsNumber(arg)) {
                 var list = new List<object>();
                 for (int i = 0; i < arg; i++) list.Insert(0, stack.Pop());
                 stack.Push(list);
@@ -687,12 +682,12 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsFloat(a)) (a, b) = (b, a);
+            if (IsNumber(a)) (a, b) = (b, a);
 
-            if (IsArray(a) && IsFloat(b)) {
+            if (IsArray(a) && IsNumber(b)) {
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
-                if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)32.0, (int)b - a.Count));
+                if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange(0, a.Count - (int)b);
                 stack.Push(a);
             }
@@ -705,12 +700,12 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsFloat(a)) (a, b) = (b, a);
+            if (IsNumber(a)) (a, b) = (b, a);
 
-            if (IsArray(a) && IsFloat(b)) {
+            if (IsArray(a) && IsNumber(b)) {
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
-                if (a.Count < b) a.AddRange(Enumerable.Repeat((object)32.0, (int)b - a.Count));
+                if (a.Count < b) a.AddRange(Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange((int)b, a.Count - (int)b);
                 stack.Push(a);
             }
@@ -738,13 +733,13 @@ namespace StaxLang {
 
         private object ToNumber(dynamic arg) {
             if (IsArray(arg)) {
-                return double.Parse(A2S(arg));
+                return BigInteger.Parse(A2S(arg));
             }
             throw new Exception("Bad type for ToNumber");
         }
 
         private object ToString(dynamic arg) {
-            if (IsFloat(arg)) {
+            if (IsNumber(arg)) {
                 return S2A(arg.ToString());
             }
             throw new Exception("Bad type for ToString");
@@ -848,7 +843,7 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsFloat(a) && IsFloat(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(a + b);
             }
             else if (IsArray(a) && IsArray(b)) {
@@ -879,7 +874,7 @@ namespace StaxLang {
                 a.RemoveAll((Predicate<object>)(e => b.Contains(e)));
                 stack.Push(a);
             }
-            else if (IsFloat(a) && IsFloat(b)) {
+            else if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(a - b);
             }
             else {
@@ -891,10 +886,10 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsFloat(a) && IsFloat(b)) {
-                stack.Push(Math.Floor(a / b));
+            if (IsNumber(a) && IsNumber(b)) {
+                stack.Push(a / b);
             }
-            else if (IsArray(a) && IsFloat(b)) {
+            else if (IsArray(a) && IsNumber(b)) {
                 var result = new List<object>();
                 for (int i = 0; i < a.Count; i += (int)b) {
                     result.Add(((IEnumerable<object>)a).Skip(i).Take((int)b).ToList());
@@ -913,13 +908,13 @@ namespace StaxLang {
         private void DoPercent(Stack<dynamic> stack) {
             var b = stack.Pop();
             if (IsArray(b)) {
-                stack.Push((double)b.Count);
+                stack.Push((BigInteger)b.Count);
                 return;
             }
 
             var a = stack.Pop();
 
-            if (IsFloat(a) && IsFloat(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(a % b);
             }
             else {
@@ -931,9 +926,9 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsFloat(a)) (a, b) = (b, a);
+            if (IsNumber(a)) (a, b) = (b, a);
 
-            if (IsFloat(b)) {
+            if (IsNumber(b)) {
                 if (IsArray(a)) {
                     var result = new List<object>();
                     for (int i = 0; i < b; i++) result.AddRange(a);
@@ -953,13 +948,13 @@ namespace StaxLang {
                 string joiner = A2S(b);
                 foreach (var e in a) {
                     if (result != "") result += joiner;
-                    result += IsFloat(e) ? e : A2S(e);
+                    result += IsNumber(e) ? e : A2S(e);
                 }
                 stack.Push(S2A(result));
                 return;
             }
 
-            if (IsFloat(a) && IsFloat(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(a * b);
                 return;
             }
@@ -970,31 +965,31 @@ namespace StaxLang {
         private void DoEqual(Stack<dynamic> stack) {
             var b = stack.Pop();
             var a = stack.Pop();
-            stack.Push(AreEqual(a, b) ? 1.0 : 0.0);
+            stack.Push(AreEqual(a, b) ? BigInteger.One : BigInteger.Zero);
         }
 
         #region support
         private bool AreEqual(dynamic a, dynamic b) {
-            if (IsFloat(a) && IsFloat(b)) return a == b;
+            if (IsNumber(a) && IsNumber(b)) return a == b;
             if (IsArray(a) && IsArray(b)) return Enumerable.SequenceEqual(a, b);
             throw new Exception("Bad types for =");
         }
 
-        private bool IsFloat(object b) => b is double;
+        private bool IsNumber(object b) => b is BigInteger;
         private bool IsArray(object b) => b is List<object>;
         private bool IsBlock(object b) => b is Block;
-        private bool IsTruthy(dynamic b) => (IsFloat(b) && b != 0) || (IsArray(b) && b.Count != 0);
+        private bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
-        private List<object> S2A(string arg) => arg.ToCharArray().Select(c => (double)(int)c as object).ToList();
+        private List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private string A2S(List<object> arg) {
-            return string.Concat(arg.Select(e => IsFloat(e)
-                ? ((char)(double)e).ToString()
+            return string.Concat(arg.Select(e => IsNumber(e)
+                ? ((char)(int)(BigInteger)e).ToString()
                 : A2S((List<object>)e)));
         }
         private object Clone(dynamic o) => IsArray(o) ? new List<object>(o) : o;
 
-        private double ParseNumber(string program, ref int ip) {
-            long value = 0;
+        private object ParseNumber(string program, ref int ip) {
+            BigInteger value = 0;
 
             while (ip < program.Length && char.IsDigit(program[ip]))
                 value = value * 10 + program[ip++] - '0';
@@ -1035,10 +1030,9 @@ namespace StaxLang {
         #endregion
 
         #region extended
-        private List<object> PrimeFactors(double n) {
+        private List<object> PrimeFactors(BigInteger n) {
             var result = new List<object>();
-            double d = 2;
-            n = Math.Floor(n);
+            BigInteger d = 2;
             while (n > 1) {
                 while (n % d == 0) {
                     result.Add(d);
@@ -1051,7 +1045,7 @@ namespace StaxLang {
 
         private void DoSum(Stack<dynamic> stack) {
             var list = stack.Pop();
-            double result = 0;
+            BigInteger result = 0;
 
             foreach (var e in list) result += e;
 
@@ -1062,14 +1056,14 @@ namespace StaxLang {
             var b = stack.Pop();
 
             if (IsArray(b)) {
-                double result = 0;
-                foreach (double e in b) result = GCD(result, e);
+                BigInteger result = 0;
+                foreach (BigInteger e in b) result = GCD(result, e);
                 stack.Push(result);
                 return;
             }
 
             var a = stack.Pop();
-            if (IsFloat(a) && IsFloat(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 stack.Push(GCD(a, b));
                 return;
             }
@@ -1077,7 +1071,7 @@ namespace StaxLang {
             throw new Exception("Bad types for GCD");
         }
 
-        private double GCD(double a, double b) {
+        private BigInteger GCD(BigInteger a, BigInteger b) {
             if (a == 0 || b == 0) return a + b;
             return GCD(b, a % b);
         }
