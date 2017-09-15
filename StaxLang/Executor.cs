@@ -11,8 +11,6 @@ namespace StaxLang {
      *     log
      *     invert
      *     arbitrary range
-     *     -1 constant
-     *     bigint
      *     pre-condition loop (...; conditional break; ...)
      *     get size of side stack
      *     eval
@@ -25,6 +23,16 @@ namespace StaxLang {
 
     public class Executor {
         public TextWriter Output { get; private set; }
+
+        private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
+            ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
+            ['d'] = S2A("0123456789"),
+            ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
+            ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ['s'] = S2A(" \t\r\n\v"),
+            ['n'] = S2A("\n"),
+        };
 
         private BigInteger Index = BigInteger.Zero; // loop iteration
         private dynamic X = BigInteger.Zero; // register - default to numeric value of first input
@@ -136,10 +144,6 @@ namespace StaxLang {
                         ++ip;
                         DoAssignIndex(stack);
                         break;
-                    case '~':
-                        ++ip;
-                        stack.Peek().RemoveAt(0); // tail
-                        break;
                     case '#': // to number
                         ++ip;
                         stack.Push(ToNumber(stack.Pop()));
@@ -188,10 +192,6 @@ namespace StaxLang {
                         ++ip;
                         DoIf(stack, side);
                         break;
-                    case 'a': // alphabet
-                        ++ip;
-                        stack.Push(S2A("abcdefghijklmnopqrstuvwxyz"));
-                        break;
                     case 'A': // 10 (0xA)
                         ++ip;
                         stack.Push(BigInteger.One * 10);
@@ -207,10 +207,6 @@ namespace StaxLang {
                     case 'd': // discard
                         ++ip;
                         stack.Pop();
-                        break;
-                    case 'e': // empty array
-                        ++ip;
-                        stack.Push(S2A(""));
                         break;
                     case 'E': // explode (de-listify)
                         ++ip;
@@ -260,10 +256,6 @@ namespace StaxLang {
                         ++ip;
                         DoTranspose(stack);
                         break;
-                    case 'n': // push newline
-                        ++ip;
-                        stack.Push(S2A(Environment.NewLine));
-                        break;
                     case 'N': // negate
                         ++ip;
                         DoNegate(stack);
@@ -279,14 +271,6 @@ namespace StaxLang {
                     case 'P': // print
                         ++ip;
                         Print(stack.Pop());
-                        break;
-                    case 'q': // min
-                        ++ip;
-                        stack.Push(((List<object>)stack.Pop()).Min() ?? BigInteger.Zero);
-                        break;
-                    case 'Q': // max
-                        ++ip;
-                        stack.Push(((List<object>)stack.Pop()).Max() ?? BigInteger.Zero);
                         break;
                     case 'r': // 0 range
                         ++ip;
@@ -310,10 +294,6 @@ namespace StaxLang {
                             stack.Push(bottom);
                         }
                         break;
-                    case 'S': // space
-                        ++ip;
-                        stack.Push(S2A(" "));
-                        break;
                     case 't': // trim left
                         ++ip;
                         stack.Push(S2A(A2S(stack.Pop()).TrimStart()));
@@ -325,6 +305,10 @@ namespace StaxLang {
                     case 'u': // unique
                         ++ip;
                         DoUnique(stack);
+                        break;
+                    case 'V': // constant value
+                        stack.Push(Constants[program[++ip]]);
+                        ++ip;
                         break;
                     case 'w': // while
                         ++ip;
@@ -389,6 +373,10 @@ namespace StaxLang {
                                     stack.Push((BigInteger)((long)a ^ (long)b));
                                 }
                                 break;
+                            case 'A': // 10 ** x
+                                ++ip;
+                                stack.Push(BigInteger.Pow(10, (int)stack.Pop()));
+                                break;
                             case 'b': // base convert
                                 ++ip;
                                 DoBaseConvert(stack);
@@ -397,19 +385,23 @@ namespace StaxLang {
                                 ++ip;
                                 stack.Push(PrimeFactors(stack.Pop()));
                                 break;
-                            case 'g':
+                            case 'g': // gcd
                                 ++ip;
                                 DoGCD(stack);
+                                break;
+                            case 'P': // print blank newline
+                                ++ip;
+                                Output.WriteLine();
                                 break;
                             case 'r': // regex replace
                                 ++ip;
                                 DoReplace(stack, side);
                                 break;
-                            case 's':
+                            case 's': // sum
                                 ++ip;
                                 DoSum(stack);
                                 break;
-                            case 't':
+                            case 't': // translate
                                 ++ip;
                                 DoTranslate(stack);
                                 break;
@@ -742,6 +734,11 @@ namespace StaxLang {
             if (IsNumber(arg)) {
                 return S2A(arg.ToString());
             }
+            else if (IsArray(arg)) {
+                string result = "";
+                foreach (var e in arg) result += IsNumber(e) ? e : A2S(e);
+                return S2A(result);
+            }
             throw new Exception("Bad type for ToString");
         }
 
@@ -871,6 +868,7 @@ namespace StaxLang {
             var a = stack.Pop();
 
             if (IsArray(a) && IsArray(b)) {
+                a = new List<object>(a);
                 a.RemoveAll((Predicate<object>)(e => b.Contains(e)));
                 stack.Push(a);
             }
@@ -975,13 +973,13 @@ namespace StaxLang {
             throw new Exception("Bad types for =");
         }
 
-        private bool IsNumber(object b) => b is BigInteger;
-        private bool IsArray(object b) => b is List<object>;
-        private bool IsBlock(object b) => b is Block;
-        private bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
+        private static bool IsNumber(object b) => b is BigInteger;
+        private static bool IsArray(object b) => b is List<object>;
+        private static bool IsBlock(object b) => b is Block;
+        private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
-        private List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
-        private string A2S(List<object> arg) {
+        private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
+        private static string A2S(List<object> arg) {
             return string.Concat(arg.Select(e => IsNumber(e)
                 ? ((char)(int)(BigInteger)e).ToString()
                 : A2S((List<object>)e)));
@@ -1015,9 +1013,15 @@ namespace StaxLang {
             int depth = 0;
             int start = ip + 1;
             do {
-                if (program[ip] == '|' || program[ip] == '\'') ip += 2; // extended and char
+                if (program[ip] == '|' || program[ip] == '\'' || program[ip] == 'V') {
+                    ip++; // 2-char tokens
+                    continue;
+                }
 
-                if (program[ip] == '"') ParseString(program, ref ip);
+                if (program[ip] == '"') {
+                    ParseString(program, ref ip);
+                    continue;
+                }
 
                 if (program[ip] == '{') ++depth;
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
