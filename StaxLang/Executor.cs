@@ -10,8 +10,10 @@ namespace StaxLang {
      *     log
      *     invert
      *     arbitrary range
-     *     bitwise ops on int32 (&, |, ^, ~)
      *     -1 constant
+     *     bigint
+     *     pre-condition loop (...; conditional break; ...)
+     *     get size of side stack
      *  
      * To downgrade:
      *     head/tail
@@ -363,12 +365,33 @@ namespace StaxLang {
                         break;
                     case '|': // extended operations
                         switch (program[++ip]) {
-                            case '/': // div mod
+                            case '%': // div mod
                                 ++ip; {
                                     double b = stack.Pop();
                                     double a = stack.Pop();
                                     stack.Push(Math.Floor(a / b));
                                     stack.Push(a % b);
+                                }
+                                break;
+                            case '&': // bitwise and
+                                ++ip; {
+                                    double b = stack.Pop();
+                                    double a = stack.Pop();
+                                    stack.Push((double)((long)a & (long)b));
+                                }
+                                break;
+                            case '|': // bitwise or
+                                ++ip; {
+                                    double b = stack.Pop();
+                                    double a = stack.Pop();
+                                    stack.Push((double)((long)a | (long)b));
+                                }
+                                break;
+                            case '^': // bitwise xor
+                                ++ip; {
+                                    double b = stack.Pop();
+                                    double a = stack.Pop();
+                                    stack.Push((double)((long)a ^ (long)b));
                                 }
                                 break;
                             case 'b': // base convert
@@ -575,6 +598,8 @@ namespace StaxLang {
             var element = stack.Pop();
             var list = stack.Pop();
 
+            if (!IsArray(list)) (list, element) = (element, list);
+
             if (IsArray(list)) {
                 for (int i = 0; i < list.Count; i++) {
                     if (IsArray(element)) {
@@ -629,9 +654,12 @@ namespace StaxLang {
         }
 
         private void DoReadIndex(Stack<dynamic> stack) {
-            int index = (int)stack.Pop();
+            var top = stack.Pop();
             var list = stack.Pop();
 
+            if (IsArray(top)) (top, list) = (list, top);
+
+            int index = (int)top;
             if (IsArray(list)) {
                 index %= list.Count;
                 index += list.Count;

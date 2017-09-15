@@ -251,6 +251,11 @@ namespace StaxLang.Tests {
             RunProgram("ArE'A{ch^1l}25*Lre*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Ar26r{65+1lm+e*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             RunProgram("Are*a^+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("36r{36|b^me*", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("36r{48+c58/7*+m", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("43r{48+m7r{58+m-", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("91r48r-7r{58+m-", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            RunProgram("91r48r-65r58r--", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         }
 
         [TestMethod]
@@ -269,6 +274,9 @@ namespace StaxLang.Tests {
 
             RunProgram("s#Xd{Are*a+YsI^x%ys@]pFe", "5f69\n16", "607a");
             RunProgram("s#Xd{]x|b^x%x|bpFe", "5f69\n16", "607a");
+            RunProgram("s#Xd{]x|b^x|b1)pFe", "5f69\n16", "607a");
+            RunProgram("[#Are*a+(c~'0+2lM,s|t", "5f69\n16", "607a");
+            RunProgram("d#Are*a+([y{;I^;@m", "5f69\n16", "607a");
         }
 
         [TestMethod]
@@ -434,26 +442,39 @@ namespace StaxLang.Tests {
         public void CheckersPatternTest() {
             http://golf.shinh.org/p.rb?checkers+pattern
 
-            RunProgram("S/E#[#{;{R}{r}i2%?{2%mS*P}*", "3 19",
+            string[] ThreeNineteenOutput = {
                 "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
                 "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
-                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
-            RunProgram("S/E#[#{i2%{!cpSp};v*!P}*", "3 19",
-                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
-                "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
-                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
-            RunProgram("S/E#R{2%mS*s#{cP1001$|t}*d", "3 19",
-                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1",
-                "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
-                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1");
+                "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"};
+
+            RunProgram("S/E#[#{;{R}{r}i2%?{2%mS*P}*", "3 19", ThreeNineteenOutput);
+            RunProgram("S/E#[#{i2%{!cpSp};v*!P}*", "3 19", ThreeNineteenOutput);
+            RunProgram("S/E#R{2%mS*s#{cP1001$|t}*d", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
         public void IsFibTest() {
             https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
-            RunProgram("#1N[1{c;+s[cx<w=", "0", "1");
-            RunProgram("#1N[1{c;+s[cx<w=", "13", "1");
-            RunProgram("#1N[1{c;+s[cx<w=", "14", "0");
+            RunProgram("#X1N[1{c;+s[cx<w=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+        }
+
+        [TestMethod]
+        public void PandigitalDoublingTest() {
+            https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
+            
+            // this test needs bigints
+            //RunProgram("0[cAre*s-%!!{{#H$,^[cAre*s-%w}*d,", "66833", "44");
+
+            RunProgram("0[cAre*s-%!!{{#H$,^[cAre*s-%w}*d,", "617283945", "1");
+            RunProgram("0[cAre*Zs-%!!{{#H$,^[czs-%w}*d,", "617283945", "1");
+            RunProgram("0[{cAre*s-%}Z1*!!{{#H$,^[z1*w}*d,", "617283945", "1");
+        }
+
+        [TestMethod]
+        public void MersennePrimeTest() {
+            https://codegolf.stackexchange.com/questions/104508/is-it-a-mersenne-prime
+            RunProgram("#c^|&!x|f%1=*", "15", "0");
+            RunProgram("#Xc^|&!x|f%1=*P}", "5\n6\n7\n8191", "0", "0", "1", "1");
         }
     }
 }
