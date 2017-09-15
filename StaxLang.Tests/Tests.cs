@@ -458,6 +458,8 @@ namespace StaxLang.Tests {
             RunProgram("0[{Vd1C-!!X{#H$,^[}*xwd,", "617283945", "1");
             RunProgram("0[{0{#H$,^[1}Vd3C-?wd,", "66833", "44");
             RunProgram("0[{0{#H$,^[1}Vd3C-?wd,", "617283945", "1");
+            RunProgram("{0{#H$0[1}Vd3C-?wd|D", "66833", "44");
+            RunProgram("{0{#H$0[1}Vd3C-?wd|D", "617283945", "1");
 
         }
 

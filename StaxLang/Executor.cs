@@ -381,6 +381,14 @@ namespace StaxLang {
                                 ++ip;
                                 DoBaseConvert(stack);
                                 break;
+                            case 'd': // depth of stack
+                                ++ip;
+                                stack.Push(new BigInteger(stack.Count));
+                                break;
+                            case 'D': // depth of side stack
+                                ++ip;
+                                stack.Push(new BigInteger(side.Count));
+                                break;
                             case 'f': // prime factorize
                                 ++ip;
                                 stack.Push(PrimeFactors(stack.Pop()));
