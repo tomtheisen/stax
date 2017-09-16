@@ -61,11 +61,6 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        public void MultipleOutputs() {
-            RunProgram("123\"hello\"", "", "123", "hello");
-        }
-
-        [TestMethod]
         public void UnterminatedString() {
             RunProgram("\"asdf", "", "asdf");
         }
@@ -73,6 +68,11 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void EscapedString() {
             RunProgram("\"a`\"b\"", "", "a\"b");
+        }
+
+        [TestMethod]
+        public void DigTest() {
+            RunProgram("'a'b'c'd 2C LrS", "", "a", "b", "c", "d", "b");
         }
 
         [TestMethod]
@@ -87,80 +87,75 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void RangeTest() {
-            RunProgram("5rE", "", "0", "1", "2", "3", "4");
-            RunProgram("5RE", "", "1", "2", "3", "4", "5");
+            RunProgram("5rS", "", "0", "1", "2", "3", "4");
+            RunProgram("5RS", "", "1", "2", "3", "4", "5");
         }
 
         [TestMethod]
         public void StarOverloadsTest() {
-            RunProgram("2r3*E", "", "0", "1", "0", "1", "0", "1");
+            RunProgram("2r3*S", "", "0", "1", "0", "1", "0", "1");
             RunProgram("4\"abc\"*", "", "abcabcabcabc");
-            RunProgram("{1}3*", "", "1", "1", "1");
+            RunProgram("{1P}3*", "", "1", "1", "1");
         }
 
         [TestMethod]
         public void CopyTest() {
-            RunProgram("1c", "", "1", "1");
+            RunProgram("1QP", "", "1", "1");
         }
 
         [TestMethod]
         public void InputTest() {
-            RunProgram("#2*", "3", "6");
+            RunProgram("n2*", "3", "6");
         }
 
         [TestMethod]
         public void SquaresTest() {
-            RunProgram("5R{c*mE", "", "1", "4", "9", "16", "25");
+            RunProgram("5R{c*mS", "", "1", "4", "9", "16", "25");
             RunProgram("5R{c*PF", "", "1", "4", "9", "16", "25");
         }
 
         [TestMethod]
         public void WhileTest() {
-            RunProgram("3{cvcw", "", "3", "2", "1", "0");
+            RunProgram("3{Qvcw", "", "3", "2", "1");
         }
 
         [TestMethod]
         public void CollatzTest() {
-            RunProgram("#{ch1C3*^2C2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
-            RunProgram("#{cXhx3*^x2%?cv}w", "3", "3", "10", "5", "16", "8", "4", "2", "1");
-            RunProgram("#{cXhx3*^x2%?cvw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
-            RunProgram("#{cXhx3*^2lx@cvw", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("n{QXhx3*^2lx@cvwP", "3", "3", "10", "5", "16", "8", "4", "2", "1");
         }
 
         [TestMethod]
         public void DropFirstTest() {
-            RunProgram("4RU)E", "", "2", "3", "4");
+            RunProgram("4RU)S", "", "2", "3", "4");
         }
 
         [TestMethod]
         public void DivisorsTest() {
-            RunProgram("#vR{xs%!fE", "12", "1", "2", "3", "4", "6");
-            RunProgram("#vR{xs%!f%v", "12", "4");
+            RunProgram("nvR{xs%!fS", "12", "1", "2", "3", "4", "6");
+            RunProgram("nvR{xs%!f%v", "12", "4");
         }
 
         [TestMethod]
         public void PrimeTest() {
-            RunProgram("2Xd{xvR1]-{xs%!f%!{x}*x^X20-w", "", "2", "3", "5", "7", "11", "13", "17", "19");
-            RunProgram("d2Zd{zvR1]-{zs%!f%!{z}*z^Zx-w", "15", "2", "3", "5", "7", "11", "13");
-            RunProgram("#R1]-{|f%1=fE", "15", "2", "3", "5", "7", "11", "13");
+            RunProgram("nR1]-{|f%1=fS", "15", "2", "3", "5", "7", "11", "13");
         }
 
         [TestMethod]
         public void TriangleTest() {
-            RunProgram("#R{'**mE", "4", "*", "**", "***", "****");
+            RunProgram("nR{'**mS", "4", "*", "**", "***", "****");
         }
 
         [TestMethod]
         public void FactorialTest() {
-            RunProgram("1s#R{*cmd", "5", "120");
-            RunProgram("1s#R{*F", "5", "120");
-            RunProgram("1s#X{*xvXxwd", "5", "120");
+            RunProgram("1nR{*cmd", "5", "120");
+            RunProgram("1nR{*F", "5", "120");
+            RunProgram("1nX{*xvXxwd", "5", "120");
             RunProgram("d1xR{*F", "5", "120");
         }
 
         [TestMethod]
         public void ListifyTest() {
-            RunProgram("1 2 3 LrE", "", "1", "2", "3");
+            RunProgram("1 2 3 LrS", "", "1", "2", "3");
         }
 
         [TestMethod]
@@ -176,8 +171,8 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DiagonalTest() {
-            RunProgram(@"#R{'\)mE", "3", @"\", @" \", @"  \");
-            RunProgram(@"#R{'\)PF", "3", @"\", @" \", @"  \");
+            RunProgram(@"nR{'\)mS", "3", @"\", @" \", @"  \");
+            RunProgram(@"nR{'\)PF", "3", @"\", @" \", @"  \");
         }
 
         [TestMethod]
@@ -185,8 +180,8 @@ namespace StaxLang.Tests {
             RunProgram(@"#R{c'\)sxs-H^'/)+PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#R{c'\)pxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"#R{'\)px_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#R{'\)x_-H^'/)+mE", "3", @"\    /", @" \  /", @"  \/");
-            RunProgram(@"#R{' xH*i'\&sN'/&TmE", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#R{'\)x_-H^'/)+mS", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"#R{' xH*i'\&sN'/&TmS", "3", @"\    /", @" \  /", @"  \/");
         }
 
         [TestMethod]
@@ -196,15 +191,15 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void BigXTest() {
-            RunProgram(@"#R{'\)x_v-H'/)+mEx^'X)xRr{'/)x_v-H'\)+mE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmE", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#R{'\)x_v-H'/)+mSx^'X)PxRr{'/)x_v-H'\)+mS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#{xH^' *i'\&iNv'/&c[TP}*'Xx^)P{,rTP}x*", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
         public void SplitTest() {
-            RunProgram("{]mE", "asdf\nxxx", "xxx", "a", "s", "d", "f");
-            RunProgram("1/E", "asdf\nxxx", "xxx", "a", "s", "d", "f");
+            RunProgram("{]mS", "asdf\nxxx", "a", "s", "d", "f");
+            RunProgram("1/S", "asdf\nxxx", "a", "s", "d", "f");
         }
 
         [TestMethod]
@@ -233,24 +228,24 @@ namespace StaxLang.Tests {
             RunProgram("Ar{$1Cs/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Cs/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Cs/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("[Ar{$;s/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$;s/%v$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
         public void SmileyTest() {
-            RunProgram("':\":-\"{c')+}3*", "", ":", ":-", ":-)", ":-))", ":-)))");
-            RunProgram("':c'-+{c')+}3*", "", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("':P\":-\"Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("':Q'-+Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
         }
 
         [TestMethod]
         public void DeleteBlanksTest() {
-            RunProgram("L{fE", "1\n\n2\n\n\n3", "1", "2", "3");
+            RunProgram("L{fS", "1\n\n2\n\n\n3", "1", "2", "3");
         }
 
         [TestMethod]
         public void ScopeTest() {
-            RunProgram("2R{d 9R{dF _F", "", "1", "2");
-            RunProgram("2R{d 9R{dF iF", "", "0", "1");
+            RunProgram("2R{d 9R{dF _PF", "", "1", "2");
+            RunProgram("2R{d 9R{dF iPF", "", "0", "1");
         }
 
         [TestMethod]
@@ -273,7 +268,8 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void BaseConversionTest() {
-            RunProgram("#16|bc4|b", "291", "123", "27");
+            RunProgram("#16|b", "291", "123");
+            RunProgram("4|b", "123", "27");
         }
 
         [TestMethod]
@@ -284,14 +280,16 @@ namespace StaxLang.Tests {
             RunProgram("s#Xd{]x|b^x%x|bpF|P", "5f69\n16", "607a");
             RunProgram("s#Xd{]x|b^x|b1)pF|P", "5f69\n16", "607a");
             RunProgram("d#Ar$Va+([y{;I^;@m", "5f69\n16", "607a");
-            RunProgram("d#Vw([y{;I^;@m", "5f69\n16", "607a");
             RunProgram("d#Vw({]2*m$U)'0+ys|t", "5f69\n16", "607a");
+            RunProgram("d#Vw([y{;I^;@m", "5f69\n16", "607a");
         }
 
         [TestMethod]
         public void FibTest() {
-            RunProgram("#vv1s1s{c2C+}*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("d1cxvv{c2C+}*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("#1s0s{c2C+Q}*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("1 0{c2C+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("01{cQ2C+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("01{QX+xs}n*", "7", "1", "1", "2", "3", "5", "8", "13");
         }
 
         [TestMethod]
@@ -309,37 +307,39 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void RegularTest() {
             http://golf.shinh.org/p.rb?Hamming+Numbers
-            RunProgram("20R{5R1]-{*{_/c_%!wF1=fE", "", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12", "15", "16", "18", "20");
-            RunProgram("#c*R{5R1]-{*{_/c_%!wF1=fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("#c*R{H|fU@6/!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("#c*R{H|fH6<fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("#c*R{|f5R-!fx(E", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("20R{5R1]-{*{_/c_%!wF1=fS", "", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12", "15", "16", "18", "20");
+            RunProgram("#c*R{5R1]-{*{_/c_%!wF1=fx(S", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|fU@6/!fx(S", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{H|fH6<fx(S", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("#c*R{|f5R-!fx(S", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
 
         [TestMethod]
         public void DeleteLastLineTest() {
             http://golf.shinh.org/p.rb?delete+last+line
-            RunProgram("Lc%v(E", "foo\nbar\nbaz", "foo", "bar");
-            RunProgram("LU(E", "foo\nbar\nbaz", "foo", "bar");
-            RunProgram("LEd", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("Lc%v(S", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("LU(S", "foo\nbar\nbaz", "foo", "bar");
+            RunProgram("P,,[}", "foo\nbar\nbaz", "foo", "bar");
         }
 
         [TestMethod]
         public void RotateLinesTest() {
             http://golf.shinh.org/p.rb?rotate+lines
-            RunProgram("[LE,", "foo\nbar\nbaz", "bar", "baz", "foo");
+            RunProgram("d{P|DwyP", "foo\nbar\nbaz", "bar", "baz", "foo");
         }
 
         [TestMethod]
         public void FizzBuzzTest() {
-            RunProgram("#R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mE", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("#R{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?mE", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("#R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mS", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("#R{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?mS", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("#R{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?PF", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
         }
 
         [TestMethod]
         public void GCDTest() {
             http://golf.shinh.org/p.rb?Greatest+Common+Divisor
             RunProgram("#s#|g", "42\n56", "14");
+            RunProgram("nn|g", "42\n56", "14");
         }
 
         [TestMethod]
@@ -347,12 +347,13 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Least+Common+Multiple
             RunProgram("' /{#mXE*xE|g/P}", "195 548\n965 981", "106860", "946665");
             RunProgram("' /E#Xs#Y*xy|g/P}", "195 548\n965 981", "106860", "946665");
+            RunProgram("nXnY*xy|g/P}", "195 548\n965 981", "106860", "946665");
         }
 
         [TestMethod]
         public void DeleteDupesTest() {
             http://golf.shinh.org/p.rb?delete+duplicate+lines
-            RunProgram("LuE", "a\nb\na\nc", "a", "b", "c");
+            RunProgram("LuS", "a\nb\na\nc", "a", "b", "c");
         }
 
         [TestMethod]
@@ -367,7 +368,7 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgramSingleInputs("0[{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", 
+            RunProgramSingleInputs(",0[{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", 
                 ")", "failed at: )", 
                 "()", "yes", 
                 "{()[]}", "yes", 
@@ -378,13 +379,16 @@ namespace StaxLang.Tests {
         public void GoogleTest() {
             RunProgram("#'o*'gs+\"gle\"+", "2", "google");
             RunProgram("#'o*'gs+\"gle\"+", "10", "goooooooooogle");
-            RunProgram("'gp#'o*p\"gle", "10", "goooooooooogle");
+            RunProgram("'gp#'o*p\"gle\"P", "10", "goooooooooogle");
         }
 
         [TestMethod]
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
             RunProgram("1Cd#c^*hP}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("1Cd#R|sP}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("{#R|sP|Dvw", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("#,[R|sP}", "1\n2\n3\n0", "1", "3", "6");
         }
 
         [TestMethod]
@@ -397,12 +401,12 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void TransposeTest() {
-            RunProgram("LME", "abc\ndef\nghi", "adg", "beh", "cfi");
+            RunProgram("LMS", "abc\ndef\nghi", "adg", "beh", "cfi");
         }
 
         [TestMethod]
         public void NegateTest() {
-            RunProgramSingleInputs("#N", "13", "-13", "-14", "14");
+            RunProgramSingleInputs("nN", "13", "-13", "-14", "14");
         }
 
         [TestMethod]
@@ -415,9 +419,9 @@ namespace StaxLang.Tests {
             RunProgram("[;%R2R-{;(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("X%R2R-{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("%R2R-{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("2(y2N){+cP2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("zs{+3)cm2N)sdE", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("{zs+3)Zm2N)E", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("2(y2N){+Q2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("zs{+3)cm2N)sdS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("{zs+3)Zm2N)S", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
 
         [TestMethod]
@@ -427,7 +431,7 @@ namespace StaxLang.Tests {
             RunProgram("#R1]-{c2+*|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("#R1]-{^c*v|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("#R1]-{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
-            RunProgram("#R1]-{c2+*|f%2=f{c2+2l',*mE", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("#R1]-{c2+*|f%2=f{c2+2l',*mS", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
@@ -438,7 +442,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+[\"\\w+\"{1(;r|t_U(U)x|t_1);|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
 
         [TestMethod]
@@ -452,28 +456,29 @@ namespace StaxLang.Tests {
 
             RunProgram("' /E#[#{;{R}{r}i2%?{2%m' *P}*", "3 19", ThreeNineteenOutput);
             RunProgram("' /E#[#{i2%{!cp' p};v*!P}*", "3 19", ThreeNineteenOutput);
-            RunProgram("' /E#R{2%m' *s#{cP1001$|t}*d", "3 19", ThreeNineteenOutput);
+            RunProgram("' /E#R{2%m' *s#{Q1001$|t}*d", "3 19", ThreeNineteenOutput);
+            RunProgram("nnv[{i2%{!cp' p};*!P}*", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
         public void IsFibTest() {
             https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
-            RunProgram("#XU[1{c;+s[cx<w=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("nXU1{s1C+cx<wx=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
         }
 
         [TestMethod]
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
 
-            RunProgramSingleInputs("0[{Vd1C-!!X{#H$,^[}*xwd,", "66833", "44", "617283945", "1");
-            RunProgramSingleInputs("0[{0{#H$,^[1}Vd3C-?wd,", "66833", "44", "617283945", "1");
-            RunProgramSingleInputs("{0{#H$0[1}Vd3C-?wd|D", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("{0{#H$0[1}Vd3C-?w|D", "66833", "44", "617283945", "1");
         }
 
         [TestMethod]
         public void MersennePrimeTest() {
             https://codegolf.stackexchange.com/questions/104508/is-it-a-mersenne-prime
             RunProgramSingleInputs("#c^|&!x|f%1=*", "5", "0", "6", "0", "7", "1", "15", "0", "8191", "1");
+            RunProgramSingleInputs("#c^|&!x|fx-!*", "5", "0", "6", "0", "7", "1", "15", "0", "8191", "1");
+            RunProgramSingleInputs("#c^|&!x|p*", "5", "0", "6", "0", "7", "1", "15", "0", "8191", "1");
         }
 
         [TestMethod]
@@ -518,10 +523,9 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SquaringSequnceTest() {
             https://codegolf.stackexchange.com/questions/101961/the-squaring-sequence
-            RunProgramSingleInputs("#1111s{c*4(#}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
-            RunProgramSingleInputs("#'14*s{#c*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
-            RunProgramSingleInputs("#1s{c*$4*4(#}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
+            RunProgramSingleInputs("1111n{c*4(#}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
+            RunProgramSingleInputs("'14*n{#c*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
+            RunProgramSingleInputs("1n{c*$4*4(#}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
         }
-
     }
 }
