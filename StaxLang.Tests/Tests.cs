@@ -39,56 +39,8 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        public void IntLiteral() {
-            RunProgram("123", "", "123");
-            RunProgram("999999999999999999999999999999999999999", "", "999999999999999999999999999999999999999");
-        }
-
-        [TestMethod]
-        public void DoubleLiteral() {
-            RunProgram("1.23", "", "1.23");
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(FormatException))]
-        public void TooManyDecimals() {
-            RunProgram("1.23.45", "");
-        }
-
-        [TestMethod]
-        public void StringLiteral() {
-            RunProgram("\"hello\"", "", "hello");
-        }
-
-        [TestMethod]
-        public void UnterminatedString() {
-            RunProgram("\"asdf", "", "asdf");
-        }
-
-        [TestMethod]
-        public void EscapedString() {
-            RunProgram("\"a`\"b\"", "", "a\"b");
-        }
-
-        [TestMethod]
         public void DigTest() {
             RunProgram("'a'b'c'd 2C LrS", "", "a", "b", "c", "d", "b");
-        }
-
-        [TestMethod]
-        public void AdditionTest() {
-            RunProgram("2 3+", "", "5");
-        }
-
-        [TestMethod]
-        public void ConcatTest() {
-            RunProgram("\"hello\" \"world\"+", "", "helloworld");
-        }
-
-        [TestMethod]
-        public void RangeTest() {
-            RunProgram("5rS", "", "0", "1", "2", "3", "4");
-            RunProgram("5RS", "", "1", "2", "3", "4", "5");
         }
 
         [TestMethod]
