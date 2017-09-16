@@ -235,6 +235,7 @@ namespace StaxLang.Tests {
         public void SmileyTest() {
             RunProgram("':P\":-\"Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
             RunProgram("':Q'-+Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("{\":-\"')i*+i^(P}n^^*", "3", ":", ":-", ":-)", ":-))", ":-)))");
         }
 
         [TestMethod]
@@ -348,6 +349,7 @@ namespace StaxLang.Tests {
             RunProgram("' /{#mXE*xE|g/P}", "195 548\n965 981", "106860", "946665");
             RunProgram("' /E#Xs#Y*xy|g/P}", "195 548\n965 981", "106860", "946665");
             RunProgram("nXnY*xy|g/P}", "195 548\n965 981", "106860", "946665");
+            RunProgram("nn|lP}", "195 548\n965 981", "106860", "946665");
         }
 
         [TestMethod]
