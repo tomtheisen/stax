@@ -17,12 +17,25 @@ namespace StaxLang.Tests {
 
         internal void RunProgram(string source, string input = "", params string[] expected) {
             var writer = new StringWriter();
-
             new Executor(writer).Run(source, MultiLineStrip(input));
-
             string actual = writer.ToString();
+            
             var expectedJoined = string.Concat(expected.Select(e => e + Environment.NewLine));
             Assert.AreEqual(expectedJoined, actual);
+        }
+
+        internal void RunProgramSingleInputs(string source, params string[] inputOutputs) {
+            if (inputOutputs.Length % 2 != 0) throw new ArgumentException(nameof(inputOutputs));
+
+            for (int i = 0; i < inputOutputs.Length; i+=2) {
+                var input = inputOutputs[i];
+                var expected = inputOutputs[i + 1] + Environment.NewLine;
+                var writer = new StringWriter();
+                new Executor(writer).Run(source, new[] { input });
+                string actual = writer.ToString();
+
+                Assert.AreEqual(expected, actual);
+            }
         }
 
         [TestMethod]
@@ -271,6 +284,8 @@ namespace StaxLang.Tests {
             RunProgram("s#Xd{]x|b^x%x|bpF|P", "5f69\n16", "607a");
             RunProgram("s#Xd{]x|b^x|b1)pF|P", "5f69\n16", "607a");
             RunProgram("d#Ar$Va+([y{;I^;@m", "5f69\n16", "607a");
+            RunProgram("d#Vw([y{;I^;@m", "5f69\n16", "607a");
+            RunProgram("d#Vw({]2*m$U)'0+ys|t", "5f69\n16", "607a");
         }
 
         [TestMethod]
@@ -352,10 +367,11 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", ")", "failed at: )");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "()", "yes");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "{()[]}", "yes");
-            RunProgram("0[{{\"_)}]\",@=!{\"failed at: \"pyP0lh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", "()}()", "failed at: }()");
+            RunProgramSingleInputs("0[{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx[}\"({[\"3CI^X?yU)YdF\"yes", 
+                ")", "failed at: )", 
+                "()", "yes", 
+                "{()[]}", "yes", 
+                "()}()", "failed at: }()");
         }
 
         [TestMethod]
@@ -386,8 +402,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void NegateTest() {
-            RunProgram("#N", "13", "-13");
-            RunProgram("#N", "-14", "14");
+            RunProgramSingleInputs("#N", "13", "-13", "-14", "14");
         }
 
         [TestMethod]
@@ -401,7 +416,7 @@ namespace StaxLang.Tests {
             RunProgram("X%R2R-{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("%R2R-{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("2(y2N){+cP2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("0ls{+3)cm2N)sdE", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("zs{+3)cm2N)sdE", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("{zs+3)Zm2N)E", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
 
@@ -450,23 +465,15 @@ namespace StaxLang.Tests {
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
 
-            RunProgram("0[cVds-%!!{{#H$,^[cVds-%w}*d,", "66833", "44");
-            RunProgram("0[cVds-%!!{{#H$,^[cAr$s-%w}*d,", "617283945", "1");
-            RunProgram("0[cVdZs-%!!{{#H$,^[czs-%w}*d,", "617283945", "1");
-            RunProgram("0[{cVds-%}Z1*!!{{#H$,^[z1*w}*d,", "617283945", "1");
-            RunProgram("0[{Vd1C-!!X{#H$,^[}*xwd,", "66833", "44");
-            RunProgram("0[{Vd1C-!!X{#H$,^[}*xwd,", "617283945", "1");
-            RunProgram("0[{0{#H$,^[1}Vd3C-?wd,", "66833", "44");
-            RunProgram("0[{0{#H$,^[1}Vd3C-?wd,", "617283945", "1");
-            RunProgram("{0{#H$0[1}Vd3C-?wd|D", "66833", "44");
-            RunProgram("{0{#H$0[1}Vd3C-?wd|D", "617283945", "1");
+            RunProgramSingleInputs("0[{Vd1C-!!X{#H$,^[}*xwd,", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("0[{0{#H$,^[1}Vd3C-?wd,", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("{0{#H$0[1}Vd3C-?wd|D", "66833", "44", "617283945", "1");
         }
 
         [TestMethod]
         public void MersennePrimeTest() {
             https://codegolf.stackexchange.com/questions/104508/is-it-a-mersenne-prime
-            RunProgram("#c^|&!x|f%1=*", "15", "0");
-            RunProgram("#Xc^|&!x|f%1=*P}", "5\n6\n7\n8191", "0", "0", "1", "1");
+            RunProgramSingleInputs("#c^|&!x|f%1=*", "5", "0", "6", "0", "7", "1", "15", "0", "8191", "1");
         }
 
         [TestMethod]
@@ -495,5 +502,26 @@ namespace StaxLang.Tests {
             RunProgram("9R8Rr+{9s-' *_|A9/c*$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *'1_*#c*$+PF", "", expected);
         }
+
+        [TestMethod]
+        public void DizzyEnumeration() {
+            https://codegolf.stackexchange.com/questions/142893/dizzy-integer-enumeration
+            RunProgramSingleInputs("#^h{N}xh*", 
+                "0", "0", 
+                "1", "1",
+                "2", "-1", 
+                "3", "-2", 
+                "4", "2", 
+                "5", "3");
+        }
+
+        [TestMethod]
+        public void SquaringSequnceTest() {
+            https://codegolf.stackexchange.com/questions/101961/the-squaring-sequence
+            RunProgramSingleInputs("#1111s{c*4(#}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
+            RunProgramSingleInputs("#'14*s{#c*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
+            RunProgramSingleInputs("#1s{c*$4*4(#}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
+        }
+
     }
 }

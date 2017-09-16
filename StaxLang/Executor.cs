@@ -37,7 +37,7 @@ namespace StaxLang {
         private BigInteger Index = BigInteger.Zero; // loop iteration
         private dynamic X = BigInteger.Zero; // register - default to numeric value of first input
         private dynamic Y = BigInteger.Zero; // register - default to first input
-        private dynamic Z = BigInteger.Zero; // register - default to empty string
+        private dynamic Z = S2A(""); // register - default to empty string
         private dynamic _ = BigInteger.Zero; // implicit iterator
 
         public Executor(TextWriter output = null) {
@@ -706,7 +706,9 @@ namespace StaxLang {
             var b = stack.Pop();
             var a = stack.Pop();
 
-            if (IsNumber(a)) (a, b) = (b, a);
+            if (IsArray(b)) (a, b) = (b, a);
+
+            if (IsNumber(a)) a = ToString(a);
 
             if (IsArray(a) && IsNumber(b)) {
                 a = new List<object>(a);
@@ -744,7 +746,7 @@ namespace StaxLang {
             throw new Exception("Bad type for ToNumber");
         }
 
-        private object ToString(dynamic arg) {
+        private List<object> ToString(dynamic arg) {
             if (IsNumber(arg)) {
                 return S2A(arg.ToString());
             }
