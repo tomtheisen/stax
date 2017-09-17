@@ -50,10 +50,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FeatureTests.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="FeatureTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StaxLang\StaxLang.csproj">

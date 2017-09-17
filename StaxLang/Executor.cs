@@ -11,16 +11,14 @@ namespace StaxLang {
      *     log
      *     invert
      *     arbitrary range
-     *     pre-condition loop (...; conditional break; ...)
-     *     get size of side stack
      *     eval
      *     palindromize
      *     prefix / suffixes
      *     recursion
+     *     rotate
      *  
      * To downgrade:
      *     head/tail
-     *     min/max
      *     
      */
 
@@ -32,8 +30,8 @@ namespace StaxLang {
             ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
             ['d'] = S2A("0123456789"),
-            ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
             ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
             ['s'] = S2A(" \t\r\n\v"),
             ['n'] = S2A("\n"),
         };
@@ -80,6 +78,18 @@ namespace StaxLang {
         private void Run(string program) {
             int ip = 0;
 
+            if (program.Length > 0) switch (program[0]) {
+                case 'm': // line-map
+                    Run("L{" + program.Substring(1) + "PF");
+                    return;
+                case 'f': // line-filter
+                    Run("L{d{}{_P}_" + program.Substring(1) + "?F");
+                    return;
+                case 'F': // line-for
+                    Run("L{" + program.Substring(1) + "F");
+                    return;
+            }
+
             while (ip < program.Length) {
                 switch (program[ip++]) {
                     case '`':
@@ -110,7 +120,7 @@ namespace StaxLang {
                     case ',': // pop from side stack
                         Push(SideStack.Pop());
                         break;
-                    case '[': // push to side stack
+                    case '~': // push to side stack
                         SideStack.Push(Pop());
                         break;
                     case '"': // "literal"
@@ -230,9 +240,6 @@ namespace StaxLang {
                     case 'I': // get index
                         DoGetIndex();
                         break;
-                    case 'l': // listify string or n elements
-                        DoListify();
-                        break;
                     case 'L': // listify stack
                         var newList = new List<object>();
                         while (TotalSize > 0) newList.Add(Pop());
@@ -337,6 +344,9 @@ namespace StaxLang {
                                     Push(a % b);
                                 }
                                 break;
+                            case '~': // bitwise not
+                                Push(~Pop());
+                                break;
                             case '&': // bitwise and
                                 Push(Pop() & Pop());
                                 break;
@@ -364,6 +374,9 @@ namespace StaxLang {
                             case 'D': // depth of side stack
                                 Push(new BigInteger(SideStack.Count));
                                 break;
+                            case 'e': // is even
+                                Push(Pop() % 2 ^ 1);
+                                break;
                             case 'f': // prime factorize
                                 Push(PrimeFactors(Pop()));
                                 break;
@@ -371,7 +384,7 @@ namespace StaxLang {
                                 DoGCD();
                                 break;
                             case 'l': // lcm
-                                Run("c2C|g[*,/");
+                                Run("c2C|g~*,/");
                                 break;
                             case 'p': // is prime
                                 Run("|f%1=");
@@ -385,13 +398,19 @@ namespace StaxLang {
                             case 's': // sum
                                 Run("0s{+F");
                                 break;
+                            case 'x': // decrement X, push
+                                Push(--X);
+                                break;
+                            case 'X': // increment X, push
+                                Push(++X);
+                                break;
                             case 't': // translate
                                 DoTranslate();
                                 break;
-                            default: throw new Exception($"Unknown extended character '{program[ip]}'");
+                            default: throw new Exception($"Unknown extended character '{program[ip-1]}'");
                         }
                         break;
-                    default: throw new Exception($"Unknown character '{program[ip]}'");
+                    default: throw new Exception($"Unknown character '{program[ip-1]}'");
                 }
             }
         }
@@ -415,7 +434,7 @@ namespace StaxLang {
             if (IsArray(text) && IsArray(search)) {
                 string ts = A2S(text), ss = A2S(search);
                 if (IsArray(replace)) {
-                    Push(S2A(ts.Replace(ss, A2S(replace))));
+                    Push(Regex.Replace(ts, ss, A2S(replace)));
                     return;
                 }
                 else if (IsBlock(replace)) {
@@ -652,18 +671,6 @@ namespace StaxLang {
             }
         }
 
-        private void DoListify() {
-            var arg = Pop();
-            if (IsNumber(arg)) {
-                var list = new List<object>();
-                for (int i = 0; i < arg; i++) list.Insert(0, Pop());
-                Push(list);
-            }
-            else {
-                throw new Exception("Bad type for listify");
-            }
-        }
-
         private void PadLeft() {
             var b = Pop();
             var a = Pop();
@@ -736,13 +743,12 @@ namespace StaxLang {
 
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);
-                long i = 0;
+                Index = 0;
                 var result = new List<object>();
                 foreach (var e in a) {
-                    Push(e);
-                    _ = e;
-                    Index = i++;
+                    Push(_ = e);
                     Run(b.Program);
+                    Index++;
                     if (IsTruthy(Pop())) result.Add(e);
                 }
                 Push(result);
@@ -759,12 +765,11 @@ namespace StaxLang {
 
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);
-                long i = 0;
+                Index = 0;
                 foreach (var e in a) {
-                    Push(e);
-                    _ = e;
-                    Index = i++;
+                    Push(_ = e);
                     Run(b.Program);
+                    Index++;
                 }
                 (_, Index) = initial;
             }
@@ -797,13 +802,12 @@ namespace StaxLang {
 
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);
-                long i = 0;
+                Index = 0;
                 var result = new List<object>();
                 foreach (var e in a) {
-                    Push(e);
-                    _ = e;
-                    Index = i++;
+                    Push(_ = e);
                     Run(b.Program);
+                    Index++;
                     result.Add(Pop());
                 }
                 Push(result);
