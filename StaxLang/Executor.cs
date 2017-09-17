@@ -16,6 +16,8 @@ namespace StaxLang {
      *     prefix / suffixes
      *     recursion
      *     rotate
+     *     left / right truncate
+     *     gunzip base 85
      *  
      * To downgrade:
      *     head/tail
@@ -204,7 +206,10 @@ namespace StaxLang {
                     case 'c': // copy
                         Push(Peek());
                         break;
-                    case 'C': // dig
+                    case 'd': // discard
+                        Pop();
+                        break;
+                    case 'D': // dig
                         {
                             int n = (int)Pop();
                             var temp = new Stack<dynamic>();
@@ -213,9 +218,6 @@ namespace StaxLang {
                             while (temp.Any()) Push(temp.Pop());
                             Push(target);
                         }
-                        break;
-                    case 'd': // discard
-                        Pop();
                         break;
                     case 'E': // explode (de-listify)
                         DoExplode();
@@ -384,7 +386,13 @@ namespace StaxLang {
                                 DoGCD();
                                 break;
                             case 'l': // lcm
-                                Run("c2C|g~*,/");
+                                Run("c2D|g~*,/");
+                                break;
+                            case 'm': // min
+                                Push(BigInteger.Min(Pop(), Pop()));
+                                break;
+                            case 'M': // max
+                                Push(BigInteger.Max(Pop(), Pop()));
                                 break;
                             case 'p': // is prime
                                 Run("|f%1=");

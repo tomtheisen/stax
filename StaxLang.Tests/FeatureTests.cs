@@ -39,6 +39,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void PrimeTest() => RunProgram("97 |p", "1");
         [TestMethod] public void IsEven() => RunProgram("3 |e", "0");
         [TestMethod] public void IncDecXTest() => RunProgram("|X|X|X|x Lr $", "1232");
+        [TestMethod] public void Minimum() => RunProgram("3 7 |m", "3");
+        [TestMethod] public void Maximum() => RunProgram("3 7 |M", "7");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -99,6 +101,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Tail() => RunProgram("5R H", "5");
         [TestMethod] public void ShowArray() => RunProgram("'x]S", "x");
         [TestMethod] public void Sum() => RunProgram("5R |s", "15");
+        [TestMethod] public void MinimumArray() => RunProgram("5R Oh", "1");
+        [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -133,7 +137,7 @@ namespace StaxLang.Tests {
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
-        [TestMethod] public void Dig() => RunProgram("'a'b'c'd 2C", "b");
+        [TestMethod] public void Dig() => RunProgram("'a'b'c'd 2D", "b");
         [TestMethod] public void ListifyStack() => RunProgram("1 2 3 4 5 L ',*", "5,4,3,2,1");
         [TestMethod] public void SideStack() => RunProgram("1 2 3 4 ~~p;p,ppp", "23314");
         [TestMethod] public void Discard() => RunProgram("11 22 33 d", "22");

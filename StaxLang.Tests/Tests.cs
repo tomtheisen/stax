@@ -144,11 +144,11 @@ namespace StaxLang.Tests {
         public void DigitTallyTest() {
             RunProgram("d10r{$ys/%v$mP", "176093677603", "2102003301");
             RunProgram("Xd10r{$xs/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Cs/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Ds/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Ds/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$1Ds/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$;s/%v$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("mAr{$1Cs/%v$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("mAr{$1Ds/%v$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -202,9 +202,9 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void FibTest() {
-            RunProgram("#1s0s{c2C+Q}*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("1 0{c2C+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("01{cQ2C+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("#1s0s{c2D+Q}*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("1 0{c2D+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("01{cQ2D+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{QX+xs}n*", "7", "1", "1", "2", "3", "5", "8", "13");
         }
 
@@ -286,7 +286,7 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgramSingleInputs(",0~{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx~}\"({[\"3CI^X?yU)YdF\"yes", 
+            RunProgramSingleInputs(",0~{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx~}\"({[\"3DI^X?yU)YdF\"yes", 
                 ")", "failed at: )", 
                 "()", "yes", 
                 "{()[]}", "yes", 
@@ -303,8 +303,8 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
-            RunProgram("1Cd#c^*hP}", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("1Cd#R|sP}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("1Dd#c^*hP}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("1Dd#R|sP}", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("{#R|sP|Dvw", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("#,~R|sP}", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("{#R|sPc#w", "1\n2\n3\n0", "1", "3", "6");
@@ -378,15 +378,15 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void IsFibTest() {
             https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
-            RunProgram("nXU1{s1C+cx<wx=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
-            RunProgram("m#XU1{s1C+cx<wx=", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("nXU1{s1D+cx<wx=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("m#XU1{s1D+cx<wx=", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
         }
 
         [TestMethod]
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
 
-            RunProgramSingleInputs("{0{#H$0~1}Vd3C-?w|D", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("{0{#H$0~1}Vd3D-?w|D", "66833", "44", "617283945", "1");
         }
 
         [TestMethod]
@@ -470,6 +470,81 @@ namespace StaxLang.Tests {
             RunProgram(@"{{x^X}{xvX^}_2%?_])PF", @"\\\//\\/\//\\///", slashOut);
             RunProgram(@"{{|X}{|x^}_2%?_])PF", @"\\\//\\/\//\\///", slashOut);
             RunProgram(@"{|ex+X_])Px_2%-XF", @"\\\//\\/\//\\///", slashOut);
+        }
+
+        [TestMethod]
+        public void TabulaRectaTest() {
+            https://codegolf.stackexchange.com/questions/86986/print-a-tabula-recta
+            var expected = new[] {
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "BCDEFGHIJKLMNOPQRSTUVWXYZA",
+                "CDEFGHIJKLMNOPQRSTUVWXYZAB",
+                "DEFGHIJKLMNOPQRSTUVWXYZABC",
+                "EFGHIJKLMNOPQRSTUVWXYZABCD",
+                "FGHIJKLMNOPQRSTUVWXYZABCDE",
+                "GHIJKLMNOPQRSTUVWXYZABCDEF",
+                "HIJKLMNOPQRSTUVWXYZABCDEFG",
+                "IJKLMNOPQRSTUVWXYZABCDEFGH",
+                "JKLMNOPQRSTUVWXYZABCDEFGHI",
+                "KLMNOPQRSTUVWXYZABCDEFGHIJ",
+                "LMNOPQRSTUVWXYZABCDEFGHIJK",
+                "MNOPQRSTUVWXYZABCDEFGHIJKL",
+                "NOPQRSTUVWXYZABCDEFGHIJKLM",
+                "OPQRSTUVWXYZABCDEFGHIJKLMN",
+                "PQRSTUVWXYZABCDEFGHIJKLMNO",
+                "QRSTUVWXYZABCDEFGHIJKLMNOP",
+                "RSTUVWXYZABCDEFGHIJKLMNOPQ",
+                "STUVWXYZABCDEFGHIJKLMNOPQR",
+                "TUVWXYZABCDEFGHIJKLMNOPQRS",
+                "UVWXYZABCDEFGHIJKLMNOPQRST",
+                "VWXYZABCDEFGHIJKLMNOPQRSTU",
+                "WXYZABCDEFGHIJKLMNOPQRSTUV",
+                "XYZABCDEFGHIJKLMNOPQRSTUVW",
+                "YZABCDEFGHIJKLMNOPQRSTUVWX",
+                "ZABCDEFGHIJKLMNOPQRSTUVWXY",
+            };
+
+            RunProgram("VA{Q2*U)26(}26*", "", expected);
+            RunProgram("VA{Qch+U)}26*", "", expected);
+        }
+
+        [TestMethod]
+        public void LphabetTest() {
+            https://codegolf.stackexchange.com/questions/87064/print-output-the-l-phabet
+
+            string[] expected = {
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "BBCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "CCCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "DDDDEFGHIJKLMNOPQRSTUVWXYZ",
+                "EEEEEFGHIJKLMNOPQRSTUVWXYZ",
+                "FFFFFFGHIJKLMNOPQRSTUVWXYZ",
+                "GGGGGGGHIJKLMNOPQRSTUVWXYZ",
+                "HHHHHHHHIJKLMNOPQRSTUVWXYZ",
+                "IIIIIIIIIJKLMNOPQRSTUVWXYZ",
+                "JJJJJJJJJJKLMNOPQRSTUVWXYZ",
+                "KKKKKKKKKKKLMNOPQRSTUVWXYZ",
+                "LLLLLLLLLLLLMNOPQRSTUVWXYZ",
+                "MMMMMMMMMMMMMNOPQRSTUVWXYZ",
+                "NNNNNNNNNNNNNNOPQRSTUVWXYZ",
+                "OOOOOOOOOOOOOOOPQRSTUVWXYZ",
+                "PPPPPPPPPPPPPPPPQRSTUVWXYZ",
+                "QQQQQQQQQQQQQQQQQRSTUVWXYZ",
+                "RRRRRRRRRRRRRRRRRRSTUVWXYZ",
+                "SSSSSSSSSSSSSSSSSSSTUVWXYZ",
+                "TTTTTTTTTTTTTTTTTTTTUVWXYZ",
+                "UUUUUUUUUUUUUUUUUUUUUVWXYZ",
+                "VVVVVVVVVVVVVVVVVVVVVVWXYZ",
+                "WWWWWWWWWWWWWWWWWWWWWWWXYZ",
+                "XXXXXXXXXXXXXXXXXXXXXXXXYZ",
+                "YYYYYYYYYYYYYYYYYYYYYYYYYZ",
+                "ZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+            };
+
+            RunProgram("zVA{]Yi*]+{y+mFS", "", expected);
+            RunProgram("26RZ{~z{;|M64+mPF", "", expected);
+            RunProgram("VA{~VA{;|MmPF", "", expected);
+            RunProgram("VA{VA{1D|MmPF", "", expected);
         }
     }
 }
