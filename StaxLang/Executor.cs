@@ -203,6 +203,9 @@ namespace StaxLang {
                     case 'A': // 10 (0xA)
                         Push(BigInteger.One * 10);
                         break;
+                    case 'B': // batch
+                        Run("ss ~ c;v( 1D;vN) {+;)cm sdsd ,d");
+                        break;
                     case 'c': // copy
                         Push(Peek());
                         break;
@@ -363,6 +366,12 @@ namespace StaxLang {
                                     var exp = (int)Pop();
                                     Push(BigInteger.Pow(Pop(), exp));
                                 }
+                                break;
+                            case ')': // rotate right
+                                Run("cHsU(+");
+                                break;
+                            case '(': // rotate left
+                                Run("cU)sh+");
                                 break;
                             case 'A': // 10 ** x
                                 Push(BigInteger.Pow(10, (int)Pop()));

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace StaxLang.Tests {
     [TestClass]
-    public class Tests {
+    public class GolfTests {
         internal static string[] MultiLineStrip(string arg) {
             var result = arg.Trim().Split('\n')
                 .Select(line => line.TrimStart())
@@ -342,6 +342,7 @@ namespace StaxLang.Tests {
             RunProgram("2(y2N){+Q2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("zs{+3)cm2N)sdS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("{zs+3)Zm2N)S", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("3BS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
 
         [TestMethod]
@@ -506,6 +507,7 @@ namespace StaxLang.Tests {
 
             RunProgram("VA{Q2*U)26(}26*", "", expected);
             RunProgram("VA{Qch+U)}26*", "", expected);
+            RunProgram("VA{Q|(}26*", "", expected);
         }
 
         [TestMethod]
@@ -545,6 +547,74 @@ namespace StaxLang.Tests {
             RunProgram("26RZ{~z{;|M64+mPF", "", expected);
             RunProgram("VA{~VA{;|MmPF", "", expected);
             RunProgram("VA{VA{1D|MmPF", "", expected);
+            RunProgram("VAQc2B{|tQF", "", expected);
+        }
+
+        [TestMethod]
+        public void AlphabetsTriangleTest() {
+            https://codegolf.stackexchange.com/questions/87496/alphabet-triangle?noredirect=1&lq=1
+            string[] expected = {
+            "A",
+                "ABA",
+                "ABCBA",
+                "ABCDCBA",
+                "ABCDEDCBA",
+                "ABCDEFEDCBA",
+                "ABCDEFGFEDCBA",
+                "ABCDEFGHGFEDCBA",
+                "ABCDEFGHIHGFEDCBA",
+                "ABCDEFGHIJIHGFEDCBA",
+                "ABCDEFGHIJKJIHGFEDCBA",
+                "ABCDEFGHIJKLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWXWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYXWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZYXWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYXWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWXWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVWVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUVUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTUTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSTSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRSRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQRQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPQPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNOPONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNONMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMNMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLMLKJIHGFEDCBA",
+                "ABCDEFGHIJKLKJIHGFEDCBA",
+                "ABCDEFGHIJKJIHGFEDCBA",
+                "ABCDEFGHIJIHGFEDCBA",
+                "ABCDEFGHIHGFEDCBA",
+                "ABCDEFGHGFEDCBA",
+                "ABCDEFGFEDCBA",
+                "ABCDEFEDCBA",
+                "ABCDEDCBA",
+                "ABCDCBA",
+                "ABCBA",
+                "ABA",
+                "A",
+            };
+
+            RunProgram("VA{VAi^(crU)+mcrU)+S", "", expected);
+        }
+
+        [TestMethod]
+        public void LongestOneRunTest() {
+            https://codegolf.stackexchange.com/questions/143000/calculate-the-longest-series-of-1s-in-an-integers-binary-value
+
+            RunProgramSingleInputs("#{cch|&cwd2|b%v", "142", "1", "48", "4", "750", "5", "0", "0");
         }
     }
 }

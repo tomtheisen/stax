@@ -82,6 +82,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void Unique() => RunProgram("\"Hello World\" u", "Helo Wrd");
         [TestMethod] public void RegexReplace() => RunProgram("\"axbxxcxxxd\" \"x+\" 'z |r", "azbzczd");
         [TestMethod] public void Translate() => RunProgram("\"Hello World\" \"e3o0\" |t", "H3ll0 W0rld");
+        [TestMethod] public void Batch() => RunProgram("\"hello\" 3B ',*", "hel,ell,llo");
+        [TestMethod] public void RotateRight() => RunProgram("\"asdf\" |)", "fasd");
+        [TestMethod] public void RotateLeft() => RunProgram("\"asdf\" |(", "sdfa");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
