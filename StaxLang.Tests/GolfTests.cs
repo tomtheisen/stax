@@ -672,5 +672,17 @@ namespace StaxLang.Tests {
                 "3", "15",
                 "4", "17");
         }
+
+        [TestMethod]
+        public void CrossedSquareTest() {
+            RunProgram("'*x*QxvXvR{'*x('*+s'*& xvi-'*&PFP", "7",
+                "*******",
+                "**   **",
+                "* * * *",
+                "*  *  *",
+                "* * * *",
+                "**   **",
+                "*******");
+        }
     }
 }

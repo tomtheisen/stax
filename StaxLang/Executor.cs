@@ -751,7 +751,7 @@ namespace StaxLang {
         private void Print(object arg, bool newline = true) {
             OutputWritten = true;
             if (IsArray(arg)) {
-                Print(A2S((List<object>)arg), newline);
+                Print(A2S((List<object>)arg).Replace("\n", Environment.NewLine), newline);
                 return;
             }
 

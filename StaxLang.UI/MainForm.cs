@@ -27,5 +27,38 @@ namespace StaxLang.UI {
                 OutputTextbox.Text = ex.Message;
             }
         }
+
+        private void ProgramTextbox_TextChanged(object sender, EventArgs e) {
+            UpdateMetrics();
+        }
+
+        private void ProgramTextbox_KeyUp(object sender, KeyEventArgs e) {
+            UpdateMetrics();
+        }
+
+        private void ProgramTextbox_MouseMove(object sender, MouseEventArgs e) {
+            UpdateMetrics();
+        }
+
+        private void UpdateMetrics() {
+            ProgramSizeLabel.Text = $"{ProgramTextbox.Text.Length} characters";
+            if (ProgramTextbox.SelectedText.Length == 1) {
+                ProgramSizeLabel.Text += $" (codepoint {ProgramTextbox.SelectedText[0] - 0})";
+            }
+            else if (ProgramTextbox.SelectedText != "") {
+                ProgramSizeLabel.Text += $" ({ProgramTextbox.SelectedText.Length} selected)";
+            }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e) {
+            ProgramTextbox.Text = Settings.Default.Program;
+            InputTextbox.Text = Settings.Default.Input;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+            Settings.Default.Program = ProgramTextbox.Text;
+            Settings.Default.Input = InputTextbox.Text;
+            Settings.Default.Save();
+        }
     }
 }
