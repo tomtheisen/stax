@@ -229,6 +229,11 @@ namespace StaxLang {
                         DoFilter();
                         break;
                     case 'F': // for loop
+                        if (IsNumber(Peek())) {
+                            BigInteger n = Pop();
+                            for (Index = 0; Index < n; Index++) Run(program.Substring(ip));
+                            return;
+                        }
                         DoFor();
                         break;
                     case 'h':

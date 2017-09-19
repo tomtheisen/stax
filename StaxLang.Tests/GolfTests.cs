@@ -114,6 +114,7 @@ namespace StaxLang.Tests {
             RunProgram(@"#R{'\)x_v-H'/)+mSx^'X)PxRr{'/)x_v-H'\)+mS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#{xH^' *i'\&iNv'/&c~TP}*'Xx^)P{,rTP}x*", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#{xH^' *i'\&iNv'/&c~TP}*'Xx^)PxF,rTP", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -156,6 +157,7 @@ namespace StaxLang.Tests {
             RunProgram("':P\":-\"Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
             RunProgram("':Q'-+Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
             RunProgram("{\":-\"')i*+i^(P}n^^*", "3", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("n2+F\":-\"')i*+i^(P", "3", ":", ":-", ":-)", ":-))", ":-)))");
         }
 
         [TestMethod]
@@ -206,6 +208,7 @@ namespace StaxLang.Tests {
             RunProgram("1 0{c2D+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{cQ2D+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{QX+xs}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("01nFQX+xs", "7", "1", "1", "2", "3", "5", "8", "13");
         }
 
         [TestMethod]
@@ -374,6 +377,7 @@ namespace StaxLang.Tests {
             RunProgram("' /E#~#{i2%{!cp' p};v*!P}*", "3 19", ThreeNineteenOutput);
             RunProgram("' /E#R{2%m' *s#{Q1001$|t}*d", "3 19", ThreeNineteenOutput);
             RunProgram("nnv~{i2%{!cp' p};*!P}*", "3 19", ThreeNineteenOutput);
+            RunProgram("nnv~Fi2%{!cp' p};*!P", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
@@ -435,6 +439,13 @@ namespace StaxLang.Tests {
                 "3", "-2", 
                 "4", "2", 
                 "5", "3");
+            RunProgramSingleInputs("#^hxhFN",
+                "0", "0",
+                "1", "1",
+                "2", "-1",
+                "3", "-2",
+                "4", "2",
+                "5", "3");
         }
 
         [TestMethod]
@@ -443,6 +454,7 @@ namespace StaxLang.Tests {
             RunProgramSingleInputs("1111n{c*4(#}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("'14*n{#c*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("1n{c*$4*4(#}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
+            RunProgramSingleInputs("1nFc*$4*4(#", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
         }
 
         [TestMethod]
@@ -508,6 +520,7 @@ namespace StaxLang.Tests {
             RunProgram("VA{Q2*U)26(}26*", "", expected);
             RunProgram("VA{Qch+U)}26*", "", expected);
             RunProgram("VA{Q|(}26*", "", expected);
+            RunProgram("VA26FQ|(", "", expected);
         }
 
         [TestMethod]
@@ -647,6 +660,12 @@ namespace StaxLang.Tests {
         public void BinarySierpinskiTest() {
             https://codegolf.stackexchange.com/questions/67497/compute-the-binary-sierpinski-triangle-sequence
             RunProgramSingleInputs("1{cH|^}n*",
+                "0", "1",
+                "1", "3",
+                "2", "5",
+                "3", "15",
+                "4", "17");
+            RunProgramSingleInputs("1nFcH|^",
                 "0", "1",
                 "1", "3",
                 "2", "5",

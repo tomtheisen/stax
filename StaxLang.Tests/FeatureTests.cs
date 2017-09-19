@@ -133,6 +133,7 @@ namespace StaxLang.Tests {
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
+        [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3F1p", "111");
         [TestMethod] public void While() => RunProgram("3{cp^c8=!w", "34567");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
