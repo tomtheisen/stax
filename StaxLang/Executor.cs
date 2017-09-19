@@ -301,10 +301,14 @@ namespace StaxLang {
                         foreach (var e in Pop()) Print(e);
                         break;
                     case 't': // trim left
-                        Push(S2A(A2S(Pop()).TrimStart()));
+                        if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));
+                        else if (IsNumber(Peek())) Run("ss~ c%,-)");
+                        else throw new Exception("Bad types for trimleft");
                         break;
                     case 'T': // trim right
-                        Push(S2A(A2S(Pop()).TrimEnd()));
+                        if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimEnd()));
+                        else if (IsNumber(Peek())) Run("ss~ c%,-(");
+                        else throw new Exception("Bad types for trimright");
                         break;
                     case 'u': // unique
                         DoUnique();
@@ -342,12 +346,7 @@ namespace StaxLang {
                     case '|': // extended operations
                         switch (program[ip++]) {
                             case '%': // div mod
-                                {
-                                    BigInteger b = Pop();
-                                    BigInteger a = Pop();
-                                    Push(a / b);
-                                    Push(a % b);
-                                }
+                                Run("ss1C1C%~/,");
                                 break;
                             case '~': // bitwise not
                                 Push(~Pop());
@@ -362,16 +361,17 @@ namespace StaxLang {
                                 Push(Pop() ^ Pop());
                                 break;
                             case '*': // exponent
-                                {
-                                    var exp = (int)Pop();
-                                    Push(BigInteger.Pow(Pop(), exp));
-                                }
+                                Run("s");
+                                Push(BigInteger.Pow(Pop(), (int)Pop()));
                                 break;
                             case ')': // rotate right
                                 Run("cHsU(+");
                                 break;
                             case '(': // rotate left
                                 Run("cU)sh+");
+                                break;
+                            case 'a': // absolute value
+                                Push(BigInteger.Abs(Pop()));
                                 break;
                             case 'A': // 10 ** x
                                 Push(BigInteger.Pow(10, (int)Pop()));
@@ -451,7 +451,7 @@ namespace StaxLang {
             if (IsArray(text) && IsArray(search)) {
                 string ts = A2S(text), ss = A2S(search);
                 if (IsArray(replace)) {
-                    Push(Regex.Replace(ts, ss, A2S(replace)));
+                    Push(S2A(Regex.Replace(ts, ss, A2S(replace))));
                     return;
                 }
                 else if (IsBlock(replace)) {
@@ -932,6 +932,10 @@ namespace StaxLang {
 
             if (IsNumber(b)) {
                 if (IsArray(a)) {
+                    if (b < 0) {
+                        a.Reverse();
+                        b *= -1;
+                    }
                     var result = new List<object>();
                     for (int i = 0; i < b; i++) result.AddRange(a);
                     Push(result);

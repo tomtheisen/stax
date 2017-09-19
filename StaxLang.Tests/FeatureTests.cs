@@ -41,6 +41,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void IncDecXTest() => RunProgram("|X|X|X|x Lr $", "1232");
         [TestMethod] public void Minimum() => RunProgram("3 7 |m", "3");
         [TestMethod] public void Maximum() => RunProgram("3 7 |M", "7");
+        [TestMethod] public void AbsoluteValue() => RunProgram("5|a", "5");
+        [TestMethod] public void NegativeAbsoluteValue() => RunProgram("5N|a", "5");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -79,6 +81,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh");
         [TestMethod] public void TrimLeft() => RunProgram("\"  abc  \" t", "abc  ");
         [TestMethod] public void TrimRight() => RunProgram("\"  abc  \" T", "  abc");
+        [TestMethod] public void TrimLeftBy() => RunProgram("\"hello world\" 2 t", "llo world");
+        [TestMethod] public void TrimRightBy() => RunProgram("\"hello world\" 2 T", "hello wor");
         [TestMethod] public void Unique() => RunProgram("\"Hello World\" u", "Helo Wrd");
         [TestMethod] public void RegexReplace() => RunProgram("\"axbxxcxxxd\" \"x+\" 'z |r", "azbzczd");
         [TestMethod] public void Translate() => RunProgram("\"Hello World\" \"e3o0\" |t", "H3ll0 W0rld");
@@ -93,6 +97,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ConcatArray() => RunProgram("3R 4R + ',*", "1,2,3,1,2,3,4");
         [TestMethod] public void ConcatArrayElement() => RunProgram("3R 7 + ',*", "1,2,3,7");
         [TestMethod] public void RepeatArray() => RunProgram("3R 2* ',*", "1,2,3,1,2,3");
+        [TestMethod] public void RepeatArrayBackwards() => RunProgram("3R 2N* ',*", "3,2,1,3,2,1");
         [TestMethod] public void Explode() => RunProgram("5R E +", "9");
         [TestMethod] public void StringArrayEquivalence() => RunProgram("\"abc\" ',*", "97,98,99");
         [TestMethod] public void ArrayLength() => RunProgram("5R%", "5");

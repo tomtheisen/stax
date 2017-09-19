@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaxLang", "StaxLang\StaxLang.csproj", "{B5D7331C-78E2-42B0-AB46-F98966184C59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaxLang.Tests", "StaxLang.Tests\StaxLang.Tests.csproj", "{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaxLang.UI", "StaxLang.UI\StaxLang.UI.csproj", "{E8FC5E6E-A255-4F9C-AB39-D3D716CA4F54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28EAAD76-3248-4F23-9ED6-97A5E1A89A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8FC5E6E-A255-4F9C-AB39-D3D716CA4F54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8FC5E6E-A255-4F9C-AB39-D3D716CA4F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8FC5E6E-A255-4F9C-AB39-D3D716CA4F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8FC5E6E-A255-4F9C-AB39-D3D716CA4F54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE9FD444-D7B2-4B22-A06E-CD882184BCF0}
 	EndGlobalSection
 EndGlobal

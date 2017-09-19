@@ -340,8 +340,8 @@ namespace StaxLang.Tests {
             RunProgram("X%R2R-{x(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("%R2R-{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("2(y2N){+Q2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("zs{+3)cm2N)sdS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("{zs+3)Zm2N)S", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("zs{+3)cm2tsdS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
+            RunProgram("{zs+3)Zm2tS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("3BS", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
 
@@ -613,8 +613,45 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void LongestOneRunTest() {
             https://codegolf.stackexchange.com/questions/143000/calculate-the-longest-series-of-1s-in-an-integers-binary-value
-
             RunProgramSingleInputs("#{cch|&cwd2|b%v", "142", "1", "48", "4", "750", "5", "0", "0");
+        }
+
+        [TestMethod]
+        public void SimplifyNotNegateTest() {
+            https://codegolf.stackexchange.com/questions/142934/evaluate-an-expression-of-minus-and-tilde
+            RunProgramSingleInputs("%|e'-*'x+py{]'~=Ui^|**m|scU>'+*pP",
+                "x", "x+0",
+                "~x", "-x-1",
+                "-~x", "x+1",
+                "~-~x", "-x-2",
+                "-~-~x", "x+2",
+                "--~~x", "x+0",
+                "~-x", "x-1",
+                "-~-x", "-x+1");
+        }
+
+        [TestMethod]
+        public void BitflipAndNegateTest() {
+            https://codegolf.stackexchange.com/questions/92598/bitflip-and-negate
+            RunProgramSingleInputs("\"-~\"x*x0<T'0+",
+                "-3", "~-~-~0",
+                "-2", "~-~0",
+                "-1", "~0",
+                "0", "0",
+                "1", "-~0",
+                "2", "-~-~0",
+                "3", "-~-~-~0");
+        }
+
+        [TestMethod]
+        public void BinarySierpinskiTest() {
+            https://codegolf.stackexchange.com/questions/67497/compute-the-binary-sierpinski-triangle-sequence
+            RunProgramSingleInputs("1{cH|^}n*",
+                "0", "1",
+                "1", "3",
+                "2", "5",
+                "3", "15",
+                "4", "17");
         }
     }
 }
