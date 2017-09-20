@@ -43,6 +43,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Maximum() => RunProgram("3 7 |M", "7");
         [TestMethod] public void AbsoluteValue() => RunProgram("5|a", "5");
         [TestMethod] public void NegativeAbsoluteValue() => RunProgram("5N|a", "5");
+        [TestMethod] public void RepeatedDivide() => RunProgram("12 2 |/", "3");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");

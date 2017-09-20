@@ -52,6 +52,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DropFirstTest() {
             RunProgram("4RU)S", "", "2", "3", "4");
+            RunProgram("4R1tS", "", "2", "3", "4");
         }
 
         [TestMethod]
@@ -68,6 +69,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void TriangleTest() {
             RunProgram("nR{'**mS", "4", "*", "**", "***", "****");
+            RunProgram("znF'*+Q", "4", "*", "**", "***", "****");
         }
 
         [TestMethod]
@@ -707,6 +709,28 @@ namespace StaxLang.Tests {
                 @"+++++XXXXX+++++",
             };
             RunProgram(@"znR{X""X/""i@]*x""+\""i@]*+x*xx^*h)~{;i@]x*+m;]x*+FS", "5", expected);
+            RunProgram(@"znHR{hR|s_^hY""+X""""/\""ih2%?*{O_*ihR|sts(]y*+MFS", "5", expected);
+        }
+
+        [TestMethod]
+        public void PalindromicBinaryTwist() {
+            https://codegolf.stackexchange.com/questions/139254/palindromic-numbers-with-a-binary-twist
+            string[] expected = {
+                "1", "1",
+                "6", "1",
+                "9", "1",
+                "10", "0",
+                "12", "0",
+                "13", "0",
+                "14", "0",
+                "33", "1",
+                "44", "0",
+                "1342177280", "0",
+                "297515792", "1",
+            };
+
+            RunProgramSingleInputs("cr=xH{hc|ew2|bcr=*", expected);
+            RunProgramSingleInputs("cr=x2|/2|bcr=*",expected);
         }
     }
 }

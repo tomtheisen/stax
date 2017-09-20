@@ -14,13 +14,8 @@ namespace StaxLang {
      *     eval
      *     palindromize
      *     prefix / suffixes
-     *     recursion
-     *     rotate
-     *     left / right truncate
+     *     recursion (call into newline, conditional call into newline, conditional self-call)
      *     gunzip base 85
-     *  
-     * To downgrade:
-     *     head/tail
      *     
      */
 
@@ -63,10 +58,10 @@ namespace StaxLang {
             SideStack = new Stack<dynamic>(input.Reverse().Select(S2A));
             try {
                 Run(program);
-                if (!OutputWritten) Print(Pop());
             }
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
+            if (!OutputWritten) Print(Pop());
         }
 
         private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : SideStack.Pop();
@@ -369,6 +364,9 @@ namespace StaxLang {
                                 Run("s");
                                 Push(BigInteger.Pow(Pop(), (int)Pop()));
                                 break;
+                            case '/': // repeated divide
+                                Run("ss~;*{;/c;%!w,d");
+                                break;
                             case ')': // rotate right
                                 Run("cHsU(+");
                                 break;
@@ -412,7 +410,7 @@ namespace StaxLang {
                                 Run("|f%1=");
                                 break;
                             case 'P': // print blank newline
-                                Output.WriteLine();
+                                Print("");
                                 break;
                             case 'r': // regex replace
                                 DoReplace();
@@ -1002,7 +1000,7 @@ namespace StaxLang {
         private bool AreEqual(dynamic a, dynamic b) {
             if (IsNumber(a) && IsNumber(b)) return a == b;
             if (IsArray(a) && IsArray(b)) return Enumerable.SequenceEqual(a, b);
-            throw new Exception("Bad types for =");
+            else return false;
         }
 
         private static bool IsNumber(object b) => b is BigInteger;
