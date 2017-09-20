@@ -675,14 +675,38 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void CrossedSquareTest() {
+            https://codegolf.stackexchange.com/questions/91068/creating-a-crossed-square
             RunProgram("'*x*QxvXvR{'*x('*+s'*& xvi-'*&PFP", "7",
-                "*******",
+            "*******",
                 "**   **",
                 "* * * *",
                 "*  *  *",
                 "* * * *",
                 "**   **",
                 "*******");
+        }
+
+        [TestMethod]
+        public void NicomachussTest() {
+            https://codegolf.stackexchange.com/questions/143216/visualize-nicomachuss-theorem
+            string[] expected = {
+                @"+//XXX\\\\+++++",
+                @"/\\XXX\\\\+++++",
+                @"/\\XXX////+++++",
+                @"XXX+++////+++++",
+                @"XXX+++////+++++",
+                @"XXX+++////XXXXX",
+                @"\\////\\\\XXXXX",
+                @"\\////\\\\XXXXX",
+                @"\\////\\\\XXXXX",
+                @"\\////\\\\XXXXX",
+                @"+++++XXXXX+++++",
+                @"+++++XXXXX+++++",
+                @"+++++XXXXX+++++",
+                @"+++++XXXXX+++++",
+                @"+++++XXXXX+++++",
+            };
+            RunProgram(@"znR{X""X/""i@]*x""+\""i@]*+x*xx^*h)~{;i@]x*+m;]x*+FS", "5", expected);
         }
     }
 }

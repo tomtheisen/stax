@@ -57,7 +57,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void GreaterThan() => RunProgram("1 2>", "0");
         [TestMethod] public void NotTrue() => RunProgram("7!", "0");
         [TestMethod] public void NotFalse() => RunProgram("0!", "1");
-        [TestMethod] public void If() => RunProgram("\"not equal\" \"equal\" 1 2=?", "not equal");
+        [TestMethod] public void If() => RunProgram("\"not equal\"\"equal\" 1 2=?", "not equal");
 
         // String
         [TestMethod] public void Char() => RunProgram("'a", "a");
@@ -120,8 +120,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Digits() => RunProgram("Vd", "0123456789");
         [TestMethod] public void UpperWord() => RunProgram("VW", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void LowerWord() => RunProgram("Vw", "0123456789abcdefghijklmnopqrstuvwxyz");
-        [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r\n\v");
-        [TestMethod] public void Newline() => RunProgram("Vn 'x+", "\nx");
+        [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
+        [TestMethod] public void Newline() => RunProgram("Vn 'x+", Environment.NewLine + "x");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");

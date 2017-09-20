@@ -1051,6 +1051,7 @@ namespace StaxLang {
 
                 if (program[ip] == '"') {
                     ParseString(program, ref ip);
+                    --ip;
                     continue;
                 }
 
