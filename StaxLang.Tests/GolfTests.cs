@@ -69,7 +69,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void TriangleTest() {
             RunProgram("nR{'**mS", "4", "*", "**", "***", "****");
-            RunProgram("znF'*+Q", "4", "*", "**", "***", "****");
+            RunProgram("znf'*+Q", "4", "*", "**", "***", "****");
         }
 
         [TestMethod]
@@ -116,7 +116,7 @@ namespace StaxLang.Tests {
             RunProgram(@"#R{'\)x_v-H'/)+mSx^'X)PxRr{'/)x_v-H'\)+mS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#H^Xrr{d' x*i'\&_""/X""i_=@&TmS", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
             RunProgram(@"#{xH^' *i'\&iNv'/&c~TP}*'Xx^)P{,rTP}x*", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
-            RunProgram(@"#{xH^' *i'\&iNv'/&c~TP}*'Xx^)PxF,rTP", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
+            RunProgram(@"#{xH^' *i'\&iNv'/&c~TP}*'Xx^)Pxf,rTP", "2", @"\   /", @" \ /", @"  X", @" / \", @"/   \");
         }
 
         [TestMethod]
@@ -159,7 +159,7 @@ namespace StaxLang.Tests {
             RunProgram("':P\":-\"Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
             RunProgram("':Q'-+Q{')+Q}n*", "3", ":", ":-", ":-)", ":-))", ":-)))");
             RunProgram("{\":-\"')i*+i^(P}n^^*", "3", ":", ":-", ":-)", ":-))", ":-)))");
-            RunProgram("n2+F\":-\"')i*+i^(P", "3", ":", ":-", ":-)", ":-))", ":-)))");
+            RunProgram("n2+f\":-\"')i*+i^(P", "3", ":", ":-", ":-)", ":-))", ":-)))");
         }
 
         [TestMethod]
@@ -210,7 +210,7 @@ namespace StaxLang.Tests {
             RunProgram("1 0{c2D+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{cQ2D+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{QX+xs}n*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("01nFQX+xs", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("01nfQX+xs", "7", "1", "1", "2", "3", "5", "8", "13");
         }
 
         [TestMethod]
@@ -309,10 +309,10 @@ namespace StaxLang.Tests {
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
             RunProgram("1Dd#c^*hP}", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("1Dd#R|sP}", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("{#R|sP|Dvw", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("#,~R|sP}", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("{#R|sPc#w", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("1Dd#R|+P}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("{#R|+P|Dvw", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("#,~R|+P}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("{#R|+Pc#w", "1\n2\n3\n0", "1", "3", "6");
         }
 
         [TestMethod]
@@ -320,7 +320,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Rule+30
             RunProgram("\"  \"s+X{2%Hxi^@2%xi^^@2%++\" ## \"s@m", "##  #   #", "## #### ###");
             RunProgram("\"  \"+{c' s+}2*cLM{0s{2%+F\" ## \"s@m", "##  #   #", "## #### ###");
-            RunProgram("\"  \"+{c' s+}2*cLM{\" ## \"s{2%m|s@m", "##  #   #", "## #### ###");
+            RunProgram("\"  \"+{c' s+}2*cLM{\" ## \"s{2%m|+@m", "##  #   #", "## #### ###");
         }
 
         [TestMethod]
@@ -379,7 +379,7 @@ namespace StaxLang.Tests {
             RunProgram("' /E#~#{i2%{!cp' p};v*!P}*", "3 19", ThreeNineteenOutput);
             RunProgram("' /E#R{2%m' *s#{Q1001$|t}*d", "3 19", ThreeNineteenOutput);
             RunProgram("nnv~{i2%{!cp' p};*!P}*", "3 19", ThreeNineteenOutput);
-            RunProgram("nnv~Fi2%{!cp' p};*!P", "3 19", ThreeNineteenOutput);
+            RunProgram("nnv~fi2%{!cp' p};*!P", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
@@ -441,7 +441,7 @@ namespace StaxLang.Tests {
                 "3", "-2", 
                 "4", "2", 
                 "5", "3");
-            RunProgramSingleInputs("#^hxhFN",
+            RunProgramSingleInputs("#^hxhfN",
                 "0", "0",
                 "1", "1",
                 "2", "-1",
@@ -456,7 +456,7 @@ namespace StaxLang.Tests {
             RunProgramSingleInputs("1111n{c*4(#}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("'14*n{#c*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("1n{c*$4*4(#}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
-            RunProgramSingleInputs("1nFc*$4*4(#", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
+            RunProgramSingleInputs("1nfc*$4*4(#", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
         }
 
         [TestMethod]
@@ -522,7 +522,7 @@ namespace StaxLang.Tests {
             RunProgram("VA{Q2*U)26(}26*", "", expected);
             RunProgram("VA{Qch+U)}26*", "", expected);
             RunProgram("VA{Q|(}26*", "", expected);
-            RunProgram("VA26FQ|(", "", expected);
+            RunProgram("VA26fQ|(", "", expected);
         }
 
         [TestMethod]
@@ -634,7 +634,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SimplifyNotNegateTest() {
             https://codegolf.stackexchange.com/questions/142934/evaluate-an-expression-of-minus-and-tilde
-            RunProgramSingleInputs("%|e'-*'x+py{]'~=Ui^|**m|scU>'+*pP",
+            RunProgramSingleInputs("%|e'-*'x+py{]'~=Ui^|**m|+cU>'+*pP",
                 "x", "x+0",
                 "~x", "-x-1",
                 "-~x", "x+1",
@@ -667,7 +667,7 @@ namespace StaxLang.Tests {
                 "2", "5",
                 "3", "15",
                 "4", "17");
-            RunProgramSingleInputs("1nFcH|^",
+            RunProgramSingleInputs("1nfcH|^",
                 "0", "1",
                 "1", "3",
                 "2", "5",
@@ -709,7 +709,7 @@ namespace StaxLang.Tests {
                 @"+++++XXXXX+++++",
             };
             RunProgram(@"znR{X""X/""i@]*x""+\""i@]*+x*xx^*h)~{;i@]x*+m;]x*+FS", "5", expected);
-            RunProgram(@"znHR{hR|s_^hY""+X""""/\""ih2%?*{O_*ihR|sts(]y*+MFS", "5", expected);
+            RunProgram(@"znHR{hR|+_^hY""+X""""/\""ih2%?*{O_*ihR|+ts(]y*+MFS", "5", expected);
         }
 
         [TestMethod]
@@ -731,6 +731,23 @@ namespace StaxLang.Tests {
 
             RunProgramSingleInputs("cr=xH{hc|ew2|bcr=*", expected);
             RunProgramSingleInputs("cr=x2|/2|bcr=*",expected);
+        }
+
+        [TestMethod]
+        public void InsignificantArrayTest() {
+            https://codegolf.stackexchange.com/questions/143278/am-i-an-insignificant-array
+            RunProgramSingleInputs("nL2B{E-m2r-U-!",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]", "1",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]", "0");
+            RunProgramSingleInputs("nL2B{E-^3/f!",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]", "1",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]", "0");
+            RunProgramSingleInputs("e2B{E-^3/f!",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]", "1",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]", "0");
+            RunProgramSingleInputs("e|-{^3/f!",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]", "1",
+                "[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]", "0");
         }
     }
 }

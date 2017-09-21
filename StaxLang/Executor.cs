@@ -207,6 +207,9 @@ namespace StaxLang {
                     case 'd': // discard
                         Pop();
                         break;
+                    case 'e': // eval
+                        DoEval();
+                        break;
                     case 'D': // dig
                         {
                             int n = (int)Pop();
@@ -221,14 +224,14 @@ namespace StaxLang {
                         DoExplode();
                         break;
                     case 'f': // filter
-                        DoFilter();
-                        break;
-                    case 'F': // for loop
                         if (IsNumber(Peek())) {
                             BigInteger n = Pop();
                             for (Index = 0; Index < n; Index++) Run(program.Substring(ip));
                             return;
                         }
+                        DoFilter();
+                        break;
+                    case 'F': // for loop
                         DoFor();
                         break;
                     case 'h':
@@ -348,6 +351,12 @@ namespace StaxLang {
                             case '%': // div mod
                                 Run("ss1C1C%~/,");
                                 break;
+                            case '+': // sum
+                                Run("0s{+F");
+                                break;
+                            case '-': // deltas
+                                Run("2B{Es-m");
+                                break;
                             case '~': // bitwise not
                                 Push(~Pop());
                                 break;
@@ -415,9 +424,6 @@ namespace StaxLang {
                             case 'r': // regex replace
                                 DoReplace();
                                 break;
-                            case 's': // sum
-                                Run("0s{+F");
-                                break;
                             case 'x': // decrement X, push
                                 Push(--X);
                                 break;
@@ -431,6 +437,44 @@ namespace StaxLang {
                         }
                         break;
                     default: throw new Exception($"Unknown character '{program[ip-1]}'");
+                }
+            }
+        }
+
+        // not an eval of stax code, but a json-like data parse
+        private void DoEval() {
+            string arg = A2S(Pop());
+            var activeArrays = new Stack<List<object>>();
+
+            void NewValue(object val) {
+                if (activeArrays.Count > 0) {
+                    activeArrays.Peek().Add(val);
+                }
+                else {
+                    Push(val);
+                }
+            }
+
+            for (int i = 0; i < arg.Length; i++) {
+                switch (arg[i]) {
+                    case '[':
+                        activeArrays.Push(new List<object>());
+                        break;
+                    case ']':
+                        NewValue(activeArrays.Pop());
+                        break;
+                    case '"':
+                        int finishPos = arg.IndexOf('"', i+1);
+                        NewValue(S2A(arg.Substring(i + 1, finishPos - i - 1)));
+                        i = finishPos;
+                        break;
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
+                        int endPos;
+                        for (endPos = i; endPos < arg.Length && char.IsDigit(arg[endPos]); endPos++);
+                        NewValue(BigInteger.Parse(arg.Substring(i, endPos - i)));
+                        i = endPos - 1;
+                        break;
                 }
             }
         }
@@ -892,7 +936,12 @@ namespace StaxLang {
             var a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
-                Push(a / b);
+                if (a >= 0) {
+                    Push(a / b);
+                }
+                else {
+                    Push((a - b + 1) / b);
+                }
             }
             else if (IsArray(a) && IsNumber(b)) {
                 var result = new List<object>();
@@ -920,7 +969,9 @@ namespace StaxLang {
             var a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
-                Push(a % b);
+                BigInteger result = a % b;
+                if (result < 0) result += b;
+                Push(result);
             }
             else {
                 throw new Exception("Bad types for %");

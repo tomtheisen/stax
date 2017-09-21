@@ -109,9 +109,10 @@ namespace StaxLang.Tests {
         [TestMethod] public void Head() => RunProgram("5R h", "1");
         [TestMethod] public void Tail() => RunProgram("5R H", "5");
         [TestMethod] public void ShowArray() => RunProgram("'x]S", "x");
-        [TestMethod] public void Sum() => RunProgram("5R |s", "15");
+        [TestMethod] public void Sum() => RunProgram("5R |+", "15");
         [TestMethod] public void MinimumArray() => RunProgram("5R Oh", "1");
         [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");
+        [TestMethod] public void Delta() => RunProgram("1] 1]+ 3]+ 8]+ |- ',*", "0,2,5");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -131,10 +132,11 @@ namespace StaxLang.Tests {
         [TestMethod] public void TokenizeNumberInput() => RunProgram("nn+", "7", "3 4");
         [TestMethod] public void PeekPrint() => RunProgram("7qqQ", "777");
         [TestMethod] public void PrintNewline() => RunProgram("|P", "");
+        [TestMethod] public void Eval() => RunProgram("e|+", "6", "[1, 2, 3]");
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
-        [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3F1p", "111");
+        [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3f1p", "111");
         [TestMethod] public void While() => RunProgram("3{cp^c8=!w", "34567");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
