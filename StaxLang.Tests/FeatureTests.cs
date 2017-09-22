@@ -69,6 +69,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void RepeatString() => RunProgram("\"abc\"4*", "abcabcabcabc");
         [TestMethod] public void StringSubtraction() => RunProgram("\"hello world\" \"ol\" -", "he wrd");
         [TestMethod] public void StringJoin() => RunProgram("'a'b'c'd L '-*", "d-c-b-a");
+        [TestMethod] public void CharacterInterleave() => RunProgram("\"abcd\" '- |*", "a-b-c-d");
         [TestMethod] public void ToNumber() => RunProgram("4 \"3\"#+", "7");
         [TestMethod] public void Upper() => RunProgram("\"Hello\"^", "HELLO");
         [TestMethod] public void Lower() => RunProgram("\"Hello\"v", "hello");
@@ -90,6 +91,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Batch() => RunProgram("\"hello\" 3B ',*", "hel,ell,llo");
         [TestMethod] public void RotateRight() => RunProgram("\"asdf\" |)", "fasd");
         [TestMethod] public void RotateLeft() => RunProgram("\"asdf\" |(", "sdfa");
+        [TestMethod] public void RegexFind() => RunProgram("\"Hello. Good to see you.\" \"(.)\\1\" |f ', *", "ll,oo,ee");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -119,7 +121,11 @@ namespace StaxLang.Tests {
         [TestMethod] public void MinusUnit() => RunProgram("U", "-1");
         [TestMethod] public void UpperAlpha() => RunProgram("VA", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void LowerAlpha() => RunProgram("Va", "abcdefghijklmnopqrstuvwxyz");
+        [TestMethod] public void UpperConsonants() => RunProgram("VC", "BCDFGHJKLMNPQRSTVWXYZ");
+        [TestMethod] public void LowerConsonants() => RunProgram("Vc", "bcdfghjklmnpqrstvwxyz");
         [TestMethod] public void Digits() => RunProgram("Vd", "0123456789");
+        [TestMethod] public void UpperVowels() => RunProgram("VV", "AEIOU");
+        [TestMethod] public void LowerVowels() => RunProgram("Vv", "aeiou");
         [TestMethod] public void UpperWord() => RunProgram("VW", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void LowerWord() => RunProgram("Vw", "0123456789abcdefghijklmnopqrstuvwxyz");
         [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
@@ -146,6 +152,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IterationIndex() => RunProgram("'x]4* {p ':p ip ' p F", "x:0 x:1 x:2 x:3 ");
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
         [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}|r", "a1b2c3d");
+        [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");

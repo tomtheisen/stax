@@ -749,5 +749,20 @@ namespace StaxLang.Tests {
                 "[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]", "1",
                 "[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]", "0");
         }
+
+        [TestMethod]
+        public void CobolCommentStripTest() {
+            https://codegolf.stackexchange.com/questions/140292/uncomment-a-cobol-program
+
+            RunProgram("F6@4%C_7tP", 
+                "000000 blah blah\n" +
+                "000001* apples\n" +
+                "000002 oranges ?\n" +
+                "000003* yeah, oranges.\n" +
+                "000*04 love me some oranges\n",
+                "blah blah",
+                "oranges ?",
+                "love me some oranges");
+        }
     }
 }

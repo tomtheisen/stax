@@ -7,11 +7,10 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     /* To add:
-     *     exponent
+     *     reduce
      *     log
      *     invert
      *     arbitrary range
-     *     eval
      *     palindromize
      *     prefix / suffixes
      *     recursion (call into newline, conditional call into newline, conditional self-call)
@@ -26,7 +25,11 @@ namespace StaxLang {
         private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
             ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
+            ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
+            ['c'] = S2A("bcdfghjklmnpqrstvwxyz"),
             ['d'] = S2A("0123456789"),
+            ['V'] = S2A("AEIOU"),
+            ['v'] = S2A("aeiou"),
             ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
             ['s'] = S2A(" \t\r\n\v"),
@@ -204,11 +207,11 @@ namespace StaxLang {
                     case 'c': // copy
                         Push(Peek());
                         break;
+                    case 'C':
+                        if (IsTruthy(Pop())) return;
+                        break;
                     case 'd': // discard
                         Pop();
-                        break;
-                    case 'e': // eval
-                        DoEval();
                         break;
                     case 'D': // dig
                         {
@@ -219,6 +222,9 @@ namespace StaxLang {
                             while (temp.Any()) Push(temp.Pop());
                             Push(target);
                         }
+                        break;
+                    case 'e': // eval
+                        DoEval();
                         break;
                     case 'E': // explode (de-listify)
                         DoExplode();
@@ -369,9 +375,15 @@ namespace StaxLang {
                             case '^': // bitwise xor
                                 Push(Pop() ^ Pop());
                                 break;
-                            case '*': // exponent
-                                Run("s");
-                                Push(BigInteger.Pow(Pop(), (int)Pop()));
+                            case '*': 
+                                if (IsNumber(Peek())) { // exponent
+                                    Run("s"); 
+                                    Push(BigInteger.Pow(Pop(), (int)Pop()));
+                                }
+                                else if (IsArray(Peek())) { // char interleave
+                                    Run("s1/s*");
+                                }
+                                else throw new Exception("Bad types for |*");
                                 break;
                             case '/': // repeated divide
                                 Run("ss~;*{;/c;%!w,d");
@@ -401,7 +413,8 @@ namespace StaxLang {
                                 Push(Pop() % 2 ^ 1);
                                 break;
                             case 'f': // prime factorize
-                                Push(PrimeFactors(Pop()));
+                                if(IsNumber(Peek())) Push(PrimeFactors(Pop()));
+                                else if(IsArray(Peek())) DoRegexFind();
                                 break;
                             case 'g': // gcd
                                 DoGCD();
@@ -490,37 +503,48 @@ namespace StaxLang {
             Push(SideStack.Pop());
         }
 
+        private void DoRegexFind() {
+            var search = Pop();
+            var text = Pop();
+
+            if (!IsArray(text) || !IsArray(search)) throw new Exception("Bad types for find");
+            string ts = A2S(text), ss = A2S(search);
+
+            var result = new List<object>();
+            foreach (Match m in Regex.Matches(ts, ss)) result.Add(S2A(m.Value));
+            Push(result);
+        }
+
         private void DoReplace() {
             var replace = Pop();
             var search = Pop();
             var text = Pop();
 
-            if (IsArray(text) && IsArray(search)) {
-                string ts = A2S(text), ss = A2S(search);
-                if (IsArray(replace)) {
-                    Push(S2A(Regex.Replace(ts, ss, A2S(replace))));
-                    return;
+            if (!IsArray(text) || !IsArray(search)) throw new Exception("Bad types for replace");
+            string ts = A2S(text), ss = A2S(search);
+
+            if (IsArray(replace)) {
+                Push(S2A(Regex.Replace(ts, ss, A2S(replace))));
+                return;
+            }
+            else if (IsBlock(replace)) {
+                var initial = (_, Index);
+                string result = "";
+                var matches = Regex.Matches(ts, ss);
+                int consumed = 0;
+                Index = 0;
+                foreach (Match match in matches) {
+                    result += ts.Substring(consumed, match.Index - consumed);
+                    Push(_ = S2A(match.Value));
+                    Run(replace.Program);
+                    Index++;
+                    result += A2S(Pop());
+                    consumed = match.Index + match.Length;
                 }
-                else if (IsBlock(replace)) {
-                    var initial = _;
-                    string result = "";
-                    var matches = Regex.Matches(ts, ss);
-                    int consumed = 0;
-                    foreach (Match match in matches) {
-                        result += ts.Substring(consumed, match.Index - consumed);
-                        Push(_ = S2A(match.Value));
-                        Run(replace.Program);
-                        result += A2S(Pop());
-                        consumed = match.Index + match.Length;
-                    }
-                    result += ts.Substring(consumed);
-                    Push(S2A(result));
-                    _ = initial;
-                    return;
-                }
-                else {
-                    throw new Exception("Bad types for replace");
-                }
+                result += ts.Substring(consumed);
+                Push(S2A(result));
+                (_, Index) = initial;
+                return;
             }
             else {
                 throw new Exception("Bad types for replace");
