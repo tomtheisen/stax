@@ -52,6 +52,7 @@ namespace StaxLang {
 
         public void Run(string program, string[] input) {
             Z = S2A("");
+            _ = S2A(string.Join("\n", input));
 
             if (input.Length > 0) {
                 Y = S2A(input[0]);
@@ -381,9 +382,6 @@ namespace StaxLang {
                                 if (IsNumber(Peek())) { // exponent
                                     Run("s"); 
                                     Push(BigInteger.Pow(Pop(), (int)Pop()));
-                                }
-                                else if (IsArray(Peek())) { // char interleave
-                                    Run("s1/s*");
                                 }
                                 else throw new Exception("Bad types for |*");
                                 break;
@@ -884,6 +882,8 @@ namespace StaxLang {
         private void DoTranspose() {
             var list = Pop();
             var result = new List<object>();
+
+            if (list.Count > 0 && !IsArray(list[0])) list = new List<object> { list };
 
             int? count = null;
             foreach (var series in list) count = Math.Min(count ?? int.MaxValue, series.Count);

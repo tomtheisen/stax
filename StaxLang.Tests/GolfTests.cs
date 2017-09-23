@@ -768,7 +768,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void ReverseTheConsonantsTest() {
             https://codegolf.stackexchange.com/questions/83171/reverse-the-consonants
-            RunProgram("Vc'y-'||*Z{yz|fri@}R", "reverse the consonants", "setenne sne cohtosarvr");
+            RunProgram("Vc'y-M'|*Z{yz|fri@}R", "reverse the consonants", "setenne sne cohtosarvr");
         }
 
         [TestMethod]
