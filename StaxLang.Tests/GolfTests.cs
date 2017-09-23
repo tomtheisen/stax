@@ -363,7 +363,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}|r", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
 
         [TestMethod]
@@ -763,6 +763,20 @@ namespace StaxLang.Tests {
                 "blah blah",
                 "oranges ?",
                 "love me some oranges");
+        }
+
+        [TestMethod]
+        public void ReverseTheConsonantsTest() {
+            https://codegolf.stackexchange.com/questions/83171/reverse-the-consonants
+            RunProgram("Vc'y-'||*Z{yz|fri@}R", "reverse the consonants", "setenne sne cohtosarvr");
+        }
+
+        [TestMethod]
+        public void ReverseStringMaintainCapsTest() {
+            https://codegolf.stackexchange.com/questions/84606/reverse-a-string-while-maintaining-the-capitalization-in-the-same-places
+            RunProgramSingleInputs("vr{_]^VAyi@I^?m",
+                "Hello, Midnightas", "SathginDim ,olleh",
+                ".Q", "q.");
         }
     }
 }

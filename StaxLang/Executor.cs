@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 namespace StaxLang {
     /* To add:
      *     reduce
+     *     zip map
      *     log
      *     invert
      *     arbitrary range
@@ -296,7 +297,8 @@ namespace StaxLang {
                         else throw new Exception("Bad type for r");
                         break;
                     case 'R': // 1 range
-                        Push(Enumerable.Range(1, (int)Pop()).Select(i => new BigInteger(i)).Cast<object>().ToList());
+                        if (IsNumber(Peek())) Push(Enumerable.Range(1, (int)Pop()).Select(i => new BigInteger(i)).Cast<object>().ToList());
+                        else DoRegexReplace(); // regex replace
                         break;
                     case 's': // swap
                         {
@@ -422,6 +424,9 @@ namespace StaxLang {
                             case 'l': // lcm
                                 Run("c2D|g~*,/");
                                 break;
+                            case 'J': // join with newlines
+                                Run("Vn*");
+                                break;
                             case 'm': // min
                                 Push(BigInteger.Min(Pop(), Pop()));
                                 break;
@@ -434,8 +439,8 @@ namespace StaxLang {
                             case 'P': // print blank newline
                                 Print("");
                                 break;
-                            case 'r': // regex replace
-                                DoReplace();
+                            case 's': // regex split
+                                DoRegexSplit();
                                 break;
                             case 'x': // decrement X, push
                                 Push(--X);
@@ -515,7 +520,17 @@ namespace StaxLang {
             Push(result);
         }
 
-        private void DoReplace() {
+        private void DoRegexSplit() {
+            var search = Pop();
+            var text = Pop();
+
+            if (!IsArray(text) || !IsArray(search)) throw new Exception("Bad types for replace");
+            string ts = A2S(text), ss = A2S(search);
+
+            Push(Regex.Split(ts, ss, RegexOptions.ECMAScript).Select(S2A).Cast<object>().ToList());
+        }
+
+        private void DoRegexReplace() {
             var replace = Pop();
             var search = Pop();
             var text = Pop();

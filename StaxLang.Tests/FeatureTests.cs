@@ -86,12 +86,13 @@ namespace StaxLang.Tests {
         [TestMethod] public void TrimLeftBy() => RunProgram("\"hello world\" 2 t", "llo world");
         [TestMethod] public void TrimRightBy() => RunProgram("\"hello world\" 2 T", "hello wor");
         [TestMethod] public void Unique() => RunProgram("\"Hello World\" u", "Helo Wrd");
-        [TestMethod] public void RegexReplace() => RunProgram("\"axbxxcxxxd\" \"x+\" 'z |r", "azbzczd");
+        [TestMethod] public void RegexReplace() => RunProgram("\"axbxxcxxxd\" \"x+\" 'z R", "azbzczd");
         [TestMethod] public void Translate() => RunProgram("\"Hello World\" \"e3o0\" |t", "H3ll0 W0rld");
         [TestMethod] public void Batch() => RunProgram("\"hello\" 3B ',*", "hel,ell,llo");
         [TestMethod] public void RotateRight() => RunProgram("\"asdf\" |)", "fasd");
         [TestMethod] public void RotateLeft() => RunProgram("\"asdf\" |(", "sdfa");
-        [TestMethod] public void RegexFind() => RunProgram("\"Hello. Good to see you.\" \"(.)\\1\" |f ', *", "ll,oo,ee");
+        [TestMethod] public void RegexFind() => RunProgram("\"Hello. Good to see you.\" \"o+\" |f ', *", "o,oo,o,o");
+        [TestMethod] public void RegexSplit() => RunProgram("\"Hello. Good to see you.\" \"o+\" |s ', *", "Hell,. G,d t, see y,u.");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -115,6 +116,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void MinimumArray() => RunProgram("5R Oh", "1");
         [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");
         [TestMethod] public void Delta() => RunProgram("1] 1]+ 3]+ 8]+ |- ',*", "0,2,5");
+        [TestMethod] public void JoinWithNewlines() => RunProgram("\"abcd\" 2/ |J r", "dc\r\nba");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -151,7 +153,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");
         [TestMethod] public void IterationIndex() => RunProgram("'x]4* {p ':p ip ' p F", "x:0 x:1 x:2 x:3 ");
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
-        [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}|r", "a1b2c3d");
+        [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}R", "a1b2c3d");
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
 
         // Stack operations
