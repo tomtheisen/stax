@@ -260,6 +260,9 @@ namespace StaxLang {
                     case 'I': // get index
                         DoGetIndex();
                         break;
+                    case 'l': // listify-n
+                        DoListifyN();
+                        break;
                     case 'L': // listify stack
                         var newList = new List<object>();
                         while (TotalSize > 0) newList.Add(Pop());
@@ -465,6 +468,19 @@ namespace StaxLang {
                         break;
                     default: throw new Exception($"Unknown character '{program[ip-1]}'");
                 }
+            }
+        }
+
+        private void DoListifyN() {
+            var n = Pop();
+
+            if (IsNumber(n)) {
+                var result = new List<object>();
+                for (int i = 0; i < n; i++) result.Insert(0, Pop());
+                Push(result);
+            }
+            else {
+                throw new Exception("bad type for listify n");
             }
         }
 

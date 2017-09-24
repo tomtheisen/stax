@@ -164,6 +164,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
         [TestMethod] public void Dig() => RunProgram("'a'b'c'd 2D", "b");
         [TestMethod] public void ListifyStack() => RunProgram("1 2 3 4 5 L ',*", "5,4,3,2,1");
+        [TestMethod] public void ListifyN() => RunProgram("1 2 3 4 5 3l ',*", "3,4,5");
         [TestMethod] public void SideStack() => RunProgram("1 2 3 4 ~~p;p,ppp", "23314");
         [TestMethod] public void Discard() => RunProgram("11 22 33 d", "22");
         [TestMethod] public void Swap() => RunProgram("1 2 s pp", "12");
