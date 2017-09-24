@@ -42,6 +42,9 @@ namespace StaxLang.Tests {
         public void SquaresTest() {
             RunProgram("5R{c*mS", "", "1", "4", "9", "16", "25");
             RunProgram("5R{c*PF", "", "1", "4", "9", "16", "25");
+            RunProgram("5fi^c*P", "", "1", "4", "9", "16", "25");
+            RunProgram("5{c*mS", "", "1", "4", "9", "16", "25");
+            RunProgram("5{c*PF", "", "1", "4", "9", "16", "25");
         }
 
         [TestMethod]
@@ -380,6 +383,7 @@ namespace StaxLang.Tests {
             RunProgram("' /E#R{2%m' *s#{Q1001$|t}*d", "3 19", ThreeNineteenOutput);
             RunProgram("nnv~{i2%{!cp' p};*!P}*", "3 19", ThreeNineteenOutput);
             RunProgram("nnv~fi2%{!cp' p};*!P", "3 19", ThreeNineteenOutput);
+            RunProgram("nnv~fi|e{q!' p};*P", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
@@ -429,6 +433,7 @@ namespace StaxLang.Tests {
             RunProgram("9R8Rr+{9s-' *_R_vRr+$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *_|A9/c*$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *'1_*#c*$+PF", "", expected);
+            RunProgram("9R|p{R$9)|pTPF", "", expected);
         }
 
         [TestMethod]
@@ -569,7 +574,7 @@ namespace StaxLang.Tests {
         public void AlphabetsTriangleTest() {
             https://codegolf.stackexchange.com/questions/87496/alphabet-triangle?noredirect=1&lq=1
             string[] expected = {
-            "A",
+                "A",
                 "ABA",
                 "ABCBA",
                 "ABCDCBA",
@@ -623,6 +628,8 @@ namespace StaxLang.Tests {
             };
 
             RunProgram("VA{VAi^(crU)+mcrU)+S", "", expected);
+            RunProgram("VA{VAi^(cr1t+mcr1t+S", "", expected);
+            RunProgram("VA|[{|pm|pS", "", expected);
         }
 
         [TestMethod]
@@ -679,7 +686,16 @@ namespace StaxLang.Tests {
         public void CrossedSquareTest() {
             https://codegolf.stackexchange.com/questions/91068/creating-a-crossed-square
             RunProgram("'*x*QxvXvR{'*x('*+s'*& xvi-'*&PFP", "7",
-            "*******",
+                "*******",
+                "**   **",
+                "* * * *",
+                "*  *  *",
+                "* * * *",
+                "**   **",
+                "*******");
+
+            RunProgram("'*Zx*]xh{z)xh(zs+|pm+|pS", "7",
+                "*******",
                 "**   **",
                 "* * * *",
                 "*  *  *",

@@ -93,6 +93,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void RotateLeft() => RunProgram("\"asdf\" |(", "sdfa");
         [TestMethod] public void RegexFind() => RunProgram("\"Hello. Good to see you.\" \"o+\" |f ', *", "o,oo,o,o");
         [TestMethod] public void RegexSplit() => RunProgram("\"Hello. Good to see you.\" \"o+\" |s ', *", "Hell,. G,d t, see y,u.");
+        [TestMethod] public void Prefixes() => RunProgram("\"abc\" |[ ',*", "a,ab,abc");
+        [TestMethod] public void Suffixes() => RunProgram("\"abc\" |] ',*", "abc,bc,c");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -117,6 +119,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");
         [TestMethod] public void Delta() => RunProgram("1] 1]+ 3]+ 8]+ |- ',*", "0,2,5");
         [TestMethod] public void JoinWithNewlines() => RunProgram("\"abcd\" 2/ |J r", "dc\r\nba");
+        [TestMethod] public void Palindromize() => RunProgram("\"abcb\" |p", "abcbcba");
+        [TestMethod] public void ZipRep() => RunProgram("\"abcde\" \"xy\" \\ ',*", "ax,by,cx,dy,ex");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");

@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 namespace StaxLang {
     /* To add:
      *     reduce
-     *     zip map
+     *     zip-short
+     *     zip-rep
      *     log
      *     invert
      *     arbitrary range
@@ -153,6 +154,9 @@ namespace StaxLang {
                         break;
                     case '/':
                         DoSlash();
+                        break;
+                    case '\\':
+                        DoZipRepeat();
                         break;
                     case '%':
                         DoPercent();
@@ -394,6 +398,12 @@ namespace StaxLang {
                             case '(': // rotate left
                                 Run("cU)sh+");
                                 break;
+                            case '[': // prefixes
+                                Run("~;%R{;s(m,d");
+                                break;
+                            case ']': // suffixes
+                                Run("~;%R{;s)mr,d");
+                                break;
                             case 'a': // absolute value
                                 Push(BigInteger.Abs(Pop()));
                                 break;
@@ -431,8 +441,9 @@ namespace StaxLang {
                             case 'M': // max
                                 Push(BigInteger.Max(Pop(), Pop()));
                                 break;
-                            case 'p': // is prime
-                                Run("|f%1=");
+                            case 'p': 
+                                if (IsNumber(Peek())) Run("|f%1="); // is prime
+                                else if (IsArray(Peek())) Run("cr1t+"); // palindromize
                                 break;
                             case 'P': // print blank newline
                                 Print("");
@@ -455,6 +466,21 @@ namespace StaxLang {
                     default: throw new Exception($"Unknown character '{program[ip-1]}'");
                 }
             }
+        }
+
+        private void DoZipRepeat() {
+            var b = Pop();
+            var a = Pop();
+
+            if (!IsArray(a)) a = new List<object> { a };
+            if (!IsArray(b)) b = new List<object> { b };
+
+            var result = new List<object>();
+            int size = Math.Max(a.Count, b.Count);
+            for (int i = 0; i < size; i++) {
+                result.Add(new List<object> { a[i%a.Count], b[i%b.Count] });
+            }
+            Push(result);
         }
 
         // not an eval of stax code, but a json-like data parse
@@ -842,6 +868,8 @@ namespace StaxLang {
             var b = Pop();
             var a = Pop();
 
+            if (IsBlock(b) && IsNumber(a)) a = Enumerable.Range(1, (int)a).Select(n => new BigInteger(n)).Cast<object>().ToList();
+
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);
                 Index = 0;
@@ -863,6 +891,8 @@ namespace StaxLang {
         private void DoFor() {
             var b = Pop();
             var a = Pop();
+
+            if (IsBlock(b) && IsNumber(a)) a = Enumerable.Range(1, (int)a).Select(n => new BigInteger(n)).Cast<object>().ToList();
 
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);
@@ -902,6 +932,7 @@ namespace StaxLang {
             var a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
+            if (IsBlock(b) && IsNumber(a)) a = Enumerable.Range(1, (int)a).Select(n => new BigInteger(n)).Cast<object>().ToList();
 
             if (IsArray(a) && IsBlock(b)) {
                 var initial = (_, Index);

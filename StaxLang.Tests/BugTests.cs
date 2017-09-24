@@ -14,5 +14,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void NegativeDivision() => RunProgram("U2/", "-1");
         [TestMethod] public void NegativeMod() => RunProgram("U2%", "1");
         [TestMethod] public void RegexReplaceIndex() => RunProgram("'x'x+ 'x {i$} R", "01");
+        [TestMethod] public void EmptyTranspose() => RunProgram("1p zMp", "1");
     }
 }
