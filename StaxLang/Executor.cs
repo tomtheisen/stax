@@ -723,14 +723,14 @@ namespace StaxLang {
             var b = Pop();
             var a = Pop();
 
-            Push(a < b ? BigInteger.One : BigInteger.Zero);
+            Push(Comparer.Instance.Compare(a, b) < 0 ? BigInteger.One : BigInteger.Zero);
         }
 
         private void DoGreaterThan() {
             var b = Pop();
             var a = Pop();
 
-            Push(a > b ? BigInteger.One : BigInteger.Zero);
+            Push(Comparer.Instance.Compare(a, b) > 0 ? BigInteger.One : BigInteger.Zero);
         }
 
         private void DoOrder() {
