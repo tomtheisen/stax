@@ -521,7 +521,7 @@ namespace StaxLang {
                                 Push(++X);
                                 break;
                             case 'z': // zero-fill
-                                Run("ss~; '0* s+ ,)");
+                                Run("ss ~; '0* s 2l$ ,)");
                                 break;
                             default: throw new Exception($"Unknown extended character '{program[ip-1]}'");
                         }
