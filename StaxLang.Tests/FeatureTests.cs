@@ -121,6 +121,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void JoinWithNewlines() => RunProgram("\"abcd\" 2/ |J r", "dc\r\nba");
         [TestMethod] public void Palindromize() => RunProgram("\"abcb\" |p", "abcbcba");
         [TestMethod] public void ZipRep() => RunProgram("\"abcde\" \"xy\" \\ ',*", "ax,by,cx,dy,ex");
+        [TestMethod] public void Union() => RunProgram("1]2]+2]+3]+3]+  3r |& ',*", "1,2,2");
+        [TestMethod] public void SymmetricDiff() => RunProgram("1]2]+2]+3]+3]+  3r |^ ',*", "3,3,0");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -148,7 +150,7 @@ namespace StaxLang.Tests {
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
-        [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3f1p", "111");
+        [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3F1p", "111");
         [TestMethod] public void While() => RunProgram("3{cp^c8=!w", "34567");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
