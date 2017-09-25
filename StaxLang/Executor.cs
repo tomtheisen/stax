@@ -9,12 +9,9 @@ namespace StaxLang {
     /* To add:
      *     reduce
      *     zip-short
-     *     zip-rep
      *     log
+     *     trig
      *     invert
-     *     arbitrary range
-     *     palindromize
-     *     prefix / suffixes
      *     recursion (call into newline, conditional call into newline, conditional self-call)
      *     gunzip base 85
      *     slice / slice assignment
@@ -79,19 +76,19 @@ namespace StaxLang {
 
         private int TotalSize => MainStack.Count + SideStack.Count;
 
-        private void Run(string program) {
+        private int Run(string program) {
             int ip = 0;
 
             if (program.Length > 0) switch (program[0]) {
                 case 'm': // line-map
                     Run("L{" + program.Substring(1) + "PF");
-                    return;
+                    return 0;
                 case 'f': // line-filter
                     Run("L{d{}{_P}_" + program.Substring(1) + "?F");
-                    return;
+                    return 0;
                 case 'F': // line-for
                     Run("L{" + program.Substring(1) + "F");
-                    return;
+                    return 0;
             }
 
             while (ip < program.Length) {
@@ -215,7 +212,7 @@ namespace StaxLang {
                         Push(Peek());
                         break;
                     case 'C':
-                        if (IsTruthy(Pop())) return;
+                        if (IsTruthy(Pop())) return 1;
                         break;
                     case 'd': // discard
                         Pop();
@@ -243,7 +240,7 @@ namespace StaxLang {
                                 _ = Index + 1;
                                 Run(program.Substring(ip));
                             }
-                            return;
+                            return 0;
                         }
                         DoFilter(); // filter
                         break;
@@ -254,7 +251,7 @@ namespace StaxLang {
                                 Push(_ = Index + 1);
                                 Run(program.Substring(ip));
                             }
-                            return;
+                            return 0;
                         } else if (IsArray(Peek())) {
                             Index = 0;
                             foreach (var e in Pop()) {
@@ -262,7 +259,7 @@ namespace StaxLang {
                                 Run(program.Substring(ip));
                                 Index++;
                             }
-                            return;
+                            return 0;
                         }
                         DoFor();
                         break;
@@ -301,7 +298,7 @@ namespace StaxLang {
                                 Push(_ = Index + 1);
                                 Run(program.Substring(ip) + "P");
                             }
-                            return;
+                            return 0;
                         } else if (IsArray(Peek())) {
                             Index = 0;
                             foreach (var e in Pop()) {
@@ -309,7 +306,7 @@ namespace StaxLang {
                                 Run(program.Substring(ip) + "P");
                                 Index++;
                             }
-                            return;
+                            return 0;
                         }
                         DoMap();
                         break;
@@ -380,8 +377,11 @@ namespace StaxLang {
                     case 'V': // constant value
                         Push(Constants[program[ip++]]);
                         break;
-                    case 'w': // while
+                    case 'w': // do-while
                         DoWhile();
+                        break;
+                    case 'W':
+                        DoPreCheckWhile();
                         break;
                     case '_':
                         Push(_);
@@ -460,6 +460,9 @@ namespace StaxLang {
                             case 'b': // base convert
                                 DoBaseConvert();
                                 break;
+                            case 'B': // binary convert
+                                Run("2|b");
+                                break;
                             case 'd': // depth of stack
                                 Push(new BigInteger(MainStack.Count));
                                 break;
@@ -475,6 +478,9 @@ namespace StaxLang {
                                 break;
                             case 'g': // gcd
                                 DoGCD();
+                                break;
+                            case 'H': // hex convert
+                                Run("16|b");
                                 break;
                             case 'l': // lcm
                                 if (IsArray(Peek())) Run("1s{|lF");
@@ -504,14 +510,17 @@ namespace StaxLang {
                             case 's': // regex split
                                 DoRegexSplit();
                                 break;
+                            case 't': // translate
+                                DoTranslate();
+                                break;
                             case 'x': // decrement X, push
                                 Push(--X);
                                 break;
                             case 'X': // increment X, push
                                 Push(++X);
                                 break;
-                            case 't': // translate
-                                DoTranslate();
+                            case 'z': // zero-fill
+                                Run("ss~; '0* s+ ,)");
                                 break;
                             default: throw new Exception($"Unknown extended character '{program[ip-1]}'");
                         }
@@ -519,6 +528,8 @@ namespace StaxLang {
                     default: throw new Exception($"Unknown character '{program[ip-1]}'");
                 }
             }
+
+            return 0;
         }
 
         private void DoListifyN() {
@@ -903,9 +914,16 @@ namespace StaxLang {
             }
         }
 
+        private void DoPreCheckWhile() {
+            Block block = Pop();
+            int exitCode;
+            do exitCode = Run(block.Program); while (exitCode == 0);
+        }
+
         private void DoWhile() {
             Block block = Pop();
-            do Run(block.Program); while (IsTruthy(Pop()));
+            int exitCode;
+            do exitCode = Run(block.Program); while (exitCode == 0 && IsTruthy(Pop()));
         }
 
         private void DoIf() {
@@ -1245,7 +1263,7 @@ namespace StaxLang {
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
                 // shortcut block terminators
-                if ("wmfFO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
+                if ("wWmfFO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
             } while (++ip < program.Length);
             return new Block(program.Substring(start));
         }

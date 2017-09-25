@@ -33,6 +33,10 @@ namespace StaxLang.Tests {
         [TestMethod] public void PowerOfTen() => RunProgram("3 |A", "1000");
         [TestMethod] public void BaseConvert() => RunProgram("255 16 |b", "ff");
         [TestMethod] public void BaseUnconvert() => RunProgram("\"ff\" 16 |b", "255");
+        [TestMethod] public void BinaryConvert() => RunProgram("5 |B", "101");
+        [TestMethod] public void BinaryUnConvert() => RunProgram("\"101\" |B", "5");
+        [TestMethod] public void HexConvert() => RunProgram("255 |H", "ff");
+        [TestMethod] public void HexUnconvert() => RunProgram("\"ff\" |H", "255");
         [TestMethod] public void PrimeFactorize() => RunProgram("12 |f ',*", "2,2,3");
         [TestMethod] public void GCD() => RunProgram("12 18 |g", "6");
         [TestMethod] public void LCM() => RunProgram("12 18 |l", "36");
@@ -95,6 +99,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void RegexSplit() => RunProgram("\"Hello. Good to see you.\" \"o+\" |s ', *", "Hell,. G,d t, see y,u.");
         [TestMethod] public void Prefixes() => RunProgram("\"abc\" |[ ',*", "a,ab,abc");
         [TestMethod] public void Suffixes() => RunProgram("\"abc\" |] ',*", "abc,bc,c");
+        [TestMethod] public void ZeroFill() => RunProgram("\"abc\" 5 |z", "00abc");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -151,7 +156,8 @@ namespace StaxLang.Tests {
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
         [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3F1p", "111");
-        [TestMethod] public void While() => RunProgram("3{cp^c8=!w", "34567");
+        [TestMethod] public void DoWhile() => RunProgram("3{q^c8-w", "34567");
+        [TestMethod] public void While() => RunProgram("3{q^c8=C'-pW", "3-4-5-6-7");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");

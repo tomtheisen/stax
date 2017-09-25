@@ -816,5 +816,28 @@ namespace StaxLang.Tests {
 
             RunProgram("1YZ20mx_*yzNZ*-Xy_*Y|g~x;/p'/py,/", "", expected);
         }
+
+        [TestMethod]
+        public void AsciiStarsTest() {
+            http://golf.shinh.org/p.rb?ASCII+Stars
+            string[] expected = {
+                "  *",
+                " ***",
+                "*****",
+                " ***",
+                "  *",
+            };
+
+            RunProgram("n{'**x)|pTm|pS", "3", expected);
+        }
+
+        [TestMethod]
+        public void BinaryMultiplicationTest() {
+            http://golf.shinh.org/p.rb?Binary+Multiplication
+            RunProgramSingleInputs("',/{|BmE*|B8|z",
+                "00000011,00000011", "00001001",
+                "00101001,00000110", "11110110",
+                "00001111,00001011", "10100101");
+        }
     }
 }
