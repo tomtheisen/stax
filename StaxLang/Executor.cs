@@ -12,10 +12,14 @@ namespace StaxLang {
      *     log
      *     trig
      *     invert
+     *     rational
+     *     floats
      *     recursion (call into newline, conditional call into newline, conditional self-call)
-     *     gunzip base 85
+     *     gunzip base 85 / predictive english compression
      *     slice / slice assignment
      *     coalesce-esque (js ||)
+     *     fancy stack ops
+     *     string interpolate
      *     
      */
 
@@ -39,12 +43,12 @@ namespace StaxLang {
 
         private BigInteger Index = BigInteger.Zero; // loop iteration
         private dynamic X = BigInteger.Zero; // register - default to numeric value of first input
-        private dynamic Y = BigInteger.Zero; // register - default to first input
-        private dynamic Z = S2A(""); // register - default to empty string
-        private dynamic _ = BigInteger.Zero; // implicit iterator
+        private dynamic Y = S2A(""); // register - default to first input
+        private dynamic Z; // register - default to empty string
+        private dynamic _; // implicit iterator
 
         private Stack<dynamic> MainStack;
-        private Stack<dynamic> SideStack;
+        private Stack<dynamic> InputStack;
 
         public Executor(TextWriter output = null) {
             Output = output ?? Console.Out;
@@ -60,7 +64,7 @@ namespace StaxLang {
             }
 
             MainStack = new Stack<dynamic>();
-            SideStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+            InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
             try {
                 Run(program);
             }
@@ -69,13 +73,13 @@ namespace StaxLang {
             if (!OutputWritten) Print(Pop());
         }
 
-        private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : SideStack.Pop();
+        private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : InputStack.Pop();
 
-        private dynamic Peek() => MainStack.Any() ? MainStack.Peek() : SideStack.Peek();
+        private dynamic Peek() => MainStack.Any() ? MainStack.Peek() : InputStack.Peek();
 
         private void Push(dynamic arg) => MainStack.Push(arg);
 
-        private int TotalSize => MainStack.Count + SideStack.Count;
+        private int TotalSize => MainStack.Count + InputStack.Count;
 
         private int Run(string program) {
             int ip = 0;
@@ -116,14 +120,18 @@ namespace StaxLang {
                     case '\n':
                     case '\r':
                         break;
+                    case '\t': // line comment
+                        ip = program.IndexOf('\n', ip);
+                        if (ip == -1) return 0;
+                        break;
                     case ';': // peek from side stack
-                        Push(SideStack.Peek());
+                        Push(InputStack.Peek());
                         break;
                     case ',': // pop from side stack
-                        Push(SideStack.Pop());
+                        Push(InputStack.Pop());
                         break;
                     case '~': // push to side stack
-                        SideStack.Push(Pop());
+                        InputStack.Push(Pop());
                         break;
                     case '"': // "literal"
                         --ip;
@@ -468,7 +476,7 @@ namespace StaxLang {
                                 Push(new BigInteger(MainStack.Count));
                                 break;
                             case 'D': // depth of side stack
-                                Push(new BigInteger(SideStack.Count));
+                                Push(new BigInteger(InputStack.Count));
                                 break;
                             case 'e': // is even
                                 Push(Pop() % 2 ^ 1);
@@ -600,14 +608,14 @@ namespace StaxLang {
         }
 
         private void DoGetNumber() {
-            while(IsArray(SideStack.Peek())) {
-                var matches = Regex.Matches((string)A2S(SideStack.Pop()), @"-?\d+");
+            while(IsArray(InputStack.Peek())) {
+                var matches = Regex.Matches((string)A2S(InputStack.Pop()), @"-?\d+");
                 for (int i = matches.Count - 1; i >= 0; i--) {
-                    SideStack.Push(BigInteger.Parse(matches[i].Value));
+                    InputStack.Push(BigInteger.Parse(matches[i].Value));
                 }
             }
 
-            Push(SideStack.Pop());
+            Push(InputStack.Pop());
         }
 
         private void DoRegexFind() {
