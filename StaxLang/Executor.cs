@@ -16,6 +16,7 @@ namespace StaxLang {
      *     gunzip base 85
      *     slice / slice assignment
      *     coalesce-esque (js ||)
+     *     find-index-all by value/block
      *     
      */
 
