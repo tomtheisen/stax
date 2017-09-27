@@ -193,9 +193,8 @@ namespace StaxLang.Tests {
             RunProgram("s#Xd{VdVa+YsI^x%ys@]pF|P", "5f69\n16", "607a");
             RunProgram("s#Xd{]x|b^x%x|bpF|P", "5f69\n16", "607a");
             RunProgram("s#Xd{]x|b^x|b1)pF|P", "5f69\n16", "607a");
-            RunProgram("d#Ar$Va+(~y{;I^;@m", "5f69\n16", "607a");
             RunProgram("d#Vw({]2*m$U)'0+ys|t", "5f69\n16", "607a");
-            RunProgram("d#Vw(~y{;I^;@m", "5f69\n16", "607a");
+            RunProgram("d#Vw(~y{;I^;s@m", "5f69\n16", "607a");
         }
 
         [TestMethod]
