@@ -388,9 +388,27 @@ namespace StaxLang {
                         Push(Constants[program[ip++]]);
                         break;
                     case 'w': // do-while
+                        if (!IsBlock(Peek())) {
+                            int exitCode;
+                            Index = 0;
+                            do {
+                                exitCode = Run(program.Substring(ip));
+                                Index++;
+                            } while (exitCode == 0 && IsTruthy(Pop()));
+                            return 0;
+                        }
                         DoWhile();
                         break;
                     case 'W':
+                        if (!IsBlock(Peek())) {
+                            int exitCode;
+                            Index = 0;
+                            do {
+                                exitCode = Run(program.Substring(ip));
+                                Index++;
+                            } while (exitCode == 0);
+                            return 0;
+                        }
                         DoPreCheckWhile();
                         break;
                     case '_':
@@ -482,9 +500,9 @@ namespace StaxLang {
                             case 'e': // is even
                                 Push(Pop() % 2 ^ 1);
                                 break;
-                            case 'f': // prime factorize
-                                if(IsNumber(Peek())) Push(PrimeFactors(Pop()));
-                                else if(IsArray(Peek())) DoRegexFind();
+                            case 'f': 
+                                if(IsNumber(Peek())) Push(PrimeFactors(Pop())); // prime factorize
+                                else if(IsArray(Peek())) DoRegexFind(); // regex find all matches
                                 break;
                             case 'g': // gcd
                                 DoGCD();
@@ -869,21 +887,29 @@ namespace StaxLang {
         }
 
         private void DoReadIndex() {
+            dynamic ReadAt(List<object> arr, int idx) {
+                idx %= arr.Count;
+                idx += arr.Count;
+                idx %= arr.Count;
+                return arr[idx];
+            }
+
             var top = Pop();
             var list = Pop();
 
-            if (IsArray(top)) (top, list) = (list, top);
-
-            int index = (int)top;
             if (IsArray(list)) {
-                index %= list.Count;
-                index += list.Count;
-                index %= list.Count;
-                Push(list[index]);
+                if (IsArray(top)) {
+                    var result = new List<object>();
+                    foreach (var idx in top) result.Add(ReadAt(list, (int)idx));
+                    Push(result);
+                    return;
+                }
+                else if (IsNumber(top)) {
+                    Push(ReadAt(list, (int)top));
+                    return;
+                }
             }
-            else {
-                throw new Exception("Bad type for index");
-            }
+            throw new Exception("Bad type for index");
         }
 
         private void PadLeft() {

@@ -113,6 +113,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void StringArrayEquivalence() => RunProgram("\"abc\" ',*", "97,98,99");
         [TestMethod] public void ArrayLength() => RunProgram("5R%", "5");
         [TestMethod] public void ReadIndex() => RunProgram("5R 2@", "3");
+        [TestMethod] public void ReadIndexes() => RunProgram("5R 2]1N]+ @ ',*", "3,5");
         [TestMethod] public void AssignIndex() => RunProgram("5R 1 8& ',*", "1,8,3,4,5");
         [TestMethod] public void ArrayToString() => RunProgram("5R$", "12345");
         [TestMethod] public void SingletonWrap() => RunProgram("0]%", "1");
@@ -157,7 +158,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
         [TestMethod] public void ShorthandRepeatBlock() => RunProgram("3F1p", "111");
         [TestMethod] public void DoWhile() => RunProgram("3{q^c8-w", "34567");
+        [TestMethod] public void DoWhileShorthand() => RunProgram("3wq^c8-", "34567");
         [TestMethod] public void While() => RunProgram("3{q^c8=C'-pW", "3-4-5-6-7");
+        [TestMethod] public void WhileShorthand() => RunProgram("3Wq^c8=C'-p", "3-4-5-6-7");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
@@ -167,6 +170,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
         [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}R", "a1b2c3d");
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
+
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
