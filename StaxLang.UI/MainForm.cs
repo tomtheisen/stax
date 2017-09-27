@@ -60,5 +60,9 @@ namespace StaxLang.UI {
             Settings.Default.Input = InputTextbox.Text;
             Settings.Default.Save();
         }
+
+        private void CompressorButton_Click(object sender, EventArgs e) {
+            new CompressorForm().Show(this);
+        }
     }
 }

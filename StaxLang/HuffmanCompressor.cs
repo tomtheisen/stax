@@ -65,6 +65,35 @@ namespace StaxLang {
             return result.Substring(2);
         }
 
+        public static string Compress(string input) {
+            input = ". " + input;
+            var path = new List<char>();
+
+            for (int i = 2; i < input.Length; i++) {
+                var tree = Trees[input.Substring(i - 2, 2)];
+                var cpath = tree.FindPath(input[i]);
+                if (cpath == null) return null;
+                if (i == input.Length - 1) {
+                    while (cpath.Count >= 2 && cpath.Last() == '0') {
+                        cpath.RemoveAt(cpath.Count - 1);
+                    }
+                }
+                path.AddRange(cpath);
+            }
+
+            var big = BigInteger.One;
+            for (int i = 0; i < path.Count; i++) {
+                big <<= 1;
+                big |= path[i] & 1;
+            }
+            string result = "";
+            while (big > 0) {
+                result += Symbols[(int)(big % Symbols.Length)];
+                big /= Symbols.Length;
+            }
+            return result;
+        }
+
         class HuffmanNode {
             public HuffmanNode Left { get; private set; }
             public HuffmanNode Right { get; private set; }
@@ -84,6 +113,17 @@ namespace StaxLang {
             public char Traverse(IList<char> path, ref int idx) {
                 if (LeafValue.HasValue) return LeafValue.Value;
                 return (++idx <= path.Count && path[idx - 1] == '1' ? Right : Left).Traverse(path, ref idx);
+            }
+
+            public List<char> FindPath(char ch) {
+                if (LeafValue.HasValue) return ch == LeafValue ? new List<char>() : null;
+
+                List<char> result = Left.FindPath(ch);
+                result?.Insert(0, '0');
+                if (result != null) return result;
+                result = Right.FindPath(ch);
+                result?.Insert(0, '1');
+                return result;
             }
         }
     }

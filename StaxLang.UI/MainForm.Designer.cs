@@ -29,9 +29,10 @@
             this.InputTextbox = new System.Windows.Forms.TextBox();
             this.OutputTextbox = new System.Windows.Forms.TextBox();
             this.MainSplit = new System.Windows.Forms.SplitContainer();
+            this.ProgramSizeLabel = new System.Windows.Forms.Label();
             this.ProgramTextbox = new System.Windows.Forms.TextBox();
             this.RunButton = new System.Windows.Forms.Button();
-            this.ProgramSizeLabel = new System.Windows.Forms.Label();
+            this.CompressorButton = new System.Windows.Forms.Button();
             InputLabel = new System.Windows.Forms.Label();
             OutputLabel = new System.Windows.Forms.Label();
             ProgramLabel = new System.Windows.Forms.Label();
@@ -44,27 +45,30 @@
             // InputLabel
             // 
             InputLabel.AutoSize = true;
-            InputLabel.Location = new System.Drawing.Point(9, 0);
+            InputLabel.Location = new System.Drawing.Point(7, 0);
+            InputLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             InputLabel.Name = "InputLabel";
-            InputLabel.Size = new System.Drawing.Size(39, 17);
+            InputLabel.Size = new System.Drawing.Size(31, 13);
             InputLabel.TabIndex = 4;
             InputLabel.Text = "Input";
             // 
             // OutputLabel
             // 
             OutputLabel.AutoSize = true;
-            OutputLabel.Location = new System.Drawing.Point(9, 137);
+            OutputLabel.Location = new System.Drawing.Point(7, 111);
+            OutputLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             OutputLabel.Name = "OutputLabel";
-            OutputLabel.Size = new System.Drawing.Size(51, 17);
+            OutputLabel.Size = new System.Drawing.Size(39, 13);
             OutputLabel.TabIndex = 5;
             OutputLabel.Text = "Output";
             // 
             // ProgramLabel
             // 
             ProgramLabel.AutoSize = true;
-            ProgramLabel.Location = new System.Drawing.Point(12, 9);
+            ProgramLabel.Location = new System.Drawing.Point(9, 7);
+            ProgramLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             ProgramLabel.Name = "ProgramLabel";
-            ProgramLabel.Size = new System.Drawing.Size(62, 17);
+            ProgramLabel.Size = new System.Drawing.Size(46, 13);
             ProgramLabel.TabIndex = 5;
             ProgramLabel.Text = "Program";
             // 
@@ -73,11 +77,11 @@
             this.InputTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.InputTextbox.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InputTextbox.Location = new System.Drawing.Point(12, 19);
-            this.InputTextbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.InputTextbox.Location = new System.Drawing.Point(9, 15);
+            this.InputTextbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.InputTextbox.Multiline = true;
             this.InputTextbox.Name = "InputTextbox";
-            this.InputTextbox.Size = new System.Drawing.Size(505, 89);
+            this.InputTextbox.Size = new System.Drawing.Size(380, 73);
             this.InputTextbox.TabIndex = 2;
             // 
             // OutputTextbox
@@ -86,13 +90,13 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OutputTextbox.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OutputTextbox.Location = new System.Drawing.Point(12, 158);
-            this.OutputTextbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.OutputTextbox.Location = new System.Drawing.Point(9, 128);
+            this.OutputTextbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.OutputTextbox.Multiline = true;
             this.OutputTextbox.Name = "OutputTextbox";
             this.OutputTextbox.ReadOnly = true;
             this.OutputTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputTextbox.Size = new System.Drawing.Size(502, 244);
+            this.OutputTextbox.Size = new System.Drawing.Size(378, 199);
             this.OutputTextbox.TabIndex = 4;
             this.OutputTextbox.WordWrap = false;
             // 
@@ -100,6 +104,7 @@
             // 
             this.MainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainSplit.Location = new System.Drawing.Point(0, 0);
+            this.MainSplit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MainSplit.Name = "MainSplit";
             this.MainSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -111,14 +116,25 @@
             // 
             // MainSplit.Panel2
             // 
+            this.MainSplit.Panel2.Controls.Add(this.CompressorButton);
             this.MainSplit.Panel2.Controls.Add(this.RunButton);
             this.MainSplit.Panel2.Controls.Add(InputLabel);
             this.MainSplit.Panel2.Controls.Add(this.InputTextbox);
             this.MainSplit.Panel2.Controls.Add(this.OutputTextbox);
             this.MainSplit.Panel2.Controls.Add(OutputLabel);
-            this.MainSplit.Size = new System.Drawing.Size(529, 565);
-            this.MainSplit.SplitterDistance = 148;
+            this.MainSplit.Size = new System.Drawing.Size(397, 459);
+            this.MainSplit.SplitterDistance = 120;
+            this.MainSplit.SplitterWidth = 3;
             this.MainSplit.TabIndex = 7;
+            // 
+            // ProgramSizeLabel
+            // 
+            this.ProgramSizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProgramSizeLabel.Location = new System.Drawing.Point(160, 6);
+            this.ProgramSizeLabel.Name = "ProgramSizeLabel";
+            this.ProgramSizeLabel.Size = new System.Drawing.Size(227, 15);
+            this.ProgramSizeLabel.TabIndex = 7;
+            this.ProgramSizeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // ProgramTextbox
             // 
@@ -126,11 +142,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ProgramTextbox.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ProgramTextbox.Location = new System.Drawing.Point(12, 29);
-            this.ProgramTextbox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.ProgramTextbox.Location = new System.Drawing.Point(9, 24);
+            this.ProgramTextbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ProgramTextbox.Multiline = true;
             this.ProgramTextbox.Name = "ProgramTextbox";
-            this.ProgramTextbox.Size = new System.Drawing.Size(505, 117);
+            this.ProgramTextbox.Size = new System.Drawing.Size(380, 96);
             this.ProgramTextbox.TabIndex = 1;
             this.ProgramTextbox.TextChanged += new System.EventHandler(this.ProgramTextbox_TextChanged);
             this.ProgramTextbox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ProgramTextbox_KeyUp);
@@ -139,32 +155,34 @@
             // RunButton
             // 
             this.RunButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RunButton.Location = new System.Drawing.Point(418, 112);
-            this.RunButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.RunButton.Location = new System.Drawing.Point(314, 91);
+            this.RunButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RunButton.Name = "RunButton";
-            this.RunButton.Size = new System.Drawing.Size(99, 42);
+            this.RunButton.Size = new System.Drawing.Size(74, 34);
             this.RunButton.TabIndex = 3;
             this.RunButton.Text = "&Run";
             this.RunButton.UseVisualStyleBackColor = true;
             this.RunButton.Click += new System.EventHandler(this.RunButton_Click);
             // 
-            // ProgramSizeLabel
+            // CompressorButton
             // 
-            this.ProgramSizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgramSizeLabel.Location = new System.Drawing.Point(214, 8);
-            this.ProgramSizeLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.ProgramSizeLabel.Name = "ProgramSizeLabel";
-            this.ProgramSizeLabel.Size = new System.Drawing.Size(303, 18);
-            this.ProgramSizeLabel.TabIndex = 7;
-            this.ProgramSizeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.CompressorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CompressorButton.Location = new System.Drawing.Point(236, 90);
+            this.CompressorButton.Margin = new System.Windows.Forms.Padding(2);
+            this.CompressorButton.Name = "CompressorButton";
+            this.CompressorButton.Size = new System.Drawing.Size(74, 34);
+            this.CompressorButton.TabIndex = 6;
+            this.CompressorButton.Text = "&Compressor";
+            this.CompressorButton.UseVisualStyleBackColor = true;
+            this.CompressorButton.Click += new System.EventHandler(this.CompressorButton_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(529, 565);
+            this.ClientSize = new System.Drawing.Size(397, 459);
             this.Controls.Add(this.MainSplit);
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "MainForm";
             this.Text = "Stax Language";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -186,6 +204,7 @@
         private System.Windows.Forms.TextBox ProgramTextbox;
         private System.Windows.Forms.Button RunButton;
         private System.Windows.Forms.Label ProgramSizeLabel;
+        private System.Windows.Forms.Button CompressorButton;
     }
 }
 

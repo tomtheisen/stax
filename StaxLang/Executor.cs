@@ -14,7 +14,6 @@ namespace StaxLang {
      *     invert
      *     rational
      *     floats
-     *     gunzip base 85 / predictive english compression
      *     slice / slice assignment
      *     coalesce-esque (js ||)
      *     fancy stack ops
