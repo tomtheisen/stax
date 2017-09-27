@@ -100,6 +100,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Prefixes() => RunProgram("\"abc\" |[ ',*", "a,ab,abc");
         [TestMethod] public void Suffixes() => RunProgram("\"abc\" |] ',*", "abc,bc,c");
         [TestMethod] public void ZeroFill() => RunProgram("\"abc\" 5 |z", "00abc");
+        [TestMethod] public void CompressedLiterals() => RunProgram(".6Js2%", "literal");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");

@@ -14,7 +14,6 @@ namespace StaxLang {
      *     invert
      *     rational
      *     floats
-     *     recursion (call into newline, conditional call into newline, conditional self-call)
      *     gunzip base 85 / predictive english compression
      *     slice / slice assignment
      *     coalesce-esque (js ||)
@@ -137,6 +136,10 @@ namespace StaxLang {
                     case '"': // "literal"
                         --ip;
                         Push(ParseString(program, ref ip));
+                        break;
+                    case '.': // compressed .6Js2%.
+                        --ip;
+                        Push(ParseCompressedString(program, ref ip));
                         break;
                     case '\'': // single char 'x
                         Push(S2A(program.Substring(ip++, 1)));
@@ -1242,6 +1245,15 @@ namespace StaxLang {
                 return double.Parse(value + "." + ParseNumber(program, ref ip));
             }
             return value;
+        }
+
+        private List<object> ParseCompressedString(string program, ref int ip) {
+            string compressed = "";
+            while (ip < program.Length - 1 && program[++ip] != '.') compressed += program[ip];
+            if (ip < program.Length) ++ip; // final quote
+
+            var decompressed = HuffmanCompressor.Decompress(compressed);
+            return S2A(decompressed);
         }
 
         private List<object> ParseString(string program, ref int ip) {
