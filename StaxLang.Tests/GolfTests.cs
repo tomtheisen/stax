@@ -278,7 +278,7 @@ namespace StaxLang.Tests {
         public void PalindromizeTest() {
             http://golf.shinh.org/p.rb?palindromize
             RunProgram("X{dxxi(r+m{cr=fhP}", "test\nNISIOISIN", "testset", "NISIOISIN");
-            RunProgram("mX{dxxi(r+m{cr=fh", "test\nNISIOISIN", "testset", "NISIOISIN");
+            RunProgram("mX{xxi(r+m{cr=fh", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
         [TestMethod]
