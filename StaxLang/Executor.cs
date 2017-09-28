@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:abgGkKo[
+    //  `:gGkKo
     /* To add:
      *     reduce
      *     map-many
@@ -20,10 +20,6 @@ namespace StaxLang {
      *     rational
      *     floats
      *     slice / slice assignment
-     *     fancy stack ops
-     *          ab -> aab       (for common left operand before block)
-     *          ab -> abab      (to preserve binary operands)
-     *          abc -> bca      (final piece needed to demote and reclaim D)
      *     string interpolate
      *     find-index-all by value/block/regex
      *     generate until duplicate
@@ -224,14 +220,29 @@ namespace StaxLang {
                     case ')':
                         PadLeft();
                         break;
+                    case '[': // copy outer
+                        Run("ss~c,");
+                        break;
                     case ']': // singleton
                         Push(new List<object> { Pop() });
                         break;
                     case '?': // if
                         DoIf();
                         break;
+                    case 'a': // alter stack
+                        {
+                            dynamic c = Pop(), b = Pop(), a = Pop();
+                            Push(b); Push(c); Push(a);
+                        }
+                        break;
                     case 'A': // 10 (0xA)
                         Push(BigInteger.One * 10);
+                        break;
+                    case 'b': // both copy
+                        {
+                            dynamic b = Pop(), a = Peek();
+                            Push(b); Push(a); Push(b);
+                        }
                         break;
                     case 'B': // batch
                         Run("ss ~ c;v( 1D;vN) {+;)cm sdsd ,d");

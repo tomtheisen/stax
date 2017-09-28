@@ -184,6 +184,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void Swap() => RunProgram("1 2 s pp", "12");
         [TestMethod] public void StackDepth() => RunProgram("1 1 1 1 |d", "4");
         [TestMethod] public void SideStackDepth() => RunProgram("1 1 1 1 ~~~ |D", "3");
+        [TestMethod] public void AlterStack() => RunProgram("1 2 3 4 a pppp", "2431");
+        [TestMethod] public void CopyBoth() => RunProgram("1 2 3 b ppppp", "32321");
+        [TestMethod] public void CopyUnder() => RunProgram("1 2 3 [ pppp ", "3221");
     }
 }
 
