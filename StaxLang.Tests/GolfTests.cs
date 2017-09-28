@@ -142,14 +142,14 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Digit+Tally
             RunProgram("d10r{$ys/%v$mP", "176093677603", "2102003301");
             RunProgram("Xd10r{$xs/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Ds/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Ds/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("Ar{$1Ds/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$[/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$[/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$[/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$;s/%v$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("mAr{$1Ds/%v$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("mAr{$[/%v$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$;s#$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Vd{;s#$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
-            RunProgram("mVd{1Ds#$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("mVd{[#$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -203,9 +203,8 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void FibTest() {
-            RunProgram("e1s0s{c2D+Q}*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("1 0{c2D+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
-            RunProgram("01{cQ2D+}n*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("e1s0s{b+Q}*", "7", "1", "1", "2", "3", "5", "8", "13");
+            RunProgram("1 0{b+Q}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01{QX+xs}n*", "7", "1", "1", "2", "3", "5", "8", "13");
             RunProgram("01nfQX+xs", "7", "1", "1", "2", "3", "5", "8", "13");
         }
@@ -292,7 +291,7 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgramSingleInputs(",0~{{\"_)}]\",@=!{\"failed at: \"pyPzh}*}{dx~}\"({[\"3DI^X?yU)YdF\"yes", 
+            RunProgramSingleInputs(",0~{c{\"_)}]\",@=!{\"failed at: \"pyPzh}*}s{dx~}\"({[\"aI^X?yU)YdF\"yes", 
                 ")", "failed at: )", 
                 "()", "yes", 
                 "{()[]}", "yes", 
@@ -309,8 +308,6 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
-            RunProgram("1Ddec^*hP}", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("1DdeR|+P}", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("{eR|+P|Dvw", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("e,~R|+P}", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("{eR|+Pcew", "1\n2\n3\n0", "1", "3", "6");
@@ -387,15 +384,15 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void IsFibTest() {
             https://codegolf.stackexchange.com/questions/126373/am-i-a-fibonacci-number
-            RunProgram("nXU1{s1D+cx<wx=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
-            RunProgram("meXU1{s1D+cx<wx=", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("nXU1{s[+cx<wx=P}", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
+            RunProgram("meXU1{s[+cx<wx=", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
         }
 
         [TestMethod]
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
 
-            RunProgramSingleInputs("{0{eH$0~1}Vd3D-?w|D", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("{X0{eH$0~1}Vdx-?w|D", "66833", "44", "617283945", "1");
         }
 
         [TestMethod]
@@ -564,7 +561,7 @@ namespace StaxLang.Tests {
             RunProgram("zVA{]Yi*]+{y+mFS", "", expected);
             RunProgram("26RZ{~z{;|M64+mPF", "", expected);
             RunProgram("VA{~VA{;|MmPF", "", expected);
-            RunProgram("VA{VA{1D|MmPF", "", expected);
+            RunProgram("VA{VA{[s|MmPF", "", expected);
             RunProgram("VAQc2B{|tQF", "", expected);
         }
 

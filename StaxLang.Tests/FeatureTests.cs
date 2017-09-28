@@ -176,7 +176,6 @@ namespace StaxLang.Tests {
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
-        [TestMethod] public void Dig() => RunProgram("'a'b'c'd 2D", "b");
         [TestMethod] public void ListifyStack() => RunProgram("1 2 3 4 5 L ',*", "5,4,3,2,1");
         [TestMethod] public void ListifyN() => RunProgram("1 2 3 4 5 3l ',*", "3,4,5");
         [TestMethod] public void SideStack() => RunProgram("1 2 3 4 ~~p;p,ppp", "23314");

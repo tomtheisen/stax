@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:gGkKo
+    //  `:DgGkKo
     /* To add:
      *     reduce
      *     map-many
@@ -245,7 +245,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'B': // batch
-                        Run("ss ~ c;v( 1D;vN) {+;)cm sdsd ,d");
+                        Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d");
                         break;
                     case 'c': // copy
                         Push(Peek());
@@ -255,16 +255,6 @@ namespace StaxLang {
                         break;
                     case 'd': // discard
                         Pop();
-                        break;
-                    case 'D': // dig
-                        {
-                            int n = (int)Pop();
-                            var temp = new Stack<dynamic>();
-                            for (int i = 0; i < n; i++) temp.Push(Pop());
-                            var target = Peek();
-                            while (temp.Any()) Push(temp.Pop());
-                            Push(target);
-                        }
                         break;
                     case 'e': // eval
                         DoEval();
@@ -486,7 +476,7 @@ namespace StaxLang {
                                 Push(Pop() | Pop());
                                 break;
                             case '^': // bitwise xor
-                                if (IsArray(Peek())) Run("s 1D1D-~ s-, +");
+                                if (IsArray(Peek())) Run("s b-~ s-, +");
                                 else Push(Pop() ^ Pop());
                                 break;
                             case '*': 
@@ -544,7 +534,7 @@ namespace StaxLang {
                                 break;
                             case 'l': // lcm
                                 if (IsArray(Peek())) Run("1s{|lF");
-                                else if (IsNumber(Peek())) Run("c2D|g~*,/");
+                                else if (IsNumber(Peek())) Run("b|g~*,/");
                                 else throw new Exception("Bad type for lcm");
                                 break;
                             case 'J': // join with newlines
