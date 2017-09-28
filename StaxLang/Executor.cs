@@ -6,6 +6,8 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace StaxLang {
+    // available chars
+    //  `:abgGkKo[
     /* To add:
      *     reduce
      *     map-many
@@ -19,15 +21,22 @@ namespace StaxLang {
      *     floats
      *     slice / slice assignment
      *     fancy stack ops
+     *          ab -> aab       (for common left operand before block)
+     *          ab -> abab      (to preserve binary operands)
+     *          abc -> bca      (final piece needed to demote and reclaim D)
      *     string interpolate
      *     find-index-all by value/block/regex
      *     generate until duplicate
-     *     generate n elements based on predicate
+     *     generate n elements satisfying predicate
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
-     *     non-regex substring count
      *     compare / sign
+     *     arbitrary ranges
+     *     change compressed literals to use [notation]
+     *     
+     *     code explainer
+     *     debugger
      *     
      */
 
@@ -137,6 +146,10 @@ namespace StaxLang {
                         break;
                     case '~': // push to side stack
                         InputStack.Push(Pop());
+                        break;
+                    case '#': // count number
+                        if (IsArray(Peek())) Run("/%v");
+                        else if (IsNumber(Peek())) Run("]|&%");
                         break;
                     case '"': // "literal"
                         --ip;
@@ -961,13 +974,25 @@ namespace StaxLang {
         private void DoPreCheckWhile() {
             Block block = Pop();
             int exitCode;
-            do exitCode = Run(block.Program); while (exitCode == 0);
+            var initial = Index;
+            Index = 0;
+            do {
+                exitCode = Run(block.Program);
+                Index++;
+            } while (exitCode == 0);
+            Index = initial;
         }
 
         private void DoWhile() {
             Block block = Pop();
             int exitCode;
-            do exitCode = Run(block.Program); while (exitCode == 0 && IsTruthy(Pop()));
+            var initial = Index;
+            Index = 0;
+            do {
+                exitCode = Run(block.Program);
+                ++Index;
+            } while (exitCode == 0 && IsTruthy(Pop()));
+            Index = initial;
         }
 
         private void DoIf() {

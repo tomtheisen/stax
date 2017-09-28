@@ -139,6 +139,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void DigitTallyTest() {
+            http://golf.shinh.org/p.rb?Digit+Tally
             RunProgram("d10r{$ys/%v$mP", "176093677603", "2102003301");
             RunProgram("Xd10r{$xs/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$1Ds/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
@@ -146,6 +147,9 @@ namespace StaxLang.Tests {
             RunProgram("Ar{$1Ds/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$;s/%v$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("mAr{$1Ds/%v$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Ar{$;s#$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("Vd{;s#$mP,}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("mVd{1Ds#$m", "27204322879364\n82330228112748", "1042201211", "1242100130");
         }
 
         [TestMethod]
@@ -279,6 +283,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?palindromize
             RunProgram("X{dxxi(r+m{cr=fhP}", "test\nNISIOISIN", "testset", "NISIOISIN");
             RunProgram("mX{xxi(r+m{cr=fh", "test\nNISIOISIN", "testset", "NISIOISIN");
+            RunProgram("m{__i(r+ccr=!w", "test\nNISIOISIN", "testset", "NISIOISIN");
         }
 
         [TestMethod]
@@ -842,6 +847,36 @@ namespace StaxLang.Tests {
                 "00000011,00000011", "00001001",
                 "00101001,00000110", "11110110",
                 "00001111,00001011", "10100101");
+        }
+
+        [TestMethod]
+        public void IllustrateLCMTest() {
+            https://codegolf.stackexchange.com/questions/143725/illustrate-the-least-common-multiple
+            RunProgram("ec|l~mv'-*'|+;_/*", "[6 4]", "-----|-----|", "---|---|---|");
+        }
+
+        [TestMethod]
+        public void SymmetricNotPalindromicTest() {
+            https://codegolf.stackexchange.com/questions/142248/im-symmetric-not-palindromic
+            RunProgramSingleInputs(@"r""()<>[]{}qpbd/\""Xcr+|t"" !`""'+*-.:=AHIMOTUVWXY^_ovwx|""x+|&_=",
+                "()()", "1",
+                "()()()", "1",
+                "[A + A]", "1",
+                "WOW ! WOW", "1",
+                "OH-AH_wx'xw_HA-HO", "1",
+                "(<<[[[T*T]]]>>)", "1",
+                "(:)", "1",
+                ")-(", "1",
+                "())(()", "1",
+                "qpqp", "1",
+                "())(", "0",
+                "((B))", "0",
+                "11", "0",
+                "+-*+-", "0",
+                "WOW ! wow", "0",
+                "(;)", "0",
+                "qppq", "0");
+
         }
     }
 }

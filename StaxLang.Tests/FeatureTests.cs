@@ -100,6 +100,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Suffixes() => RunProgram("\"abc\" |] ',*", "abc,bc,c");
         [TestMethod] public void ZeroFill() => RunProgram("\"abc\" 5 |z", "00abc");
         [TestMethod] public void CompressedLiterals() => RunProgram(".6Js2%", "literal");
+        [TestMethod] public void SubstringOccurrences() => RunProgram("\"drab cab\" \"ab\" #", "2");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -129,6 +130,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ZipRep() => RunProgram("\"abcde\" \"xy\" \\ ',*", "ax,by,cx,dy,ex");
         [TestMethod] public void Union() => RunProgram("1]2]+2]+3]+3]+  3r |& ',*", "1,2,2");
         [TestMethod] public void SymmetricDiff() => RunProgram("1]2]+2]+3]+3]+  3r |^ ',*", "3,3,0");
+        [TestMethod] public void CountInTest() => RunProgram("1]2]+2]+3]+3]+ 3 #", "2");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
