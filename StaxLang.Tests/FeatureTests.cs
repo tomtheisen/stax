@@ -74,7 +74,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void StringSubtraction() => RunProgram("\"hello world\" \"ol\" -", "he wrd");
         [TestMethod] public void StringJoin() => RunProgram("'a'b'c'd L '-*", "d-c-b-a");
         [TestMethod] public void CharacterInterleave() => RunProgram("\"abcd\"M '- *", "a-b-c-d");
-        [TestMethod] public void ToNumber() => RunProgram("4 \"3\"#+", "7");
         [TestMethod] public void Upper() => RunProgram("\"Hello\"^", "HELLO");
         [TestMethod] public void Lower() => RunProgram("\"Hello\"v", "hello");
         [TestMethod] public void TruncateRight() => RunProgram("\"Hello\" 3(", "Hel");

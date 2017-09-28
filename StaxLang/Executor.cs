@@ -8,17 +8,26 @@ using System.Text.RegularExpressions;
 namespace StaxLang {
     /* To add:
      *     reduce
+     *     map-many
+     *     uncons / uncons-right
      *     zip-short
+     *     cross-product
      *     log
      *     trig
      *     invert
      *     rational
      *     floats
      *     slice / slice assignment
-     *     coalesce-esque (js ||)
      *     fancy stack ops
      *     string interpolate
-     *     find-index-all by value/block
+     *     find-index-all by value/block/regex
+     *     generate until duplicate
+     *     generate n elements based on predicate
+     *     repeat-to-length
+     *     increase-to-multiple
+     *     non-regex replace
+     *     non-regex substring count
+     *     compare / sign
      *     
      */
 
@@ -97,9 +106,6 @@ namespace StaxLang {
 
             while (ip < program.Length) {
                 switch (program[ip++]) {
-                    case '`':
-                        DoDump(program, ip);
-                        break;
                     case '0':
                         Push(BigInteger.Zero);
                         break;
@@ -147,7 +153,7 @@ namespace StaxLang {
                         --ip;
                         Push(ParseBlock(program, ref ip));
                         break;
-                    case '}': // do-over
+                    case '}': // do-over (or block end)
                         ip = 0;
                         break;
                     case '!': // not
@@ -176,9 +182,6 @@ namespace StaxLang {
                         break;
                     case '&': // assign index
                         DoAssignIndex();
-                        break;
-                    case '#': // to number
-                        Push(ToNumber(Pop()));
                         break;
                     case '$': // to string
                         Push(ToString(Pop()));
@@ -436,6 +439,9 @@ namespace StaxLang {
                         break;
                     case '|': // extended operations
                         switch (program[ip++]) {
+                            case '`':
+                                DoDump(program, ip);
+                                break;
                             case '%': // div mod
                                 Run("ss1C1C%~/,");
                                 break;
