@@ -29,7 +29,6 @@ namespace StaxLang {
      *     non-regex replace
      *     compare / sign
      *     arbitrary ranges
-     *     change compressed literals to use [notation]
      *     
      *     code explainer
      *     debugger
