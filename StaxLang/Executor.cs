@@ -108,492 +108,507 @@ namespace StaxLang {
 
         private int Run(string program) {
             int ip = 0;
+            while (ip < program.Length) {
+                int exitCode = Step(program, ref ip);
+                if (exitCode == 1) return exitCode;
+            }
+            return 0;
+        }
 
-            if (program.Length > 0) switch (program[0]) {
+        private int Step(string program, ref int ip) {
+            if (ip == 0) switch (program[0]) {
                 case 'm': // line-map
                     Run("L{" + program.Substring(1) + "PF");
+                    ip = program.Length;
                     return 0;
                 case 'f': // line-filter
                     Run("L{{}{_P}a" + program.Substring(1) + "?F");
+                    ip = program.Length;
                     return 0;
                 case 'F': // line-for
                     Run("L{" + program.Substring(1) + "F");
+                    ip = program.Length;
                     return 0;
             }
-
-            while (ip < program.Length) {
-                switch (program[ip++]) {
-                    case '0':
-                        Push(BigInteger.Zero);
-                        break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        --ip;
-                        Push(ParseNumber(program, ref ip));
-                        break;
-                    case ' ':
-                    case '\n':
-                    case '\r':
-                        break;
-                    case '\t': // line comment
-                        ip = program.IndexOf('\n', ip);
-                        if (ip == -1) return 0;
-                        break;
-                    case ';': // peek from side stack
-                        Push(InputStack.Peek());
-                        break;
-                    case ',': // pop from side stack
-                        Push(InputStack.Pop());
-                        break;
-                    case '~': // push to side stack
-                        InputStack.Push(Pop());
-                        break;
-                    case '#': // count number
-                        if (IsArray(Peek())) Run("/%v");
-                        else if (IsNumber(Peek())) Run("]|&%");
-                        break;
-                    case '"': // "literal"
-                        --ip;
-                        Push(ParseString(program, ref ip));
-                        break;
-                    case '.': // compressed .6Js2%.
-                        --ip;
-                        Push(ParseCompressedString(program, ref ip));
-                        break;
-                    case '\'': // single char 'x
-                        Push(S2A(program.Substring(ip++, 1)));
-                        break;
-                    case '{': // block
-                        --ip;
-                        Push(ParseBlock(program, ref ip));
-                        break;
-                    case '}': // do-over (or block end)
-                        ip = 0;
-                        break;
-                    case '!': // not
-                        Push(IsTruthy(Pop()) ? BigInteger.Zero : BigInteger.One);
-                        break;
-                    case '+':
-                        DoPlus();
-                        break;
-                    case '-':
-                        DoMinus();
-                        break;
-                    case '*':
-                        DoStar();
-                        break;
-                    case '/':
-                        DoSlash();
-                        break;
-                    case '\\':
-                        DoZipRepeat();
-                        break;
-                    case '%':
-                        DoPercent();
-                        break;
-                    case '@': // read index
-                        DoReadIndex();
-                        break;
-                    case '&': // assign index
-                        DoAssignIndex();
-                        break;
-                    case '$': // to string
-                        Push(ToString(Pop()));
-                        break;
-                    case '<':
-                        DoLessThan();
-                        break;
-                    case '>':
-                        DoGreaterThan();
-                        break;
-                    case '=':
-                        DoEqual();
-                        break;
-                    case 'v':
-                        if (IsNumber(Peek())) Push(Pop() - 1); // decrement
-                        else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToLower())); // lower
-                        else throw new Exception("Bad type for v");
-                        break;
-                    case '^':
-                        if (IsNumber(Peek())) Push(Pop() + 1); // increment
-                        else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToUpper())); // uppper
-                        else throw new Exception("Bad type for ^");
-                        break;
-                    case '(':
-                        PadRight();
-                        break;
-                    case ')':
-                        PadLeft();
-                        break;
-                    case '[': // copy outer
-                        Run("ss~c,");
-                        break;
-                    case ']': // singleton
-                        Push(new List<object> { Pop() });
-                        break;
-                    case '?': // if
-                        DoIf();
-                        break;
-                    case 'a': // alter stack
-                        {
-                            dynamic c = Pop(), b = Pop(), a = Pop();
-                            Push(b); Push(c); Push(a);
+            switch (program[ip++]) {
+                case '0':
+                    Push(BigInteger.Zero);
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    --ip;
+                    Push(ParseNumber(program, ref ip));
+                    break;
+                case ' ':
+                case '\n':
+                case '\r':
+                    break;
+                case '\t': // line comment
+                    ip = program.IndexOf('\n', ip);
+                    if (ip == -1) return 0;
+                    break;
+                case ';': // peek from side stack
+                    Push(InputStack.Peek());
+                    break;
+                case ',': // pop from side stack
+                    Push(InputStack.Pop());
+                    break;
+                case '~': // push to side stack
+                    InputStack.Push(Pop());
+                    break;
+                case '#': // count number
+                    if (IsArray(Peek())) Run("/%v");
+                    else if (IsNumber(Peek())) Run("]|&%");
+                    break;
+                case '"': // "literal"
+                    --ip;
+                    Push(ParseString(program, ref ip));
+                    break;
+                case '.': // compressed .6Js2%.
+                    --ip;
+                    Push(ParseCompressedString(program, ref ip));
+                    break;
+                case '\'': // single char 'x
+                    Push(S2A(program.Substring(ip++, 1)));
+                    break;
+                case '{': // block
+                    --ip;
+                    Push(ParseBlock(program, ref ip));
+                    break;
+                case '}': // do-over (or block end)
+                    ip = 0;
+                    break;
+                case '!': // not
+                    Push(IsTruthy(Pop()) ? BigInteger.Zero : BigInteger.One);
+                    break;
+                case '+':
+                    DoPlus();
+                    break;
+                case '-':
+                    DoMinus();
+                    break;
+                case '*':
+                    DoStar();
+                    break;
+                case '/':
+                    DoSlash();
+                    break;
+                case '\\':
+                    DoZipRepeat();
+                    break;
+                case '%':
+                    DoPercent();
+                    break;
+                case '@': // read index
+                    DoReadIndex();
+                    break;
+                case '&': // assign index
+                    DoAssignIndex();
+                    break;
+                case '$': // to string
+                    Push(ToString(Pop()));
+                    break;
+                case '<':
+                    DoLessThan();
+                    break;
+                case '>':
+                    DoGreaterThan();
+                    break;
+                case '=':
+                    DoEqual();
+                    break;
+                case 'v':
+                    if (IsNumber(Peek())) Push(Pop() - 1); // decrement
+                    else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToLower())); // lower
+                    else throw new Exception("Bad type for v");
+                    break;
+                case '^':
+                    if (IsNumber(Peek())) Push(Pop() + 1); // increment
+                    else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToUpper())); // uppper
+                    else throw new Exception("Bad type for ^");
+                    break;
+                case '(':
+                    PadRight();
+                    break;
+                case ')':
+                    PadLeft();
+                    break;
+                case '[': // copy outer
+                    Run("ss~c,");
+                    break;
+                case ']': // singleton
+                    Push(new List<object> { Pop() });
+                    break;
+                case '?': // if
+                    DoIf();
+                    break;
+                case 'a': // alter stack
+                    {
+                        dynamic c = Pop(), b = Pop(), a = Pop();
+                        Push(b); Push(c); Push(a);
+                    }
+                    break;
+                case 'A': // 10 (0xA)
+                    Push(BigInteger.One * 10);
+                    break;
+                case 'b': // both copy
+                    {
+                        dynamic b = Pop(), a = Peek();
+                        Push(b); Push(a); Push(b);
+                    }
+                    break;
+                case 'B': // batch
+                    Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d");
+                    break;
+                case 'c': // copy
+                    Push(Peek());
+                    break;
+                case 'C':
+                    if (IsTruthy(Pop())) return 1;
+                    break;
+                case 'd': // discard
+                    Pop();
+                    break;
+                case 'e': // eval
+                    DoEval();
+                    break;
+                case 'E': // explode (de-listify)
+                    DoExplode();
+                    break;
+                case 'f':
+                    if (IsNumber(Peek())) { // n times do
+                        var n = Pop();
+                        for (Index = BigInteger.Zero; Index < n; Index++) {
+                            _ = Index + 1;
+                            Run(program.Substring(ip));
                         }
-                        break;
-                    case 'A': // 10 (0xA)
-                        Push(BigInteger.One * 10);
-                        break;
-                    case 'b': // both copy
-                        {
-                            dynamic b = Pop(), a = Peek();
-                            Push(b); Push(a); Push(b);
+                        ip = program.Length;
+                        return 0;
+                    }
+                    DoFilter(); // filter
+                    break;
+                case 'F': // for loop
+                    if (IsNumber(Peek())) {
+                        var n = Pop();
+                        for (Index = BigInteger.Zero; Index < n; Index++) {
+                            Push(_ = Index + 1);
+                            Run(program.Substring(ip));
                         }
-                        break;
-                    case 'B': // batch
-                        Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d");
-                        break;
-                    case 'c': // copy
-                        Push(Peek());
-                        break;
-                    case 'C':
-                        if (IsTruthy(Pop())) return 1;
-                        break;
-                    case 'd': // discard
-                        Pop();
-                        break;
-                    case 'e': // eval
-                        DoEval();
-                        break;
-                    case 'E': // explode (de-listify)
-                        DoExplode();
-                        break;
-                    case 'f': 
-                        if (IsNumber(Peek())) { // n times do
-                            var n = Pop();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                _ = Index + 1;
-                                Run(program.Substring(ip));
+                        ip = program.Length;
+                        return 0;
+                    }
+                    else if (IsArray(Peek())) {
+                        Index = 0;
+                        foreach (var e in Pop()) {
+                            Push(_ = e);
+                            Run(program.Substring(ip));
+                            Index++;
+                        }
+                        ip = program.Length;
+                        return 0;
+                    }
+                    DoFor();
+                    break;
+                case 'h':
+                    if (IsNumber(Peek())) Push(Pop() / 2); // half
+                    if (IsArray(Peek())) Push(Pop()[0]); // head
+                    break;
+                case 'H':
+                    if (IsNumber(Peek())) Push(Pop() * 2); // BigInteger
+                    if (IsArray(Peek())) Push(Peek()[Pop().Count - 1]); // last
+                    break;
+                case 'i': // iteration index
+                    Push(Index);
+                    break;
+                case 'I': // get index
+                    DoFindIndex();
+                    break;
+                case 'j': // un-join with spaces
+                    Run("' /");
+                    break;
+                case 'J': // join with spaces
+                    Run("' *");
+                    break;
+                case 'l': // listify-n
+                    DoListifyN();
+                    break;
+                case 'L': // listify stack
+                    var newList = new List<object>();
+                    while (TotalSize > 0) newList.Add(Pop());
+                    Push(newList);
+                    break;
+                case 'm': // do map
+                    if (IsNumber(Peek())) {
+                        var n = Pop();
+                        for (Index = BigInteger.Zero; Index < n; Index++) {
+                            Push(_ = Index + 1);
+                            Run(program.Substring(ip) + "P");
+                        }
+                        ip = program.Length;
+                        return 0;
+                    }
+                    else if (IsArray(Peek())) {
+                        Index = 0;
+                        foreach (var e in Pop()) {
+                            Push(_ = e);
+                            Run(program.Substring(ip) + "P");
+                            Index++;
+                        }
+                        ip = program.Length;
+                        return 0;
+                    }
+                    DoMap();
+                    break;
+                case 'M': // transpose
+                    DoTranspose();
+                    break;
+                case 'n': // get number from input
+                    DoGetNumber();
+                    break;
+                case 'N': // negate
+                    DoNegate();
+                    break;
+                case 'O': // order
+                    DoOrder();
+                    break;
+                case 'p': // print inline
+                    Print(Pop(), false);
+                    break;
+                case 'P': // print
+                    Print(Pop());
+                    break;
+                case 'q': // shy print inline
+                    Print(Peek(), false);
+                    break;
+                case 'Q': // print
+                    Print(Peek());
+                    break;
+                case 'r': // 0 range
+                    if (IsNumber(Peek())) Push(Range(0, Pop()));
+                    else if (IsArray(Peek())) {
+                        var result = new List<object>(Pop());
+                        result.Reverse();
+                        Push(result);
+                    }
+                    else throw new Exception("Bad type for r");
+                    break;
+                case 'R': // 1 range
+                    if (IsNumber(Peek())) Push(Range(1, Pop()));
+                    else DoRegexReplace(); // regex replace
+                    break;
+                case 's': // swap
+                    {
+                        var top = Pop();
+                        var bottom = Pop();
+                        Push(top);
+                        Push(bottom);
+                    }
+                    break;
+                case 'S': // show array
+                    foreach (var e in Pop()) Print(e);
+                    break;
+                case 't': // trim left
+                    if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));
+                    else if (IsNumber(Peek())) Run("ss~ c%,-)");
+                    else throw new Exception("Bad types for trimleft");
+                    break;
+                case 'T': // trim right
+                    if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimEnd()));
+                    else if (IsNumber(Peek())) Run("ss~ c%,-(");
+                    else throw new Exception("Bad types for trimright");
+                    break;
+                case 'u': // unique
+                    DoUnique();
+                    break;
+                case 'U': // negative Unit
+                    Push(BigInteger.MinusOne);
+                    break;
+                case 'V': // constant value
+                    Push(Constants[program[ip++]]);
+                    break;
+                case 'w': // do-while
+                    if (!IsBlock(Peek())) {
+                        int exitCode;
+                        Index = 0;
+                        do {
+                            exitCode = Run(program.Substring(ip));
+                            Index++;
+                        } while (exitCode == 0 && IsTruthy(Pop()));
+                        ip = program.Length;
+                        return 0;
+                    }
+                    DoWhile();
+                    break;
+                case 'W':
+                    if (!IsBlock(Peek())) {
+                        int exitCode;
+                        Index = 0;
+                        do {
+                            exitCode = Run(program.Substring(ip));
+                            Index++;
+                        } while (exitCode == 0);
+                        ip = program.Length;
+                        return 0;
+                    }
+                    DoPreCheckWhile();
+                    break;
+                case '_':
+                    Push(_);
+                    break;
+                case 'x': // read;
+                    Push(X);
+                    break;
+                case 'X': // write
+                    X = Peek();
+                    break;
+                case 'y': // read;
+                    Push(Y);
+                    break;
+                case 'Y': // write
+                    Y = Peek();
+                    break;
+                case 'z': // read;
+                    Push(Z);
+                    break;
+                case 'Z': // write
+                    Z = Peek();
+                    break;
+                case '|': // extended operations
+                    switch (program[ip++]) {
+                        case '`':
+                            DoDump(program, ip);
+                            break;
+                        case '%': // div mod
+                            Run("ss1C1C%~/,");
+                            break;
+                        case '+': // sum
+                            Run("0s{+F");
+                            break;
+                        case '-': // deltas
+                            Run("2B{Es-m");
+                            break;
+                        case '~': // bitwise not
+                            Push(~Pop());
+                            break;
+                        case '&': // bitwise and
+                            if (IsArray(Peek())) Run("ss~ {;sIU>f ,d");
+                            else Push(Pop() & Pop());
+                            break;
+                        case '|': // bitwise or
+                            Push(Pop() | Pop());
+                            break;
+                        case '^': // bitwise xor
+                            if (IsArray(Peek())) Run("s b-~ s-, +");
+                            else Push(Pop() ^ Pop());
+                            break;
+                        case '*':
+                            if (IsNumber(Peek())) { // exponent
+                                Run("s");
+                                Push(BigInteger.Pow(Pop(), (int)Pop()));
                             }
-                            return 0;
-                        }
-                        DoFilter(); // filter
-                        break;
-                    case 'F': // for loop
-                        if (IsNumber(Peek())) {
-                            var n = Pop();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                Push(_ = Index + 1);
-                                Run(program.Substring(ip));
-                            }
-                            return 0;
-                        } else if (IsArray(Peek())) {
-                            Index = 0;
-                            foreach (var e in Pop()) {
-                                Push(_ = e);
-                                Run(program.Substring(ip));
-                                Index++;
-                            }
-                            return 0;
-                        }
-                        DoFor();
-                        break;
-                    case 'h':
-                        if (IsNumber(Peek())) Push(Pop() / 2); // half
-                        if (IsArray(Peek())) Push(Pop()[0]); // head
-                        break;
-                    case 'H':
-                        if (IsNumber(Peek())) Push(Pop() * 2); // BigInteger
-                        if (IsArray(Peek())) Push(Peek()[Pop().Count - 1]); // last
-                        break;
-                    case 'i': // iteration index
-                        Push(Index);
-                        break;
-                    case 'I': // get index
-                        DoFindIndex();
-                        break;
-                    case 'j': // un-join with spaces
-                        Run("' /");
-                        break;
-                    case 'J': // join with spaces
-                        Run("' *");
-                        break;
-                    case 'l': // listify-n
-                        DoListifyN();
-                        break;
-                    case 'L': // listify stack
-                        var newList = new List<object>();
-                        while (TotalSize > 0) newList.Add(Pop());
-                        Push(newList);
-                        break;
-                    case 'm': // do map
-                        if (IsNumber(Peek())) {
-                            var n = Pop();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                Push(_ = Index + 1);
-                                Run(program.Substring(ip) + "P");
-                            }
-                            return 0;
-                        } else if (IsArray(Peek())) {
-                            Index = 0;
-                            foreach (var e in Pop()) {
-                                Push(_ = e);
-                                Run(program.Substring(ip) + "P");
-                                Index++;
-                            }
-                            return 0;
-                        }
-                        DoMap();
-                        break;
-                    case 'M': // transpose
-                        DoTranspose();
-                        break;
-                    case 'n': // get number from input
-                        DoGetNumber();
-                        break;
-                    case 'N': // negate
-                        DoNegate();
-                        break;
-                    case 'O': // order
-                        DoOrder();
-                        break;
-                    case 'p': // print inline
-                        Print(Pop(), false);
-                        break;
-                    case 'P': // print
-                        Print(Pop());
-                        break;
-                    case 'q': // shy print inline
-                        Print(Peek(), false);
-                        break;
-                    case 'Q': // print
-                        Print(Peek());
-                        break;
-                    case 'r': // 0 range
-                        if (IsNumber(Peek())) Push(Range(0, Pop()));
-                        else if (IsArray(Peek())) {
-                            var result = new List<object>(Pop());
-                            result.Reverse();
-                            Push(result); 
-                        }
-                        else throw new Exception("Bad type for r");
-                        break;
-                    case 'R': // 1 range
-                        if (IsNumber(Peek())) Push(Range(1, Pop()));
-                        else DoRegexReplace(); // regex replace
-                        break;
-                    case 's': // swap
-                        {
-                            var top = Pop();
-                            var bottom = Pop();
-                            Push(top);
-                            Push(bottom);
-                        }
-                        break;
-                    case 'S': // show array
-                        foreach (var e in Pop()) Print(e);
-                        break;
-                    case 't': // trim left
-                        if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));
-                        else if (IsNumber(Peek())) Run("ss~ c%,-)");
-                        else throw new Exception("Bad types for trimleft");
-                        break;
-                    case 'T': // trim right
-                        if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimEnd()));
-                        else if (IsNumber(Peek())) Run("ss~ c%,-(");
-                        else throw new Exception("Bad types for trimright");
-                        break;
-                    case 'u': // unique
-                        DoUnique();
-                        break;
-                    case 'U': // negative Unit
-                        Push(BigInteger.MinusOne);
-                        break;
-                    case 'V': // constant value
-                        Push(Constants[program[ip++]]);
-                        break;
-                    case 'w': // do-while
-                        if (!IsBlock(Peek())) {
-                            int exitCode;
-                            Index = 0;
-                            do {
-                                exitCode = Run(program.Substring(ip));
-                                Index++;
-                            } while (exitCode == 0 && IsTruthy(Pop()));
-                            return 0;
-                        }
-                        DoWhile();
-                        break;
-                    case 'W':
-                        if (!IsBlock(Peek())) {
-                            int exitCode;
-                            Index = 0;
-                            do {
-                                exitCode = Run(program.Substring(ip));
-                                Index++;
-                            } while (exitCode == 0);
-                            return 0;
-                        }
-                        DoPreCheckWhile();
-                        break;
-                    case '_':
-                        Push(_);
-                        break;
-                    case 'x': // read;
-                        Push(X);
-                        break;
-                    case 'X': // write
-                        X = Peek();
-                        break;
-                    case 'y': // read;
-                        Push(Y);
-                        break;
-                    case 'Y': // write
-                        Y = Peek();
-                        break;
-                    case 'z': // read;
-                        Push(Z);
-                        break;
-                    case 'Z': // write
-                        Z = Peek();
-                        break;
-                    case '|': // extended operations
-                        switch (program[ip++]) {
-                            case '`':
-                                DoDump(program, ip);
-                                break;
-                            case '%': // div mod
-                                Run("ss1C1C%~/,");
-                                break;
-                            case '+': // sum
-                                Run("0s{+F");
-                                break;
-                            case '-': // deltas
-                                Run("2B{Es-m");
-                                break;
-                            case '~': // bitwise not
-                                Push(~Pop());
-                                break;
-                            case '&': // bitwise and
-                                if (IsArray(Peek())) Run("ss~ {;sIU>f ,d");
-                                else Push(Pop() & Pop());
-                                break;
-                            case '|': // bitwise or
-                                Push(Pop() | Pop());
-                                break;
-                            case '^': // bitwise xor
-                                if (IsArray(Peek())) Run("s b-~ s-, +");
-                                else Push(Pop() ^ Pop());
-                                break;
-                            case '*': 
-                                if (IsNumber(Peek())) { // exponent
-                                    Run("s"); 
-                                    Push(BigInteger.Pow(Pop(), (int)Pop()));
-                                }
-                                else throw new Exception("Bad types for |*");
-                                break;
-                            case '/': // repeated divide
-                                Run("ss~;*{;/c;%!w,d");
-                                break;
-                            case ')': // rotate right
-                                Run("cHsU(+");
-                                break;
-                            case '(': // rotate left
-                                Run("cU)sh+");
-                                break;
-                            case '[': // prefixes
-                                Run("~;%R{;s(m,d");
-                                break;
-                            case ']': // suffixes
-                                Run("~;%R{;s)mr,d");
-                                break;
-                            case 'a': // absolute value
-                                Push(BigInteger.Abs(Pop()));
-                                break;
-                            case 'A': // 10 ** x
-                                Push(BigInteger.Pow(10, (int)Pop()));
-                                break;
-                            case 'b': // base convert
-                                DoBaseConvert();
-                                break;
-                            case 'B': // binary convert
-                                Run("2|b");
-                                break;
-                            case 'd': // depth of stack
-                                Push(new BigInteger(MainStack.Count));
-                                break;
-                            case 'D': // depth of side stack
-                                Push(new BigInteger(InputStack.Count));
-                                break;
-                            case 'e': // is even
-                                Push(Pop() % 2 ^ 1);
-                                break;
-                            case 'f': 
-                                if(IsNumber(Peek())) Push(PrimeFactors(Pop())); // prime factorize
-                                else if(IsArray(Peek())) DoRegexFind(); // regex find all matches
-                                break;
-                            case 'g': // gcd
-                                DoGCD();
-                                break;
-                            case 'H': // hex convert
-                                Run("16|b");
-                                break;
-                            case 'I': // find all indexes
-                                DoFindIndexAll();
-                                break;
-                            case 'l': // lcm
-                                if (IsArray(Peek())) Run("1s{|lF");
-                                else if (IsNumber(Peek())) Run("b|g~*,/");
-                                else throw new Exception("Bad type for lcm");
-                                break;
-                            case 'J': // join with newlines
-                                Run("Vn*");
-                                break;
-                            case 'm': // min
-                                if (IsNumber(Peek())) Push(BigInteger.Min(Pop(), Pop()));
-                                else if (IsArray(Peek())) Run("chs{|mF");
-                                else throw new Exception("Bad types for min");
-                                break;
-                            case 'M': // max
-                                if (IsNumber(Peek())) Push(BigInteger.Max(Pop(), Pop()));
-                                else if (IsArray(Peek())) Run("chs{|MF");
-                                else throw new Exception("Bad types for max");
-                                break;
-                            case 'p': 
-                                if (IsNumber(Peek())) Run("|f%1="); // is prime
-                                else if (IsArray(Peek())) Run("cr1t+"); // palindromize
-                                break;
-                            case 'P': // print blank newline
-                                Print("");
-                                break;
-                            case 's': // regex split
-                                DoRegexSplit();
-                                break;
-                            case 't': // translate
-                                DoTranslate();
-                                break;
-                            case 'x': // decrement X, push
-                                Push(--X);
-                                break;
-                            case 'X': // increment X, push
-                                Push(++X);
-                                break;
-                            case 'z': // zero-fill
-                                Run("ss ~; '0* s 2l$ ,)");
-                                break;
-                            default: throw new Exception($"Unknown extended character '{program[ip-1]}'");
-                        }
-                        break;
-                    default: throw new Exception($"Unknown character '{program[ip-1]}'");
-                }
+                            else throw new Exception("Bad types for |*");
+                            break;
+                        case '/': // repeated divide
+                            Run("ss~;*{;/c;%!w,d");
+                            break;
+                        case ')': // rotate right
+                            Run("cHsU(+");
+                            break;
+                        case '(': // rotate left
+                            Run("cU)sh+");
+                            break;
+                        case '[': // prefixes
+                            Run("~;%R{;s(m,d");
+                            break;
+                        case ']': // suffixes
+                            Run("~;%R{;s)mr,d");
+                            break;
+                        case 'a': // absolute value
+                            Push(BigInteger.Abs(Pop()));
+                            break;
+                        case 'A': // 10 ** x
+                            Push(BigInteger.Pow(10, (int)Pop()));
+                            break;
+                        case 'b': // base convert
+                            DoBaseConvert();
+                            break;
+                        case 'B': // binary convert
+                            Run("2|b");
+                            break;
+                        case 'd': // depth of stack
+                            Push(new BigInteger(MainStack.Count));
+                            break;
+                        case 'D': // depth of side stack
+                            Push(new BigInteger(InputStack.Count));
+                            break;
+                        case 'e': // is even
+                            Push(Pop() % 2 ^ 1);
+                            break;
+                        case 'f':
+                            if (IsNumber(Peek())) Push(PrimeFactors(Pop())); // prime factorize
+                            else if (IsArray(Peek())) DoRegexFind(); // regex find all matches
+                            break;
+                        case 'g': // gcd
+                            DoGCD();
+                            break;
+                        case 'H': // hex convert
+                            Run("16|b");
+                            break;
+                        case 'I': // find all indexes
+                            DoFindIndexAll();
+                            break;
+                        case 'l': // lcm
+                            if (IsArray(Peek())) Run("1s{|lF");
+                            else if (IsNumber(Peek())) Run("b|g~*,/");
+                            else throw new Exception("Bad type for lcm");
+                            break;
+                        case 'J': // join with newlines
+                            Run("Vn*");
+                            break;
+                        case 'm': // min
+                            if (IsNumber(Peek())) Push(BigInteger.Min(Pop(), Pop()));
+                            else if (IsArray(Peek())) Run("chs{|mF");
+                            else throw new Exception("Bad types for min");
+                            break;
+                        case 'M': // max
+                            if (IsNumber(Peek())) Push(BigInteger.Max(Pop(), Pop()));
+                            else if (IsArray(Peek())) Run("chs{|MF");
+                            else throw new Exception("Bad types for max");
+                            break;
+                        case 'p':
+                            if (IsNumber(Peek())) Run("|f%1="); // is prime
+                            else if (IsArray(Peek())) Run("cr1t+"); // palindromize
+                            break;
+                        case 'P': // print blank newline
+                            Print("");
+                            break;
+                        case 's': // regex split
+                            DoRegexSplit();
+                            break;
+                        case 't': // translate
+                            DoTranslate();
+                            break;
+                        case 'x': // decrement X, push
+                            Push(--X);
+                            break;
+                        case 'X': // increment X, push
+                            Push(++X);
+                            break;
+                        case 'z': // zero-fill
+                            Run("ss ~; '0* s 2l$ ,)");
+                            break;
+                        default: throw new Exception($"Unknown extended character '{program[ip - 1]}'");
+                    }
+                    break;
+                default: throw new Exception($"Unknown character '{program[ip - 1]}'");
             }
-
             return 0;
         }
 
@@ -765,11 +780,7 @@ namespace StaxLang {
             int i = 0;
             Output.WriteLine("program: {0}", program.Substring(ip));
             foreach (var e in MainStack) {
-                var formatted = e;
-                if (IsArray(e)) {
-                    formatted = '"' + A2S(e) + '"';
-                    if (((string)formatted).Any(char.IsControl)) formatted = '[' + string.Join(", ", e) + ']';
-                }
+                var formatted = Format(e);
                 Output.WriteLine("{0:##0}: {1}", i++, formatted);
             }
             Output.WriteLine();
@@ -1341,6 +1352,19 @@ namespace StaxLang {
 
         private static List<object> Range(BigInteger start, BigInteger count) =>
             Enumerable.Range((int)start, (int)count).Select(n => new BigInteger(n) as object).ToList();
+
+        private string Format(dynamic e) {
+            if (IsArray(e)) {
+                var formatted = e;
+                formatted = '"' + A2S(e) + '"';
+                if (((string)formatted).Any(char.IsControl) || ((IList<object>)e).Any(IsArray)) {
+                    var inner = ((IList<object>)e).Select(Format);
+                    return '[' + string.Join(", ", inner) + ']';
+                }
+                return formatted;
+            }
+            return e.ToString();
+        }
 
         private object ParseNumber(string program, ref int ip) {
             BigInteger value = 0;
