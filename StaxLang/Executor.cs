@@ -9,7 +9,7 @@ namespace StaxLang {
     // available chars
     //  `:DgGkKo
     /* To add:
-     *     find-index-all by value/block/regex
+     *     find-index-all by regex
      *     reduce
      *     map-many / flatten
      *     uncons / uncons-right
@@ -93,6 +93,16 @@ namespace StaxLang {
         private dynamic Peek() => MainStack.Any() ? MainStack.Peek() : InputStack.Peek();
 
         private void Push(dynamic arg) => MainStack.Push(arg);
+
+        Stack<(dynamic _, BigInteger Index)> CallStackFrames = new Stack<(dynamic _, BigInteger Index)>();
+
+        private void PushStackFrame() {
+            CallStackFrames.Push((_, Index));
+        }
+
+        private void PopStackFrame() {
+            (_, Index) = CallStackFrames.Pop();
+        }
 
         private int TotalSize => MainStack.Count + InputStack.Count;
 
@@ -699,7 +709,7 @@ namespace StaxLang {
                 return;
             }
             else if (IsBlock(replace)) {
-                var initial = (_, Index);
+                PushStackFrame();
                 string result = "";
                 var matches = Regex.Matches(ts, ss);
                 int consumed = 0;
@@ -714,7 +724,7 @@ namespace StaxLang {
                 }
                 result += ts.Substring(consumed);
                 Push(S2A(result));
-                (_, Index) = initial;
+                PopStackFrame();
                 return;
             }
             else {
@@ -811,7 +821,7 @@ namespace StaxLang {
                 var list = Pop();
                 var combined = new List<(object val, IComparable key)>();
 
-                var initial = (_, Index);
+                PushStackFrame();
                 Index = 0;
                 foreach (var e in list) {
                     _ = e;
@@ -820,7 +830,7 @@ namespace StaxLang {
                     combined.Add((e, Pop()));
                     ++Index;
                 }
-                (_, Index) = initial;
+                PopStackFrame();
 
                 Push(combined.OrderBy(e => e.key).Select(e => e.val).ToList());
             }
@@ -867,8 +877,23 @@ namespace StaxLang {
                 }
                 Push(result);
             }
+            else if (IsBlock(target)) {
+                PushStackFrame();
+                var result = new List<object>();
+                for (Index = 0; Index < list.Count; Index++) {
+                    Push(_ = list[(int)Index]);
+                    int exitCode = Run(target.Program);
+                    if (exitCode == 0 && IsTruthy(Pop())) result.Add(Index);
+                }
+                PopStackFrame();
+                Push(result);
+            }
             else {
-                throw new NotImplementedException();
+                var result = new List<object>();
+                for (int i = 0; i < list.Count; i++) {
+                    if (AreEqual(list[(int)i], target)) result.Add(new BigInteger(i));
+                }
+                Push(result);
             }
         }
 
@@ -1001,25 +1026,25 @@ namespace StaxLang {
         private void DoPreCheckWhile() {
             Block block = Pop();
             int exitCode;
-            var initial = Index;
+            PushStackFrame();
             Index = 0;
             do {
                 exitCode = Run(block.Program);
                 Index++;
             } while (exitCode == 0);
-            Index = initial;
+            PopStackFrame();
         }
 
         private void DoWhile() {
             Block block = Pop();
             int exitCode;
-            var initial = Index;
+            PushStackFrame();
             Index = 0;
             do {
                 exitCode = Run(block.Program);
                 ++Index;
             } while (exitCode == 0 && IsTruthy(Pop()));
-            Index = initial;
+            PopStackFrame();
         }
 
         private void DoIf() {
@@ -1052,7 +1077,7 @@ namespace StaxLang {
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
-                var initial = (_, Index);
+                PushStackFrame();
                 Index = 0;
                 var result = new List<object>();
                 foreach (var e in a) {
@@ -1062,7 +1087,7 @@ namespace StaxLang {
                     if (IsTruthy(Pop())) result.Add(e);
                 }
                 Push(result);
-                (_, Index) = initial;
+                PopStackFrame();
             }
             else {
                 throw new Exception("Bad types for filter");
@@ -1076,14 +1101,14 @@ namespace StaxLang {
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
-                var initial = (_, Index);
+                PushStackFrame();
                 Index = 0;
                 foreach (var e in a) {
                     Push(_ = e);
                     Run(b.Program);
                     Index++;
                 }
-                (_, Index) = initial;
+                PopStackFrame();
             }
             else {
                 throw new Exception("Bad types for for");
@@ -1116,7 +1141,7 @@ namespace StaxLang {
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
-                var initial = (_, Index);
+                PushStackFrame();
                 Index = 0;
                 var result = new List<object>();
                 foreach (var e in a) {
@@ -1126,7 +1151,7 @@ namespace StaxLang {
                     if (exitCode == 0) result.Add(Pop());
                 }
                 Push(result);
-                (_, Index) = initial;
+                PopStackFrame();
             }
             else {
                 throw new Exception("bad type for map");
@@ -1248,9 +1273,9 @@ namespace StaxLang {
                     return;
                 }
                 else if (IsBlock(a)) {
-                    var initial = Index;
+                    PushStackFrame();
                     for (Index = 0; Index < b; Index++) Run(a.Program);
-                    Index = initial;
+                    PopStackFrame();
                     return;
                 }
             }

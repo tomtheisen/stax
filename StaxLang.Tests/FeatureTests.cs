@@ -132,6 +132,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Union() => RunProgram("1]2]+2]+3]+3]+  3r |& ',*", "1,2,2");
         [TestMethod] public void SymmetricDiff() => RunProgram("1]2]+2]+3]+3]+  3r |^ ',*", "3,3,0");
         [TestMethod] public void CountInTest() => RunProgram("1]2]+2]+3]+3]+ 3 #", "2");
+        [TestMethod] public void IndexAllArray() => RunProgram("\"[1 2 3 2 1 2 3]\"e 3|I J", "2 6");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -173,6 +174,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
         [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}R", "a1b2c3d");
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
+        [TestMethod] public void FindAllIndexesPredicate() => RunProgram("\"[1 2 2 3 3 4 4 5]\"e {|e} |I J", "1 2 5 6");
 
 
         // Stack operations
