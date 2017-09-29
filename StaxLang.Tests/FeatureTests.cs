@@ -81,6 +81,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void TruncateLeft() => RunProgram("\"Hello\" 3)", "llo");
         [TestMethod] public void PadLeft() => RunProgram("\"Hello\" 8)", "   Hello");
         [TestMethod] public void FindIndex() => RunProgram("\"Hello World\" \"Wo\" I", "6");
+        [TestMethod] public void FindAllIndexes() => RunProgram("\"Hello World\" \"o\" |I J", "4 7");
         [TestMethod] public void UnfoundIndex() => RunProgram("\"Hello World\" \"Wr\" I", "-1");
         [TestMethod] public void ChunkString() => RunProgram("\"abcdefgh\" 3/ ',*", "abc,def,gh");
         [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh");

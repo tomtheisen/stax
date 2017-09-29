@@ -9,8 +9,9 @@ namespace StaxLang {
     // available chars
     //  `:DgGkKo
     /* To add:
+     *     find-index-all by value/block/regex
      *     reduce
-     *     map-many
+     *     map-many / flatten
      *     uncons / uncons-right
      *     zip-short
      *     cross-product
@@ -21,14 +22,16 @@ namespace StaxLang {
      *     floats
      *     slice / slice assignment
      *     string interpolate
-     *     find-index-all by value/block/regex
      *     generate until duplicate
      *     generate n elements satisfying predicate
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
+     *     replace first only
      *     compare / sign
      *     arbitrary ranges
+     *     uneval
+     *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
      *     
      *     code explainer
      *     debugger
@@ -101,7 +104,7 @@ namespace StaxLang {
                     Run("L{" + program.Substring(1) + "PF");
                     return 0;
                 case 'f': // line-filter
-                    Run("L{d{}{_P}_" + program.Substring(1) + "?F");
+                    Run("L{{}{_P}a" + program.Substring(1) + "?F");
                     return 0;
                 case 'F': // line-for
                     Run("L{" + program.Substring(1) + "F");
@@ -303,7 +306,7 @@ namespace StaxLang {
                         Push(Index);
                         break;
                     case 'I': // get index
-                        DoGetIndex();
+                        DoFindIndex();
                         break;
                     case 'j': // un-join with spaces
                         Run("' /");
@@ -530,6 +533,9 @@ namespace StaxLang {
                                 break;
                             case 'H': // hex convert
                                 Run("16|b");
+                                break;
+                            case 'I': // find all indexes
+                                DoFindIndexAll();
                                 break;
                             case 'l': // lcm
                                 if (IsArray(Peek())) Run("1s{|lF");
@@ -848,15 +854,36 @@ namespace StaxLang {
             }
         }
 
-        private void DoGetIndex() {
-            var element = Pop();
-            var list = Pop();
+        private void DoFindIndexAll() {
+            dynamic target = Pop(), list = Pop();
+            if (!IsArray(list)) throw new Exception("Bad types for find index all");
+
+            if (IsArray(target)) {
+                string text = A2S(list), search = A2S(target);
+                var result = new List<object>();
+                int lastFound = -1;
+                while ((lastFound = text.IndexOf(search, lastFound + 1)) >= 0) {
+                    result.Add(new BigInteger(lastFound));
+                }
+                Push(result);
+            }
+            else {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void DoFindIndex() {
+            dynamic element = Pop(), list = Pop();
 
             if (!IsArray(list)) (list, element) = (element, list);
 
             if (IsArray(list)) {
                 for (int i = 0; i < list.Count; i++) {
                     if (IsArray(element)) {
+                        if (i + element.Count > list.Count) {
+                            Push(BigInteger.MinusOne);
+                            return;
+                        }
                         bool match = true;
                         for (int j = 0; j < element.Count; j++) {
                             if (!AreEqual(list[i + j], element[j])) {
@@ -1094,9 +1121,9 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in a) {
                     Push(_ = e);
-                    Run(b.Program);
+                    int exitCode = Run(b.Program);
                     Index++;
-                    result.Add(Pop());
+                    if (exitCode == 0) result.Add(Pop());
                 }
                 Push(result);
                 (_, Index) = initial;

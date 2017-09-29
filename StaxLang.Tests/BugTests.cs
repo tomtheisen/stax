@@ -17,5 +17,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void EmptyTranspose() => RunProgram("1p zMp", "1");
         [TestMethod] public void StringArrayDiff() => RunProgram("\"abc\"] \"abc\"] |^ %", "0");
         [TestMethod] public void ZeroFillNumber() => RunProgram("6 2 |z", "06");
+        [TestMethod] public void UnfoundMulticharSubstringIndex() => RunProgram("\"abc\" \"xy\" I", "-1");
+        [TestMethod] public void UnfoundMulticharSubstringOverlap() => RunProgram("\"abc\" \"cd\" I", "-1");
     }
 }
