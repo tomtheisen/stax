@@ -873,7 +873,20 @@ namespace StaxLang.Tests {
                 "WOW ! wow", "0",
                 "(;)", "0",
                 "qppq", "0");
+        }
 
+        [TestMethod]
+        public void StringStairsTest() {
+            https://codegolf.stackexchange.com/questions/143988/build-me-some-string-stairs
+
+            string[] expected = {
+                "Stap        sapr",
+                "   hylo        ophy",
+                "      cocc        ticu",
+                "         us          s",
+            };
+
+            RunProgram("nXdj{x/{xvi*' *s+mmc{%m|Ms{[%-z]*_s+m{{%m|M_{[(mmMFJTP", "4\nStaphylococcus saprophyticus", expected);
         }
     }
 }

@@ -32,6 +32,8 @@ namespace StaxLang {
      *     arbitrary ranges
      *     uneval
      *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
+     *     rectangularize
+     *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     
      *     code explainer
      *     debugger
@@ -778,7 +780,6 @@ namespace StaxLang {
 
         private void DoDump(string program, int ip) {
             int i = 0;
-            Output.WriteLine("program: {0}", program.Substring(ip));
             foreach (var e in MainStack) {
                 var formatted = Format(e);
                 Output.WriteLine("{0:##0}: {1}", i++, formatted);
