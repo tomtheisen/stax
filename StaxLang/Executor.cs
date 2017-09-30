@@ -498,7 +498,7 @@ namespace StaxLang {
                 case '|': // extended operations
                     switch (program[ip++]) {
                         case '`':
-                            DoDump(program, ip);
+                            DoDump();
                             break;
                         case '%': // div mod
                             Run("ss1C1C%~/,");
@@ -793,11 +793,17 @@ namespace StaxLang {
             }
         }
 
-        private void DoDump(string program, int ip) {
+        private void DoDump() {
             int i = 0;
-            foreach (var e in MainStack.Concat(InputStack)) {
-                var formatted = Format(e);
-                Output.WriteLine("{0:##0}: {1}", i++, formatted);
+            if (CallStackFrames.Any()) Output.WriteLine("i: {0}, _: {1}", Index, Format(_));
+            Output.WriteLine("x: {0} y: {1} z: {2}", Format(X), Format(Y), Format(Z));
+            if (MainStack.Any()) {
+                Output.WriteLine("Main:");
+                foreach (var e in MainStack) Output.WriteLine("{0:##0}: {1}", i++, Format(e)); 
+            }
+            if (InputStack.Any()) {
+                Output.WriteLine("Input:");
+                foreach (var e in InputStack) Output.WriteLine("{0:##0}: {1}", i++, Format(e));
             }
             Output.WriteLine();
         }
@@ -1366,7 +1372,7 @@ namespace StaxLang {
         private string Format(dynamic e) {
             if (IsArray(e)) {
                 var formatted = e;
-                formatted = '"' + A2S(e) + '"';
+                formatted = '"' + A2S(e).Replace("\n", "\\n") + '"';
                 if (((string)formatted).Any(char.IsControl) || ((IList<object>)e).Any(IsArray)) {
                     var inner = ((IList<object>)e).Select(Format);
                     return '[' + string.Join(", ", inner) + ']';
