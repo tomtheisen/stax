@@ -171,11 +171,11 @@ namespace StaxLang.Tests {
         [TestMethod] public void Map() => RunProgram("5R {c*m ',*", "1,4,9,16,25");
         [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");
         [TestMethod] public void IterationIndex() => RunProgram("'x]4* {p ':p ip ' p F", "x:0 x:1 x:2 x:3 ");
+        [TestMethod] public void OuterIterationIndex() => RunProgram("2F 2F |ip", "0011");
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
         [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}R", "a1b2c3d");
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
         [TestMethod] public void FindAllIndexesPredicate() => RunProgram("\"[1 2 2 3 3 4 4 5]\"e {|e} |I J", "1 2 5 6");
-
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");

@@ -19,5 +19,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ZeroFillNumber() => RunProgram("6 2 |z", "06");
         [TestMethod] public void UnfoundMulticharSubstringIndex() => RunProgram("\"abc\" \"xy\" I", "-1");
         [TestMethod] public void UnfoundMulticharSubstringOverlap() => RunProgram("\"abc\" \"cd\" I", "-1");
+        [TestMethod] public void TooMuchTrim() => RunProgram("'a 3t", "");
+        [TestMethod] public void ShorthandLoopIndex() => RunProgram("2F2Fip", "0101");
     }
 }

@@ -887,6 +887,11 @@ namespace StaxLang.Tests {
             };
 
             RunProgram("nXdj{x/{xvi*' *s+mmc{%m|Ms{[%-z]*_s+m{{%m|M_{[(mmMFJTP", "4\nStaphylococcus saprophyticus", expected);
+            RunProgram("nXdccj~FiY;{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
+            RunProgram("scj~FiY;{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
+            RunProgram("djWiYdc{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
+            RunProgram("djWiYxv*z)[s{%cvx/-_xy*tx((mJTc!C+P", "4\nStaphylococcus saprophyticus", expected);
+            RunProgram("djWc{%cvx/-_x|i*tx((mJTc!Cixv*z)pP", "4\nStaphylococcus saprophyticus", expected);
         }
     }
 }
