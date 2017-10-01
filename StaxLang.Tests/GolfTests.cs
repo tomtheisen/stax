@@ -893,5 +893,12 @@ namespace StaxLang.Tests {
             RunProgram("djWiYxv*z)[s{%cvx/-_xy*tx((mJTc!C+P", "4\nStaphylococcus saprophyticus", expected);
             RunProgram("djWc{%cvx/-_x|i*tx((mJTc!Cixv*z)pP", "4\nStaphylococcus saprophyticus", expected);
         }
+
+        [TestMethod]
+        public void PalindromeRangeTest() {
+            https://codegolf.stackexchange.com/questions/3532/enumerate-all-palindromic-numbers-in-decimal-between-0-and-n
+
+            RunProgram("e^rf$cr=", "33", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "11", "22", "33");
+        }
     }
 }

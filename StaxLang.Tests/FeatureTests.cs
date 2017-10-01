@@ -167,6 +167,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void WhileShorthand() => RunProgram("3Wq^c8=C'-p", "3-4-5-6-7");
         [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
+        [TestMethod] public void FilterShorthand() => RunProgram("5rf2%", "1\r\n3");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
         [TestMethod] public void Map() => RunProgram("5R {c*m ',*", "1,4,9,16,25");
         [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");

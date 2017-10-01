@@ -298,6 +298,17 @@ namespace StaxLang {
                         ip = program.Length;
                         return 0;
                     }
+                    else if (IsArray(Peek())) {
+                        Index = 0;
+                        foreach (var e in Pop()) {
+                            Push(_ = e);
+                            Run(program.Substring(ip));
+                            if (IsTruthy(Pop())) Print(e);
+                            Index++;
+                        }
+                        ip = program.Length;
+                        return 0;
+                    }
                     DoFilter(); // filter
                     break;
                 case 'F': // for loop
