@@ -34,6 +34,7 @@ namespace StaxLang {
      *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
      *     rectangularize
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
+     *     pair
      *     
      *     code explainer
      *     debugger
