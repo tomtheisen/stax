@@ -119,6 +119,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void AssignIndex() => RunProgram("5R 1 8& ',*", "1,8,3,4,5");
         [TestMethod] public void ArrayToString() => RunProgram("5R$", "12345");
         [TestMethod] public void SingletonWrap() => RunProgram("0]%", "1");
+        [TestMethod] public void PairWrap() => RunProgram("3 7 \\%", "2");
         [TestMethod] public void Head() => RunProgram("5R h", "1");
         [TestMethod] public void Tail() => RunProgram("5R H", "5");
         [TestMethod] public void ShowArray() => RunProgram("'x]S", "x");
