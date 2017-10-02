@@ -11,7 +11,7 @@ namespace StaxLang {
     /* To add:
      *     find-index-all by regex
      *     reduce
-     *     map-many / flatten
+     *     map-many
      *     uncons / uncons-right
      *     zip-short
      *     cross-product
@@ -20,7 +20,6 @@ namespace StaxLang {
      *     invert
      *     rational
      *     floats
-     *     slice / slice assignment
      *     string interpolate
      *     generate until duplicate
      *     generate n elements satisfying predicate
@@ -29,12 +28,10 @@ namespace StaxLang {
      *     non-regex replace
      *     replace first only
      *     compare / sign
-     *     arbitrary ranges
      *     uneval
      *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
      *     rectangularize
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
-     *     pair
      *     
      *     code explainer
      *     debugger
@@ -129,7 +126,7 @@ namespace StaxLang {
                     ip = program.Length;
                     return 0;
                 case 'f': // line-filter
-                    Run("L{{}{_P}a" + program.Substring(1) + "?F");
+                    Run("L{" + program.Substring(1) + "{_P}{}?F");
                     ip = program.Length;
                     return 0;
                 case 'F': // line-for
@@ -295,6 +292,17 @@ namespace StaxLang {
                         for (Index = BigInteger.Zero; Index < n; Index++) {
                             _ = Index + 1;
                             Run(program.Substring(ip));
+                        }
+                        ip = program.Length;
+                        return 0;
+                    }
+                    else if (IsArray(Peek())) {
+                        Index = 0;
+                        foreach (var e in Pop()) {
+                            Push(_ = e);
+                            Run(program.Substring(ip));
+                            if (IsTruthy(Pop())) Print(e);
+                            Index++;
                         }
                         ip = program.Length;
                         return 0;
@@ -608,6 +616,18 @@ namespace StaxLang {
                         case 'P': // print blank newline
                             Print("");
                             break;
+                        case 'r': // start-end range
+                            {
+                                int end = (int)Pop(), start = (int)Pop();
+                                Push(Enumerable.Range(start, end - start).Select(n => new BigInteger(n) as object).ToList());
+                                break;
+                            }
+                        case 'R': // start-end-stride range
+                            {
+                                int stride = (int)Pop(), end = (int)Pop(), start = (int)Pop();
+                                Push(Enumerable.Range(0, end - start).Select(n => n * stride + start).TakeWhile(n => n < end).Select(n => new BigInteger(n) as object).ToList());
+                                break;
+                            }
                         case 's': // regex split
                             DoRegexSplit();
                             break;
@@ -645,8 +665,12 @@ namespace StaxLang {
         }
 
         private void DoZipRepeat() {
-            var b = Pop();
-            var a = Pop();
+            dynamic b = Pop(), a = Pop();
+
+            if (!IsArray(a) && !IsArray(b)) {
+                Push(new List<object> { a, b });
+                return;
+            }
 
             if (!IsArray(a)) a = new List<object> { a };
             if (!IsArray(b)) b = new List<object> { b };
@@ -768,6 +792,8 @@ namespace StaxLang {
         private void DoTranslate() {
             var translation = Pop();
             var input = Pop();
+
+            if (IsNumber(input)) input = new List<object> { input };
 
             if (IsArray(input) && IsArray(translation)) {
                 var result = new List<object>();
@@ -976,14 +1002,15 @@ namespace StaxLang {
         }
 
         private void DoAssignIndex() {
-            var element = Pop();
-            var index = (int)Pop();
-            var list = Pop();
+            dynamic element = Pop(), indexes = Pop(), list = Pop();
+
+            if (IsNumber(indexes)) indexes = new List<object> { indexes };
 
             if (IsArray(list)) {
                 var result = new List<object>(list);
-                index = ((index % result.Count) + result.Count) % result.Count;
-                result[index] = element;
+                foreach (int index in indexes) {
+                    result[((index % result.Count) + result.Count) % result.Count] = element;
+                }
                 Push(result);
             }
             else {
@@ -1079,14 +1106,8 @@ namespace StaxLang {
         }
 
         private void DoIf() {
-            bool condition = IsTruthy(Pop());
-
-            var then = Pop();
-            if (condition) {
-                Pop();
-                Push(then);
-            }
-
+            dynamic @else = Pop(), then = Pop(), condition = Pop();
+            Push(IsTruthy(condition) ? then : @else);
             if (IsBlock(Peek())) Run(Pop().Program);
         }
 
@@ -1426,6 +1447,12 @@ namespace StaxLang {
 
                 if (program[ip] == '"') {
                     ParseString(program, ref ip);
+                    --ip;
+                    continue;
+                }
+
+                if (program[ip] == '.') {
+                    ParseCompressedString(program, ref ip);
                     --ip;
                     continue;
                 }

@@ -62,7 +62,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void GreaterThan() => RunProgram("1 2>", "0");
         [TestMethod] public void NotTrue() => RunProgram("7!", "0");
         [TestMethod] public void NotFalse() => RunProgram("0!", "1");
-        [TestMethod] public void If() => RunProgram("\"not equal\"\"equal\" 1 2=?", "not equal");
+        [TestMethod] public void If() => RunProgram("1 2= \"equal\" \"not equal\" ?", "not equal");
 
         // String
         [TestMethod] public void Char() => RunProgram("'a", "a");
@@ -106,6 +106,8 @@ namespace StaxLang.Tests {
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
         [TestMethod] public void OneRange() => RunProgram("5R',*", "1,2,3,4,5");
+        [TestMethod] public void StartEndRange() => RunProgram("5 8 |r J", "5 6 7");
+        [TestMethod] public void StartEndStrideRange() => RunProgram("5 13 2 |R J", "5 7 9 11");
         [TestMethod] public void ReverseArray() => RunProgram("5R r ',*", "5,4,3,2,1");
         [TestMethod] public void ConcatArray() => RunProgram("3R 4R + ',*", "1,2,3,1,2,3,4");
         [TestMethod] public void ConcatArrayElement() => RunProgram("3R 7 + ',*", "1,2,3,7");
@@ -117,6 +119,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ReadIndex() => RunProgram("5R 2@", "3");
         [TestMethod] public void ReadIndexes() => RunProgram("5R 2]1N]+ @ ',*", "3,5");
         [TestMethod] public void AssignIndex() => RunProgram("5R 1 8& ',*", "1,8,3,4,5");
+        [TestMethod] public void AssignIndexAll() => RunProgram("5R 1 2\\ 8& ',*", "1,8,8,4,5");
         [TestMethod] public void ArrayToString() => RunProgram("5R$", "12345");
         [TestMethod] public void SingletonWrap() => RunProgram("0]%", "1");
         [TestMethod] public void PairWrap() => RunProgram("3 7 \\%", "2");
@@ -166,8 +169,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void DoWhileShorthand() => RunProgram("3wq^c8-", "34567");
         [TestMethod] public void While() => RunProgram("3{q^c8=C'-pW", "3-4-5-6-7");
         [TestMethod] public void WhileShorthand() => RunProgram("3Wq^c8=C'-p", "3-4-5-6-7");
-        [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
+        [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" 1 2=  {} {\"not \"s+} ?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
+        [TestMethod] public void FilterShorthand() => RunProgram("5rf2%", "1\r\n3");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
         [TestMethod] public void Map() => RunProgram("5R {c*m ',*", "1,4,9,16,25");
         [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");
