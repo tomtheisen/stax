@@ -618,8 +618,10 @@ namespace StaxLang {
                             break;
                         case 'r': // start-end range
                             {
-                                int end = (int)Pop(), start = (int)Pop();
-                                Push(Enumerable.Range(start, end - start).Select(n => new BigInteger(n) as object).ToList());
+                                dynamic end = Pop(), start = Pop();
+                                if (IsArray(end)) end = new BigInteger(end.Count);
+                                if (IsArray(start)) start = new BigInteger(-start.Count);
+                                Push(Enumerable.Range((int)start, (int)(end - start)).Select(n => new BigInteger(n) as object).ToList());
                                 break;
                             }
                         case 'R': // start-end-stride range

@@ -102,6 +102,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ZeroFill() => RunProgram("\"abc\" 5 |z", "00abc");
         [TestMethod] public void CompressedLiterals() => RunProgram(".6Js2%", "literal");
         [TestMethod] public void SubstringOccurrences() => RunProgram("\"drab cab\" \"ab\" #", "2");
+        [TestMethod] public void AutoRangeBounds() => RunProgram("\"asdf\"X 2x|r '/ &", "as//");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
