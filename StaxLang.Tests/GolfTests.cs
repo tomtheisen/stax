@@ -873,5 +873,13 @@ namespace StaxLang.Tests {
 
             RunProgram("e^rf$cr=", "33", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "11", "22", "33");
         }
+
+        [TestMethod]
+        public void RemoveAmbigousPluralsTest() {
+            https://codegolf.stackexchange.com/questions/144136/remove-ambiguous-plurals
+            RunProgramSingleInputs(@"""(\b(an?|one|1) \S+)\(s\)""X""$1""Rx5)'sR",
+                "one banana(s) two apple(s)", "one banana two apples",
+                "1 banana(s) 11 apple(s)", "1 banana 11 apples");
+        }
     }
 }
