@@ -69,6 +69,7 @@ namespace StaxLang.Tests {
         public void PrimeTest() {
             RunProgram("nR1]-{|f%1=fS", "15", "2", "3", "5", "7", "11", "13");
             RunProgram("n{|pfS", "15", "2", "3", "5", "7", "11", "13");
+            RunProgram("nRf|p", "15", "2", "3", "5", "7", "11", "13");
         }
 
         [TestMethod]
@@ -87,11 +88,6 @@ namespace StaxLang.Tests {
         }
 
         [TestMethod]
-        public void ReverseTest() {
-            RunProgram("r", "asdf", "fdsa");
-        }
-
-        [TestMethod]
         public void DiagonalTest() {
             RunProgram(@"nR{'\)mS", "3", @"\", @" \", @"  \");
             RunProgram(@"nR{'\)PF", "3", @"\", @" \", @"  \");
@@ -104,6 +100,7 @@ namespace StaxLang.Tests {
             RunProgram(@"eR{c'\)pxs-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"eR{'\)px_-H^'/)PF", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"eR{'\)x_-H^'/)+mS", "3", @"\    /", @" \  /", @"  \/");
+            RunProgram(@"em'\)x_-H^'/)+", "3", @"\    /", @" \  /", @"  \/");
             RunProgram(@"eR{' xH*i'\&sN'/&TmS", "3", @"\    /", @" \  /", @"  \/");
         }
 
@@ -170,18 +167,6 @@ namespace StaxLang.Tests {
         public void ScopeTest() {
             RunProgram("2R{d 9R{dF _PF", "", "1", "2");
             RunProgram("2R{d 9R{dF iPF", "", "0", "1");
-        }
-
-        [TestMethod]
-        public void AllDigitsTest() {
-            RunProgram("Ar26r{65+]m+$", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("36r{36|b^mP", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("36r{48+c58/7*+m", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("43r{48+m7r{58+m-", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("91r48r-7r{58+m-", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("91r48r-65r58r--", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("VdVa^+", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            RunProgram("VW", "", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         }
 
         [TestMethod]
@@ -284,13 +269,10 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BracketMatching() {
             http://golf.shinh.org/p.rb?Bracket+Matching
-            // x - bracket type
-            // y - input
-            // z - temp storage for outer i
-            RunProgramSingleInputs(",0~{c{ \"_)}]\",@=! {\"failed at: \"pyPzh}*} s {dx~} \"({[\"aI^X aas?yU)YdF\"yes", 
-                ")", "failed at: )", 
-                "()", "yes", 
-                "{()[]}", "yes", 
+            RunProgramSingleInputs("mUZ~{\"[](){}\"|tX_={,_={}{iZd}?}{x~}?z^CFzU=.TO..2%IKrq`._zt+?",
+                ")", "failed at: )",
+                "()", "yes",
+                "{()[]}", "yes",
                 "()}()", "failed at: }()");
         }
 

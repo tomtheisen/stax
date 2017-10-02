@@ -780,6 +780,8 @@ namespace StaxLang {
             var translation = Pop();
             var input = Pop();
 
+            if (IsNumber(input)) input = new List<object> { input };
+
             if (IsArray(input) && IsArray(translation)) {
                 var result = new List<object>();
                 var map = new Dictionary<char, char>();
@@ -1431,6 +1433,12 @@ namespace StaxLang {
 
                 if (program[ip] == '"') {
                     ParseString(program, ref ip);
+                    --ip;
+                    continue;
+                }
+
+                if (program[ip] == '.') {
+                    ParseCompressedString(program, ref ip);
                     --ip;
                     continue;
                 }

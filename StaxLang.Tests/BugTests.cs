@@ -21,5 +21,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void UnfoundMulticharSubstringOverlap() => RunProgram("\"abc\" \"cd\" I", "-1");
         [TestMethod] public void TooMuchTrim() => RunProgram("'a 3t", "");
         [TestMethod] public void ShorthandLoopIndex() => RunProgram("2F2Fip", "0101");
+        [TestMethod] public void CompressedInBlock() => RunProgram("1{.O.F", "Thg");
     }
 }
