@@ -106,6 +106,8 @@ namespace StaxLang.Tests {
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
         [TestMethod] public void OneRange() => RunProgram("5R',*", "1,2,3,4,5");
+        [TestMethod] public void StartEndRange() => RunProgram("5 8 |r J", "5 6 7");
+        [TestMethod] public void StartEndStrideRange() => RunProgram("5 13 2 |R J", "5 7 9 11");
         [TestMethod] public void ReverseArray() => RunProgram("5R r ',*", "5,4,3,2,1");
         [TestMethod] public void ConcatArray() => RunProgram("3R 4R + ',*", "1,2,3,1,2,3,4");
         [TestMethod] public void ConcatArrayElement() => RunProgram("3R 7 + ',*", "1,2,3,7");
@@ -117,6 +119,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ReadIndex() => RunProgram("5R 2@", "3");
         [TestMethod] public void ReadIndexes() => RunProgram("5R 2]1N]+ @ ',*", "3,5");
         [TestMethod] public void AssignIndex() => RunProgram("5R 1 8& ',*", "1,8,3,4,5");
+        [TestMethod] public void AssignIndexAll() => RunProgram("5R 1 2\\ 8& ',*", "1,8,8,4,5");
         [TestMethod] public void ArrayToString() => RunProgram("5R$", "12345");
         [TestMethod] public void SingletonWrap() => RunProgram("0]%", "1");
         [TestMethod] public void Head() => RunProgram("5R h", "1");
