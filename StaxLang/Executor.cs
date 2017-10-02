@@ -129,7 +129,7 @@ namespace StaxLang {
                     ip = program.Length;
                     return 0;
                 case 'f': // line-filter
-                    Run("L{{}{_P}a" + program.Substring(1) + "?F");
+                    Run("L{" + program.Substring(1) + "{_P}{}?F");
                     ip = program.Length;
                     return 0;
                 case 'F': // line-for
@@ -1090,14 +1090,8 @@ namespace StaxLang {
         }
 
         private void DoIf() {
-            bool condition = IsTruthy(Pop());
-
-            var then = Pop();
-            if (condition) {
-                Pop();
-                Push(then);
-            }
-
+            dynamic @else = Pop(), then = Pop(), condition = Pop();
+            Push(IsTruthy(condition) ? then : @else);
             if (IsBlock(Peek())) Run(Pop().Program);
         }
 

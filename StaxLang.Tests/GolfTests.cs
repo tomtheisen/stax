@@ -50,7 +50,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void CollatzTest() {
-            RunProgram("n{QXhx3*^x2%?cvwP", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("nQwX2%x3*^xh?Qcv", "3", "3", "10", "5", "16", "8", "4", "2", "1");
         }
 
         [TestMethod]
@@ -248,11 +248,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void FizzBuzzTest() {
             RunProgram("eR{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mS", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("eR{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?mS", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("eR{_3%!\"Fizz\"*_5%!\"Buzz\"*+c?PF", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("eF__3%!\"Fizz\"*_5%!\"Buzz\"*+c?P", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("em_3%!\"Fizz\"*_5%!\"Buzz\"*+c?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("nm_3%!.N\"(.*_5%!.-D.*+c?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("nm3%!.N\"(.*_5%!.-D.*+c_?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
         }
 
         [TestMethod]
@@ -291,7 +287,7 @@ namespace StaxLang.Tests {
             // x - bracket type
             // y - input
             // z - temp storage for outer i
-            RunProgramSingleInputs(",0~{c{\"_)}]\",@=!{\"failed at: \"pyPzh}*}s{dx~}\"({[\"aI^X?yU)YdF\"yes", 
+            RunProgramSingleInputs(",0~{c{ \"_)}]\",@=! {\"failed at: \"pyPzh}*} s {dx~} \"({[\"aI^X aas?yU)YdF\"yes", 
                 ")", "failed at: )", 
                 "()", "yes", 
                 "{()[]}", "yes", 
@@ -373,7 +369,6 @@ namespace StaxLang.Tests {
                 "0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0",
                 "1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"};
 
-            RunProgram("' /Ee~e{;{R}{r}i2%?{2%m' *P}*", "3 19", ThreeNineteenOutput);
             RunProgram("' /Ee~e{i2%{!cp' p};v*!P}*", "3 19", ThreeNineteenOutput);
             RunProgram("' /EeR{2%m' *se{Q1001$|t}*d", "3 19", ThreeNineteenOutput);
             RunProgram("nnv~{i2%{!cp' p};*!P}*", "3 19", ThreeNineteenOutput);
@@ -388,11 +383,11 @@ namespace StaxLang.Tests {
             RunProgram("meXU1{s[+cx<wx=", "0\n3\n4\n13\n14", "1", "1", "0", "1", "0");
         }
 
+        [Timeout(100)]
         [TestMethod]
         public void PandigitalDoublingTest() {
             https://codegolf.stackexchange.com/questions/142758/pandigital-doubling
-
-            RunProgramSingleInputs("{X0{eH$0~1}Vdx-?w|D", "66833", "44", "617283945", "1");
+            RunProgramSingleInputs("{cVds-{eH$0~1}0?w|D", "66833", "44", "617283945", "1");
         }
 
         [TestMethod]
@@ -480,10 +475,6 @@ namespace StaxLang.Tests {
                 @"/"
             };
 
-            RunProgram(@"0,{d{vc^}{^c}_92=?_])PF", @"\\\//\\/\//\\///", slashOut);
-            RunProgram(@"0,{d{^c}{vc^}_2%?_])PF", @"\\\//\\/\//\\///", slashOut);
-            RunProgram(@"{{x^X}{xvX^}_2%?_])PF", @"\\\//\\/\//\\///", slashOut);
-            RunProgram(@"{{|X}{|x^}_2%?_])PF", @"\\\//\\/\//\\///", slashOut);
             RunProgram(@"{|ex+X_])Px_2%-XF", @"\\\//\\/\//\\///", slashOut);
         }
 
@@ -723,7 +714,7 @@ namespace StaxLang.Tests {
                 @"+++++XXXXX+++++",
             };
             RunProgram(@"znR{X""X/""i@]*x""+\""i@]*+x*xx^*h)~{;i@]x*+m;]x*+FS", "5", expected);
-            RunProgram(@"znHR{hR|+_^hY""+X""""/\""ih2%?*{O_*ihR|+ts(]y*+MFS", "5", expected);
+            RunProgram(@"znHR{hR|+_^hYih2%""/\""""+X""?*{O_*ihR|+ts(]y*+MFS", "5", expected);
         }
 
         [TestMethod]
@@ -789,7 +780,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void ReverseStringMaintainCapsTest() {
             https://codegolf.stackexchange.com/questions/84606/reverse-a-string-while-maintaining-the-capitalization-in-the-same-places
-            RunProgramSingleInputs("vr{_]^VAyi@I^?m",
+            RunProgramSingleInputs("vr{VAyi@I^_]^_?m",
                 "Hello, Midnightas", "SathginDim ,olleh",
                 ".Q", "q.");
         }

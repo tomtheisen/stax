@@ -62,7 +62,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void GreaterThan() => RunProgram("1 2>", "0");
         [TestMethod] public void NotTrue() => RunProgram("7!", "0");
         [TestMethod] public void NotFalse() => RunProgram("0!", "1");
-        [TestMethod] public void If() => RunProgram("\"not equal\"\"equal\" 1 2=?", "not equal");
+        [TestMethod] public void If() => RunProgram("1 2= \"equal\" \"not equal\" ?", "not equal");
 
         // String
         [TestMethod] public void Char() => RunProgram("'a", "a");
@@ -165,7 +165,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void DoWhileShorthand() => RunProgram("3wq^c8-", "34567");
         [TestMethod] public void While() => RunProgram("3{q^c8=C'-pW", "3-4-5-6-7");
         [TestMethod] public void WhileShorthand() => RunProgram("3Wq^c8=C'-p", "3-4-5-6-7");
-        [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" {\"not \"s+} {} 1 2=?", "not equal");
+        [TestMethod] public void IfBlocks() => RunProgram(" \"equal\" 1 2=  {} {\"not \"s+} ?", "not equal");
         [TestMethod] public void Filter() => RunProgram("5R {2%f ',*", "1,3,5");
         [TestMethod] public void FilterShorthand() => RunProgram("5rf2%", "1\r\n3");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
