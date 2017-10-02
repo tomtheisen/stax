@@ -138,6 +138,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void SymmetricDiff() => RunProgram("1]2]+2]+3]+3]+  3r |^ ',*", "3,3,0");
         [TestMethod] public void CountInTest() => RunProgram("1]2]+2]+3]+3]+ 3 #", "2");
         [TestMethod] public void IndexAllArray() => RunProgram("\"[1 2 3 2 1 2 3]\"e 3|I J", "2 6");
+        [TestMethod] public void Uncons() => RunProgram("\"abcd\" B pP", "97bcd");
+        [TestMethod] public void UnconsRight() => RunProgram("\"abcd\" N pP", "100abc");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");

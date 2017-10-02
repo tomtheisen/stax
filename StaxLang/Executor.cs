@@ -12,7 +12,6 @@ namespace StaxLang {
      *     find-index-all by regex
      *     reduce
      *     map-many
-     *     uncons / uncons-right
      *     zip-short
      *     cross-product
      *     log
@@ -268,8 +267,10 @@ namespace StaxLang {
                         Push(b); Push(a); Push(b);
                     }
                     break;
-                case 'B': // batch
-                    Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d");
+                case 'B': 
+                    if (IsNumber(Peek())) Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
+                    else if (IsArray(Peek())) Run("c1tsh"); // uncons-right
+                    else throw new Exception("Bad type for N");
                     break;
                 case 'c': // copy
                     Push(Peek());
@@ -350,10 +351,10 @@ namespace StaxLang {
                     DoFindIndex();
                     break;
                 case 'j': // un-join with spaces
-                    Run("' /");
+                    Run("' /"); 
                     break;
-                case 'J': // join with spaces
-                    Run("' *");
+                case 'J': 
+                    Run("' *"); // join with spaces
                     break;
                 case 'l': // listify-n
                     DoListifyN();
@@ -394,8 +395,10 @@ namespace StaxLang {
                 case 'n': // get number from input
                     DoGetNumber();
                     break;
-                case 'N': // negate
-                    DoNegate();
+                case 'N':
+                    if (IsNumber(Peek())) Run("U*"); // negate
+                    else if (IsArray(Peek())) Run("c1TsH"); // uncons
+                    else throw new Exception("Bad type for N");
                     break;
                 case 'O': // order
                     DoOrder();
@@ -808,17 +811,6 @@ namespace StaxLang {
             }
             else {
                 throw new Exception("Bad types for translate");
-            }
-        }
-
-        private void DoNegate() {
-            var arg = Pop();
-
-            if (IsNumber(arg)) {
-                Push(-arg);
-            }
-            else {
-                throw new Exception("Bad type for negate");
             }
         }
 
@@ -1351,9 +1343,7 @@ namespace StaxLang {
         }
 
         private void DoEqual() {
-            var b = Pop();
-            var a = Pop();
-            Push(AreEqual(a, b) ? BigInteger.One : BigInteger.Zero);
+            Push(AreEqual(Pop(), Pop()) ? BigInteger.One : BigInteger.Zero);
         }
 
         #region support
@@ -1473,14 +1463,14 @@ namespace StaxLang {
 
             private Comparer() { }
 
-            public int Compare(object a, object b) {
+            public int Compare(dynamic a, dynamic b) {
                 if (IsNumber(a)) {
-                    while (IsArray(b)) b = ((IList<object>)b)[0];
+                    while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
                     if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsNumber(b)) {
-                    while (IsArray(a)) a = ((IList<object>)a)[0];
+                    while (IsArray(a) && a.Count > 0) a = ((IList<object>)a)[0];
                     if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }

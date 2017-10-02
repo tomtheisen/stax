@@ -881,5 +881,64 @@ namespace StaxLang.Tests {
                 "one banana(s) two apple(s)", "one banana two apples",
                 "1 banana(s) 11 apple(s)", "1 banana 11 apples");
         }
+
+        [TestMethod]
+        public void AlphabetSearchlightTest() {
+            https://codegolf.stackexchange.com/questions/141725/make-an-alphabet-searchlight
+            string[] expected = {
+                "                         ZYXWVUTSRQPONMLKJIHGFEDCBA",
+                "                        YXWVUTSRQPONMLKJIHGFEDCBA",
+                "                       XWVUTSRQPONMLKJIHGFEDCBA",
+                "                      WVUTSRQPONMLKJIHGFEDCBA",
+                "                     VUTSRQPONMLKJIHGFEDCBA",
+                "                    UTSRQPONMLKJIHGFEDCBA",
+                "                   TSRQPONMLKJIHGFEDCBA",
+                "                  SRQPONMLKJIHGFEDCBA",
+                "                 RQPONMLKJIHGFEDCBA",
+                "                QPONMLKJIHGFEDCBA",
+                "               PONMLKJIHGFEDCBA",
+                "              ONMLKJIHGFEDCBA",
+                "             NMLKJIHGFEDCBA",
+                "            MLKJIHGFEDCBA",
+                "           LKJIHGFEDCBA",
+                "          KJIHGFEDCBA",
+                "         JIHGFEDCBA",
+                "        IHGFEDCBA",
+                "       HGFEDCBA",
+                "      GFEDCBA",
+                "     FEDCBA",
+                "    EDCBA",
+                "   DCBA",
+                "  CBA",
+                " BA",
+                "A",
+            };
+            RunProgram("VAr|]mc%Hv)", "", expected);
+        }
+
+        [TestMethod]
+        public void WordIntoAlphabetGrid() {
+            https://codegolf.stackexchange.com/questions/141372/fit-a-word-into-an-alphabet-grid
+            
+            string[] expected = {
+                "A            N     T      ",
+                "        I                 ",
+                "   D    I         S       ",
+                "    E             ST      ",
+                "AB         L              ",
+                "        I         S       ",
+                "       H    M             ",
+                "    E        N     T      ",
+                "A                R        ",
+                "        I                 ",
+                "A            N            ",
+                "        I         S       ",
+                "            M             ",
+                "                          ",
+            };
+
+            RunProgram("wVA{[I' {1t_}?mQT", "ANTIDISESTABLISHMENTARIANISM", expected);
+            RunProgram("wVA{[I' {B}?mQT", "ANTIDISESTABLISHMENTARIANISM", expected);
+        }
     }
 }
