@@ -83,6 +83,7 @@ namespace StaxLang {
             try {
                 Run(program);
             }
+            catch (CancelException) { }
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
             if (!OutputWritten) Print(Pop());
@@ -109,29 +110,27 @@ namespace StaxLang {
 
         private int TotalSize => MainStack.Count + InputStack.Count;
 
-        private int Run(string program) {
+        private void Run(string program) {
             int ip = 0;
             while (ip < program.Length) {
-                int exitCode = Step(program, ref ip);
-                if (exitCode == 1) return exitCode;
+                Step(program, ref ip);
             }
-            return 0;
         }
 
-        private int Step(string program, ref int ip) {
+        private void Step(string program, ref int ip) {
             if (ip == 0) switch (program[0]) {
                 case 'm': // line-map
                     Run("L{" + program.Substring(1) + "PF");
                     ip = program.Length;
-                    return 0;
+                    return;
                 case 'f': // line-filter
                     Run("L{" + program.Substring(1) + "{_P}{}?F");
                     ip = program.Length;
-                    return 0;
+                    return;
                 case 'F': // line-for
                     Run("L{" + program.Substring(1) + "F");
                     ip = program.Length;
-                    return 0;
+                    return;
             }
             switch (program[ip++]) {
                 case '0':
@@ -155,7 +154,7 @@ namespace StaxLang {
                     break;
                 case '\t': // line comment
                     ip = program.IndexOf('\n', ip);
-                    if (ip == -1) return 0;
+                    if (ip == -1) return;
                     break;
                 case ';': // peek from side stack
                     Push(InputStack.Peek());
@@ -276,7 +275,7 @@ namespace StaxLang {
                     Push(Peek());
                     break;
                 case 'C':
-                    if (IsTruthy(Pop())) return 1;
+                    if (IsTruthy(Pop())) throw new CancelException();
                     break;
                 case 'd': // discard
                     Pop();
@@ -295,7 +294,7 @@ namespace StaxLang {
                             Run(program.Substring(ip));
                         }
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     else if (IsArray(Peek())) {
                         Index = 0;
@@ -306,7 +305,7 @@ namespace StaxLang {
                             Index++;
                         }
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     DoFilter(); // filter
                     break;
@@ -320,7 +319,7 @@ namespace StaxLang {
                         }
                         PopStackFrame();
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     else if (IsArray(Peek())) {
                         Index = 0;
@@ -332,7 +331,7 @@ namespace StaxLang {
                         }
                         PopStackFrame();
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     DoFor();
                     break;
@@ -374,7 +373,7 @@ namespace StaxLang {
                         }
                         PopStackFrame();
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     else if (IsArray(Peek())) {
                         PushStackFrame();
@@ -385,7 +384,7 @@ namespace StaxLang {
                         }
                         PopStackFrame();
                         ip = program.Length;
-                        return 0;
+                        return;
                     }
                     DoMap();
                     break;
@@ -460,29 +459,32 @@ namespace StaxLang {
                     break;
                 case 'w': // do-while
                     if (!IsBlock(Peek())) {
-                        int exitCode;
                         PushStackFrame();
-                        do {
-                            exitCode = Run(program.Substring(ip));
-                            Index++;
-                        } while (exitCode == 0 && IsTruthy(Pop()));
-                        PopStackFrame();
-                        ip = program.Length;
-                        return 0;
+                        try {
+                            do {
+                                Run(program.Substring(ip));
+                                Index++;
+                            } while (IsTruthy(Pop()));
+                        } finally {
+                            PopStackFrame();
+                            ip = program.Length;
+                        }
+                        return;
                     }
                     DoWhile();
                     break;
                 case 'W':
                     if (!IsBlock(Peek())) {
-                        int exitCode;
                         PushStackFrame();
-                        do {
-                            exitCode = Run(program.Substring(ip));
-                            Index++;
-                        } while (exitCode == 0);
-                        PopStackFrame();
-                        ip = program.Length;
-                        return 0;
+                        try {
+                            while (true) {
+                                Run(program.Substring(ip));
+                                Index++;
+                            }
+                        } finally {
+                            PopStackFrame();
+                            ip = program.Length;
+                        }
                     }
                     DoPreCheckWhile();
                     break;
@@ -624,7 +626,7 @@ namespace StaxLang {
                                 dynamic end = Pop(), start = Pop();
                                 if (IsArray(end)) end = new BigInteger(end.Count);
                                 if (IsArray(start)) start = new BigInteger(-start.Count);
-                                Push(Enumerable.Range((int)start, (int)(end - start)).Select(n => new BigInteger(n) as object).ToList());
+                                Push(Range(start, end - start));
                                 break;
                             }
                         case 'R': // start-end-stride range
@@ -653,7 +655,6 @@ namespace StaxLang {
                     break;
                 default: throw new Exception($"Unknown character '{program[ip - 1]}'");
             }
-            return 0;
         }
 
         private void DoListifyN() {
@@ -933,12 +934,16 @@ namespace StaxLang {
             else if (IsBlock(target)) {
                 PushStackFrame();
                 var result = new List<object>();
-                for (Index = 0; Index < list.Count; Index++) {
-                    Push(_ = list[(int)Index]);
-                    int exitCode = Run(target.Program);
-                    if (exitCode == 0 && IsTruthy(Pop())) result.Add(Index);
+                try {
+                    for (Index = 0; Index < list.Count; Index++) {
+                        Push(_ = list[(int)Index]);
+                        Run(target.Program);
+                        if (IsTruthy(Pop())) result.Add(Index);
+                    }
                 }
-                PopStackFrame();
+                finally {
+                    PopStackFrame();
+                }
                 Push(result);
             }
             else {
@@ -1079,24 +1084,32 @@ namespace StaxLang {
 
         private void DoPreCheckWhile() {
             Block block = Pop();
-            int exitCode;
             PushStackFrame();
-            do {
-                exitCode = Run(block.Program);
-                Index++;
-            } while (exitCode == 0);
-            PopStackFrame();
+            try {
+                while (true) {
+                    Run(block.Program);
+                    Index++;
+                }
+            }
+            catch (CancelException) { }
+            finally {
+                PopStackFrame();
+            }
         }
 
         private void DoWhile() {
             Block block = Pop();
-            int exitCode;
             PushStackFrame();
-            do {
-                exitCode = Run(block.Program);
-                ++Index;
-            } while (exitCode == 0 && IsTruthy(Pop()));
-            PopStackFrame();
+            try {
+                do {
+                    Run(block.Program);
+                    ++Index;
+                } while (IsTruthy(Pop()));
+            } 
+            catch (CancelException) { } 
+            finally {
+                PopStackFrame();
+            }
         }
 
         private void DoIf() {
@@ -1140,8 +1153,7 @@ namespace StaxLang {
         }
 
         private void DoFor() {
-            var b = Pop();
-            var a = Pop();
+            dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
 
@@ -1149,7 +1161,8 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in a) {
                     Push(_ = e);
-                    Run(b.Program);
+                    try { Run(b.Program); }
+                    catch (CancelException) { }
                     Index++;
                 }
                 PopStackFrame();
@@ -1178,8 +1191,7 @@ namespace StaxLang {
         }
 
         private void DoMap() {
-            var b = Pop();
-            var a = Pop();
+            dynamic b = Pop(), a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
@@ -1188,10 +1200,13 @@ namespace StaxLang {
                 PushStackFrame();
                 var result = new List<object>();
                 foreach (var e in a) {
-                    Push(_ = e);
-                    int exitCode = Run(b.Program);
-                    Index++;
-                    if (exitCode == 0) result.Add(Pop());
+                    try {
+                        Push(_ = e);
+                        Run(b.Program);
+                        result.Add(Pop());
+                    } finally {
+                        Index++;
+                    }
                 }
                 Push(result);
                 PopStackFrame();

@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block.cs" />
+    <Compile Include="CancelException.cs" />
     <Compile Include="Executor.cs" />
     <Compile Include="HuffmanCompressor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
