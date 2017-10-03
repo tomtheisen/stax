@@ -940,5 +940,19 @@ namespace StaxLang.Tests {
             RunProgram("wVA{[I' {1t_}?mQT", "ANTIDISESTABLISHMENTARIANISM", expected);
             RunProgram("wVA{[I' {B}?mQT", "ANTIDISESTABLISHMENTARIANISM", expected);
         }
+
+        [TestMethod]
+        public void IntegersContainANumberTest() {
+            https://codegolf.stackexchange.com/questions/98470/how-many-integers-contain-a-number-in-a-specific-range
+
+            RunProgramSingleInputs("e^|r{$[s#f%",
+                "\"3\" 1 100", "19",
+                "\"12\" -200 200", "24",
+                "\"123\" 1 3", "0",
+                "\"3\" 33 34", "2",
+                "\"0\" -1 1", "1",
+                "\"127\" -12 27", "0");
+
+        }
     }
 }

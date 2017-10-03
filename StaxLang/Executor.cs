@@ -31,6 +31,8 @@ namespace StaxLang {
      *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
      *     rectangularize
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
+     *     copy 2nd
+     *     STDIN / STDOUT
      *     
      *     code explainer
      *     debugger
@@ -739,10 +741,11 @@ namespace StaxLang {
                         NewValue(S2A(arg.Substring(i + 1, finishPos - i - 1)));
                         i = finishPos;
                         break;
+                    case '-':
                     case '0': case '1': case '2': case '3': case '4':
                     case '5': case '6': case '7': case '8': case '9':
                         int endPos;
-                        for (endPos = i; endPos < arg.Length && char.IsDigit(arg[endPos]); endPos++);
+                        for (endPos = i + 1; endPos < arg.Length && char.IsDigit(arg[endPos]); endPos++);
                         NewValue(BigInteger.Parse(arg.Substring(i, endPos - i)));
                         i = endPos - 1;
                         break;
