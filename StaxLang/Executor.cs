@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace StaxLang {
@@ -33,6 +34,9 @@ namespace StaxLang {
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
      *     STDIN / STDOUT
+     *     string starts-with / ends-with
+     *     Deprecate 'S' somehow
+     *     Eliminate Z
      *     
      *     code explainer
      *     debugger
@@ -147,13 +151,13 @@ namespace StaxLang {
                         ip = program.IndexOf('\n', ip);
                         if (ip == -1) yield break;
                         break;
-                    case ';': // peek from side stack
+                    case ';': // peek from input stack
                         Push(InputStack.Peek());
                         break;
-                    case ',': // pop from side stack
+                    case ',': // pop from input stack
                         Push(InputStack.Pop());
                         break;
-                    case '~': // push to side stack
+                    case '~': // push to input stack
                         InputStack.Push(Pop());
                         break;
                     case '#': // count number
@@ -1431,9 +1435,9 @@ namespace StaxLang {
                 return S2A(arg.ToString());
             }
             else if (IsArray(arg)) {
-                string result = "";
-                foreach (var e in arg) result += IsNumber(e) ? e : A2S(e);
-                return S2A(result);
+                var result = new StringBuilder();
+                foreach (var e in arg) result.Append(IsNumber(e) ? e : A2S(e));
+                return S2A(result.ToString());
             }
             throw new Exception("Bad type for ToString");
         }
