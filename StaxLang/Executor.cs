@@ -113,14 +113,10 @@ namespace StaxLang {
         private void Run(string program) {
             if (program.Length > 0) switch (program[0]) {
                 case 'm': // line-map
-                    Run("L{" + program.Substring(1) + "PF");
-                    return;
                 case 'f': // line-filter
-                    Run("L{" + program.Substring(1) + "{_P}{}?F");
-                    return;
                 case 'F': // line-for
-                    Run("L{" + program.Substring(1) + "F");
-                    return;
+                    DoListify();
+                    break;
             }
 
             for (int ip = 0; ip < program.Length;) {
@@ -133,9 +129,7 @@ namespace StaxLang {
                         --ip;
                         Push(ParseNumber(program, ref ip));
                         break;
-                    case ' ':
-                    case '\n':
-                    case '\r':
+                    case ' ': case '\n': case '\r':
                         break;
                     case '\t': // line comment
                         ip = program.IndexOf('\n', ip);
@@ -222,10 +216,10 @@ namespace StaxLang {
                         else throw new Exception("Bad type for ^");
                         break;
                     case '(':
-                        PadRight();
+                        DoPadRight();
                         break;
                     case ')':
-                        PadLeft();
+                        DoPadLeft();
                         break;
                     case '[': // copy outer
                         Run("ss~c,");
@@ -300,7 +294,10 @@ namespace StaxLang {
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 Push(_ = Index + 1);
-                                Run(program.Substring(ip));
+                                try {
+                                    Run(program.Substring(ip));
+                                }
+                                catch (CancelException) {}
                             }
                             PopStackFrame();
                             ip = program.Length;
@@ -311,7 +308,10 @@ namespace StaxLang {
                             PushStackFrame();
                             foreach (var e in Pop()) {
                                 Push(_ = e);
-                                Run(program.Substring(ip));
+                                try {
+                                    Run(program.Substring(ip));
+                                }
+                                catch (CancelException) { }
                                 Index++;
                             }
                             PopStackFrame();
@@ -344,11 +344,7 @@ namespace StaxLang {
                         DoListifyN();
                         break;
                     case 'L': // listify stack
-                        {
-                            var newList = new List<object>();
-                            while (TotalSize > 0) newList.Add(Pop());
-                            Push(newList);
-                        }
+                        DoListify();
                         break;
                     case 'm': // do map
                         if (IsNumber(Peek())) {
@@ -384,7 +380,7 @@ namespace StaxLang {
                         DoGetNumber();
                         break;
                     case 'N':
-                        if (IsNumber(Peek())) Run("U*"); // negate
+                        if (IsNumber(Peek())) Push(-Pop()); // negate
                         else if (IsArray(Peek())) Run("c1TsH"); // uncons
                         else throw new Exception("Bad type for N");
                         break;
@@ -418,8 +414,7 @@ namespace StaxLang {
                         break;
                     case 's': // swap
                         {
-                            var top = Pop();
-                            var bottom = Pop();
+                            dynamic top = Pop(), bottom = Pop();
                             Push(top);
                             Push(bottom);
                         }
@@ -650,6 +645,12 @@ namespace StaxLang {
                     default: throw new Exception($"Unknown character '{program[ip - 1]}'");
                 }
             }
+        }
+
+        private void DoListify() {
+            var newList = new List<object>();
+            while (TotalSize > 0) newList.Add(Pop());
+            Push(newList);
         }
 
         private void DoListifyN() {
@@ -1035,7 +1036,7 @@ namespace StaxLang {
             throw new Exception("Bad type for index");
         }
 
-        private void PadLeft() {
+        private void DoPadLeft() {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a)) (a, b) = (b, a);
@@ -1052,7 +1053,7 @@ namespace StaxLang {
             }
         }
 
-        private void PadRight() {
+        private void DoPadRight() {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
