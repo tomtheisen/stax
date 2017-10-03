@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:DgGkKo
+    //  `:DgGkKno
     /* To add:
      *     find-index-all by regex
      *     reduce
@@ -37,6 +37,9 @@ namespace StaxLang {
      *     string starts-with / ends-with
      *     Deprecate 'S' somehow
      *     Eliminate Z
+     *     array element repeat
+     *     array rotation distance
+     *     2 ** x
      *     
      *     code explainer
      *     debugger
@@ -99,6 +102,22 @@ namespace StaxLang {
 
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+
+            if (input.Length == 1) {
+                try {
+                    DoEval();
+                    if (TotalSize == 0) {
+                        InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                    }
+                    else {
+                        (MainStack, InputStack) = (InputStack, MainStack);
+                    }
+                }
+                catch {
+                    MainStack.Clear();
+                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                }
+            }
         }
 
         private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : InputStack.Pop();
@@ -131,7 +150,7 @@ namespace StaxLang {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
-                    DoListify();
+                    if (TotalSize > 0 && !IsNumber(Peek())) DoListify();
                     break;
             }
 
@@ -400,9 +419,9 @@ namespace StaxLang {
                     case 'M': // transpose
                         DoTranspose();
                         break;
-                    case 'n': // get number from input
-                        DoGetNumber();
-                        break;
+                    //case 'n': // get number from input
+                    //    DoGetNumber();
+                    //    break;
                     case 'N':
                         if (IsNumber(Peek())) Push(-Pop()); // negate
                         else if (IsArray(Peek())) RunMacro("c1TsH"); // uncons
@@ -753,19 +772,11 @@ namespace StaxLang {
                         NewValue(BigInteger.Parse(arg.Substring(i, endPos - i)));
                         i = endPos - 1;
                         break;
+                    case ' ': case '\t': case '\r': case '\n': case ',':
+                        break;
+                    default: throw new Exception($"Bad char {arg[i]} during eval");
                 }
             }
-        }
-
-        private void DoGetNumber() {
-            while(IsArray(InputStack.Peek())) {
-                var matches = Regex.Matches((string)A2S(InputStack.Pop()), @"-?\d+");
-                for (int i = matches.Count - 1; i >= 0; i--) {
-                    InputStack.Push(BigInteger.Parse(matches[i].Value));
-                }
-            }
-
-            Push(InputStack.Pop());
         }
 
         private void DoRegexFind() {

@@ -24,5 +24,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void CompressedInBlock() => RunProgram("1{.O.F", "Thg");
         [TestMethod] public void MixedEqualityEmpty() => RunProgram("z 1 =", "0");
         [TestMethod] public void NegativeEval() => RunProgram("U$e", "-1");
+        [TestMethod] public void ScopeElementTest() => RunProgram("2R{d 9R{dF _pF", "12");
+        [TestMethod] public void ScopeIndexTest() => RunProgram("2R{d 9R{dF ipF", "01");
     }
 }

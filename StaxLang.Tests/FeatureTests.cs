@@ -160,10 +160,10 @@ namespace StaxLang.Tests {
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");
         [TestMethod] public void Print() => RunProgram("1 2P 3", "2");
         [TestMethod] public void SuppressedNewline() => RunProgram("1p 2P 3", "12");
-        [TestMethod] public void TokenizeNumberInput() => RunProgram("nn+", "7", "3 4");
+        [TestMethod] public void ImplicitEvalTokenizeInput() => RunProgram("+", "7", "3 4");
         [TestMethod] public void PeekPrint() => RunProgram("7qqQ", "777");
         [TestMethod] public void PrintNewline() => RunProgram("|P", "");
-        [TestMethod] public void Eval() => RunProgram("e|+", "6", "[1, 2, 3]");
+        [TestMethod] public void ImplicitEval() => RunProgram("|+", "6", "[1, 2, 3]");
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
