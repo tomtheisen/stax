@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rational.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="CancelException.cs" />
     <Compile Include="ExecutionState.cs" />
