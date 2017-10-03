@@ -55,10 +55,10 @@ namespace StaxLang {
             ['n'] = S2A("\n"),
         };
 
-        private BigInteger Index = BigInteger.Zero; // loop iteration
-        private BigInteger IndexOuter = BigInteger.Zero; // outer loop iteration
-        private dynamic X = BigInteger.Zero; // register - default to numeric value of first input
-        private dynamic Y = S2A(""); // register - default to first input
+        private BigInteger Index; // loop iteration
+        private BigInteger IndexOuter; // outer loop iteration
+        private dynamic X; // register - default to numeric value of first input
+        private dynamic Y; // register - default to first input
         private dynamic Z; // register - default to empty string
         private dynamic _; // implicit iterator
 
@@ -70,7 +70,20 @@ namespace StaxLang {
         }
 
         public void Run(string program, string[] input) {
-            Z = S2A("");
+            Initialize(input);
+            try {
+                foreach (var s in RunSteps(program)) ;
+            }
+            catch (CancelException) { }
+            catch (InvalidOperationException) { }
+            catch (ArgumentOutOfRangeException) { }
+            if (!OutputWritten) Print(Pop());
+        }
+
+        private void Initialize(string[] input) {
+            IndexOuter = Index = 0;
+            X = BigInteger.Zero;
+            Y = Z = S2A("");
             _ = S2A(string.Join("\n", input));
 
             if (input.Length > 0) {
@@ -80,13 +93,6 @@ namespace StaxLang {
 
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
-            try {
-                Run(program);
-            }
-            catch (CancelException) { }
-            catch (InvalidOperationException) { }
-            catch (ArgumentOutOfRangeException) { }
-            if (!OutputWritten) Print(Pop());
         }
 
         private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : InputStack.Pop();
@@ -110,7 +116,11 @@ namespace StaxLang {
 
         private int TotalSize => MainStack.Count + InputStack.Count;
 
-        private void Run(string program) {
+        private void RunMacro(string program) {
+            foreach (var s in RunSteps(program));
+        }
+
+        private IEnumerable<ExecutionState> RunSteps(string program) {
             if (program.Length > 0) switch (program[0]) {
                 case 'm': // line-map
                 case 'f': // line-filter
@@ -133,7 +143,7 @@ namespace StaxLang {
                         break;
                     case '\t': // line comment
                         ip = program.IndexOf('\n', ip);
-                        if (ip == -1) return;
+                        if (ip == -1) yield break;
                         break;
                     case ';': // peek from side stack
                         Push(InputStack.Peek());
@@ -145,8 +155,8 @@ namespace StaxLang {
                         InputStack.Push(Pop());
                         break;
                     case '#': // count number
-                        if (IsArray(Peek())) Run("/%v");
-                        else if (IsNumber(Peek())) Run("]|&%");
+                        if (IsArray(Peek())) RunMacro("/%v");
+                        else if (IsNumber(Peek())) RunMacro("]|&%");
                         break;
                     case '"': // "literal"
                         --ip;
@@ -176,7 +186,7 @@ namespace StaxLang {
                         DoMinus();
                         break;
                     case '*':
-                        DoStar();
+                        foreach (var s in DoStar()) yield return s;
                         break;
                     case '/':
                         DoSlash();
@@ -222,13 +232,13 @@ namespace StaxLang {
                         DoPadLeft();
                         break;
                     case '[': // copy outer
-                        Run("ss~c,");
+                        RunMacro("ss~c,");
                         break;
                     case ']': // singleton
                         Push(new List<object> { Pop() });
                         break;
                     case '?': // if
-                        DoIf();
+                        foreach (var s in DoIf()) yield return s;
                         break;
                     case 'a': // alter stack
                         {
@@ -246,8 +256,8 @@ namespace StaxLang {
                         }
                         break;
                     case 'B':
-                        if (IsNumber(Peek())) Run("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
-                        else if (IsArray(Peek())) Run("c1tsh"); // uncons-right
+                        if (IsNumber(Peek())) RunMacro("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
+                        else if (IsArray(Peek())) RunMacro("c1tsh"); // uncons-right
                         else throw new Exception("Bad type for N");
                         break;
                     case 'c': // copy
@@ -270,23 +280,23 @@ namespace StaxLang {
                             var n = Pop();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 _ = Index + 1;
-                                Run(program.Substring(ip));
+                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                             }
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
-                        else if (IsArray(Peek())) {
+                        else if (IsArray(Peek())) { // filter shorthand
                             Index = 0;
                             foreach (var e in Pop()) {
                                 Push(_ = e);
-                                Run(program.Substring(ip));
+                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                                 if (IsTruthy(Pop())) Print(e);
                                 Index++;
                             }
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
-                        DoFilter(); // filter
+                        foreach (var s in DoFilter()) yield return s; // block filter
                         break;
                     case 'F': // for loop
                         if (IsNumber(Peek())) {
@@ -294,31 +304,39 @@ namespace StaxLang {
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 Push(_ = Index + 1);
-                                try {
-                                    Run(program.Substring(ip));
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
+                                while (true) {
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) { break; }
+                                    yield return runner.Current;
                                 }
-                                catch (CancelException) {}
                             }
                             PopStackFrame();
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
                         else if (IsArray(Peek())) {
                             Index = 0;
                             PushStackFrame();
                             foreach (var e in Pop()) {
                                 Push(_ = e);
-                                try {
-                                    Run(program.Substring(ip));
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
+                                while (true) {
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) { break; }
+                                    yield return runner.Current;
                                 }
-                                catch (CancelException) { }
                                 Index++;
                             }
                             PopStackFrame();
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
-                        DoFor();
+                        foreach (var s in DoFor()) yield return s;
                         break;
                     case 'h':
                         if (IsNumber(Peek())) Push(Pop() / 2); // half
@@ -335,10 +353,10 @@ namespace StaxLang {
                         DoFindIndex();
                         break;
                     case 'j': // un-join with spaces
-                        Run("' /");
+                        RunMacro("' /");
                         break;
                     case 'J':
-                        Run("' *"); // join with spaces
+                        RunMacro("' *"); // join with spaces
                         break;
                     case 'l': // listify-n
                         DoListifyN();
@@ -352,26 +370,26 @@ namespace StaxLang {
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 Push(_ = Index + 1);
-                                Run(program.Substring(ip));
+                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                                 Print(Pop());
                             }
                             PopStackFrame();
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
                         else if (IsArray(Peek())) {
                             PushStackFrame();
                             foreach (var e in Pop()) {
                                 Push(_ = e);
-                                Run(program.Substring(ip));
+                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                                 Print(Pop());
                                 Index++;
                             }
                             PopStackFrame();
                             ip = program.Length;
-                            return;
+                            yield break;
                         }
-                        DoMap();
+                        foreach (var s in DoMap()) yield return s;
                         break;
                     case 'M': // transpose
                         DoTranspose();
@@ -381,11 +399,11 @@ namespace StaxLang {
                         break;
                     case 'N':
                         if (IsNumber(Peek())) Push(-Pop()); // negate
-                        else if (IsArray(Peek())) Run("c1TsH"); // uncons
+                        else if (IsArray(Peek())) RunMacro("c1TsH"); // uncons
                         else throw new Exception("Bad type for N");
                         break;
                     case 'O': // order
-                        DoOrder();
+                        foreach (var s in DoOrder()) yield return s;
                         break;
                     case 'p': // print inline
                         Print(Pop(), false);
@@ -410,7 +428,10 @@ namespace StaxLang {
                         break;
                     case 'R': // 1 range
                         if (IsNumber(Peek())) Push(Range(1, Pop()));
-                        else DoRegexReplace(); // regex replace
+                        else {
+                            // regex replace
+                            foreach (var s in DoRegexReplace()) yield return s;
+                        }
                         break;
                     case 's': // swap
                         {
@@ -424,12 +445,12 @@ namespace StaxLang {
                         break;
                     case 't': // trim left
                         if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));
-                        else if (IsNumber(Peek())) Run("ss~ c%,-0|M)");
+                        else if (IsNumber(Peek())) RunMacro("ss~ c%,-0|M)");
                         else throw new Exception("Bad types for trimleft");
                         break;
                     case 'T': // trim right
                         if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimEnd()));
-                        else if (IsNumber(Peek())) Run("ss~ c%,-0|M(");
+                        else if (IsNumber(Peek())) RunMacro("ss~ c%,-0|M(");
                         else throw new Exception("Bad types for trimright");
                         break;
                     case 'u': // unique
@@ -444,38 +465,43 @@ namespace StaxLang {
                     case 'w': // do-while
                         if (!IsBlock(Peek())) {
                             PushStackFrame();
-                            try {
-                                do {
-                                    Run(program.Substring(ip));
-                                    Index++;
-                                } while (IsTruthy(Pop()));
-                            }
-                            catch (CancelException) { }
-                            finally {
-                                PopStackFrame();
-                                ip = program.Length;
-                            }
-                            return;
+                            do {
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
+                                while (true) {
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) { goto WhileEscape; }
+                                    yield return runner.Current;
+                                }
+                                ++Index;
+                            } while (IsTruthy(Pop()));
+
+                            WhileEscape:
+                            PopStackFrame();
+                            yield break;
                         }
-                        DoWhile();
+                        foreach (var s in DoWhile()) yield return s;
                         break;
                     case 'W':
                         if (!IsBlock(Peek())) {
                             PushStackFrame();
-                            try {
+                            while (true) {
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
                                 while (true) {
-                                    Run(program.Substring(ip));
-                                    Index++;
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) { goto WhileEscape; }
+                                    yield return runner.Current;
                                 }
+                                ++Index;
                             }
-                            catch (CancelException) { }
-                            finally {
-                                PopStackFrame();
-                                ip = program.Length;
-                            }
-                            return;
+                            WhileEscape:
+                            PopStackFrame();
+                            yield break;
                         }
-                        DoPreCheckWhile();
+                        foreach (var s in DoPreCheckWhile()) yield return s;
                         break;
                     case '_':
                         Push(_);
@@ -504,26 +530,26 @@ namespace StaxLang {
                                 DoDump();
                                 break;
                             case '%': // div mod
-                                Run("ss1C1C%~/,");
+                                RunMacro("ss1C1C%~/,");
                                 break;
                             case '+': // sum
-                                Run("0s{+F");
+                                RunMacro("0s{+F");
                                 break;
                             case '-': // deltas
-                                Run("2B{Es-m");
+                                RunMacro("2B{Es-m");
                                 break;
                             case '~': // bitwise not
                                 Push(~Pop());
                                 break;
                             case '&': 
-                                if (IsArray(Peek())) Run("ss~ {;sIU>f ,d"); // intersection
+                                if (IsArray(Peek())) RunMacro("ss~ {;sIU>f ,d"); // intersection
                                 else Push(Pop() & Pop()); // bitwise and
                                 break;
                             case '|': // bitwise or
                                 Push(Pop() | Pop());
                                 break;
                             case '^': 
-                                if (IsArray(Peek())) Run("s b-~ s-, +"); // symmetric diff
+                                if (IsArray(Peek())) RunMacro("s b-~ s-, +"); // symmetric diff
                                 else Push(Pop() ^ Pop()); // bitwise xor
                                 break;
                             case '*':
@@ -534,19 +560,19 @@ namespace StaxLang {
                                 else throw new Exception("Bad types for |*");
                                 break;
                             case '/': // repeated divide
-                                Run("ss~;*{;/c;%!w,d");
+                                RunMacro("ss~;*{;/c;%!w,d");
                                 break;
                             case ')': // rotate right
-                                Run("cHsU(+");
+                                RunMacro("cHsU(+");
                                 break;
                             case '(': // rotate left
-                                Run("cU)sh+");
+                                RunMacro("cU)sh+");
                                 break;
                             case '[': // prefixes
-                                Run("~;%R{;s(m,d");
+                                RunMacro("~;%R{;s(m,d");
                                 break;
                             case ']': // suffixes
-                                Run("~;%R{;s)mr,d");
+                                RunMacro("~;%R{;s)mr,d");
                                 break;
                             case 'a': // absolute value
                                 Push(BigInteger.Abs(Pop()));
@@ -558,7 +584,7 @@ namespace StaxLang {
                                 DoBaseConvert();
                                 break;
                             case 'B': // binary convert
-                                Run("2|b");
+                                RunMacro("2|b");
                                 break;
                             case 'd': // depth of stack
                                 Push(new BigInteger(MainStack.Count));
@@ -577,35 +603,35 @@ namespace StaxLang {
                                 DoGCD();
                                 break;
                             case 'H': // hex convert
-                                Run("16|b");
+                                RunMacro("16|b");
                                 break;
                             case 'i': // outer loop index
                                 Push(IndexOuter);
                                 break;
                             case 'I': // find all indexes
-                                DoFindIndexAll();
+                                foreach (var s in DoFindIndexAll()) yield return s;
                                 break;
                             case 'l': // lcm
-                                if (IsArray(Peek())) Run("1s{|lF");
-                                else if (IsNumber(Peek())) Run("b|g~*,/");
+                                if (IsArray(Peek())) RunMacro("1s{|lF");
+                                else if (IsNumber(Peek())) RunMacro("b|g~*,/");
                                 else throw new Exception("Bad type for lcm");
                                 break;
                             case 'J': // join with newlines
-                                Run("Vn*");
+                                RunMacro("Vn*");
                                 break;
                             case 'm': // min
                                 if (IsNumber(Peek())) Push(BigInteger.Min(Pop(), Pop()));
-                                else if (IsArray(Peek())) Run("chs{|mF");
+                                else if (IsArray(Peek())) RunMacro("chs{|mF");
                                 else throw new Exception("Bad types for min");
                                 break;
                             case 'M': // max
                                 if (IsNumber(Peek())) Push(BigInteger.Max(Pop(), Pop()));
-                                else if (IsArray(Peek())) Run("chs{|MF");
+                                else if (IsArray(Peek())) RunMacro("chs{|MF");
                                 else throw new Exception("Bad types for max");
                                 break;
                             case 'p':
-                                if (IsNumber(Peek())) Run("|f%1="); // is prime
-                                else if (IsArray(Peek())) Run("cr1t+"); // palindromize
+                                if (IsNumber(Peek())) RunMacro("|f%1="); // is prime
+                                else if (IsArray(Peek())) RunMacro("cr1t+"); // palindromize
                                 break;
                             case 'P': // print blank newline
                                 Print("");
@@ -637,13 +663,14 @@ namespace StaxLang {
                                 Push(++X);
                                 break;
                             case 'z': // zero-fill
-                                Run("ss ~; '0* s 2l$ ,)");
+                                RunMacro("ss ~; '0* s 2l$ ,)");
                                 break;
                             default: throw new Exception($"Unknown extended character '{program[ip - 1]}'");
                         }
                         break;
                     default: throw new Exception($"Unknown character '{program[ip - 1]}'");
                 }
+                yield return new ExecutionState();
             }
         }
 
@@ -756,7 +783,7 @@ namespace StaxLang {
             Push(Regex.Split(ts, ss, RegexOptions.ECMAScript).Select(S2A).Cast<object>().ToList());
         }
 
-        private void DoRegexReplace() {
+        private IEnumerable<ExecutionState> DoRegexReplace() {
             var replace = Pop();
             var search = Pop();
             var text = Pop();
@@ -766,7 +793,7 @@ namespace StaxLang {
 
             if (IsArray(replace)) {
                 Push(S2A(Regex.Replace(ts, ss, A2S(replace))));
-                return;
+                yield break;
             }
             else if (IsBlock(replace)) {
                 PushStackFrame();
@@ -776,7 +803,7 @@ namespace StaxLang {
                 foreach (Match match in matches) {
                     result += ts.Substring(consumed, match.Index - consumed);
                     Push(_ = S2A(match.Value));
-                    Run(replace.Program);
+                    foreach (var s in RunSteps(replace.Program)) yield return s;
                     Index++;
                     result += A2S(Pop());
                     consumed = match.Index + match.Length;
@@ -784,7 +811,7 @@ namespace StaxLang {
                 result += ts.Substring(consumed);
                 Push(S2A(result));
                 PopStackFrame();
-                return;
+                yield break;
             }
             else {
                 throw new Exception("Bad types for replace");
@@ -856,7 +883,7 @@ namespace StaxLang {
             Push(Comparer.Instance.Compare(a, b) > 0 ? BigInteger.One : BigInteger.Zero);
         }
 
-        private void DoOrder() {
+        private IEnumerable<ExecutionState> DoOrder() {
             var arg = Pop();
 
             if (IsArray(arg)) {
@@ -872,7 +899,7 @@ namespace StaxLang {
                 foreach (var e in list) {
                     _ = e;
                     Push(e);
-                    Run(arg.Program);
+                    foreach (var s in RunSteps(arg.Program)) yield return s;
                     combined.Add((e, Pop()));
                     ++Index;
                 }
@@ -910,7 +937,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoFindIndexAll() {
+        private IEnumerable<ExecutionState> DoFindIndexAll() {
             dynamic target = Pop(), list = Pop();
             if (!IsArray(list)) throw new Exception("Bad types for find index all");
 
@@ -929,7 +956,7 @@ namespace StaxLang {
                 try {
                     for (Index = 0; Index < list.Count; Index++) {
                         Push(_ = list[(int)Index]);
-                        Run(target.Program);
+                        foreach (var s in RunSteps(target.Program)) yield return s;
                         if (IsTruthy(Pop())) result.Add(Index);
                     }
                 }
@@ -1072,40 +1099,49 @@ namespace StaxLang {
             }
         }
 
-        private void DoPreCheckWhile() {
+        private IEnumerable<ExecutionState> DoPreCheckWhile() {
             Block block = Pop();
             PushStackFrame();
-            try {
+                
+            while (true) {
+                var runner = RunSteps(block.Program).GetEnumerator();
                 while (true) {
-                    Run(block.Program);
-                    Index++;
+                    try {
+                        if (!runner.MoveNext()) break;
+                    }
+                    catch (CancelException) { goto WhileEscape; }
+                    yield return runner.Current;
                 }
+                ++Index;
             }
-            catch (CancelException) { }
-            finally {
-                PopStackFrame();
-            }
+            WhileEscape:
+            PopStackFrame();
         }
 
-        private void DoWhile() {
+        private IEnumerable<ExecutionState> DoWhile() {
             Block block = Pop();
             PushStackFrame();
-            try {
-                do {
-                    Run(block.Program);
-                    ++Index;
-                } while (IsTruthy(Pop()));
-            } 
-            catch (CancelException) { } 
-            finally {
-                PopStackFrame();
-            }
+            do {
+                var runner = RunSteps(block.Program).GetEnumerator();
+                while (true) {
+                    try {
+                        if (!runner.MoveNext()) break;
+                    }
+                    catch (CancelException) { goto WhileEscape; }
+                    yield return runner.Current;
+                }
+                ++Index;
+            } while (IsTruthy(Pop()));
+            WhileEscape:
+            PopStackFrame();
         }
 
-        private void DoIf() {
+        private IEnumerable<ExecutionState> DoIf() {
             dynamic @else = Pop(), then = Pop(), condition = Pop();
             Push(IsTruthy(condition) ? then : @else);
-            if (IsBlock(Peek())) Run(Pop().Program);
+            if (IsBlock(Peek())) {
+                foreach (var s in RunSteps(Pop().Program)) yield return s;
+            }
         }
 
         private void Print(object arg, bool newline = true) {
@@ -1119,7 +1155,7 @@ namespace StaxLang {
             else Output.Write(arg);
         }
 
-        private void DoFilter() {
+        private IEnumerable<ExecutionState> DoFilter() {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
@@ -1129,7 +1165,7 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in a) {
                     Push(_ = e);
-                    Run(b.Program);
+                    foreach (var s in RunSteps(b.Program)) yield return s;
                     Index++;
                     if (IsTruthy(Pop())) result.Add(e);
                 }
@@ -1141,7 +1177,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoFor() {
+        private IEnumerable<ExecutionState> DoFor() {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
@@ -1150,10 +1186,17 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in a) {
                     Push(_ = e);
-                    try { Run(b.Program); }
-                    catch (CancelException) { }
+                    var runner = RunSteps(((Block)b).Program).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) { goto WhileEscape; }
+                        yield return runner.Current;
+                    }
                     Index++;
                 }
+                WhileEscape:
                 PopStackFrame();
             }
             else {
@@ -1179,7 +1222,7 @@ namespace StaxLang {
             Push(result);
         }
 
-        private void DoMap() {
+        private IEnumerable<ExecutionState> DoMap() {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
@@ -1191,7 +1234,7 @@ namespace StaxLang {
                 foreach (var e in a) {
                     try {
                         Push(_ = e);
-                        Run(b.Program);
+                        foreach (var s in RunSteps(((Block)b).Program)) yield return s;
                         result.Add(Pop());
                     } finally {
                         Index++;
@@ -1217,9 +1260,7 @@ namespace StaxLang {
                 Push(result);
             }
             else if (IsArray(a)) {
-                var result = new List<object>(a);
-                result.Add(b);
-                Push(result);
+                Push(new List<object>(a) { b });
             }
             else if (IsArray(b)) {
                 var result = new List<object> { a };
@@ -1298,7 +1339,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoStar() {
+        private IEnumerable<ExecutionState> DoStar() {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a)) (a, b) = (b, a);
@@ -1312,13 +1353,15 @@ namespace StaxLang {
                     var result = new List<object>();
                     for (int i = 0; i < b; i++) result.AddRange(a);
                     Push(result);
-                    return;
+                    yield break;
                 }
                 else if (IsBlock(a)) {
                     PushStackFrame();
-                    for (Index = 0; Index < b; Index++) Run(a.Program);
+                    for (Index = 0; Index < b; Index++) {
+                        foreach (var s in RunSteps(((Block)a).Program)) yield return s;
+                    }
                     PopStackFrame();
-                    return;
+                    yield break;
                 }
             }
 
@@ -1330,12 +1373,12 @@ namespace StaxLang {
                     result += IsNumber(e) ? e : A2S(e);
                 }
                 Push(S2A(result));
-                return;
+                yield break;
             }
 
             if (IsNumber(a) && IsNumber(b)) {
                 Push(a * b);
-                return;
+                yield break;
             }
 
             throw new Exception("Bad types for *");
