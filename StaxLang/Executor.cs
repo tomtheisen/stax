@@ -128,15 +128,8 @@ namespace StaxLang {
                     case '0':
                         Push(BigInteger.Zero);
                         break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
+                    case '1': case '2': case '3': case '4': case '5':
+                    case '6': case '7': case '8': case '9':
                         --ip;
                         Push(ParseNumber(program, ref ip));
                         break;
@@ -250,7 +243,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'A': // 10 (0xA)
-                        Push(BigInteger.One * 10);
+                        Push(new BigInteger(10));
                         break;
                     case 'b': // both copy
                         {
@@ -527,21 +520,21 @@ namespace StaxLang {
                             case '~': // bitwise not
                                 Push(~Pop());
                                 break;
-                            case '&': // bitwise and
-                                if (IsArray(Peek())) Run("ss~ {;sIU>f ,d");
-                                else Push(Pop() & Pop());
+                            case '&': 
+                                if (IsArray(Peek())) Run("ss~ {;sIU>f ,d"); // intersection
+                                else Push(Pop() & Pop()); // bitwise and
                                 break;
                             case '|': // bitwise or
                                 Push(Pop() | Pop());
                                 break;
-                            case '^': // bitwise xor
-                                if (IsArray(Peek())) Run("s b-~ s-, +");
-                                else Push(Pop() ^ Pop());
+                            case '^': 
+                                if (IsArray(Peek())) Run("s b-~ s-, +"); // symmetric diff
+                                else Push(Pop() ^ Pop()); // bitwise xor
                                 break;
                             case '*':
                                 if (IsNumber(Peek())) { // exponent
-                                    Run("s");
-                                    Push(BigInteger.Pow(Pop(), (int)Pop()));
+                                    dynamic b = Pop(), a = Pop();
+                                    Push(BigInteger.Pow(a, (int)b));
                                 }
                                 else throw new Exception("Bad types for |*");
                                 break;
@@ -1347,6 +1340,37 @@ namespace StaxLang {
             throw new Exception("Bad types for *");
         }
 
+        private List<object> PrimeFactors(BigInteger n) {
+            var result = new List<object>();
+            BigInteger d = 2;
+            while (n > 1) {
+                while (n % d == 0) {
+                    result.Add(d);
+                    n /= d;
+                }
+                ++d;
+            }
+            return result;
+        }
+
+        private void DoGCD() {
+            var b = Pop();
+            if (IsArray(b)) {
+                BigInteger result = 0;
+                foreach (BigInteger e in b) result = BigInteger.GreatestCommonDivisor(result, e);
+                Push(result);
+                return;
+            }
+
+            var a = Pop();
+            if (IsNumber(a) && IsNumber(b)) {
+                Push(BigInteger.GreatestCommonDivisor(a, b));
+                return;
+            }
+
+            throw new Exception("Bad types for GCD");
+        }
+
         #region support
         private object ToNumber(dynamic arg) {
             if (IsArray(arg)) {
@@ -1510,45 +1534,6 @@ namespace StaxLang {
             }
         }
 
-        #endregion
-
-        #region extended
-        private List<object> PrimeFactors(BigInteger n) {
-            var result = new List<object>();
-            BigInteger d = 2;
-            while (n > 1) {
-                while (n % d == 0) {
-                    result.Add(d);
-                    n /= d;
-                }
-                ++d;
-            }
-            return result;
-        }
-
-        private void DoGCD() {
-            var b = Pop();
-
-            if (IsArray(b)) {
-                BigInteger result = 0;
-                foreach (BigInteger e in b) result = GCD(result, e);
-                Push(result);
-                return;
-            }
-
-            var a = Pop();
-            if (IsNumber(a) && IsNumber(b)) {
-                Push(GCD(a, b));
-                return;
-            }
-
-            throw new Exception("Bad types for GCD");
-        }
-
-        private BigInteger GCD(BigInteger a, BigInteger b) {
-            if (a == 0 || b == 0) return a + b;
-            return GCD(b, a % b);
-        }
         #endregion
     }
 }
