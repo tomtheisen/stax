@@ -109,7 +109,11 @@ namespace StaxLang {
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
 
-            if (input.Length == 1 & program.FirstOrDefault() != 'i') {
+            if (program.FirstOrDefault() == 'e') {
+                // if first instruction is 'e', eval all lines and put back on stack in same order
+                RunMacro("L{eFw~|d");
+            }
+            else if (input.Length == 1 & program.FirstOrDefault() != 'i') {
                 try {
                     DoEval();
                     if (TotalSize == 0) {
@@ -307,7 +311,7 @@ namespace StaxLang {
                         Pop();
                         break;
                     case 'e': // eval
-                        DoEval();
+                        if (CallStackFrames.Any() || ip > 1) DoEval();
                         break;
                     case 'E': // explode (de-listify)
                         DoExplode();

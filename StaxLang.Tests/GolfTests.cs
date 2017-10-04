@@ -38,6 +38,11 @@ namespace StaxLang.Tests {
             }
         }
 
+        [TestMethod] public void LineModeEval() {
+            // leading e runs on each line of input
+            RunProgram("e-", "5\n8", "3");
+        }
+
         [TestMethod]
         public void SquaresTest() {
             RunProgram("5mc*", "", "1", "4", "9", "16", "25");
@@ -234,7 +239,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void GCDTest() {
             http://golf.shinh.org/p.rb?Greatest+Common+Divisor
-            RunProgram("e,e|g", "42\n56", "14");
+            RunProgram("e|g", "42\n56", "14");
         }
 
         [TestMethod]
@@ -282,7 +287,7 @@ namespace StaxLang.Tests {
         public void SummationTest() {
             http://golf.shinh.org/p.rb?Summation
             RunProgram("{eR|+P|Dvw", "1\n2\n3\n0", "1", "3", "6");
-            RunProgram("e,~R|+P}", "1\n2\n3\n0", "1", "3", "6");
+            RunProgram("ewR|+P;", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("{eR|+Pcew", "1\n2\n3\n0", "1", "3", "6");
             RunProgram("mec!CR|+", "1\n2\n3\n0", "1", "3", "6");
         }
@@ -854,8 +859,6 @@ namespace StaxLang.Tests {
                 "         us          s",
             };
 
-            RunProgram("eXdj{x/{xvi*' *s+mmc{%m|Ms{[%-z]*_s+m{{%m|M_{[(mmMFJTP", "4\nStaphylococcus saprophyticus", expected);
-            RunProgram("eXdccj~FiY;{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
             RunProgram("scj~FiY;{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
             RunProgram("djWiYdc{%cvx/-' xv*y*_xy*tx(+(mJTc!CP", "4\nStaphylococcus saprophyticus", expected);
             RunProgram("djWiYxv*z)[s{%cvx/-_xy*tx((mJTc!C+P", "4\nStaphylococcus saprophyticus", expected);
