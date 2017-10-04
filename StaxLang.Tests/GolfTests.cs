@@ -334,6 +334,7 @@ namespace StaxLang.Tests {
             RunProgram("R1-{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{|p_2+|p*fFp',p_2+P", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{c*v|f%2=fmvq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("mc*v|f2tCiq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
@@ -341,6 +342,7 @@ namespace StaxLang.Tests {
             http://golf.shinh.org/p.rb?Bronspeak
             RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
             RunProgram("VaVv2*O|(c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("\"\\w+\"{1(Vc{]2*m$U)'b+c^+Vv2*{O|(c^+X+Zr|t_1t1Tx|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
 
         [TestMethod]
@@ -742,7 +744,7 @@ namespace StaxLang.Tests {
         public void CobolCommentStripTest() {
             https://codegolf.stackexchange.com/questions/140292/uncomment-a-cobol-program
 
-            RunProgram("F6@4%C_7tP", 
+            RunProgram("m6@4%C_7t", 
                 "000000 blah blah\n" +
                 "000001* apples\n" +
                 "000002 oranges ?\n" +
