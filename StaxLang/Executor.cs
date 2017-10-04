@@ -184,12 +184,18 @@ namespace StaxLang {
                         else if (IsNumber(Peek())) RunMacro("]|&%");
                         break;
                     case '"': // "literal"
-                        --ip;
-                        Push(ParseString(program, ref ip));
+                        {
+                            --ip;
+                            Push(ParseString(program, ref ip, out bool implicitEnd));
+                            if (implicitEnd) Print(Peek()); 
+                        }
                         break;
                     case '.': // compressed .6Js2%.
-                        --ip;
-                        Push(ParseCompressedString(program, ref ip));
+                        {
+                            --ip;
+                            Push(ParseCompressedString(program, ref ip, out bool implitEnd));
+                            if (implitEnd) Print(Peek()); 
+                        }
                         break;
                     case '\'': // single char 'x
                         Push(S2A(program.Substring(ip++, 1)));
@@ -1496,22 +1502,24 @@ namespace StaxLang {
             return value;
         }
 
-        private List<object> ParseCompressedString(string program, ref int ip) {
+        private List<object> ParseCompressedString(string program, ref int ip, out bool implicitEnd) {
             string compressed = "";
             while (ip < program.Length - 1 && program[++ip] != '.') compressed += program[ip];
-            if (ip < program.Length) ++ip; // final quote
+            implicitEnd = ip == program.Length - 1;
+            ++ip; // final delimiter
 
             var decompressed = HuffmanCompressor.Decompress(compressed);
             return S2A(decompressed);
         }
 
-        private List<object> ParseString(string program, ref int ip) {
+        private List<object> ParseString(string program, ref int ip, out bool implicitEnd) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
                 if (program[ip] == '`') ++ip;
                 result += program[ip];
             }
-            if (ip < program.Length) ++ip; // final quote
+            implicitEnd = ip == program.Length - 1;
+            ++ip; // final quote
             return S2A(result);
         }
 
@@ -1525,13 +1533,13 @@ namespace StaxLang {
                 }
 
                 if (program[ip] == '"') {
-                    ParseString(program, ref ip);
+                    ParseString(program, ref ip, out bool implicitEnd);
                     --ip;
                     continue;
                 }
 
                 if (program[ip] == '.') {
-                    ParseCompressedString(program, ref ip);
+                    ParseCompressedString(program, ref ip, out bool implicitEnd);
                     --ip;
                     continue;
                 }

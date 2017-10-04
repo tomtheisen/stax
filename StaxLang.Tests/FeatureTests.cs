@@ -164,6 +164,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void PeekPrint() => RunProgram("7qqQ", "777");
         [TestMethod] public void PrintNewline() => RunProgram("|P", "");
         [TestMethod] public void ImplicitEval() => RunProgram("|+", "6", "[1, 2, 3]");
+        [TestMethod] public void ImplicitTrailingLiteralPrint() => RunProgram("1p \"abc", "1abc");
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");

@@ -271,9 +271,11 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void GoogleTest() {
+            http://golf.shinh.org/p.rb?google
             RunProgram("'o*'gs+\"gle\"+", "2", "google");
             RunProgram("'o*'gs+\"gle\"+", "10", "goooooooooogle");
             RunProgram("'gp'o*p\"gle\"P", "10", "goooooooooogle");
+            RunProgram("'gp'o*p\"gle", "10", "goooooooooogle");
         }
 
         [TestMethod]
@@ -327,6 +329,7 @@ namespace StaxLang.Tests {
             RunProgram("R1-{^c*v|f%2=f{p',p_2+PF", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("R1-{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{|p_2+|p*fFp',p_2+P", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("{c*v|f%2=fmvq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
@@ -398,6 +401,7 @@ namespace StaxLang.Tests {
             RunProgram("9R8Rr+{9s-' *_|A9/c*$+PF", "", expected);
             RunProgram("9R8Rr+{9s-' *'1_*ec*$+PF", "", expected);
             RunProgram("9R|p{R$9)|pTPF", "", expected);
+            RunProgram("9R|pmR$9)|pT", "", expected);
         }
 
         [TestMethod]
@@ -528,6 +532,7 @@ namespace StaxLang.Tests {
             RunProgram("VA{~VA{;|MmPF", "", expected);
             RunProgram("VA{VA{[s|MmPF", "", expected);
             RunProgram("VAQc2B{|tQF", "", expected);
+            RunProgram("VAQc2BF|tQ", "", expected);
         }
 
         [TestMethod]
@@ -595,7 +600,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void LongestOneRunTest() {
             https://codegolf.stackexchange.com/questions/143000/calculate-the-longest-series-of-1s-in-an-integers-binary-value
-            RunProgramSingleInputs("{cch|&cwd2|b%v", "142", "1", "48", "4", "750", "5", "0", "0");
+            RunProgramSingleInputs("{cch|&cwd|B%v", "142", "1", "48", "4", "750", "5", "0", "0");
         }
 
         [TestMethod]
