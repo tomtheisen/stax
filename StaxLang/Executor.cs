@@ -40,6 +40,7 @@ namespace StaxLang {
      *     array element repeat
      *     array rotation distance
      *     2 ** x
+     *     map-cancel
      *     
      *     code explainer
      *     debugger
@@ -79,7 +80,7 @@ namespace StaxLang {
         }
 
         public void Run(string program, string[] input) {
-            Initialize(input);
+            Initialize(program, input);
             try {
                 foreach (var s in RunSteps(program)) ;
             }
@@ -89,7 +90,7 @@ namespace StaxLang {
             if (!OutputWritten) Print(Pop());
         }
 
-        private void Initialize(string[] input) {
+        private void Initialize(string program, string[] input) {
             IndexOuter = Index = 0;
             X = BigInteger.Zero;
             Y = Z = S2A("");
@@ -103,7 +104,7 @@ namespace StaxLang {
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
 
-            if (input.Length == 1) {
+            if (input.Length == 1 & program.FirstOrDefault() != 'i') {
                 try {
                     DoEval();
                     if (TotalSize == 0) {
@@ -309,21 +310,25 @@ namespace StaxLang {
                     case 'f':
                         if (IsNumber(Peek())) { // n times do
                             var n = Pop();
+                            PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 _ = Index + 1;
                                 foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                             }
+                            PopStackFrame();
                             ip = program.Length;
                             yield break;
                         }
                         else if (IsArray(Peek())) { // filter shorthand
                             Index = 0;
+                            PushStackFrame();
                             foreach (var e in Pop()) {
                                 Push(_ = e);
                                 foreach (var s in RunSteps(program.Substring(ip))) yield return s;
                                 if (IsTruthy(Pop())) Print(e);
                                 Index++;
                             }
+                            PopStackFrame();
                             ip = program.Length;
                             yield break;
                         }
@@ -378,7 +383,7 @@ namespace StaxLang {
                         if (IsArray(Peek())) Push(Peek()[Pop().Count - 1]); // last
                         break;
                     case 'i': // iteration index
-                        Push(Index);
+                        if (CallStackFrames.Any()) Push(Index);
                         break;
                     case 'I': // get index
                         DoFindIndex();
