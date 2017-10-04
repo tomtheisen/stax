@@ -126,7 +126,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void PairWrap() => RunProgram("3 7 \\%", "2");
         [TestMethod] public void Head() => RunProgram("5R h", "1");
         [TestMethod] public void Tail() => RunProgram("5R H", "5");
-        [TestMethod] public void ShowArray() => RunProgram("'x]S", "x");
         [TestMethod] public void Sum() => RunProgram("5R |+", "15");
         [TestMethod] public void MinimumArray() => RunProgram("5R Oh", "1");
         [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");

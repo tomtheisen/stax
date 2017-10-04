@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:DgGkKno
+    //  `:DgGkKnoS
     /* To add:
      *     find-index-all by regex
      *     reduce
@@ -35,12 +35,14 @@ namespace StaxLang {
      *     copy 2nd
      *     STDIN / STDOUT
      *     string starts-with / ends-with
-     *     Deprecate 'S' somehow
      *     Eliminate Z
      *     array element repeat
      *     array rotation distance
      *     2 ** x
-     *     map-cancel
+     *     Push 0, pop input
+     *     Push 1, pop input
+     *     Rotate chars (like translate on a ring)
+     *     Continue-if-set (c!C)
      *     
      *     code explainer
      *     debugger
@@ -375,7 +377,7 @@ namespace StaxLang {
                         foreach (var s in DoFor()) yield return s;
                         break;
                     case 'h':
-                        if (IsNumber(Peek())) Push(Pop() / 2); // half
+                        if (IsNumber(Peek())) RunMacro("2/"); // half
                         if (IsArray(Peek())) Push(Pop()[0]); // head
                         break;
                     case 'H':
@@ -493,9 +495,6 @@ namespace StaxLang {
                             Push(top);
                             Push(bottom);
                         }
-                        break;
-                    case 'S': // show array
-                        foreach (var e in Pop()) Print(e);
                         break;
                     case 't': // trim left
                         if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));

@@ -46,7 +46,10 @@ namespace StaxLang {
         }
 
         const string Symbols = " !\"#$%&'()*+,-/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        private static Dictionary<string, string> MemoizedDecompress = new Dictionary<string, string>();
         public static string Decompress(string compressed) {
+            if (MemoizedDecompress.TryGetValue(compressed, out var result)) return result;
+
             BigInteger big = 0;
             foreach (var ch in compressed.Reverse()) big = big * Symbols.Length + Symbols.IndexOf(ch);
 
@@ -56,7 +59,7 @@ namespace StaxLang {
                 big >>= 1;
             }
 
-            string result = ". ";
+            result = ". ";
             int pathidx = 1;
             while (pathidx < path.Count) {
                 var tree = Trees[result.Substring(result.Length - 2)];
