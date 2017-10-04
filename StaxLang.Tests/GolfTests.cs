@@ -82,7 +82,7 @@ namespace StaxLang.Tests {
             RunProgram("1,X{*xvXxwd", "5", "120");
             RunProgram("d1xR{*F", "5", "120");
             RunProgram("1,F*", "5", "120");
-            RunProgram(" F*", "5", "120");
+            RunProgram("F*", "5", "120");
         }
 
         [TestMethod]

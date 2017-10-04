@@ -45,6 +45,7 @@ namespace StaxLang {
      *     Rotate chars (like translate on a ring)
      *     Continue-if-set (c!C)
      *     Leading 'e' is eval-all-lines mode
+     *     min/max for all numerics
      *     
      *     code explainer
      *     debugger
@@ -252,12 +253,12 @@ namespace StaxLang {
                         Push(AreEqual(Pop(), Pop()) ? BigInteger.One : BigInteger.Zero);
                         break;
                     case 'v':
-                        if (IsInt(Peek())) Push(Pop() - 1); // decrement
+                        if (IsNumber(Peek())) Push(Pop() - 1); // decrement
                         else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToLower())); // lower
                         else throw new Exception("Bad type for v");
                         break;
                     case '^':
-                        if (IsInt(Peek())) Push(Pop() + 1); // increment
+                        if (IsNumber(Peek())) Push(Pop() + 1); // increment
                         else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToUpper())); // uppper
                         else throw new Exception("Bad type for ^");
                         break;
@@ -456,7 +457,7 @@ namespace StaxLang {
                         DoTranspose();
                         break;
                     case 'N':
-                        if (IsInt(Peek())) Push(-Pop()); // negate
+                        if (IsNumber(Peek())) Push(-Pop()); // negate
                         else if (IsArray(Peek())) RunMacro("c1TsH"); // uncons
                         else throw new Exception("Bad type for N");
                         break;
@@ -1068,6 +1069,10 @@ namespace StaxLang {
             if (IsArray(arg)) {
                 foreach (var item in arg) Push(item);
             }
+            else if (IsFrac(arg)) {
+                Push(arg.Num);
+                Push(arg.Den);
+            }
         }
 
         private void DoAssignIndex() {
@@ -1600,14 +1605,14 @@ namespace StaxLang {
             private Comparer() { }
 
             public int Compare(dynamic a, dynamic b) {
-                if (IsInt(a)) {
+                if (IsNumber(a)) {
                     while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
-                    if (IsInt(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
-                if (IsInt(b)) {
+                if (IsNumber(b)) {
                     while (IsArray(a) && a.Count > 0) a = ((IList<object>)a)[0];
-                    if (IsInt(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsArray(a) && IsArray(b)) {

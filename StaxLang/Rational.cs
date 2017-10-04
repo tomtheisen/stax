@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace StaxLang {
-    public class Rational {
+    public class Rational : IComparable {
         public BigInteger Num { get; private set; }
         public BigInteger Den { get; private set; }
 
@@ -20,7 +20,14 @@ namespace StaxLang {
             var reduction = BigInteger.GreatestCommonDivisor(Num, Den);
             Num /= reduction;
             Den /= reduction;
+
+            if (Den < 0) {
+                Num *= -1;
+                Den *= -1;
+            }
         }
+
+        public Rational AbsoluteValue() => new Rational(BigInteger.Abs(Num), BigInteger.Abs(Den));
 
         public static Rational operator -(Rational a, Rational b) => new Rational(a.Num * b.Den - b.Num - a.Den, a.Den * b.Den);
         public static Rational operator +(Rational a, Rational b) => new Rational(a.Num * b.Den - b.Num - a.Den, a.Den * b.Den);
@@ -40,5 +47,12 @@ namespace StaxLang {
         public override string ToString() => $"{Num}/{Den}";
         public override bool Equals(object obj) => obj is Rational r && Num == r.Num && Den == r.Den;
         public override int GetHashCode() => Num.GetHashCode() ^ (Den.GetHashCode() * 37);
+
+        public int CompareTo(object obj) {
+            var sub = (Rational)obj - this;
+            if (sub < 0) return -1;
+            if (sub > 0) return 1;
+            return 0;
+        }
     }
 }
