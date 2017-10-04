@@ -21,8 +21,9 @@ namespace StaxLang {
      *     rational
      *     floats
      *     string interpolate
-     *     generate until duplicate
-     *     generate n elements satisfying predicate
+     *     Generators: (optional filters, optional emit initial peek)
+     *          until duplicate
+     *          n
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
@@ -1305,6 +1306,7 @@ namespace StaxLang {
         }
 
         private void DoPlus() {
+            if (TotalSize < 2) return;
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -1396,6 +1398,7 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoStar() {
+            if (TotalSize < 2) yield break;
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a)) (a, b) = (b, a);

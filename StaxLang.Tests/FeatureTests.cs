@@ -18,8 +18,10 @@ namespace StaxLang.Tests {
         [TestMethod] public void BigIntLiteral() => RunProgram("999999999999999999999999999999999999999", "999999999999999999999999999999999999999");
         [TestMethod] public void FloatLiteral() => RunProgram("1.23", "1.23");
         [TestMethod] public void Addition() => RunProgram("2 3+", "5");
+        [TestMethod] public void AdditionOneValNoop() => RunProgram("2 +", "2");
         [TestMethod] public void Subtraction() => RunProgram("2 3-", "-1");
         [TestMethod] public void Multiplication() => RunProgram("2 3*", "6");
+        [TestMethod] public void MulOneValNoop() => RunProgram("2 *", "2");
         [TestMethod] public void Division() => RunProgram("14 3/", "4");
         [TestMethod] public void Modulus() => RunProgram("11 4%", "3");
         [TestMethod] public void Increment() => RunProgram("7^", "8");
