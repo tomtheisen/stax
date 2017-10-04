@@ -716,6 +716,7 @@ namespace StaxLang.Tests {
             RunProgramSingleInputs("$cr=xH{hc|ew2|bcr=*", expected);
             RunProgramSingleInputs("$cr=x2|/2|bcr=*",expected);
             RunProgramSingleInputs("$cr=x2|/|Bcr=*", expected);
+            RunProgramSingleInputs("2|/|Bcr=ycr=*", expected);
         }
 
         [TestMethod]
