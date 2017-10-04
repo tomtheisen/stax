@@ -406,8 +406,18 @@ namespace StaxLang {
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
                                 Push(_ = Index + 1);
-                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
+                                while (true) {
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) {
+                                        goto NextIndex;
+                                    }
+                                    yield return runner.Current;
+                                }
                                 Print(Pop());
+                                NextIndex:;
                             }
                             PopStackFrame();
                             ip = program.Length;
@@ -417,8 +427,19 @@ namespace StaxLang {
                             PushStackFrame();
                             foreach (var e in Pop()) {
                                 Push(_ = e);
-                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
+                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
+                                while (true) {
+                                    try {
+                                        if (!runner.MoveNext()) break;
+                                    }
+                                    catch (CancelException) {
+                                        goto NextElement;
+                                    }
+                                    yield return runner.Current;
+                                }
                                 Print(Pop());
+
+                                NextElement:
                                 Index++;
                             }
                             PopStackFrame();
@@ -430,9 +451,6 @@ namespace StaxLang {
                     case 'M': // transpose
                         DoTranspose();
                         break;
-                    //case 'n': // get number from input
-                    //    DoGetNumber();
-                    //    break;
                     case 'N':
                         if (IsNumber(Peek())) Push(-Pop()); // negate
                         else if (IsArray(Peek())) RunMacro("c1TsH"); // uncons
@@ -599,10 +617,10 @@ namespace StaxLang {
                                 RunMacro("ss~;*{;/c;%!w,d");
                                 break;
                             case ')': // rotate right
-                                RunMacro("cHsU(+");
+                                RunMacro("cH]sU(+");
                                 break;
                             case '(': // rotate left
-                                RunMacro("cU)sh+");
+                                RunMacro("cU)sh]+");
                                 break;
                             case '[': // prefixes
                                 RunMacro("~;%R{;s(m,d");
@@ -1261,13 +1279,23 @@ namespace StaxLang {
                 PushStackFrame();
                 var result = new List<object>();
                 foreach (var e in a) {
-                    try {
-                        Push(_ = e);
-                        foreach (var s in RunSteps(((Block)b).Program)) yield return s;
-                        result.Add(Pop());
-                    } finally {
-                        Index++;
+                    Push(_ = e);
+
+                    var runner = RunSteps(((Block)b).Program).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) {
+                            goto NextElement;
+                        }
+                        yield return runner.Current;
                     }
+
+                    result.Add(Pop());
+
+                    NextElement:
+                    Index++;
                 }
                 Push(result);
                 PopStackFrame();

@@ -185,6 +185,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void RegexReplaceBlock() => RunProgram("\"axbxxcxxxd\" \"x+\"{%$}R", "a1b2c3d");
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
         [TestMethod] public void FindAllIndexesPredicate() => RunProgram("\"[1 2 2 3 3 4 4 5]\"e {|e} |I J", "1 2 5 6");
+        [TestMethod] public void MapCancelFilter() => RunProgram("5R {|eC_$2*m", "113355");
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
