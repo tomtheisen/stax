@@ -44,6 +44,7 @@ namespace StaxLang {
      *     Push 1, pop input
      *     Rotate chars (like translate on a ring)
      *     Continue-if-set (c!C)
+     *     Leading 'e' is eval-all-lines mode
      *     
      *     code explainer
      *     debugger
@@ -154,7 +155,7 @@ namespace StaxLang {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
-                    if (TotalSize > 0 && !IsNumber(Peek())) DoListify();
+                    if (TotalSize > 0 && !IsInt(Peek())) DoListify();
                     break;
             }
 
@@ -185,7 +186,7 @@ namespace StaxLang {
                         break;
                     case '#': // count number
                         if (IsArray(Peek())) RunMacro("/%v");
-                        else if (IsNumber(Peek())) RunMacro("]|&%");
+                        else if (IsInt(Peek())) RunMacro("]|&%");
                         break;
                     case '"': // "literal"
                         {
@@ -251,12 +252,12 @@ namespace StaxLang {
                         Push(AreEqual(Pop(), Pop()) ? BigInteger.One : BigInteger.Zero);
                         break;
                     case 'v':
-                        if (IsNumber(Peek())) Push(Pop() - 1); // decrement
+                        if (IsInt(Peek())) Push(Pop() - 1); // decrement
                         else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToLower())); // lower
                         else throw new Exception("Bad type for v");
                         break;
                     case '^':
-                        if (IsNumber(Peek())) Push(Pop() + 1); // increment
+                        if (IsInt(Peek())) Push(Pop() + 1); // increment
                         else if (IsArray(Peek())) Push(S2A(A2S(Pop()).ToUpper())); // uppper
                         else throw new Exception("Bad type for ^");
                         break;
@@ -291,7 +292,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'B':
-                        if (IsNumber(Peek())) RunMacro("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
+                        if (IsInt(Peek())) RunMacro("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
                         else if (IsArray(Peek())) RunMacro("c1tsh"); // uncons-right
                         else throw new Exception("Bad type for N");
                         break;
@@ -311,7 +312,7 @@ namespace StaxLang {
                         DoExplode();
                         break;
                     case 'f':
-                        if (IsNumber(Peek())) { // n times do
+                        if (IsInt(Peek())) { // n times do
                             var n = Pop();
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
@@ -338,7 +339,7 @@ namespace StaxLang {
                         foreach (var s in DoFilter()) yield return s; // block filter
                         break;
                     case 'F': // for loop
-                        if (IsNumber(Peek())) {
+                        if (IsInt(Peek())) {
                             var n = Pop();
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
@@ -404,7 +405,7 @@ namespace StaxLang {
                         DoListify();
                         break;
                     case 'm': // do map
-                        if (IsNumber(Peek())) {
+                        if (IsInt(Peek())) {
                             var n = Pop();
                             PushStackFrame();
                             for (Index = BigInteger.Zero; Index < n; Index++) {
@@ -455,7 +456,7 @@ namespace StaxLang {
                         DoTranspose();
                         break;
                     case 'N':
-                        if (IsNumber(Peek())) Push(-Pop()); // negate
+                        if (IsInt(Peek())) Push(-Pop()); // negate
                         else if (IsArray(Peek())) RunMacro("c1TsH"); // uncons
                         else throw new Exception("Bad type for N");
                         break;
@@ -475,7 +476,7 @@ namespace StaxLang {
                         Print(Peek());
                         break;
                     case 'r': // 0 range
-                        if (IsNumber(Peek())) Push(Range(0, Pop()));
+                        if (IsInt(Peek())) Push(Range(0, Pop()));
                         else if (IsArray(Peek())) {
                             var result = new List<object>(Pop());
                             result.Reverse();
@@ -484,7 +485,7 @@ namespace StaxLang {
                         else throw new Exception("Bad type for r");
                         break;
                     case 'R': // 1 range
-                        if (IsNumber(Peek())) Push(Range(1, Pop()));
+                        if (IsInt(Peek())) Push(Range(1, Pop()));
                         else {
                             // regex replace
                             foreach (var s in DoRegexReplace()) yield return s;
@@ -499,12 +500,12 @@ namespace StaxLang {
                         break;
                     case 't': // trim left
                         if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimStart()));
-                        else if (IsNumber(Peek())) RunMacro("ss~ c%,-0|M)");
+                        else if (IsInt(Peek())) RunMacro("ss~ c%,-0|M)");
                         else throw new Exception("Bad types for trimleft");
                         break;
                     case 'T': // trim right
                         if (IsArray(Peek())) Push(S2A(A2S(Pop()).TrimEnd()));
-                        else if (IsNumber(Peek())) RunMacro("ss~ c%,-0|M(");
+                        else if (IsInt(Peek())) RunMacro("ss~ c%,-0|M(");
                         else throw new Exception("Bad types for trimright");
                         break;
                     case 'u': // unique
@@ -607,7 +608,7 @@ namespace StaxLang {
                                 else Push(Pop() ^ Pop()); // bitwise xor
                                 break;
                             case '*':
-                                if (IsNumber(Peek())) { // exponent
+                                if (IsInt(Peek())) { // exponent
                                     dynamic b = Pop(), a = Pop();
                                     Push(BigInteger.Pow(a, (int)b));
                                 }
@@ -650,8 +651,11 @@ namespace StaxLang {
                                 Push(Pop() % 2 ^ 1);
                                 break;
                             case 'f':
-                                if (IsNumber(Peek())) Push(PrimeFactors(Pop())); // prime factorize
+                                if (IsInt(Peek())) Push(PrimeFactors(Pop())); // prime factorize
                                 else if (IsArray(Peek())) DoRegexFind(); // regex find all matches
+                                break;
+                            case 'F': // int to fraction
+                                Push(new Rational(Pop(), 1));
                                 break;
                             case 'g': // gcd
                                 DoGCD();
@@ -667,24 +671,24 @@ namespace StaxLang {
                                 break;
                             case 'l': // lcm
                                 if (IsArray(Peek())) RunMacro("1s{|lF");
-                                else if (IsNumber(Peek())) RunMacro("b|g~*,/");
+                                else if (IsInt(Peek())) RunMacro("b|g~*,/");
                                 else throw new Exception("Bad type for lcm");
                                 break;
                             case 'J': // join with newlines
                                 RunMacro("Vn*");
                                 break;
                             case 'm': // min
-                                if (IsNumber(Peek())) Push(BigInteger.Min(Pop(), Pop()));
+                                if (IsInt(Peek())) Push(BigInteger.Min(Pop(), Pop()));
                                 else if (IsArray(Peek())) RunMacro("chs{|mF");
                                 else throw new Exception("Bad types for min");
                                 break;
                             case 'M': // max
-                                if (IsNumber(Peek())) Push(BigInteger.Max(Pop(), Pop()));
+                                if (IsInt(Peek())) Push(BigInteger.Max(Pop(), Pop()));
                                 else if (IsArray(Peek())) RunMacro("chs{|MF");
                                 else throw new Exception("Bad types for max");
                                 break;
                             case 'p':
-                                if (IsNumber(Peek())) RunMacro("|f%1="); // is prime
+                                if (IsInt(Peek())) RunMacro("|f%1="); // is prime
                                 else if (IsArray(Peek())) RunMacro("cr1t+"); // palindromize
                                 break;
                             case 'P': // print blank newline
@@ -737,7 +741,7 @@ namespace StaxLang {
         private void DoListifyN() {
             var n = Pop();
 
-            if (IsNumber(n)) {
+            if (IsInt(n)) {
                 var result = new List<object>();
                 for (int i = 0; i < n; i++) result.Insert(0, Pop());
                 Push(result);
@@ -869,7 +873,7 @@ namespace StaxLang {
             var translation = Pop();
             var input = Pop();
 
-            if (IsNumber(input)) input = new List<object> { input };
+            if (IsInt(input)) input = new List<object> { input };
 
             if (IsArray(input) && IsArray(translation)) {
                 var result = new List<object>();
@@ -963,7 +967,7 @@ namespace StaxLang {
             int @base = (int)Pop();
             var number = Pop();
 
-            if (IsNumber(number)) {
+            if (IsInt(number)) {
                 long n = (long)number;
                 string result = "";
                 while (n > 0) {
@@ -1069,7 +1073,7 @@ namespace StaxLang {
         private void DoAssignIndex() {
             dynamic element = Pop(), indexes = Pop(), list = Pop();
 
-            if (IsNumber(indexes)) indexes = new List<object> { indexes };
+            if (IsInt(indexes)) indexes = new List<object> { indexes };
 
             if (IsArray(list)) {
                 var result = new List<object>(list);
@@ -1102,7 +1106,7 @@ namespace StaxLang {
                     Push(result);
                     return;
                 }
-                else if (IsNumber(top)) {
+                else if (IsInt(top)) {
                     Push(ReadAt(list, (int)top));
                     return;
                 }
@@ -1113,9 +1117,9 @@ namespace StaxLang {
         private void DoPadLeft() {
             dynamic b = Pop(), a = Pop();
 
-            if (IsNumber(a)) (a, b) = (b, a);
+            if (IsInt(a)) (a, b) = (b, a);
 
-            if (IsArray(a) && IsNumber(b)) {
+            if (IsArray(a) && IsInt(b)) {
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
                 if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
@@ -1132,9 +1136,9 @@ namespace StaxLang {
 
             if (IsArray(b)) (a, b) = (b, a);
 
-            if (IsNumber(a)) a = ToString(a);
+            if (IsInt(a)) a = ToString(a);
 
-            if (IsArray(a) && IsNumber(b)) {
+            if (IsArray(a) && IsInt(b)) {
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
                 if (a.Count < b) a.AddRange(Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
@@ -1205,7 +1209,7 @@ namespace StaxLang {
         private IEnumerable<ExecutionState> DoFilter() {
             dynamic b = Pop(), a = Pop();
 
-            if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
+            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
                 PushStackFrame();
@@ -1227,7 +1231,7 @@ namespace StaxLang {
         private IEnumerable<ExecutionState> DoFor() {
             dynamic b = Pop(), a = Pop();
 
-            if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
+            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
                 PushStackFrame();
@@ -1273,7 +1277,7 @@ namespace StaxLang {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
-            if (IsNumber(a) && IsBlock(b)) a = Range(1, a);
+            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
 
             if (IsArray(a) && IsBlock(b)) {
                 PushStackFrame();
@@ -1356,14 +1360,14 @@ namespace StaxLang {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
-                if (a >= 0) {
-                    Push(a / b);
+                if (IsInt(a) && IsInt(b) && a < 0) {
+                    Push((a - b + 1) / b); // int division is floor always
                 }
                 else {
-                    Push((a - b + 1) / b);
+                    Push(a / b);
                 }
             }
-            else if (IsArray(a) && IsNumber(b)) {
+            else if (IsArray(a) && IsInt(b)) {
                 var result = new List<object>();
                 for (int i = 0; i < a.Count; i += (int)b) {
                     result.Add(((IEnumerable<object>)a).Skip(i).Take((int)b).ToList());
@@ -1387,7 +1391,7 @@ namespace StaxLang {
             }
 
             var a = Pop();
-            if (IsNumber(a) && IsNumber(b)) {
+            if (IsInt(a) && IsInt(b)) {
                 BigInteger result = a % b;
                 if (result < 0) result += b;
                 Push(result);
@@ -1401,9 +1405,9 @@ namespace StaxLang {
             if (TotalSize < 2) yield break;
             dynamic b = Pop(), a = Pop();
 
-            if (IsNumber(a)) (a, b) = (b, a);
+            if (IsInt(a)) (a, b) = (b, a);
 
-            if (IsNumber(b)) {
+            if (IsInt(b)) {
                 if (IsArray(a)) {
                     if (b < 0) {
                         a.Reverse();
@@ -1429,7 +1433,7 @@ namespace StaxLang {
                 string joiner = A2S(b);
                 foreach (var e in a) {
                     if (result != "") result += joiner;
-                    result += IsNumber(e) ? e : A2S(e);
+                    result += IsInt(e) ? e : A2S(e);
                 }
                 Push(S2A(result));
                 yield break;
@@ -1466,7 +1470,7 @@ namespace StaxLang {
             }
 
             var a = Pop();
-            if (IsNumber(a) && IsNumber(b)) {
+            if (IsInt(a) && IsInt(b)) {
                 Push(BigInteger.GreatestCommonDivisor(a, b));
                 return;
             }
@@ -1483,12 +1487,12 @@ namespace StaxLang {
         }
 
         private List<object> ToString(dynamic arg) {
-            if (IsNumber(arg)) {
+            if (IsInt(arg)) {
                 return S2A(arg.ToString());
             }
             else if (IsArray(arg)) {
                 var result = new StringBuilder();
-                foreach (var e in arg) result.Append(IsNumber(e) ? e : A2S(e));
+                foreach (var e in arg) result.Append(IsInt(e) ? e : A2S(e));
                 return S2A(result.ToString());
             }
             throw new Exception("Bad type for ToString");
@@ -1496,14 +1500,16 @@ namespace StaxLang {
 
         private bool AreEqual(dynamic a, dynamic b) => Comparer.Instance.Compare(a, b) == 0;
 
-        private static bool IsNumber(object b) => b is BigInteger;
+        private static bool IsInt(object b) => b is BigInteger;
+        private static bool IsFrac(object b) => b is Rational;
+        private static bool IsNumber(object b) => IsInt(b) || IsFrac(b);
         private static bool IsArray(object b) => b is List<object>;
         private static bool IsBlock(object b) => b is Block;
-        private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
+        private static bool IsTruthy(dynamic b) => (IsInt(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
         private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private static string A2S(List<object> arg) {
-            return string.Concat(arg.Select(e => IsNumber(e)
+            return string.Concat(arg.Select(e => IsInt(e)
                 ? ((char)(int)(BigInteger)e).ToString()
                 : A2S((List<object>)e)));
         }
@@ -1594,14 +1600,14 @@ namespace StaxLang {
             private Comparer() { }
 
             public int Compare(dynamic a, dynamic b) {
-                if (IsNumber(a)) {
+                if (IsInt(a)) {
                     while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
-                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsInt(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
-                if (IsNumber(b)) {
+                if (IsInt(b)) {
                     while (IsArray(a) && a.Count > 0) a = ((IList<object>)a)[0];
-                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsInt(b)) return ((IComparable)a).CompareTo(b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsArray(a) && IsArray(b)) {
