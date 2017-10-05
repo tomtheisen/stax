@@ -19,9 +19,16 @@ namespace StaxLang {
      *     trig
      *     floats
      *     string interpolate
-     *     Generators: (optional filters, optional emit initial peek)
-     *          until duplicate
-     *          n
+     *     Generators: 
+     *          contextual operations: 
+     *              terminate   
+     *              skip        C
+     *          mode: 
+     *              peek w/ initial     g
+     *              post pop            G
+     *          how many: 
+     *              until duplicate     {...g
+     *              n                   {...}4g
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
@@ -37,6 +44,8 @@ namespace StaxLang {
      *     combinatorics: powerset, permutations
      *     Rotate chars (like translate on a ring)
      *     Continue-if-set (c!C)
+     *     pop recycle bin
+     *     call into next line
      *     
      *     code explainer
      *     debugger
@@ -376,6 +385,12 @@ namespace StaxLang {
                         }
                         foreach (var s in DoFor()) yield return s;
                         break;
+                    case 'g':
+                        foreach (var s in DoPeekGenerator()) yield return s;
+                        break;
+                    case 'G':
+                        foreach (var s in DoPopGenerator()) yield return s;
+                        break;
                     case 'h':
                         if (IsInt(Peek())) RunMacro("2/"); // half
                         else if (IsFrac(Peek())) Push(Pop().Num); // numerator
@@ -407,52 +422,11 @@ namespace StaxLang {
                         DoListify();
                         break;
                     case 'm': // do map
-                        if (IsInt(Peek())) {
-                            var n = Pop();
-                            PushStackFrame();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                Push(_ = Index + 1);
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) {
-                                        goto NextIndex;
-                                    }
-                                    yield return runner.Current;
-                                }
-                                Print(Pop());
-                                NextIndex:;
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoMap(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
                         }
-                        else if (IsArray(Peek())) {
-                            PushStackFrame();
-                            foreach (var e in Pop()) {
-                                Push(_ = e);
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) {
-                                        goto NextElement;
-                                    }
-                                    yield return runner.Current;
-                                }
-                                Print(Pop());
-
-                                NextElement:
-                                Index++;
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
-                        }
-                        foreach (var s in DoMap()) yield return s;
                         break;
                     case 'M': // transpose
                         DoTranspose();
@@ -766,6 +740,83 @@ namespace StaxLang {
                 }
                 yield return new ExecutionState();
             }
+        }
+
+        private IEnumerable<ExecutionState> DoPopGenerator() {
+            dynamic target = null, gen = Pop();
+            if (IsInt(gen)) {
+                target = gen;
+                gen = Pop();
+            }
+
+            if (!IsBlock(gen)) throw new Exception("Bad types for pop generator");
+
+            PushStackFrame();
+            var result = new List<object>();
+            while (target == null || result.Count < target) {
+                _ = Peek();
+                var runner = RunSteps(((Block)gen).Program).GetEnumerator();
+                while (true) {
+                    try {
+                        if (!runner.MoveNext()) break;
+                    }
+                    catch (CancelException) {
+                        goto Skip;
+                    }
+                    yield return runner.Current;
+                }
+
+                object generated = Pop();
+                if (target == null && result.Contains(generated, Comparer.Instance)) {
+                    break; // duplicate detected
+                }
+                result.Add(generated);
+                Skip:
+                ++Index;
+            }
+            PopStackFrame();
+            Push(result);
+        }
+
+        private IEnumerable<ExecutionState> DoPeekGenerator() {
+            dynamic target = null, gen = Pop();
+            if (IsInt(gen)) {
+                target = gen;
+                gen = Pop();
+                if (target == 0) {
+                    // 0 elements requested ??
+                    Push(new List<object>());
+                    yield break;
+                }
+            }
+
+            if (!IsBlock(gen)) throw new Exception("Bad types for peek generator");
+
+            PushStackFrame();
+            var result = new List<object> { Peek() };
+            while (target == null || result.Count < target) {
+                _ = Peek();
+                var runner = RunSteps(((Block)gen).Program).GetEnumerator();
+                while (true) {
+                    try {
+                        if (!runner.MoveNext()) break;
+                    }
+                    catch (CancelException) {
+                        goto Skip;
+                    }
+                    yield return runner.Current;
+                }
+
+                object generated = Peek();
+                if (target == null && result.Contains(generated, Comparer.Instance)) {
+                    break; // duplicate detected
+                }
+                result.Add(generated);
+                Skip:
+                ++Index;
+            }
+            PopStackFrame();
+            Push(result);
         }
 
         enum RotateDirection { Left, Right };
@@ -1349,7 +1400,51 @@ namespace StaxLang {
             Push(result);
         }
 
-        private IEnumerable<ExecutionState> DoMap() {
+        private IEnumerable<ExecutionState> DoMap(string restOfProgram) {
+            if (IsInt(Peek())) {
+                var n = Pop();
+                PushStackFrame();
+                for (Index = BigInteger.Zero; Index < n; Index++) {
+                    Push(_ = Index + 1);
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) {
+                            goto NextIndex;
+                        }
+                        yield return runner.Current;
+                    }
+                    Print(Pop());
+                    NextIndex:;
+                }
+                PopStackFrame();
+                yield break;
+            }
+            else if (IsArray(Peek())) {
+                PushStackFrame();
+                foreach (var e in Pop()) {
+                    Push(_ = e);
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) {
+                            goto NextElement;
+                        }
+                        yield return runner.Current;
+                    }
+                    Print(Pop());
+
+                    NextElement:
+                    Index++;
+                }
+                PopStackFrame();
+                yield break;
+            }
+
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b)) (a, b) = (b, a);
@@ -1665,7 +1760,7 @@ namespace StaxLang {
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
                 // shortcut block terminators
-                if ("wWmfFO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
+                if ("wWmfFgGO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
             } while (++ip < program.Length);
             return new Block(program.Substring(start));
         }

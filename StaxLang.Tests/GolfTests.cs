@@ -501,6 +501,7 @@ namespace StaxLang.Tests {
             RunProgram("VA{Qch+U)}26*", "", expected);
             RunProgram("VA{Q|(}26*", "", expected);
             RunProgram("VA26fQ|(", "", expected);
+            RunProgram("VA{|(gm", "", expected);
         }
 
         [TestMethod]
