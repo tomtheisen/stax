@@ -33,6 +33,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Negate() => RunProgram("4N", "-4");
         [TestMethod] public void Exponent() => RunProgram("3 4|*", "81");
         [TestMethod] public void PowerOfTen() => RunProgram("3 |A", "1000");
+        [TestMethod] public void PowerOfTwo() => RunProgram("9 |2", "512");
+        [TestMethod] public void PowerOfMinusOne() => RunProgram("9 |1", "-1");
         [TestMethod] public void BaseConvert() => RunProgram("255 16 |b", "ff");
         [TestMethod] public void BaseUnconvert() => RunProgram("\"ff\" 16 |b", "255");
         [TestMethod] public void BinaryConvert() => RunProgram("5 |B", "101");
@@ -50,12 +52,21 @@ namespace StaxLang.Tests {
         [TestMethod] public void AbsoluteValue() => RunProgram("5|a", "5");
         [TestMethod] public void NegativeAbsoluteValue() => RunProgram("5N|a", "5");
         [TestMethod] public void RepeatedDivide() => RunProgram("12 2 |/", "3");
+        [TestMethod] public void JostleInteger() => RunProgram("5j", "1/5");
+        [TestMethod] public void Fraction() => RunProgram("1 3|F", "1/3");
+        [TestMethod] public void JostleFraction() => RunProgram("2 5|F j", "5/2");
+        [TestMethod] public void FractionListify() => RunProgram("1 3|F l J", "1 3");
+        [TestMethod] public void FractionArithmetic() => RunProgram("1 3|F 2 5|F +", "11/15");
+        [TestMethod] public void FractionPower() => RunProgram("2 3|F 3 |*", "8/27");
+        [TestMethod] public void FractionFloor() => RunProgram("7 3|F @", "2");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
         [TestMethod] public void BitwiseAnd() => RunProgram("3 5|&", "1");
         [TestMethod] public void BitwiseOr() => RunProgram("3 5||", "7");
         [TestMethod] public void BitwiseXor() => RunProgram("3 5|^", "6");
+        [TestMethod] public void ShiftLeft() => RunProgram("7 3 |<", "56");
+        [TestMethod] public void ShiftRight() => RunProgram("255 2 |>", "63");
 
         // Logic
         [TestMethod] public void Equality() => RunProgram("3 3=", "1");
@@ -95,8 +106,10 @@ namespace StaxLang.Tests {
         [TestMethod] public void RegexReplace() => RunProgram("\"axbxxcxxxd\" \"x+\" 'z R", "azbzczd");
         [TestMethod] public void Translate() => RunProgram("\"Hello World\" \"e3o0\" |t", "H3ll0 W0rld");
         [TestMethod] public void Batch() => RunProgram("\"hello\" 3B ',*", "hel,ell,llo");
-        [TestMethod] public void RotateRight() => RunProgram("\"asdf\" |)", "fasd");
-        [TestMethod] public void RotateLeft() => RunProgram("\"asdf\" |(", "sdfa");
+        [TestMethod] public void RotateRight() => RunProgram("\"asdfg\" |)", "gasdf");
+        [TestMethod] public void RotateRightDistance() => RunProgram("\"asdfg\" 2 |)", "fgasd");
+        [TestMethod] public void RotateLeft() => RunProgram("\"asdfg\" |(", "sdfga");
+        [TestMethod] public void RotateLeftDistance() => RunProgram("\"asdfg\" 2 |(", "dfgas");
         [TestMethod] public void RegexFind() => RunProgram("\"Hello. Good to see you.\" \"o+\" |f ', *", "o,oo,o,o");
         [TestMethod] public void RegexSplit() => RunProgram("\"Hello. Good to see you.\" \"o+\" |s ', *", "Hell,. G,d t, see y,u.");
         [TestMethod] public void Prefixes() => RunProgram("\"abc\" |[ ',*", "a,ab,abc");
@@ -141,6 +154,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void IndexAllArray() => RunProgram("\"[1 2 3 2 1 2 3]\"e 3|I J", "2 6");
         [TestMethod] public void Uncons() => RunProgram("\"abcd\" B pP", "97bcd");
         [TestMethod] public void UnconsRight() => RunProgram("\"abcd\" N pP", "100abc");
+        [TestMethod] public void ElementRepeat() => RunProgram("3R4|*$","111122223333");
+        [TestMethod] public void CrossProduct() => RunProgram("\"abc\" \"xyz\" |* J", "ax ay az bx by bz cx cy cz");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -156,6 +171,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void LowerWord() => RunProgram("Vw", "0123456789abcdefghijklmnopqrstuvwxyz");
         [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
         [TestMethod] public void Newline() => RunProgram("Vn 'x+", Environment.NewLine + "x");
+        [TestMethod] public void Rational0() => RunProgram("V0", "0/1");
+        [TestMethod] public void Rational1() => RunProgram("V1", "1/1");
+        [TestMethod] public void RationalHalf() => RunProgram("V2", "1/2");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");

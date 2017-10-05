@@ -134,7 +134,7 @@ namespace StaxLang.Tests {
         public void PairSpacing3Test() {
             http://golf.shinh.org/p.rb?Pair+Spacing+3
             RunProgram("' /{2/' *m' *", "Sequence spacing demonstration", "Se qu en ce sp ac in g de mo ns tr at io n");
-            RunProgram("' Z/{2/z*mz*", "Sequence spacing demonstration", "Se qu en ce sp ac in g de mo ns tr at io n");
+            RunProgram("' X/{2/x*mx*", "Sequence spacing demonstration", "Se qu en ce sp ac in g de mo ns tr at io n");
             RunProgram("j{2/JmJ", "Sequence spacing demonstration", "Se qu en ce sp ac in g de mo ns tr at io n");
         }
 
@@ -267,7 +267,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BracketMatching() {
             http://golf.shinh.org/p.rb?Bracket+Matching
-            RunProgramSingleInputs("mUZ~{\"[](){}\"|tX_={,_={}{iZd}?}{x~}?z^CFzU=.TO..2%IKrq`._zt+?",
+            RunProgramSingleInputs("mUY~{\"[](){}\"|tX_={,_={}{iYd}?}{x~}?y^CFyU=.TO..2%IKrq`._yt+?",
                 ")", "failed at: )",
                 "()", "yes",
                 "{()[]}", "yes",
@@ -321,7 +321,6 @@ namespace StaxLang.Tests {
             RunProgram("%R2R-{y(3)PF", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("2(y2N){+Q2)Fd", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("zs{+3)cm2tsdm", "abcdefg", "abc", "bcd", "cde", "def", "efg");
-            RunProgram("{zs+3)Zm2tm", "abcdefg", "abc", "bcd", "cde", "def", "efg");
             RunProgram("3Bm", "abcdefg", "abc", "bcd", "cde", "def", "efg");
         }
 
@@ -334,15 +333,15 @@ namespace StaxLang.Tests {
             RunProgram("R1-{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{|p_2+|p*fFp',p_2+P", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{c*v|f%2=fmvq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
-            RunProgram("mc*v|f2tCiq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("mc*v|f%2-Ciq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
         public void BronspeakTest() {
             http://golf.shinh.org/p.rb?Bronspeak
-            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
-            RunProgram("VaVv2*O|(c^+X-{]2*m$U)'b+c^+x+Z,\"\\w+\"{1(zr|t_U(U)x|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
-            RunProgram("\"\\w+\"{1(Vc{]2*m$U)'b+c^+Vv2*{O|(c^+X+Zr|t_1t1Tx|t_1)z|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("Va\"aeeiioouua\"c^+X-{]2*m$U)'b+c^+x+Y,\"\\w+\"{1(yr|t_U(U)x|t_1)y|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("VaVv2*O|(c^+X-{]2*m$U)'b+c^+x+Y,\"\\w+\"{1(yr|t_U(U)x|t_1)y|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
+            RunProgram("\"\\w+\"{1(Vc{]2*m$U)'b+c^+Vv2*{O|(c^+X+Yr|t_1t1Tx|t_1)y|t++}R", "The quick brown fox jumped over the lazy dogs!", "Shi paocl zruwp duy hampif ivis shi kezz cugt!");
         }
 
         [TestMethod]
@@ -538,7 +537,7 @@ namespace StaxLang.Tests {
             };
 
             RunProgram("zVA{]Yi*]+{y+mFm", "", expected);
-            RunProgram("26RZ{~z{;|M64+mPF", "", expected);
+            RunProgram("26RX{~x{;|M64+mPF", "", expected);
             RunProgram("VA{~VA{;|MmPF", "", expected);
             RunProgram("VA{VA{[s|MmPF", "", expected);
             RunProgram("VAQc2B{|tQF", "", expected);
@@ -672,7 +671,7 @@ namespace StaxLang.Tests {
                 "**   **",
                 "*******");
 
-            RunProgram("'*Zx*]xh{z)xh(zs+|pm+|pm", "7",
+            RunProgram("'*Y*]xh{y)xh(ys+|pm+|pm", "7",
                 "*******",
                 "**   **",
                 "* * * *",
@@ -758,7 +757,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void ReverseTheConsonantsTest() {
             https://codegolf.stackexchange.com/questions/83171/reverse-the-consonants
-            RunProgram("Vc'y-M'|*Z{yz|fri@}R", "reverse the consonants", "setenne sne cohtosarvr");
+            RunProgram("Vc'y-M'|*X{yx|fri@}R", "reverse the consonants", "setenne sne cohtosarvr");
         }
 
         [TestMethod]
@@ -795,7 +794,9 @@ namespace StaxLang.Tests {
                 "155685007/232792560",
             };
 
-            RunProgram("1YZ20mx_*yzNZ*-Xy_*Y|g~x;/p'/py,/", "", expected);
+            RunProgram("20FUi|*s|F+Q", "", expected);
+            RunProgram("20F|1N_|F+Q", "", expected);
+            RunProgram("20Fji|1*+Q", "", expected);
         }
 
         [TestMethod]
@@ -959,6 +960,38 @@ namespace StaxLang.Tests {
         public void NarcissisticArrayElementsTest() {
             https://codegolf.stackexchange.com/questions/144358/narcissistic-array-elements
             RunProgram("XfHxiv@xi^@+>!", "[6 9 4 10 16 18 13]", "6", "4", "10");
+        }
+
+        [TestMethod]
+        public void AdditivePersistence() {
+            https://codegolf.stackexchange.com/questions/1775/additive-persistence
+            RunProgram("mq' p{i~c%1=C{]em|+$W,", "74621\n39\n2677889\n0",
+                "74621 2",
+                "39 2",
+                "2677889 3",
+                "0 0");
+        }
+
+        [TestMethod]
+        public void KaprekarsMythicalTest() {
+            https://codegolf.stackexchange.com/questions/2762/code-golf-6174-kaprekars-mythical-constant
+            RunProgram(
+                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w.X9fhc1.p,^p\".",
+                "2607",
+                "7620 - 0267 = 7353",
+                "7533 - 3357 = 4176",
+                "7641 - 1467 = 6174",
+                "Iterations: 3.");
+
+            RunProgram(
+                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w.X9fhc1.p,^p\".",
+                "1211",
+                "2111 - 1112 = 0999",
+                "9990 - 0999 = 8991",
+                "9981 - 1899 = 8082",
+                "8820 - 0288 = 8532",
+                "8532 - 2358 = 6174",
+                "Iterations: 5.");
         }
     }
 }

@@ -8,17 +8,15 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:DgGkKnoS
+    //  `:DgGkKnoSZ
     /* To add:
      *     find-index-all by regex
      *     reduce
+     *     flatten
      *     map-many
      *     zip-short
-     *     cross-product
      *     log
      *     trig
-     *     invert
-     *     rational
      *     floats
      *     string interpolate
      *     Generators: (optional filters, optional emit initial peek)
@@ -30,22 +28,15 @@ namespace StaxLang {
      *     replace first only
      *     compare / sign
      *     uneval
-     *     entire array ref inside for/filter/map (currently stored in register - maybe can eliminate one reg)
+     *     entire array ref inside for/filter/map 
      *     rectangularize
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
-     *     STDIN / STDOUT
+     *     command line STDIN / STDOUT
      *     string starts-with / ends-with
-     *     Eliminate Z
-     *     array element repeat
-     *     array rotation distance
-     *     2 ** x
-     *     Push 0, pop input
-     *     Push 1, pop input
+     *     combinatorics: powerset, permutations
      *     Rotate chars (like translate on a ring)
      *     Continue-if-set (c!C)
-     *     Leading 'e' is eval-all-lines mode
-     *     min/max for all numerics
      *     
      *     code explainer
      *     debugger
@@ -57,6 +48,9 @@ namespace StaxLang {
         public TextWriter Output { get; private set; }
 
         private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
+            ['0'] = new Rational(0, 1),
+            ['1'] = new Rational(1, 1),
+            ['2'] = new Rational(1, 2),
             ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
             ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
@@ -74,7 +68,6 @@ namespace StaxLang {
         private BigInteger IndexOuter; // outer loop iteration
         private dynamic X; // register - default to numeric value of first input
         private dynamic Y; // register - default to first input
-        private dynamic Z; // register - default to empty string
         private dynamic _; // implicit iterator
 
         private Stack<dynamic> MainStack;
@@ -98,7 +91,7 @@ namespace StaxLang {
         private void Initialize(string program, string[] input) {
             IndexOuter = Index = 0;
             X = BigInteger.Zero;
-            Y = Z = S2A("");
+            Y = S2A("");
             _ = S2A(string.Join("\n", input));
 
             if (input.Length > 0) {
@@ -191,7 +184,7 @@ namespace StaxLang {
                         break;
                     case '#': // count number
                         if (IsArray(Peek())) RunMacro("/%v");
-                        else if (IsInt(Peek())) RunMacro("]|&%");
+                        else if (IsNumber(Peek())) RunMacro("]|&%");
                         break;
                     case '"': // "literal"
                         {
@@ -239,7 +232,7 @@ namespace StaxLang {
                         DoPercent();
                         break;
                     case '@': // read index
-                        DoReadIndex();
+                        DoAt();
                         break;
                     case '&': // assign index
                         DoAssignIndex();
@@ -299,7 +292,7 @@ namespace StaxLang {
                     case 'B':
                         if (IsInt(Peek())) RunMacro("ss ~ c;v( [s;vN) {+;)cm sdsd ,d"); // batch
                         else if (IsArray(Peek())) RunMacro("c1tsh"); // uncons-right
-                        else throw new Exception("Bad type for N");
+                        else throw new Exception("Bad type for B");
                         break;
                     case 'c': // copy
                         Push(Peek());
@@ -310,7 +303,7 @@ namespace StaxLang {
                     case 'd': // discard
                         Pop();
                         break;
-                    case 'e': // eval
+                    case 'e': // eval, but only when not at the very beginning of the program
                         if (CallStackFrames.Any() || ip > 1) DoEval();
                         break;
                     case 'E': // explode (de-listify)
@@ -397,8 +390,10 @@ namespace StaxLang {
                     case 'I': // get index
                         DoFindIndex();
                         break;
-                    case 'j': // un-join with spaces
-                        RunMacro("' /");
+                    case 'j': 
+                        if (IsArray(Peek())) RunMacro("' /"); // un-join with spaces
+                        else if (IsInt(Peek())) Push(new Rational(1, Pop())); // fraction jostling (invert)
+                        else if (IsFrac(Peek())) Push(1 / Pop()); // fraction jostling (invert)
                         break;
                     case 'J':
                         RunMacro("' *"); // join with spaces
@@ -578,11 +573,8 @@ namespace StaxLang {
                     case 'Y': // write
                         Y = Peek();
                         break;
-                    case 'z': // read;
-                        Push(Z);
-                        break;
-                    case 'Z': // write
-                        Z = Peek();
+                    case 'z': // zero-length;
+                        Push(S2A(""));
                         break;
                     case '|': // extended operations
                         switch (program[ip++]) {
@@ -613,26 +605,60 @@ namespace StaxLang {
                                 else Push(Pop() ^ Pop()); // bitwise xor
                                 break;
                             case '*':
-                                if (IsInt(Peek())) { // exponent
-                                    dynamic b = Pop(), a = Pop();
-                                    Push(BigInteger.Pow(a, (int)b));
+                                if (IsInt(Peek())) { 
+                                    dynamic b = Pop();
+                                    if (IsInt(Peek())) { // exponent
+                                        Push(BigInteger.Pow(Pop(), (int)b));
+                                        break;
+                                    }
+                                    else if (IsFrac(Peek())) { // fraction power
+                                        dynamic a = Pop();
+                                        var result = new Rational(1, 1);
+                                        for (int i = 0; i < b; i++) result *= a;
+                                        Push(result);
+                                        break;
+                                    }
+                                    else if (IsArray(Peek())) { // repeat element
+                                        var result = new List<object>();
+                                        foreach (var e in Pop()) result.AddRange(Enumerable.Repeat((object)e, (int)b));
+                                        Push(result);
+                                        break;
+                                    }
                                 }
-                                else throw new Exception("Bad types for |*");
-                                break;
+                                else if (IsArray(Peek())) {
+                                    dynamic B = Pop(), A = Pop(); // cross product
+                                    var result = new List<object>();
+                                    foreach (var a in A) foreach (var b in B) result.Add(new List<object> { a, b });
+                                    Push(result);
+                                    break;
+                                }
+                                throw new Exception("Bad types for |*");
                             case '/': // repeated divide
                                 RunMacro("ss~;*{;/c;%!w,d");
                                 break;
                             case ')': // rotate right
-                                RunMacro("cH]sU(+");
+                                DoRotate(RotateDirection.Right);
                                 break;
                             case '(': // rotate left
-                                RunMacro("cU)sh]+");
+                                DoRotate(RotateDirection.Left);
                                 break;
                             case '[': // prefixes
                                 RunMacro("~;%R{;s(m,d");
                                 break;
                             case ']': // suffixes
                                 RunMacro("~;%R{;s)mr,d");
+                                break;
+                            case '<': // shift left
+                                RunMacro("|2*");
+                                break;
+                            case '>': // shift right
+                                RunMacro("|2/");
+                                break;
+                            case '1': // -1-power
+                                RunMacro("2%U1?");
+                                break;
+                            case '2': // 2-power
+                                RunMacro("2s|*");
                                 break;
                             case 'a': // absolute value
                                 Push(BigInteger.Abs(Pop()));
@@ -659,8 +685,11 @@ namespace StaxLang {
                                 if (IsInt(Peek())) Push(PrimeFactors(Pop())); // prime factorize
                                 else if (IsArray(Peek())) DoRegexFind(); // regex find all matches
                                 break;
-                            case 'F': // int to fraction
-                                Push(new Rational(Pop(), 1));
+                            case 'F': // fraction
+                                { 
+                                    dynamic den = Pop(), num = Pop();
+                                    Push(new Rational(num, den));
+                                }
                                 break;
                             case 'g': // gcd
                                 DoGCD();
@@ -683,12 +712,18 @@ namespace StaxLang {
                                 RunMacro("Vn*");
                                 break;
                             case 'm': // min
-                                if (IsInt(Peek())) Push(BigInteger.Min(Pop(), Pop()));
+                                if (IsNumber(Peek())) {
+                                    dynamic b = Pop(), a = Pop();
+                                    Push(Comparer.Instance.Compare(a, b) < 0 ? a : b);
+                                }
                                 else if (IsArray(Peek())) RunMacro("chs{|mF");
                                 else throw new Exception("Bad types for min");
                                 break;
                             case 'M': // max
-                                if (IsInt(Peek())) Push(BigInteger.Max(Pop(), Pop()));
+                                if (IsNumber(Peek())) {
+                                    dynamic b = Pop(), a = Pop();
+                                    Push(Comparer.Instance.Compare(a, b) > 0 ? a : b);
+                                }
                                 else if (IsArray(Peek())) RunMacro("chs{|MF");
                                 else throw new Exception("Bad types for max");
                                 break;
@@ -737,6 +772,32 @@ namespace StaxLang {
             }
         }
 
+        enum RotateDirection { Left, Right };
+        private void DoRotate(RotateDirection dir) {
+            dynamic arr, distance = Pop();
+            if (IsArray(distance)) {
+                arr = distance;
+                distance = BigInteger.One;
+            }
+            else {
+                arr = Pop();
+            }
+
+            if (IsArray(arr) && IsInt(distance)) {
+                var result = new List<object>();
+                distance = distance % arr.Count;
+                if (distance < 0) distance += arr.Count;
+                int cutPoint = dir == RotateDirection.Left ? (int)distance : arr.Count - (int)distance;
+                for (int i = 0; i < arr.Count; i++) {
+                    result.Add(arr[(i + cutPoint) % arr.Count]);
+                }
+                Push(result);
+            }
+            else {
+                throw new Exception("Bad types for rotate");
+            }
+        }
+
         private void DoListify() {
             var newList = new List<object>();
             while (TotalSize > 0) newList.Add(Pop());
@@ -746,7 +807,10 @@ namespace StaxLang {
         private void DoListifyN() {
             var n = Pop();
 
-            if (IsInt(n)) {
+            if (IsFrac(n)) {
+                Push(new List<object> { n.Num, n.Den });
+            }
+            else if (IsInt(n)) {
                 var result = new List<object>();
                 for (int i = 0; i < n; i++) result.Insert(0, Pop());
                 Push(result);
@@ -897,7 +961,7 @@ namespace StaxLang {
         private void DoDump() {
             int i = 0;
             if (CallStackFrames.Any()) Output.WriteLine("i: {0}, _: {1}", Index, Format(_));
-            Output.WriteLine("x: {0} y: {1} z: {2}", Format(X), Format(Y), Format(Z));
+            Output.WriteLine("x: {0} y: {1}", Format(X), Format(Y));
             if (MainStack.Any()) {
                 Output.WriteLine("Main:");
                 foreach (var e in MainStack) Output.WriteLine("{0:##0}: {1}", i++, Format(e)); 
@@ -1097,7 +1161,16 @@ namespace StaxLang {
 
         }
 
-        private void DoReadIndex() {
+        private void DoAt() {
+            var top = Pop();
+
+            if (IsFrac(top)) {
+                Push(top.Floor());
+                return;
+            }
+
+            var list = Pop();
+
             dynamic ReadAt(List<object> arr, int idx) {
                 idx %= arr.Count;
                 idx += arr.Count;
@@ -1105,9 +1178,7 @@ namespace StaxLang {
                 return arr[idx];
             }
 
-            var top = Pop();
-            var list = Pop();
-
+            // read at index
             if (IsArray(list)) {
                 if (IsArray(top)) {
                     var result = new List<object>();
@@ -1514,7 +1585,7 @@ namespace StaxLang {
         private static bool IsNumber(object b) => IsInt(b) || IsFrac(b);
         private static bool IsArray(object b) => b is List<object>;
         private static bool IsBlock(object b) => b is Block;
-        private static bool IsTruthy(dynamic b) => (IsInt(b) && b != 0) || (IsArray(b) && b.Count != 0);
+        private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
         private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private static string A2S(List<object> arg) {
