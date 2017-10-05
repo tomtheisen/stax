@@ -39,7 +39,7 @@ namespace StaxLang {
                 return;
             }
 
-            CompressedTextbox.Text = '.' + compressed + '.';
+            CompressedTextbox.Text = '`' + compressed + '`';
         }
     }
 }

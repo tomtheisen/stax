@@ -117,7 +117,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Prefixes() => RunProgram("\"abc\" |[ ',*", "a,ab,abc");
         [TestMethod] public void Suffixes() => RunProgram("\"abc\" |] ',*", "abc,bc,c");
         [TestMethod] public void ZeroFill() => RunProgram("\"abc\" 5 |z", "00abc");
-        [TestMethod] public void CompressedLiterals() => RunProgram(".6Js2%", "literal");
+        [TestMethod] public void CompressedLiterals() => RunProgram("`5Is1%", "literal");
         [TestMethod] public void SubstringOccurrences() => RunProgram("\"drab cab\" \"ab\" #", "2");
         [TestMethod] public void AutoRangeBounds() => RunProgram("\"asdf\"X 2x|r '/ &", "as//");
 

@@ -21,7 +21,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void UnfoundMulticharSubstringOverlap() => RunProgram("\"abc\" \"cd\" I", "-1");
         [TestMethod] public void TooMuchTrim() => RunProgram("'a 3t", "");
         [TestMethod] public void ShorthandLoopIndex() => RunProgram("2F2Fip", "0101");
-        [TestMethod] public void CompressedInBlock() => RunProgram("1{.O.F", "Thg");
+        [TestMethod] public void CompressedInBlock() => RunProgram("1{`N`F", "Thg");
         [TestMethod] public void MixedEqualityEmpty() => RunProgram("z 1 =", "0");
         [TestMethod] public void NegativeEval() => RunProgram("U$e", "-1");
         [TestMethod] public void ScopeElementTest() => RunProgram("2R{d 9R{dF _pF", "12");

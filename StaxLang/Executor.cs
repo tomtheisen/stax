@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  `:DgGkKnoSZ
+    //  .:DgGkKnoSZ
     /* To add:
      *     find-index-all by regex
      *     reduce
@@ -193,7 +193,7 @@ namespace StaxLang {
                             if (implicitEnd) Print(Peek()); 
                         }
                         break;
-                    case '.': // compressed .6Js2%.
+                    case '`': // compressed `5Is1%`
                         {
                             --ip;
                             Push(ParseCompressedString(program, ref ip, out bool implitEnd));
@@ -1621,7 +1621,7 @@ namespace StaxLang {
 
         private List<object> ParseCompressedString(string program, ref int ip, out bool implicitEnd) {
             string compressed = "";
-            while (ip < program.Length - 1 && program[++ip] != '.') compressed += program[ip];
+            while (ip < program.Length - 1 && program[++ip] != '`') compressed += program[ip];
             implicitEnd = ip == program.Length - 1;
             ++ip; // final delimiter
 

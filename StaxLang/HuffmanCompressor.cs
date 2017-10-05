@@ -45,7 +45,7 @@ namespace StaxLang {
             }
         }
 
-        const string Symbols = " !\"#$%&'()*+,-/0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        const string Symbols = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
         private static Dictionary<string, string> MemoizedDecompress = new Dictionary<string, string>();
         public static string Decompress(string compressed) {
             if (MemoizedDecompress.TryGetValue(compressed, out var result)) return result;

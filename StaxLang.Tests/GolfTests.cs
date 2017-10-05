@@ -233,7 +233,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void FizzBuzzTest() {
             RunProgram("R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mm", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("m3%!.N\"(.*_5%!.-D.*+c_?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("m3%!`M\"(`*_5 %!`-C`*+c_?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
         }
 
         [TestMethod]
@@ -267,7 +267,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void BracketMatching() {
             http://golf.shinh.org/p.rb?Bracket+Matching
-            RunProgramSingleInputs("mUY~{\"[](){}\"|tX_={,_={}{iYd}?}{x~}?y^CFyU=.TO..2%IKrq`._yt+?",
+            RunProgramSingleInputs("mUY~{\"[](){}\"|tX_={,_={}{iYd}?}{x~}?y^CFyU=`SN``1%HJrq_`_yt+?",
                 ")", "failed at: )",
                 "()", "yes",
                 "{()[]}", "yes",
@@ -976,7 +976,7 @@ namespace StaxLang.Tests {
         public void KaprekarsMythicalTest() {
             https://codegolf.stackexchange.com/questions/2762/code-golf-6174-kaprekars-mythical-constant
             RunProgram(
-                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w.X9fhc1.p,^p\".",
+                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w`W8fhc0`p,^p\".",
                 "2607",
                 "7620 - 0267 = 7353",
                 "7533 - 3357 = 4176",
@@ -984,7 +984,7 @@ namespace StaxLang.Tests {
                 "Iterations: 3.");
 
             RunProgram(
-                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w.X9fhc1.p,^p\".",
+                "i{{OXrqi~\" - \"pxp\" = \"pexe-$4|zQc6174$=!w`W8fhc0`p,^p\".",
                 "1211",
                 "2111 - 1112 = 0999",
                 "9990 - 0999 = 8991",
