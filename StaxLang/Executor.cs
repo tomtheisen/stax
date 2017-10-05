@@ -19,16 +19,8 @@ namespace StaxLang {
      *     trig
      *     floats
      *     string interpolate
-     *     Generators: 
-     *          contextual operations: 
-     *              terminate   
-     *              skip        C
-     *          mode: 
-     *              peek w/ initial     g
-     *              post pop            G
-     *          how many: 
-     *              until duplicate     {...g
-     *              n                   {...}4g
+     *     Generator terminate
+     *     Generator shorthand
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
@@ -46,6 +38,7 @@ namespace StaxLang {
      *     Continue-if-set (c!C)
      *     pop recycle bin
      *     call into next line
+     *     base 36 for number compression
      *     
      *     code explainer
      *     debugger
