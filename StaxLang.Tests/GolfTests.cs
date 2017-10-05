@@ -795,9 +795,9 @@ namespace StaxLang.Tests {
                 "155685007/232792560",
             };
 
-            RunProgram("20FUi|*sj*+Q", "", expected);
-            RunProgram("20F|1N_j*+Q", "", expected);
-            RunProgram("20Fji|1*+Q", "", expected);
+            RunProgram("20FUi|*su*+Q", "", expected);
+            RunProgram("20F|1N_u*+Q", "", expected);
+            RunProgram("20Fui|1*+Q", "", expected);
         }
 
         [TestMethod]
@@ -993,6 +993,12 @@ namespace StaxLang.Tests {
                 "8820 - 0288 = 8532",
                 "8532 - 2358 = 6174",
                 "Iterations: 5.");
+        }
+
+        [TestMethod]
+        public void ExtractLocalMaximaTest() {
+            https://codegolf.stackexchange.com/questions/132451/extract-local-maxima
+            RunProgram("0|S3Bm|M_1@X-Cx", "[4,2,6,12,4,5,4,3]", "4", "12", "5");
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  .:DgGkKnoSZ
+    //  .:DkKnoSZ
     /* To add:
      *     find-index-all by regex
      *     reduce
@@ -35,20 +35,20 @@ namespace StaxLang {
 	            yes
 	            no
 
-            {filter} {project}gu
-            {filter} {project}gf
-            {filter} {project}gc
-            {filter}0{project}gn
+             {filter}{project}gu
+             {filter}{project}gf
+             {filter}{project}gc
+            0{filter}{project}gn
 	                 {project}gu
 	                 {project}gc
-	                0{project}gn
-            {filter} {project}gU
-            {filter} {project}gF
-            {filter} {project}gC
-            {filter}0{project}gN
+	        0        {project}gn
+             {filter}{project}gU
+             {filter}{project}gF
+             {filter}{project}gC
+            0{filter}{project}gN
 	                 {project}gU
 	                 {project}gC
-	                0{project}gN
+	        0        {project}gN
 
      *     repeat-to-length
      *     increase-to-multiple
@@ -68,6 +68,8 @@ namespace StaxLang {
      *     pop recycle bin
      *     call into next line
      *     base 36 for number compression
+     *     surround with
+     *     between
      *     
      *     code explainer
      *     debugger
@@ -378,8 +380,6 @@ namespace StaxLang {
                         break;
                     case 'j': 
                         if (IsArray(Peek())) RunMacro("' /"); // un-join with spaces
-                        else if (IsInt(Peek())) Push(new Rational(1, Pop())); // fraction jostling (invert)
-                        else if (IsFrac(Peek())) Push(1 / Pop()); // fraction jostling (invert)
                         break;
                     case 'J':
                         RunMacro("' *"); // join with spaces
@@ -663,6 +663,9 @@ namespace StaxLang {
                             case 's': // regex split
                                 DoRegexSplit();
                                 break;
+                            case 'S': // surround with
+                                DoSurround();
+                                break;
                             case 't': // translate
                                 DoTranslate();
                                 break;
@@ -682,6 +685,17 @@ namespace StaxLang {
                 }
                 yield return new ExecutionState();
             }
+        }
+
+        private void DoSurround() {
+            dynamic b = Pop(), a = Pop();
+
+            if (!IsArray(b)) b = new List<object> { b };
+            if (!IsArray(a)) a = new List<object> { a };
+            var result = new List<object>(b);
+            result.AddRange(a);
+            result.AddRange(b);
+            Push(result);
         }
 
         private IEnumerable<ExecutionState> DoPopGenerator() {
@@ -976,6 +990,12 @@ namespace StaxLang {
                     }
                 }
                 Push(result);
+            }
+            else if (IsInt(arg)) { // upside down
+                Push(new Rational(1, arg));
+            }
+            else if (IsFrac(arg)) { // upside down
+                Push(1 / arg);
             }
             else {
                 throw new Exception("Bad type for unique");

@@ -52,15 +52,15 @@ namespace StaxLang.Tests {
         [TestMethod] public void AbsoluteValue() => RunProgram("5|a", "5");
         [TestMethod] public void NegativeAbsoluteValue() => RunProgram("5N|a", "5");
         [TestMethod] public void RepeatedDivide() => RunProgram("12 2 |/", "3");
-        [TestMethod] public void JostleInteger() => RunProgram("5j", "1/5");
-        [TestMethod] public void Fraction() => RunProgram("2 6 j*", "1/3");
-        [TestMethod] public void Numerator() => RunProgram("2 6 j* h", "1");
-        [TestMethod] public void Denominator() => RunProgram("2 6 j* H", "3");
-        [TestMethod] public void JostleFraction() => RunProgram("2 5j* j", "5/2");
-        [TestMethod] public void FractionListify() => RunProgram("1 3j* l J", "1 3");
-        [TestMethod] public void FractionArithmetic() => RunProgram("1 3j* 2 5j* +", "11/15");
-        [TestMethod] public void FractionPower() => RunProgram("2 3j* 3 |*", "8/27");
-        [TestMethod] public void FractionFloor() => RunProgram("7 3j* @", "2");
+        [TestMethod] public void UpsideDownInteger() => RunProgram("5u", "1/5");
+        [TestMethod] public void Fraction() => RunProgram("2 6 u*", "1/3");
+        [TestMethod] public void Numerator() => RunProgram("2 6 u* h", "1");
+        [TestMethod] public void Denominator() => RunProgram("2 6 u* H", "3");
+        [TestMethod] public void UpsideDownFraction() => RunProgram("2 5u* u", "5/2");
+        [TestMethod] public void FractionListify() => RunProgram("1 3u* l J", "1 3");
+        [TestMethod] public void FractionArithmetic() => RunProgram("1 3u* 2 5u* +", "11/15");
+        [TestMethod] public void FractionPower() => RunProgram("2 3u* 3 |*", "8/27");
+        [TestMethod] public void FractionFloor() => RunProgram("7 3u* @", "2");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -158,6 +158,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void UnconsRight() => RunProgram("\"abcd\" N pP", "100abc");
         [TestMethod] public void ElementRepeat() => RunProgram("3R4|*$","111122223333");
         [TestMethod] public void CrossProduct() => RunProgram("\"abc\" \"xyz\" |* J", "ax ay az bx by bz cx cy cz");
+        [TestMethod] public void SurroundWith() => RunProgram("'a'b |S", "bab");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
