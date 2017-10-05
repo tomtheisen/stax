@@ -19,8 +19,37 @@ namespace StaxLang {
      *     trig
      *     floats
      *     string interpolate
-     *     Generator terminate
-     *     Generator shorthand
+     *     Generator Retool:
+     *     Generator retool
+            End condition
+	            duplicate -    u
+	            n reached -    n
+	            filter false - f
+	            cancelled -	   c
+
+            Collection type
+	            pre-peek - lower case
+	            post-pop - upper case
+
+            Filter
+	            yes
+	            no
+
+            {filter} {project}gu
+            {filter} {project}gf
+            {filter} {project}gc
+            {filter}0{project}gn
+	                 {project}gu
+	                 {project}gc
+	                0{project}gn
+            {filter} {project}gU
+            {filter} {project}gF
+            {filter} {project}gC
+            {filter}0{project}gN
+	                 {project}gU
+	                 {project}gC
+	                0{project}gN
+
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
