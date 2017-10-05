@@ -318,72 +318,19 @@ namespace StaxLang {
                     case 'E': // explode (de-listify)
                         DoExplode();
                         break;
-                    case 'f':
-                        if (IsInt(Peek())) { // n times do
-                            var n = Pop();
-                            PushStackFrame();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                _ = Index + 1;
-                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
+                    case 'f': // block filter
+                        { 
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoFilter(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
                         }
-                        else if (IsArray(Peek())) { // filter shorthand
-                            Index = 0;
-                            PushStackFrame();
-                            foreach (var e in Pop()) {
-                                Push(_ = e);
-                                foreach (var s in RunSteps(program.Substring(ip))) yield return s;
-                                if (IsTruthy(Pop())) Print(e);
-                                Index++;
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
-                        }
-                        foreach (var s in DoFilter()) yield return s; // block filter
                         break;
                     case 'F': // for loop
-                        if (IsInt(Peek())) {
-                            var n = Pop();
-                            PushStackFrame();
-                            for (Index = BigInteger.Zero; Index < n; Index++) {
-                                Push(_ = Index + 1);
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) { break; }
-                                    yield return runner.Current;
-                                }
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoFor(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
                         }
-                        else if (IsArray(Peek())) {
-                            Index = 0;
-                            PushStackFrame();
-                            foreach (var e in Pop()) {
-                                Push(_ = e);
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) { break; }
-                                    yield return runner.Current;
-                                }
-                                Index++;
-                            }
-                            PopStackFrame();
-                            ip = program.Length;
-                            yield break;
-                        }
-                        foreach (var s in DoFor()) yield return s;
                         break;
                     case 'g':
                         foreach (var s in DoPeekGenerator()) yield return s;
@@ -494,45 +441,18 @@ namespace StaxLang {
                         Push(Constants[program[ip++]]);
                         break;
                     case 'w': // do-while
-                        if (!IsBlock(Peek())) {
-                            PushStackFrame();
-                            do {
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) { goto WhileEscape; }
-                                    yield return runner.Current;
-                                }
-                                ++Index;
-                            } while (IsTruthy(Pop()));
-
-                            WhileEscape:
-                            PopStackFrame();
-                            yield break;
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoWhile(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
                         }
-                        foreach (var s in DoWhile()) yield return s;
                         break;
                     case 'W':
-                        if (!IsBlock(Peek())) {
-                            PushStackFrame();
-                            while (true) {
-                                var runner = RunSteps(program.Substring(ip)).GetEnumerator();
-                                while (true) {
-                                    try {
-                                        if (!runner.MoveNext()) break;
-                                    }
-                                    catch (CancelException) { goto WhileEscape; }
-                                    yield return runner.Current;
-                                }
-                                ++Index;
-                            }
-                            WhileEscape:
-                            PopStackFrame();
-                            yield break;
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoPreCheckWhile(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
                         }
-                        foreach (var s in DoPreCheckWhile()) yield return s;
                         break;
                     case '_':
                         Push(_);
@@ -1277,7 +1197,25 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoPreCheckWhile() {
+        private IEnumerable<ExecutionState> DoPreCheckWhile(string restOfProgram) {
+            if (!IsBlock(Peek())) {
+                PushStackFrame();
+                while (true) {
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) { goto WhileEscape; }
+                        yield return runner.Current;
+                    }
+                    ++Index;
+                }
+                WhileEscape:
+                PopStackFrame();
+                yield break;
+            }
+
             Block block = Pop();
             PushStackFrame();
                 
@@ -1287,16 +1225,35 @@ namespace StaxLang {
                     try {
                         if (!runner.MoveNext()) break;
                     }
-                    catch (CancelException) { goto WhileEscape; }
+                    catch (CancelException) { goto WhileEscape2; }
                     yield return runner.Current;
                 }
                 ++Index;
             }
-            WhileEscape:
+            WhileEscape2:
             PopStackFrame();
         }
 
-        private IEnumerable<ExecutionState> DoWhile() {
+        private IEnumerable<ExecutionState> DoWhile(string restOfProgram) {
+            if (!IsBlock(Peek())) {
+                PushStackFrame();
+                do {
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) { goto WhileEscape; }
+                        yield return runner.Current;
+                    }
+                    ++Index;
+                } while (IsTruthy(Pop()));
+
+                WhileEscape:
+                PopStackFrame();
+                yield break;
+            }
+
             Block block = Pop();
             PushStackFrame();
             do {
@@ -1305,12 +1262,12 @@ namespace StaxLang {
                     try {
                         if (!runner.MoveNext()) break;
                     }
-                    catch (CancelException) { goto WhileEscape; }
+                    catch (CancelException) { goto WhileEscape2; }
                     yield return runner.Current;
                 }
                 ++Index;
             } while (IsTruthy(Pop()));
-            WhileEscape:
+            WhileEscape2:
             PopStackFrame();
         }
 
@@ -1333,7 +1290,30 @@ namespace StaxLang {
             else Output.Write(arg);
         }
 
-        private IEnumerable<ExecutionState> DoFilter() {
+        private IEnumerable<ExecutionState> DoFilter(string restOfProgram) {
+            if (IsInt(Peek())) { // n times do
+                var n = Pop();
+                PushStackFrame();
+                for (Index = BigInteger.Zero; Index < n; Index++) {
+                    _ = Index + 1;
+                    foreach (var s in RunSteps(restOfProgram)) yield return s;
+                }
+                PopStackFrame();
+                yield break;
+            }
+            else if (IsArray(Peek())) { // filter shorthand
+                Index = 0;
+                PushStackFrame();
+                foreach (var e in Pop()) {
+                    Push(_ = e);
+                    foreach (var s in RunSteps(restOfProgram)) yield return s;
+                    if (IsTruthy(Pop())) Print(e);
+                    Index++;
+                }
+                PopStackFrame();
+                yield break;
+            }
+
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a) && IsBlock(b)) a = Range(1, a);
@@ -1355,7 +1335,43 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoFor() {
+        private IEnumerable<ExecutionState> DoFor(string restOfProgram) {
+            if (IsInt(Peek())) {
+                var n = Pop();
+                PushStackFrame();
+                for (Index = BigInteger.Zero; Index < n; Index++) {
+                    Push(_ = Index + 1);
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) { break; }
+                        yield return runner.Current;
+                    }
+                }
+                PopStackFrame();
+                yield break;
+            }
+            else if (IsArray(Peek())) {
+                Index = 0;
+                PushStackFrame();
+                foreach (var e in Pop()) {
+                    Push(_ = e);
+                    var runner = RunSteps(restOfProgram).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!runner.MoveNext()) break;
+                        }
+                        catch (CancelException) { break; }
+                        yield return runner.Current;
+                    }
+                    Index++;
+                }
+                PopStackFrame();
+                yield break;
+            }
+
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a) && IsBlock(b)) a = Range(1, a);
