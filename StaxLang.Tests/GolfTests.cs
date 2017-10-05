@@ -794,8 +794,8 @@ namespace StaxLang.Tests {
                 "155685007/232792560",
             };
 
-            RunProgram("20FUi|*s|F+Q", "", expected);
-            RunProgram("20F|1N_|F+Q", "", expected);
+            RunProgram("20FUi|*sj*+Q", "", expected);
+            RunProgram("20F|1N_j*+Q", "", expected);
             RunProgram("20Fji|1*+Q", "", expected);
         }
 

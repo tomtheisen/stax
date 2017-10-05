@@ -377,12 +377,14 @@ namespace StaxLang {
                         foreach (var s in DoFor()) yield return s;
                         break;
                     case 'h':
-                        if (IsNumber(Peek())) RunMacro("2/"); // half
-                        if (IsArray(Peek())) Push(Pop()[0]); // head
+                        if (IsInt(Peek())) RunMacro("2/"); // half
+                        else if (IsFrac(Peek())) Push(Pop().Num); // numerator
+                        else if (IsArray(Peek())) Push(Pop()[0]); // head
                         break;
                     case 'H':
-                        if (IsNumber(Peek())) Push(Pop() * 2); // un-half
-                        if (IsArray(Peek())) Push(Peek()[Pop().Count - 1]); // last
+                        if (IsInt(Peek())) Push(Pop() * 2); // un-half
+                        else if (IsFrac(Peek())) Push(Pop().Den); // denominator
+                        else if (IsArray(Peek())) Push(Peek()[Pop().Count - 1]); // last
                         break;
                     case 'i': // iteration index
                         if (CallStackFrames.Any()) Push(Index);
@@ -684,12 +686,6 @@ namespace StaxLang {
                             case 'f':
                                 if (IsInt(Peek())) Push(PrimeFactors(Pop())); // prime factorize
                                 else if (IsArray(Peek())) DoRegexFind(); // regex find all matches
-                                break;
-                            case 'F': // fraction
-                                { 
-                                    dynamic den = Pop(), num = Pop();
-                                    Push(new Rational(num, den));
-                                }
                                 break;
                             case 'g': // gcd
                                 DoGCD();
