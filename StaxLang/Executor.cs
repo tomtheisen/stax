@@ -41,13 +41,13 @@ namespace StaxLang {
      *     RLE
      *     popcount
      *     version string
-     *     stop using CancelException.  it's super slow. put it inside ExecutionState instead
      *     base encode, but for digits
      *     
      *     code explainer
      *     debugger
      *     docs
-     *     
+     *     stop using CancelException.  it's super slow. put it inside ExecutionState instead
+     *     tests in portable files
      */
 
     public class Executor {
@@ -94,11 +94,11 @@ namespace StaxLang {
             Initialize(program, input);
             int step = 0;
             try {
-                foreach (var s in RunSteps(program)) { 
+                foreach (var s in RunSteps(program)) {
+                    if (s.Cancel) break;
                     if (++step > 100000) throw new Exception("program is running too long");
                 }
             }
-            catch (CancelException) { }
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
             if (!OutputWritten) Print(Pop());
@@ -316,7 +316,7 @@ namespace StaxLang {
                         Push(Peek());
                         break;
                     case 'C':
-                        if (IsTruthy(Pop())) throw new CancelException();
+                        if (IsTruthy(Pop())) yield return ExecutionState.CancelState;
                         break;
                     case 'd': // discard
                         Pop();
@@ -797,16 +797,10 @@ namespace StaxLang {
                 _ = Peek();
 
                 if (Index > 0 || postPop) {
-                    var genRun = RunSteps(genblock.Program).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!genRun.MoveNext()) break;
-                        }
-                        catch (CancelException) {
-                            if (stopOnCancel) goto GenComplete;
-                            goto Cancelled;
-                        }
-                        yield return genRun.Current;
+                    foreach (var s in RunSteps(genblock.Program)) {
+                        if (s.Cancel && stopOnCancel) goto GenComplete;
+                        if (s.Cancel) goto Cancelled;
+                        yield return s;
                     }
                 }
                 object generated = Peek();
@@ -814,16 +808,10 @@ namespace StaxLang {
                 bool passed = true;
                 if (filter != null) {
                     _ = generated;
-                    var filterRun = RunSteps(filter.Program).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!filterRun.MoveNext()) break;
-                        }
-                        catch (CancelException) {
-                            if (stopOnCancel) goto GenComplete;
-                            goto Cancelled;
-                        }
-                        yield return filterRun.Current;
+                    foreach (var s in RunSteps(filter.Program)) {
+                        if (s.Cancel && stopOnCancel) goto GenComplete;
+                        if (s.Cancel) goto Cancelled;
+                        yield return s;
                     }
                     passed = IsTruthy(Pop());
                     Push(generated); // put the generated element back
@@ -1168,16 +1156,12 @@ namespace StaxLang {
             else if (IsBlock(target)) {
                 PushStackFrame();
                 var result = new List<object>();
-                try {
-                    for (Index = 0; Index < list.Count; Index++) {
-                        Push(_ = list[(int)Index]);
-                        foreach (var s in RunSteps(target.Program)) yield return s;
-                        if (IsTruthy(Pop())) result.Add(Index);
-                    }
+                for (Index = 0; Index < list.Count; Index++) {
+                    Push(_ = list[(int)Index]);
+                    foreach (var s in RunSteps(target.Program)) yield return s;
+                    if (IsTruthy(Pop())) result.Add(Index);
                 }
-                finally {
-                    PopStackFrame();
-                }
+                PopStackFrame();
                 Push(result);
             }
             else {
@@ -1337,13 +1321,9 @@ namespace StaxLang {
             if (!IsBlock(Peek())) {
                 PushStackFrame();
                 while (true) {
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) { goto WhileEscape; }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(restOfProgram)) {
+                        if (s.Cancel) goto WhileEscape;
+                        yield return s;
                     }
                     ++Index;
                 }
@@ -1356,13 +1336,9 @@ namespace StaxLang {
             PushStackFrame();
                 
             while (true) {
-                var runner = RunSteps(block.Program).GetEnumerator();
-                while (true) {
-                    try {
-                        if (!runner.MoveNext()) break;
-                    }
-                    catch (CancelException) { goto WhileEscape2; }
-                    yield return runner.Current;
+                foreach (var s in RunSteps(block.Program)) {
+                    if (s.Cancel) goto WhileEscape2;
+                    yield return s;
                 }
                 ++Index;
             }
@@ -1374,13 +1350,9 @@ namespace StaxLang {
             if (!IsBlock(Peek())) {
                 PushStackFrame();
                 do {
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) { goto WhileEscape; }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(restOfProgram)) {
+                        if (s.Cancel) goto WhileEscape;
+                        yield return s;
                     }
                     ++Index;
                 } while (IsTruthy(Pop()));
@@ -1393,13 +1365,9 @@ namespace StaxLang {
             Block block = Pop();
             PushStackFrame();
             do {
-                var runner = RunSteps(block.Program).GetEnumerator();
-                while (true) {
-                    try {
-                        if (!runner.MoveNext()) break;
-                    }
-                    catch (CancelException) { goto WhileEscape2; }
-                    yield return runner.Current;
+                foreach (var s in RunSteps(block.Program)) {
+                    if (s.Cancel) goto WhileEscape2;
+                    yield return s;
                 }
                 ++Index;
             } while (IsTruthy(Pop()));
@@ -1438,7 +1406,6 @@ namespace StaxLang {
                 yield break;
             }
             else if (IsArray(Peek())) { // filter shorthand
-                Index = 0;
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
@@ -1472,35 +1439,14 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoFor(string restOfProgram) {
-            if (IsInt(Peek())) {
-                var n = Pop();
-                PushStackFrame();
-                for (Index = BigInteger.Zero; Index < n; Index++) {
-                    Push(_ = Index + 1);
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) { break; }
-                        yield return runner.Current;
-                    }
-                }
-                PopStackFrame();
-                yield break;
-            }
-            else if (IsArray(Peek())) {
-                Index = 0;
+            if (IsInt(Peek())) Push(Range(1, Pop()));
+            if (IsArray(Peek())) {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) { break; }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(restOfProgram)) {
+                        if (s.Cancel) break;
+                        yield return s;
                     }
                     Index++;
                 }
@@ -1511,18 +1457,13 @@ namespace StaxLang {
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a) && IsBlock(b)) a = Range(1, a);
-
             if (IsArray(a) && IsBlock(b)) {
                 PushStackFrame();
                 foreach (var e in a) {
                     Push(_ = e);
-                    var runner = RunSteps(((Block)b).Program).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) { goto WhileEscape; }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(((Block)b).Program)) {
+                        if (s.Cancel) goto WhileEscape;
+                        yield return s;
                     }
                     Index++;
                 }
@@ -1558,15 +1499,9 @@ namespace StaxLang {
                 PushStackFrame();
                 for (Index = BigInteger.Zero; Index < n; Index++) {
                     Push(_ = Index + 1);
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) {
-                            goto NextIndex;
-                        }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(restOfProgram)) {
+                        if (s.Cancel) goto NextIndex;
+                        yield return s;
                     }
                     Print(Pop());
                     NextIndex:;
@@ -1578,15 +1513,9 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    var runner = RunSteps(restOfProgram).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) {
-                            goto NextElement;
-                        }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(restOfProgram)) {
+                        if (s.Cancel) goto NextElement;
+                        yield return s;
                     }
                     Print(Pop());
 
@@ -1608,15 +1537,9 @@ namespace StaxLang {
                 foreach (var e in a) {
                     Push(_ = e);
 
-                    var runner = RunSteps(((Block)b).Program).GetEnumerator();
-                    while (true) {
-                        try {
-                            if (!runner.MoveNext()) break;
-                        }
-                        catch (CancelException) {
-                            goto NextElement;
-                        }
-                        yield return runner.Current;
+                    foreach (var s in RunSteps(((Block)b).Program)) {
+                        if (s.Cancel) goto NextElement;
+                        yield return s;
                     }
 
                     result.Add(Pop());

@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Rational.cs" />
     <Compile Include="Block.cs" />
-    <Compile Include="CancelException.cs" />
     <Compile Include="ExecutionState.cs" />
     <Compile Include="Executor.cs" />
     <Compile Include="HuffmanCompressor.cs" />
