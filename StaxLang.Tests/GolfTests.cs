@@ -19,7 +19,7 @@ namespace StaxLang.Tests {
             var writer = new StringWriter();
             new Executor(writer).Run(source, MultiLineStrip(input));
             string actual = writer.ToString();
-            
+
             var expectedJoined = string.Concat(expected.Select(e => e + Environment.NewLine));
             Assert.AreEqual(expectedJoined, actual);
         }
@@ -27,7 +27,7 @@ namespace StaxLang.Tests {
         internal void RunProgramSingleInputs(string source, params string[] inputOutputs) {
             if (inputOutputs.Length % 2 != 0) throw new ArgumentException(nameof(inputOutputs));
 
-            for (int i = 0; i < inputOutputs.Length; i+=2) {
+            for (int i = 0; i < inputOutputs.Length; i += 2) {
                 var input = inputOutputs[i];
                 var expected = inputOutputs[i + 1] + Environment.NewLine;
                 var writer = new StringWriter();
@@ -421,12 +421,12 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DizzyEnumeration() {
             https://codegolf.stackexchange.com/questions/142893/dizzy-integer-enumeration
-            RunProgramSingleInputs("^h{N}xh*", 
-                "0", "0", 
+            RunProgramSingleInputs("^h{N}xh*",
+                "0", "0",
                 "1", "1",
-                "2", "-1", 
-                "3", "-2", 
-                "4", "2", 
+                "2", "-1",
+                "3", "-2",
+                "4", "2",
                 "5", "3");
             RunProgramSingleInputs("^hxhfN",
                 "0", "0",
@@ -542,7 +542,7 @@ namespace StaxLang.Tests {
                 "YYYYYYYYYYYYYYYYYYYYYYYYYZ",
                 "ZZZZZZZZZZZZZZZZZZZZZZZZZZ",
             };
-            
+
             RunProgram("zVA{]Yi*]+{y+mFm", "", expected);
             RunProgram("26RX{~x{;|M64+mPF", "", expected);
             RunProgram("VA{~VA{;|MmPF", "", expected);
@@ -731,7 +731,7 @@ namespace StaxLang.Tests {
             };
 
             RunProgramSingleInputs("$cr=xH{hc|ew2|bcr=*", expected);
-            RunProgramSingleInputs("$cr=x2|/2|bcr=*",expected);
+            RunProgramSingleInputs("$cr=x2|/2|bcr=*", expected);
             RunProgramSingleInputs("$cr=x2|/|Bcr=*", expected);
             RunProgramSingleInputs("2|/|Bcr=ycr=*", expected);
         }
@@ -751,7 +751,7 @@ namespace StaxLang.Tests {
         public void CobolCommentStripTest() {
             https://codegolf.stackexchange.com/questions/140292/uncomment-a-cobol-program
 
-            RunProgram("m6@4%C_7t", 
+            RunProgram("m6@4%C_7t",
                 "000000 blah blah\n" +
                 "000001* apples\n" +
                 "000002 oranges ?\n" +
@@ -928,7 +928,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void WordIntoAlphabetGrid() {
             https://codegolf.stackexchange.com/questions/141372/fit-a-word-into-an-alphabet-grid
-            
+
             string[] expected = {
                 "A            N     T      ",
                 "        I                 ",
@@ -1016,6 +1016,63 @@ namespace StaxLang.Tests {
         public void ExtractLocalMaximaTest() {
             https://codegolf.stackexchange.com/questions/132451/extract-local-maxima
             RunProgram("0|S3Bm|M_1@X-Cx", "[4,2,6,12,4,5,4,3]", "4", "12", "5");
+        }
+
+        [TestMethod]
+        public void PlotCircleTest() {
+            http://golf.shinh.org/p.rb?Plot+Circle
+            string[] expected = {
+                "          *          ",
+                "      *********      ",
+                "    *************    ",
+                "   ***************   ",
+                "  *****************  ",
+                "  *****************  ",
+                " ******************* ",
+                " ******************* ",
+                " ******************* ",
+                " ******************* ",
+                "*********************",
+                " ******************* ",
+                " ******************* ",
+                " ******************* ",
+                " ******************* ",
+                "  *****************  ",
+                "  *****************  ",
+                "   ***************   ",
+                "    *************    ",
+                "      *********      ",
+                "          *          ",
+            };
+
+            RunProgram("Nx^|rYmc*y{[c*+xx*>' '*?m", "10", expected);
+            RunProgram("Nx^|rmc*xx*-|q^'**x^)|p", "10", expected);
+        }
+
+        [TestMethod]
+        public void YTest() {
+            http://golf.shinh.org/p.rb?Y
+            RunProgram("_m89-Ci",
+                "ZZXZYXXYZZXZZYZXYZZZYXZZZZZYYXZXXXXZZX",
+                "4",
+                "7",
+                "13",
+                "16",
+                "20",
+                "27",
+                "28");
+        }
+
+        [TestMethod]
+        public void ZTest() {
+            http://golf.shinh.org/p.rb?Z
+            RunProgram("'Z*Qx{^'Z)FL2tm", "1", "Z");
+            RunProgram("'Z*Qx{^'Z)FL2tm", "5",
+                "ZZZZZ",
+                "   Z",
+                "  Z",
+                " Z",
+                "ZZZZZ");
         }
     }
 }

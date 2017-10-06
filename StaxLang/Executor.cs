@@ -18,12 +18,13 @@ namespace StaxLang {
      *     log
      *     trig
      *     floats
+     *     sqrt float 
      *     string interpolate
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
      *     replace first only
-     *     compare / sign
+     *     compare / sign (c|a/)
      *     uneval
      *     entire array ref inside for/filter/map 
      *     rectangularize
@@ -43,6 +44,7 @@ namespace StaxLang {
      *     code explainer
      *     debugger
      *     docs
+     *     stop using CancelException.  it's super slow
      *     
      */
 
@@ -653,6 +655,9 @@ namespace StaxLang {
                                 break;
                             case 'S': // surround with
                                 DoSurround();
+                                break;
+                            case 'q': // int square root
+                                Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
                                 break;
                             case 't': // translate
                                 DoTranslate();

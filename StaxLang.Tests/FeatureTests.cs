@@ -64,6 +64,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void ExplodeNumber() => RunProgram("147 E {Hm J", "2 8 14");
         [TestMethod] public void Base36Encode() => RunProgram("9999999 |3", "5yc1r");
         [TestMethod] public void Base36Decode() => RunProgram("\"5yc1r\" |3", "9999999");
+        [TestMethod] public void IntSquareRoot() => RunProgram("170 |q", "13");
+        [TestMethod] public void IntNegativeSquareRoot() => RunProgram("|q", "13", "-170");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");

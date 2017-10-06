@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StaxLang.UI {
@@ -19,6 +14,7 @@ namespace StaxLang.UI {
             var output = new StringWriter();
             var input = InputTextbox.Lines.Reverse().SkipWhile(l => l == "").Reverse().ToArray();
             var program = ProgramTextbox.SelectedText == "" ? ProgramTextbox.Text : ProgramTextbox.SelectedText;
+            var sw = Stopwatch.StartNew();
             try {
                 int steps = new Executor(output).Run(program, input);
                 StepCountLabel.Text = $"{steps} steps.";
@@ -28,6 +24,7 @@ namespace StaxLang.UI {
                 OutputTextbox.Text = ex.Message;
                 StepCountLabel.Text = $"Failed.";
             }
+            ElapsedTimeLabel.Text = $"Elapsed: {sw.Elapsed}";
         }
 
         private void ProgramTextbox_TextChanged(object sender, EventArgs e) {
