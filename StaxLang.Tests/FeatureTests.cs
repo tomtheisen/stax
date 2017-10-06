@@ -37,6 +37,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void BaseConvert() => RunProgram("255 16 |b", "ff");
         [TestMethod] public void BaseUnconvert() => RunProgram("\"ff\" 16 |b", "255");
         [TestMethod] public void BaseUnconvertDigits() => RunProgram("4R A |b", "1234");
+        [TestMethod] public void BaseExplodeDigits() => RunProgram("255 2 |E |+ ", "8");
         [TestMethod] public void BinaryConvert() => RunProgram("5 |B", "101");
         [TestMethod] public void BinaryUnConvert() => RunProgram("\"101\" |B", "5");
         [TestMethod] public void HexConvert() => RunProgram("255 |H", "ff");

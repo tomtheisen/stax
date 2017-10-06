@@ -12,6 +12,7 @@ namespace StaxLang {
     /* To add:
      *     find-index-all by regex
      *     reduce
+     *     running "total" / reduce-collect
      *     flatten
      *     map-many
      *     zip-short
@@ -25,6 +26,7 @@ namespace StaxLang {
      *     non-regex replace
      *     replace first only
      *     compare / sign (c|a/)
+     *     eval fractions and floats
      *     uneval
      *     entire array ref inside for/filter/map 
      *     rectangularize (center/center-trim/left/right align, fill el)
@@ -39,9 +41,8 @@ namespace StaxLang {
      *     clamp
      *     FeatureTests for generators
      *     RLE
-     *     popcount
+     *     popcount (2|E|+)
      *     version string
-     *     base encode, but for digits
      *     
      *     code explainer
      *     debugger
@@ -591,6 +592,9 @@ namespace StaxLang {
                             case 'e': // is even
                                 Push(Pop() % 2 ^ 1);
                                 break;
+                            case 'E': // base digital explode
+                                DoBaseConvert(false);
+                                break;
                             case 'f':
                                 if (IsInt(Peek())) Push(PrimeFactors(Pop())); // prime factorize
                                 else if (IsArray(Peek())) DoRegexFind(); // regex find all matches
@@ -1111,19 +1115,26 @@ namespace StaxLang {
             }
         }
 
-        private void DoBaseConvert() {
+        private void DoBaseConvert(bool stringRepresentation = true) {
             int @base = (int)Pop();
             var number = Pop();
 
             if (IsInt(number)) {
                 long n = (long)number;
-                string result = "";
-                while (n > 0) {
-                    result = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)(n % @base)] + result;
+                var result = new List<object>();
+                do {
+                    BigInteger digit = n % @base;
+                    if (stringRepresentation) {
+                        char d = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)digit];
+                        result.Insert(0, new BigInteger(d + 0));
+                    }
+                    else { //digit mode
+                        result.Insert(0, digit);
+                    }
                     n /= @base;
-                }
-                if (result == "") result = "0";
-                Push(S2A(result));
+                } while (n > 0);
+
+                Push(result);
             }
             else if (IsArray(number)) {
                 string s = A2S(number).ToLower();
