@@ -19,7 +19,6 @@ namespace StaxLang {
      *     trig
      *     floats
      *     sqrt float 
-     *     square (c*)
      *     string interpolate
      *     repeat-to-length
      *     increase-to-multiple
@@ -28,7 +27,7 @@ namespace StaxLang {
      *     compare / sign (c|a/)
      *     uneval
      *     entire array ref inside for/filter/map 
-     *     rectangularize
+     *     rectangularize (center/center-trim/left/right align, fill el)
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
      *     CLI STDIN / STDOUT
@@ -41,11 +40,12 @@ namespace StaxLang {
      *     FeatureTests for generators
      *     RLE
      *     popcount
+     *     version string
+     *     stop using CancelException.  it's super slow. put it inside ExecutionState instead
      *     
      *     code explainer
      *     debugger
      *     docs
-     *     stop using CancelException.  it's super slow
      *     
      */
 
@@ -367,7 +367,8 @@ namespace StaxLang {
                         if (IsArray(Peek())) RunMacro("' /"); // un-join with spaces
                         break;
                     case 'J':
-                        RunMacro("' *"); // join with spaces
+                        if (IsArray(Peek())) RunMacro("' *"); // join with spaces
+                        else if (IsNumber(Peek())) RunMacro("c*"); // square
                         break;
                     case 'l': // listify-n
                         DoListifyN();
@@ -416,8 +417,7 @@ namespace StaxLang {
                         break;
                     case 'R': // 1 range
                         if (IsInt(Peek())) Push(Range(1, Pop()));
-                        else {
-                            // regex replace
+                        else { // regex replace
                             foreach (var s in DoRegexReplace()) yield return s;
                         }
                         break;
@@ -1280,6 +1280,7 @@ namespace StaxLang {
             }
 
             // read at index
+            if (IsInt(list) && IsArray(top)) (list, top) = (top, list);
             if (IsArray(list)) {
                 if (IsArray(top)) {
                     var result = new List<object>();

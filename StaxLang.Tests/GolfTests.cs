@@ -45,7 +45,7 @@ namespace StaxLang.Tests {
 
         [TestMethod]
         public void SquaresTest() {
-            RunProgram("5mc*", "", "1", "4", "9", "16", "25");
+            RunProgram("5mJ", "", "1", "4", "9", "16", "25");
         }
 
         [TestMethod]
@@ -213,7 +213,7 @@ namespace StaxLang.Tests {
             RunProgram("c*R{H|fU@6/!fx(m", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("c*R{H|fH6<fx(m", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
             RunProgram("c*R{|f5R-!fx(m", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
-            RunProgram("c*{|f5R-!fx(m", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
+            RunProgram("J{|f5R-!fx(m", "10", "1", "2", "3", "4", "5", "6", "8", "9", "10", "12");
         }
 
         [TestMethod]
@@ -335,7 +335,7 @@ namespace StaxLang.Tests {
             RunProgram("R1-{^c*v|f%2={_p',p_2+P}*F", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{|p_2+|p*fFp',p_2+P", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
             RunProgram("{c*v|f%2=fmvq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
-            RunProgram("mc*v|f%2-Ciq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
+            RunProgram("mJv|f%2-Ciq',p2+", "100", "3,5", "5,7", "11,13", "17,19", "29,31", "41,43", "59,61", "71,73");
         }
 
         [TestMethod]
@@ -443,7 +443,7 @@ namespace StaxLang.Tests {
             RunProgramSingleInputs("1111,{c*4(e}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("'14*,{ec*4(}*", "0", "1111", "7", "6840", "14", "7584", "19", "1425", "79", "4717");
             RunProgramSingleInputs("1,{c*$4*4(e}*", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
-            RunProgramSingleInputs("1,fc*$4*4(e", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
+            RunProgramSingleInputs("1,fJ$4*4(e", "1", "1111", "8", "6840", "15", "7584", "20", "1425", "80", "4717");
         }
 
         [TestMethod]
@@ -1047,6 +1047,7 @@ namespace StaxLang.Tests {
 
             RunProgram("Nx^|rYmc*y{[c*+xx*>' '*?m", "10", expected);
             RunProgram("Nx^|rmc*xx*-|q^'**x^)|p", "10", expected);
+            RunProgram("Nx^|rmJxJ-|q^'**x^)|p", "10", expected);
         }
 
         [TestMethod]
