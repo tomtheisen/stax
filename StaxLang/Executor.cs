@@ -42,6 +42,7 @@ namespace StaxLang {
      *     popcount
      *     version string
      *     stop using CancelException.  it's super slow. put it inside ExecutionState instead
+     *     base encode, but for digits
      *     
      *     code explainer
      *     debugger
