@@ -843,9 +843,7 @@ namespace StaxLang {
             GenComplete:
             PopStackFrame();
 
-            if (shorthand) {
-                foreach (var e in result) Print(e);
-            }
+            if (shorthand) foreach (var e in result) Print(e);
             else Push(result);
         }
 
@@ -1261,7 +1259,7 @@ namespace StaxLang {
         private void DoAt() {
             var top = Pop();
 
-            if (IsFrac(top)) {
+            if (IsFrac(top)) { // floor
                 Push(top.Floor());
                 return;
             }
@@ -1270,8 +1268,7 @@ namespace StaxLang {
 
             dynamic ReadAt(List<object> arr, int idx) {
                 idx %= arr.Count;
-                idx += arr.Count;
-                idx %= arr.Count;
+                if (idx < 0) idx += arr.Count;
                 return arr[idx];
             }
 
@@ -1289,7 +1286,7 @@ namespace StaxLang {
                     return;
                 }
             }
-            throw new Exception("Bad type for index");
+            throw new Exception("Bad type for at");
         }
 
         private void DoPadLeft() {
@@ -1333,14 +1330,14 @@ namespace StaxLang {
                 PushStackFrame();
                 while (true) {
                     foreach (var s in RunSteps(restOfProgram)) {
-                        if (s.Cancel) goto WhileEscape;
+                        if (s.Cancel) {
+                            PopStackFrame();
+                            yield break;
+                        }
                         yield return s;
                     }
                     ++Index;
                 }
-                WhileEscape:
-                PopStackFrame();
-                yield break;
             }
 
             Block block = Pop();
@@ -1348,13 +1345,14 @@ namespace StaxLang {
                 
             while (true) {
                 foreach (var s in RunSteps(block.Program)) {
-                    if (s.Cancel) goto WhileEscape2;
+                    if (s.Cancel) {
+                        PopStackFrame();
+                        yield break;
+                    }
                     yield return s;
                 }
                 ++Index;
             }
-            WhileEscape2:
-            PopStackFrame();
         }
 
         private IEnumerable<ExecutionState> DoWhile(string restOfProgram) {
@@ -1362,13 +1360,14 @@ namespace StaxLang {
                 PushStackFrame();
                 do {
                     foreach (var s in RunSteps(restOfProgram)) {
-                        if (s.Cancel) goto WhileEscape;
+                        if (s.Cancel) {
+                            PopStackFrame();
+                            yield break;
+                        }
                         yield return s;
                     }
                     ++Index;
                 } while (IsTruthy(Pop()));
-
-                WhileEscape:
                 PopStackFrame();
                 yield break;
             }
@@ -1377,13 +1376,14 @@ namespace StaxLang {
             PushStackFrame();
             do {
                 foreach (var s in RunSteps(block.Program)) {
-                    if (s.Cancel) goto WhileEscape2;
+                    if (s.Cancel) {
+                        PopStackFrame();
+                        yield break;
+                    }
                     yield return s;
                 }
                 ++Index;
             } while (IsTruthy(Pop()));
-            WhileEscape2:
-            PopStackFrame();
         }
 
         private IEnumerable<ExecutionState> DoIf() {
@@ -1473,12 +1473,14 @@ namespace StaxLang {
                 foreach (var e in a) {
                     Push(_ = e);
                     foreach (var s in RunSteps(((Block)b).Program)) {
-                        if (s.Cancel) goto WhileEscape;
+                        if (s.Cancel) {
+                            PopStackFrame();
+                            yield break;
+                        }
                         yield return s;
                     }
                     Index++;
                 }
-                WhileEscape:
                 PopStackFrame();
             }
             else {
@@ -1529,9 +1531,7 @@ namespace StaxLang {
                         yield return s;
                     }
                     Print(Pop());
-
-                    NextElement:
-                    Index++;
+                    NextElement: Index++;
                 }
                 PopStackFrame();
                 yield break;
@@ -1552,11 +1552,9 @@ namespace StaxLang {
                         if (s.Cancel) goto NextElement;
                         yield return s;
                     }
-
                     result.Add(Pop());
 
-                    NextElement:
-                    Index++;
+                    NextElement: Index++;
                 }
                 Push(result);
                 PopStackFrame();
@@ -1767,9 +1765,7 @@ namespace StaxLang {
         private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private static string A2S(List<object> arg) {
             return string.Concat(arg.Select(e => IsInt(e)
-                ? (BigInteger)e > 65536 
-                    ? "\0"
-                    : ((char)(int)(BigInteger)e).ToString()
+                ? ((char)(int)((BigInteger)e & ushort.MaxValue)).ToString()
                 : A2S((List<object>)e)));
         }
 
@@ -1904,7 +1900,6 @@ namespace StaxLang {
                 return a.GetHashCode();
             }
         }
-
         #endregion
     }
 }
