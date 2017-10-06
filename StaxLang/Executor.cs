@@ -368,7 +368,7 @@ namespace StaxLang {
                         break;
                     case 'J':
                         if (IsArray(Peek())) RunMacro("' *"); // join with spaces
-                        else if (IsNumber(Peek())) RunMacro("c*"); // square
+                        else if (IsNumber(Peek())) Push(Peek() * Pop()); // square
                         break;
                     case 'l': // listify-n
                         DoListifyN();
