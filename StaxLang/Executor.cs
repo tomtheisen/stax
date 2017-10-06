@@ -43,6 +43,7 @@ namespace StaxLang {
      *     RLE
      *     popcount (2|E|+)
      *     version string
+     *     generator shorthand
      *     
      *     code explainer
      *     debugger
