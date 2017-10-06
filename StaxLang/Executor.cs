@@ -29,20 +29,20 @@ namespace StaxLang {
      *     rectangularize
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
-     *     command line STDIN / STDOUT
+     *     CLI STDIN / STDOUT
      *     string starts-with / ends-with
      *     combinatorics: powerset, permutations
      *     Rotate chars (like translate on a ring)
-     *     Continue-if-set (c!C)
-     *     pop recycle bin
      *     call into next line
-     *     base 36 for number compression
-     *     surround with
      *     between
-     *     feature tests for generators
+     *     clamp
+     *     FeatureTests for generators
+     *     RLE
+     *     popcount
      *     
      *     code explainer
      *     debugger
+     *     docs
      *     
      */
 
@@ -171,6 +171,7 @@ namespace StaxLang {
             }
 
             for (int ip = 0; ip < program.Length;) {
+                yield return new ExecutionState();
                 switch (program[ip++]) {
                     case '0':
                         Push(BigInteger.Zero);
@@ -477,6 +478,9 @@ namespace StaxLang {
                         break;
                     case '|': // extended operations
                         switch (program[ip++]) {
+                            case ' ':
+                                Print(" ", false);
+                                break;
                             case '`':
                                 DoDump();
                                 break;
@@ -558,6 +562,9 @@ namespace StaxLang {
                                 break;
                             case '2': // 2-power
                                 RunMacro("2s|*");
+                                break;
+                            case '3': // base 36
+                                RunMacro("36|b");
                                 break;
                             case 'a': // absolute value
                                 Push(BigInteger.Abs(Pop()));
@@ -664,8 +671,8 @@ namespace StaxLang {
                         break;
                     default: throw new Exception($"Unknown character '{program[ip - 1]}'");
                 }
-                yield return new ExecutionState();
             }
+            yield return new ExecutionState();
         }
 
         private void DoSurround() {
@@ -777,24 +784,23 @@ namespace StaxLang {
 
             PushStackFrame();
             var result = new List<object>();
-            if (!postPop) {
-                result.Add(Peek());
-                if (stopOnTargetVal && AreEqual(result[0], targetVal)) goto GenComplete;
-            }
 
             object lastGenerated = null;
             while (targetCount == null || result.Count < targetCount) {
                 _ = Peek();
-                var genRun = RunSteps(genblock.Program).GetEnumerator();
-                while (true) {
-                    try {
-                        if (!genRun.MoveNext()) break;
+
+                if (Index > 0 || postPop) {
+                    var genRun = RunSteps(genblock.Program).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!genRun.MoveNext()) break;
+                        }
+                        catch (CancelException) {
+                            if (stopOnCancel) goto GenComplete;
+                            goto Cancelled;
+                        }
+                        yield return genRun.Current;
                     }
-                    catch (CancelException) {
-                        if (stopOnCancel) goto GenComplete;
-                        goto Cancelled;
-                    }
-                    yield return genRun.Current;
                 }
                 object generated = Peek();
 
@@ -1127,7 +1133,11 @@ namespace StaxLang {
             else if (IsArray(number)) {
                 string s = A2S(number).ToLower();
                 BigInteger result = 0;
-                foreach (var c in s) result = result * @base + "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
+                foreach (var c in s) {
+                    int digit = "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
+                    if (digit < 0) digit = c + 0;
+                    result = result * @base + digit;
+                }
                 Push(result);
             }
             else {
@@ -1218,6 +1228,13 @@ namespace StaxLang {
             else if (IsFrac(arg)) {
                 Push(arg.Num);
                 Push(arg.Den);
+            }
+            else if (IsInt(arg)) {
+                var result = new List<object>();
+                foreach (var c in (string)(BigInteger.Abs(arg).ToString())) {
+                    result.Add(new BigInteger(c - '0'));
+                }
+                Push(result);
             }
         }
 
@@ -1808,7 +1825,9 @@ namespace StaxLang {
         private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private static string A2S(List<object> arg) {
             return string.Concat(arg.Select(e => IsInt(e)
-                ? ((char)(int)(BigInteger)e).ToString()
+                ? (BigInteger)e > 65536 
+                    ? "\0"
+                    : ((char)(int)(BigInteger)e).ToString()
                 : A2S((List<object>)e)));
         }
 

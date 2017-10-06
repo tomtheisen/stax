@@ -360,6 +360,7 @@ namespace StaxLang.Tests {
             RunProgram("ssv~Fi|e{q!' p};*P", "3 19", ThreeNineteenOutput);
             RunProgram("vXdmi|exfq!' p", "3 19", ThreeNineteenOutput);
             RunProgram("vXdm2%xfq!' p", "3 19", ThreeNineteenOutput);
+            RunProgram("vXdm2%xfq!| ", "3 19", ThreeNineteenOutput);
         }
 
         [TestMethod]
@@ -376,6 +377,8 @@ namespace StaxLang.Tests {
             RunProgramSingleInputs("${cVds-{eH$0~1}0?w|D", "66833", "44", "617283945", "1", "1234567890", "0");
             RunProgramSingleInputs("0,{c$u%A=Cs^sHWd", "66833", "44", "617283945", "1", "1234567890", "0");
             RunProgramSingleInputs(",{i~c$u%A=CHW,", "66833", "44", "617283945", "1", "1234567890", "0");
+            RunProgramSingleInputs("{$u%A<}{Hgf%", "66833", "44", "617283945", "1", "1234567890", "0");
+            RunProgramSingleInputs("wiVdxi|<$-", "66833", "44", "617283945", "1", "1234567890", "0");
         }
 
         [TestMethod]
@@ -539,7 +542,7 @@ namespace StaxLang.Tests {
                 "YYYYYYYYYYYYYYYYYYYYYYYYYZ",
                 "ZZZZZZZZZZZZZZZZZZZZZZZZZZ",
             };
-
+            
             RunProgram("zVA{]Yi*]+{y+mFm", "", expected);
             RunProgram("26RX{~x{;|M64+mPF", "", expected);
             RunProgram("VA{~VA{;|MmPF", "", expected);
@@ -971,6 +974,16 @@ namespace StaxLang.Tests {
         public void AdditivePersistence() {
             https://codegolf.stackexchange.com/questions/1775/additive-persistence
             RunProgram("mq' p{i~c%1=C{]em|+$W,", "74621\n39\n2677889\n0",
+                "74621 2",
+                "39 2",
+                "2677889 3",
+                "0 0");
+            RunProgram("mq' pe{9>}{${]em|+gf%", "74621\n39\n2677889\n0",
+                "74621 2",
+                "39 2",
+                "2677889 3",
+                "0 0");
+            RunProgram("mq| e{9>}{E|+gf%", "74621\n39\n2677889\n0",
                 "74621 2",
                 "39 2",
                 "2677889 3",

@@ -36,6 +36,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void PowerOfMinusOne() => RunProgram("9 |1", "-1");
         [TestMethod] public void BaseConvert() => RunProgram("255 16 |b", "ff");
         [TestMethod] public void BaseUnconvert() => RunProgram("\"ff\" 16 |b", "255");
+        [TestMethod] public void BaseUnconvertDigits() => RunProgram("4R A |b", "1234");
         [TestMethod] public void BinaryConvert() => RunProgram("5 |B", "101");
         [TestMethod] public void BinaryUnConvert() => RunProgram("\"101\" |B", "5");
         [TestMethod] public void HexConvert() => RunProgram("255 |H", "ff");
@@ -60,6 +61,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void FractionArithmetic() => RunProgram("1 3u* 2 5u* +", "11/15");
         [TestMethod] public void FractionPower() => RunProgram("2 3u* 3 |*", "8/27");
         [TestMethod] public void FractionFloor() => RunProgram("7 3u* @", "2");
+        [TestMethod] public void ExplodeNumber() => RunProgram("147 E {Hm J", "2 8 14");
+        [TestMethod] public void Base36Encode() => RunProgram("9999999 |3", "5yc1r");
+        [TestMethod] public void Base36Decode() => RunProgram("\"5yc1r\" |3", "9999999");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -186,6 +190,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void PrintNewline() => RunProgram("|P", "");
         [TestMethod] public void ImplicitEval() => RunProgram("|+", "6", "[1, 2, 3]");
         [TestMethod] public void ImplicitTrailingLiteralPrint() => RunProgram("1p \"abc", "1abc");
+        [TestMethod] public void PrintSpace() => RunProgram("1p| 2p", "1 2");
 
         // Blocks
         [TestMethod] public void RepeatBlock() => RunProgram("{1p}3*", "111");
