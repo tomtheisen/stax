@@ -19,6 +19,7 @@ namespace StaxLang {
      *     trig
      *     floats
      *     sqrt float 
+     *     square (c*)
      *     string interpolate
      *     repeat-to-length
      *     increase-to-multiple
