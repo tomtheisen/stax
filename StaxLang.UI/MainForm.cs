@@ -20,11 +20,13 @@ namespace StaxLang.UI {
             var input = InputTextbox.Lines.Reverse().SkipWhile(l => l == "").Reverse().ToArray();
             var program = ProgramTextbox.SelectedText == "" ? ProgramTextbox.Text : ProgramTextbox.SelectedText;
             try {
-                new Executor(output).Run(program, input);
+                int steps = new Executor(output).Run(program, input);
+                StepCountLabel.Text = $"{steps} steps.";
                 OutputTextbox.Text = output.ToString();
             }
             catch (Exception ex) {
                 OutputTextbox.Text = ex.Message;
+                StepCountLabel.Text = $"Failed.";
             }
         }
 

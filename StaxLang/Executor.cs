@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  .:DkKnoSZ
+    //  .:DGkKnoSZ
     /* To add:
      *     find-index-all by regex
      *     reduce
@@ -19,37 +19,6 @@ namespace StaxLang {
      *     trig
      *     floats
      *     string interpolate
-     *     Generator Retool:
-     *     Generator retool
-            End condition
-	            duplicate -    u
-	            n reached -    n
-	            filter false - f
-	            cancelled -	   c
-
-            Collection type
-	            pre-peek - lower case
-	            post-pop - upper case
-
-            Filter
-	            yes
-	            no
-
-             {filter}{project}gu
-             {filter}{project}gf
-             {filter}{project}gc
-            0{filter}{project}gn
-	                 {project}gu
-	                 {project}gc
-	        0        {project}gn
-             {filter}{project}gU
-             {filter}{project}gF
-             {filter}{project}gC
-            0{filter}{project}gN
-	                 {project}gU
-	                 {project}gC
-	        0        {project}gN
-
      *     repeat-to-length
      *     increase-to-multiple
      *     non-regex replace
@@ -70,6 +39,7 @@ namespace StaxLang {
      *     base 36 for number compression
      *     surround with
      *     between
+     *     feature tests for generators
      *     
      *     code explainer
      *     debugger
@@ -110,15 +80,25 @@ namespace StaxLang {
             Output = output ?? Console.Out;
         }
 
-        public void Run(string program, string[] input) {
+        /// <summary>
+        /// run a stax program
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="input"></param>
+        /// <returns>number of steps it took</returns>
+        public int Run(string program, string[] input) {
             Initialize(program, input);
+            int step = 0;
             try {
-                foreach (var s in RunSteps(program)) ;
+                foreach (var s in RunSteps(program)) { 
+                    if (++step > 100000) throw new Exception("program is running too long");
+                }
             }
             catch (CancelException) { }
             catch (InvalidOperationException) { }
             catch (ArgumentOutOfRangeException) { }
             if (!OutputWritten) Print(Pop());
+            return step;
         }
 
         private void Initialize(string program, string[] input) {
@@ -356,11 +336,12 @@ namespace StaxLang {
                             if (shorthand) ip = program.Length;
                         }
                         break;
-                    case 'g':
-                        foreach (var s in DoPeekGenerator()) yield return s;
-                        break;
-                    case 'G':
-                        foreach (var s in DoPopGenerator()) yield return s;
+                    case 'g': // generator
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoGenerator(program[ip++], program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
+                        }
                         break;
                     case 'h':
                         if (IsInt(Peek())) RunMacro("2/"); // half
@@ -500,7 +481,7 @@ namespace StaxLang {
                                 DoDump();
                                 break;
                             case '%': // div mod
-                                RunMacro("ss1C1C%~/,");
+                                RunMacro("ssb%~/,");
                                 break;
                             case '+': // sum
                                 RunMacro("0s{+F");
@@ -698,81 +679,169 @@ namespace StaxLang {
             Push(result);
         }
 
-        private IEnumerable<ExecutionState> DoPopGenerator() {
-            dynamic target = null, gen = Pop();
-            if (IsInt(gen)) {
-                target = gen;
-                gen = Pop();
+        private IEnumerable<ExecutionState> DoGenerator(char spec, string restOfProgram) {
+            /*
+             *  End condition
+	         *      duplicate -    u
+	         *      n reached -    n
+	         *      filter false - f
+	         *      cancelled -	   c
+             *      invariant pt - i
+             *      target value - t
+             *
+             *  Collection type
+	         *      pre-peek - lower case
+	         *      post-pop - upper case
+             *
+             *  Filter
+	         *      yes
+	         *      no
+             *
+             *   {filter}{project}gu
+             *   {filter}{project}gi
+             *   {filter}{project}gf
+             *   {filter}{project}gc
+             *  0{filter}{project}gn
+             *   {filter}{project}g9
+             *  t{filter}{project}gt
+	         *           {project}gu
+	         *           {project}gi
+	         *           {project}gc
+	         *  0        {project}gn
+	         *           {project}g9
+	         *  t        {project}gt
+             *   {filter}{project}gU
+             *   {filter}{project}gI
+             *   {filter}{project}gF
+             *   {filter}{project}gC
+             *  0{filter}{project}gN
+             *   {filter}{project}g(
+             *  t{filter}{project}gT
+	         *           {project}gU
+	         *           {project}gI
+	         *           {project}gC
+	         *  0        {project}gN
+	         *           {project}g(
+	         *  t        {project}gT
+             *           
+             *           gu project
+             *           gi project
+             *           gc project
+             *         0 gn project
+             *           g9 project
+             *         t gt project
+             *           gU project
+             *           gI project
+             *           gC project
+             *         0 gN project
+             *           g( project
+             *         t gT project
+             *
+             */
+
+            char lowerSpec = char.ToLower(spec);
+            bool shorthand = !IsBlock(Peek());
+            bool stopOnDupe = lowerSpec == 'u',
+                stopOnFilter = lowerSpec == 'f',
+                stopOnCancel = lowerSpec == 'c',
+                stopOnFixPoint = lowerSpec == 'i',
+                stopOnTargetVal = lowerSpec == 't',
+                postPop = char.IsUpper(spec);
+            Block genblock = shorthand ? new Block(restOfProgram) : Pop(), 
+                filter = null;
+            dynamic targetVal = null;
+            int? targetCount = null;
+
+            if (IsBlock(Peek()) && !shorthand) filter = Pop();
+            else if (stopOnFilter) throw new Exception("generator can't stop on filter failure when there is no filter");
+
+            if (stopOnTargetVal) targetVal = Pop();
+
+            if (char.ToLower(spec) == 'n') {
+                targetCount = (int)Pop();
+            }
+            else {
+                int idx = "1234567890!@#$%^&*()".IndexOf(spec);
+                if (idx >= 0) targetCount = idx % 10 + 1;
+                postPop = idx >= 10;
             }
 
-            if (!IsBlock(gen)) throw new Exception("Bad types for pop generator");
+            if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !targetCount.HasValue) {
+                throw new Exception("no end condition for generator");
+            } 
+
+            if (targetCount == 0) { // 0 elements requested ??
+                Push(new List<object>()); 
+                yield break;
+            }
 
             PushStackFrame();
             var result = new List<object>();
-            while (target == null || result.Count < target) {
-                _ = Peek();
-                var runner = RunSteps(((Block)gen).Program).GetEnumerator();
-                while (true) {
-                    try {
-                        if (!runner.MoveNext()) break;
-                    }
-                    catch (CancelException) {
-                        goto Skip;
-                    }
-                    yield return runner.Current;
-                }
-
-                object generated = Pop();
-                if (target == null && result.Contains(generated, Comparer.Instance)) {
-                    break; // duplicate detected
-                }
-                result.Add(generated);
-                Skip:
-                ++Index;
-            }
-            PopStackFrame();
-            Push(result);
-        }
-
-        private IEnumerable<ExecutionState> DoPeekGenerator() {
-            dynamic target = null, gen = Pop();
-            if (IsInt(gen)) {
-                target = gen;
-                gen = Pop();
-                if (target == 0) {
-                    // 0 elements requested ??
-                    Push(new List<object>());
-                    yield break;
-                }
+            if (!postPop) {
+                result.Add(Peek());
+                if (stopOnTargetVal && AreEqual(result[0], targetVal)) goto GenComplete;
             }
 
-            if (!IsBlock(gen)) throw new Exception("Bad types for peek generator");
-
-            PushStackFrame();
-            var result = new List<object> { Peek() };
-            while (target == null || result.Count < target) {
+            object lastGenerated = null;
+            while (targetCount == null || result.Count < targetCount) {
                 _ = Peek();
-                var runner = RunSteps(((Block)gen).Program).GetEnumerator();
+                var genRun = RunSteps(genblock.Program).GetEnumerator();
                 while (true) {
                     try {
-                        if (!runner.MoveNext()) break;
+                        if (!genRun.MoveNext()) break;
                     }
                     catch (CancelException) {
-                        goto Skip;
+                        if (stopOnCancel) goto GenComplete;
+                        goto Cancelled;
                     }
-                    yield return runner.Current;
+                    yield return genRun.Current;
                 }
-
                 object generated = Peek();
-                if (target == null && result.Contains(generated, Comparer.Instance)) {
-                    break; // duplicate detected
+
+                bool passed = true;
+                if (filter != null) {
+                    _ = generated;
+                    var filterRun = RunSteps(filter.Program).GetEnumerator();
+                    while (true) {
+                        try {
+                            if (!filterRun.MoveNext()) break;
+                        }
+                        catch (CancelException) {
+                            if (stopOnCancel) goto GenComplete;
+                            goto Cancelled;
+                        }
+                        yield return filterRun.Current;
+                    }
+                    passed = IsTruthy(Pop());
+                    Push(generated); // put the generated element back
+                    if (stopOnFilter && !passed) break;
                 }
-                result.Add(generated);
-                Skip:
+
+                if (postPop) Pop();
+                if (passed) { // check for dupe
+                    if (stopOnDupe && result.Contains(generated, Comparer.Instance)) break;
+                    if (stopOnFixPoint && AreEqual(generated, lastGenerated)) break;
+                    result.Add(generated);
+                    if (stopOnTargetVal && AreEqual(generated, targetVal)) break;
+                }
+                lastGenerated = generated;
+
+                Cancelled:
                 ++Index;
             }
+            if (!postPop) {
+                // Remove left-over value from pre-peek mode
+                // It's kept on stack between iterations, but iterations are over now
+                Pop(); 
+            }
+
+            GenComplete:
             PopStackFrame();
-            Push(result);
+
+            if (shorthand) {
+                foreach (var e in result) Print(e);
+            }
+            else Push(result);
         }
 
         enum RotateDirection { Left, Right };
@@ -1818,7 +1887,7 @@ namespace StaxLang {
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
                 // shortcut block terminators
-                if ("wWmfFgGO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
+                if ("wWmfFgO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
             } while (++ip < program.Length);
             return new Block(program.Substring(start));
         }
@@ -1829,6 +1898,7 @@ namespace StaxLang {
             private Comparer() { }
 
             public int Compare(dynamic a, dynamic b) {
+                if (a == null || b == null) return object.ReferenceEquals(a, b);
                 if (IsNumber(a)) {
                     while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
                     if (IsNumber(b)) return ((IComparable)a).CompareTo(b);

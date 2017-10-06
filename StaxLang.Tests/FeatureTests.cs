@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace StaxLang.Tests {
     [TestClass]
@@ -24,6 +22,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void MulOneValNoop() => RunProgram("2 *", "2");
         [TestMethod] public void Division() => RunProgram("14 3/", "4");
         [TestMethod] public void Modulus() => RunProgram("11 4%", "3");
+        [TestMethod] public void DivMod() => RunProgram("17 5 |% p ' p p", "2 3");
         [TestMethod] public void Increment() => RunProgram("7^", "8");
         [TestMethod] public void Decrement() => RunProgram("7v", "6");
         [TestMethod] public void LeadingZero() => RunProgram("04*", "0");
@@ -221,6 +220,67 @@ namespace StaxLang.Tests {
         [TestMethod] public void AlterStack() => RunProgram("1 2 3 4 a pppp", "2431");
         [TestMethod] public void CopyBoth() => RunProgram("1 2 3 b ppppp", "32321");
         [TestMethod] public void CopyUnder() => RunProgram("1 2 3 [ pppp ", "3221");
+
+        // Generators
+        // TODO: add examples of each (!!?!)
+        /*
+         *  End condition
+         *      duplicate -    u
+         *      n reached -    n
+         *      filter false - f
+         *      cancelled -	   c
+         *      invariant pt - i
+         *      target value - t
+         *
+         *  Collection type
+         *      pre-peek - lower case
+         *      post-pop - upper case
+         *
+         *  Filter
+         *      yes
+         *      no
+         *
+         *   {filter}{project}gu
+         *   {filter}{project}gi
+         *   {filter}{project}gf
+         *   {filter}{project}gc
+         *  0{filter}{project}gn
+         *   {filter}{project}g9
+         *  t{filter}{project}gt
+         *           {project}gu
+         *           {project}gi
+         *           {project}gc
+         *  0        {project}gn
+         *           {project}g9
+         *  t        {project}gt
+         *   {filter}{project}gU
+         *   {filter}{project}gI
+         *   {filter}{project}gF
+         *   {filter}{project}gC
+         *  0{filter}{project}gN
+         *   {filter}{project}g(
+         *  t{filter}{project}gT
+         *           {project}gU
+         *           {project}gI
+         *           {project}gC
+         *  0        {project}gN
+         *           {project}g(
+         *  t        {project}gT
+         *           
+         *           gu project
+         *           gi project
+         *           gc project
+         *         0 gn project
+         *           g9 project
+         *         t gt project
+         *           gU project
+         *           gI project
+         *           gC project
+         *         0 gN project
+         *           g( project
+         *         t gT project
+         *
+         */
     }
 }
 

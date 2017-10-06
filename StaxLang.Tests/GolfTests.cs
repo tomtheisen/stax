@@ -51,6 +51,8 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void CollatzTest() {
             RunProgram("QwX2%x3*^xh?Qcv", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("1gth_3*^\\_@", "3", "3", "10", "5", "16", "8", "4", "2", "1");
+            RunProgram("guh_3*^\\_@", "3", "3", "10", "5", "16", "8", "4", "2", "1");
         }
 
         [TestMethod]
@@ -501,7 +503,8 @@ namespace StaxLang.Tests {
             RunProgram("VA{Qch+U)}26*", "", expected);
             RunProgram("VA{Q|(}26*", "", expected);
             RunProgram("VA26fQ|(", "", expected);
-            RunProgram("VA{|(gm", "", expected);
+            RunProgram("VA{|(gum", "", expected);
+            RunProgram("VAgu|(", "", expected);
         }
 
         [TestMethod]
@@ -543,6 +546,7 @@ namespace StaxLang.Tests {
             RunProgram("VA{VA{[s|MmPF", "", expected);
             RunProgram("VAQc2B{|tQF", "", expected);
             RunProgram("VAQc2BF|tQ", "", expected);
+            RunProgram("VAmVA{[|Mm", "", expected);
         }
 
         [TestMethod]
