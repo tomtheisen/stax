@@ -33,9 +33,12 @@
             this.ProgramTextbox = new System.Windows.Forms.TextBox();
             this.MainStatus = new System.Windows.Forms.StatusStrip();
             this.StepCountLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ElapsedTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.CompressorButton = new System.Windows.Forms.Button();
             this.RunButton = new System.Windows.Forms.Button();
-            this.ElapsedTimeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AnnotateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             InputLabel = new System.Windows.Forms.Label();
             OutputLabel = new System.Windows.Forms.Label();
             ProgramLabel = new System.Windows.Forms.Label();
@@ -44,6 +47,7 @@
             this.MainSplit.Panel2.SuspendLayout();
             this.MainSplit.SuspendLayout();
             this.MainStatus.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // InputLabel
@@ -100,14 +104,14 @@
             this.OutputTextbox.Name = "OutputTextbox";
             this.OutputTextbox.ReadOnly = true;
             this.OutputTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputTextbox.Size = new System.Drawing.Size(378, 186);
+            this.OutputTextbox.Size = new System.Drawing.Size(378, 170);
             this.OutputTextbox.TabIndex = 4;
             this.OutputTextbox.WordWrap = false;
             // 
             // MainSplit
             // 
             this.MainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainSplit.Location = new System.Drawing.Point(0, 0);
+            this.MainSplit.Location = new System.Drawing.Point(0, 24);
             this.MainSplit.Margin = new System.Windows.Forms.Padding(2);
             this.MainSplit.Name = "MainSplit";
             this.MainSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -127,8 +131,8 @@
             this.MainSplit.Panel2.Controls.Add(this.InputTextbox);
             this.MainSplit.Panel2.Controls.Add(this.OutputTextbox);
             this.MainSplit.Panel2.Controls.Add(OutputLabel);
-            this.MainSplit.Size = new System.Drawing.Size(397, 459);
-            this.MainSplit.SplitterDistance = 119;
+            this.MainSplit.Size = new System.Drawing.Size(397, 435);
+            this.MainSplit.SplitterDistance = 112;
             this.MainSplit.SplitterWidth = 3;
             this.MainSplit.TabIndex = 7;
             // 
@@ -151,7 +155,7 @@
             this.ProgramTextbox.Margin = new System.Windows.Forms.Padding(2);
             this.ProgramTextbox.Multiline = true;
             this.ProgramTextbox.Name = "ProgramTextbox";
-            this.ProgramTextbox.Size = new System.Drawing.Size(380, 95);
+            this.ProgramTextbox.Size = new System.Drawing.Size(380, 88);
             this.ProgramTextbox.TabIndex = 1;
             this.ProgramTextbox.TextChanged += new System.EventHandler(this.ProgramTextbox_TextChanged);
             this.ProgramTextbox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ProgramTextbox_KeyUp);
@@ -164,7 +168,7 @@
             this.MainStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StepCountLabel,
             this.ElapsedTimeLabel});
-            this.MainStatus.Location = new System.Drawing.Point(0, 315);
+            this.MainStatus.Location = new System.Drawing.Point(0, 298);
             this.MainStatus.Name = "MainStatus";
             this.MainStatus.Size = new System.Drawing.Size(397, 22);
             this.MainStatus.TabIndex = 7;
@@ -175,10 +179,15 @@
             this.StepCountLabel.Name = "StepCountLabel";
             this.StepCountLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // ElapsedTimeLabel
+            // 
+            this.ElapsedTimeLabel.Name = "ElapsedTimeLabel";
+            this.ElapsedTimeLabel.Size = new System.Drawing.Size(0, 17);
+            // 
             // CompressorButton
             // 
             this.CompressorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CompressorButton.Location = new System.Drawing.Point(236, 90);
+            this.CompressorButton.Location = new System.Drawing.Point(236, 91);
             this.CompressorButton.Margin = new System.Windows.Forms.Padding(2);
             this.CompressorButton.Name = "CompressorButton";
             this.CompressorButton.Size = new System.Drawing.Size(74, 34);
@@ -199,10 +208,30 @@
             this.RunButton.UseVisualStyleBackColor = true;
             this.RunButton.Click += new System.EventHandler(this.RunButton_Click);
             // 
-            // ElapsedTimeLabel
+            // menuStrip1
             // 
-            this.ElapsedTimeLabel.Name = "ElapsedTimeLabel";
-            this.ElapsedTimeLabel.Size = new System.Drawing.Size(0, 17);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(397, 24);
+            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AnnotateMenuItem});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "&Options";
+            // 
+            // annotateToolStripMenuItem
+            // 
+            this.AnnotateMenuItem.CheckOnClick = true;
+            this.AnnotateMenuItem.Name = "annotateToolStripMenuItem";
+            this.AnnotateMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.AnnotateMenuItem.Text = "Annotate";
             // 
             // MainForm
             // 
@@ -210,6 +239,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(397, 459);
             this.Controls.Add(this.MainSplit);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.Text = "Stax Language";
@@ -223,7 +254,10 @@
             this.MainSplit.ResumeLayout(false);
             this.MainStatus.ResumeLayout(false);
             this.MainStatus.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -238,6 +272,9 @@
         private System.Windows.Forms.StatusStrip MainStatus;
         private System.Windows.Forms.ToolStripStatusLabel StepCountLabel;
         private System.Windows.Forms.ToolStripStatusLabel ElapsedTimeLabel;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AnnotateMenuItem;
     }
 }
 

@@ -16,9 +16,15 @@ namespace StaxLang.UI {
             var program = ProgramTextbox.SelectedText == "" ? ProgramTextbox.Text : ProgramTextbox.SelectedText;
             var sw = Stopwatch.StartNew();
             try {
-                int steps = new Executor(output).Run(program, input);
+                bool annotate = AnnotateMenuItem.Checked;
+                var runner = new Executor(output) { Annotate = annotate };
+                int steps = runner.Run(program, input);
                 StepCountLabel.Text = $"{steps} steps.";
                 OutputTextbox.Text = output.ToString();
+                if (annotate) {
+                    string formatted = string.Join(Environment.NewLine, runner.Annotation);
+                    new CodeViewForm { CodeTextbox = { Text = formatted } }.Show(this);
+                }
             }
             catch (Exception ex) {
                 OutputTextbox.Text = ex.Message;

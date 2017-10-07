@@ -52,6 +52,8 @@ namespace StaxLang {
     public class Executor {
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
+        public bool Annotate { get; set; }
+        public IReadOnlyList<string> Annotation { get; private set; } = null;
 
         private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
             ['0'] = new Rational(0, 1),
@@ -67,7 +69,7 @@ namespace StaxLang {
             ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
             ['s'] = S2A(" \t\r\n\v"),
-            ['n'] = S2A("\n"),
+            ['n'] = S2A("\n"),  // also just A]
         };
 
         private BigInteger Index; // loop iteration
@@ -91,16 +93,18 @@ namespace StaxLang {
         /// <returns>number of steps it took</returns>
         public int Run(string program, string[] input) {
             Initialize(program, input);
+            var block = new Block(program);
             int step = 0;
             try {
-                foreach (var s in RunSteps(program)) {
+                foreach (var s in RunSteps(block)) {
                     if (s.Cancel) break;
                     if (++step > 100000) throw new Exception("program is running too long");
                 }
             }
             catch (InvalidOperationException) { }
-            catch (ArgumentOutOfRangeException) { }
             if (!OutputWritten) Print(Pop());
+
+            if (Annotate) Annotation = block.Annotate(); 
             return step;
         }
 
@@ -125,7 +129,7 @@ namespace StaxLang {
             else if (input.Length == 1 & program.FirstOrDefault() != 'i') {
                 try {
                     DoEval();
-                    if (TotalSize == 0) {
+                    if (TotalStackSize == 0) {
                         InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
                     }
                     else {
@@ -158,30 +162,36 @@ namespace StaxLang {
             (_, IndexOuter) = CallStackFrames.Pop();
         }
 
-        private int TotalSize => MainStack.Count + InputStack.Count;
+        private int TotalStackSize => MainStack.Count + InputStack.Count;
 
         private void RunMacro(string program) {
-            foreach (var s in RunSteps(program));
+            foreach (var s in RunSteps(new Block(program))) ;
         }
 
-        private IEnumerable<ExecutionState> RunSteps(string program) {
+        private IEnumerable<ExecutionState> RunSteps(Block block) {
+            var program = block.Contents;
             if (program.Length > 0) switch (program[0]) {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
-                    if (TotalSize > 0 && !IsInt(Peek())) DoListify();
+                    if (TotalStackSize > 0 && !IsInt(Peek())) DoListify();
                     break;
             }
 
             for (int ip = 0; ip < program.Length;) {
+                int ipstart = ip;
+                void AddExplanation(string text) {
+                    block.AddDesc(ipstart, text);
+                }
+
                 yield return new ExecutionState();
-                switch (program[ip++]) {
+                switch (program[ip]) {
                     case '0':
                         Push(BigInteger.Zero);
                         break;
                     case '1': case '2': case '3': case '4': case '5':
                     case '6': case '7': case '8': case '9':
-                        --ip;
+                        AddExplanation("number");
                         Push(ParseNumber(program, ref ip));
                         break;
                     case ' ': case '\n': case '\r':
@@ -205,32 +215,30 @@ namespace StaxLang {
                         break;
                     case '"': // "literal"
                         {
-                            --ip;
                             Push(ParseString(program, ref ip, out bool implicitEnd));
                             if (implicitEnd) Print(Peek()); 
                         }
                         break;
                     case '`': // compressed `5Is1%`
                         {
-                            --ip;
                             Push(ParseCompressedString(program, ref ip, out bool implitEnd));
                             if (implitEnd) Print(Peek()); 
                         }
                         break;
                     case '\'': // single char 'x
-                        Push(S2A(program.Substring(ip++, 1)));
+                        Push(S2A(program.Substring(++ip, 1)));
                         break;
                     case '{': // block
-                        --ip;
-                        Push(ParseBlock(program, ref ip));
+                        Push(ParseBlock(block, ref ip));
                         break;
                     case '}': // do-over (or block end)
-                        ip = 0;
+                        ip = -1;
                         break;
                     case '!': // not
                         Push(IsTruthy(Pop()) ? BigInteger.Zero : BigInteger.One);
                         break;
                     case '+':
+                        AddExplanation("addition");
                         DoPlus();
                         break;
                     case '-':
@@ -321,7 +329,7 @@ namespace StaxLang {
                         Pop();
                         break;
                     case 'e': // eval, but only when not at the very beginning of the program
-                        if (CallStackFrames.Any() || ip > 1) DoEval();
+                        if (CallStackFrames.Any() || ip > 0) DoEval();
                         break;
                     case 'E': // explode (de-listify)
                         DoExplode();
@@ -329,14 +337,14 @@ namespace StaxLang {
                     case 'f': // block filter
                         { 
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoFilter(program.Substring(ip))) yield return s;
+                            foreach (var s in DoFilter(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
                     case 'F': // for loop
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoFor(program.Substring(ip))) yield return s;
+                            foreach (var s in DoFor(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -345,8 +353,8 @@ namespace StaxLang {
                             // shorthand is indicated by
                             //   no trailing block
                             //   OR trailing block with explicit close }, in which case it becomes a filter
-                            bool shorthand = !IsBlock(Peek()) || (ip >= 2 && program[ip - 2] == '}');
-                            foreach (var s in DoGenerator(shorthand, program[ip++], program.Substring(ip))) {
+                            bool shorthand = !IsBlock(Peek()) || (ip >= 1 && program[ip - 1] == '}');
+                            foreach (var s in DoGenerator(shorthand, program[++ip], block.SubBlock(ip + 1))) {
                                 yield return s;
                             }
                             if (shorthand) ip = program.Length;
@@ -378,7 +386,7 @@ namespace StaxLang {
                     case 'k': // reduce
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoReduce(program.Substring(ip))) yield return s;
+                            foreach (var s in DoReduce(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -391,7 +399,7 @@ namespace StaxLang {
                     case 'm': // do map
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoMap(program.Substring(ip))) yield return s;
+                            foreach (var s in DoMap(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -457,19 +465,19 @@ namespace StaxLang {
                         Push(BigInteger.MinusOne);
                         break;
                     case 'V': // constant value
-                        Push(Constants[program[ip++]]);
+                        Push(Constants[program[++ip]]);
                         break;
                     case 'w': // do-while
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoWhile(program.Substring(ip))) yield return s;
+                            foreach (var s in DoWhile(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
                     case 'W':
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoPreCheckWhile(program.Substring(ip))) yield return s;
+                            foreach (var s in DoPreCheckWhile(block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -492,7 +500,7 @@ namespace StaxLang {
                         Push(S2A(""));
                         break;
                     case '|': // extended operations
-                        switch (program[ip++]) {
+                        switch (program[++ip]) {
                             case ' ':
                                 Print(" ", false);
                                 break;
@@ -687,11 +695,12 @@ namespace StaxLang {
                             case 'z': // zero-fill
                                 RunMacro("ss ~; '0* s 2l$ ,)");
                                 break;
-                            default: throw new Exception($"Unknown extended character '{program[ip - 1]}'");
+                            default: throw new Exception($"Unknown extended character '{program[ip]}'");
                         }
                         break;
-                    default: throw new Exception($"Unknown character '{program[ip - 1]}'");
+                    default: throw new Exception($"Unknown character '{program[ip]}'");
                 }
+                ++ip;
             }
             yield return new ExecutionState();
         }
@@ -707,7 +716,7 @@ namespace StaxLang {
             Push(result);
         }
 
-        private IEnumerable<ExecutionState> DoGenerator(bool shorthand, char spec, string restOfProgram) {
+        private IEnumerable<ExecutionState> DoGenerator(bool shorthand, char spec, Block rest) {
             /*
              *  End condition
 	         *      duplicate -    u
@@ -774,7 +783,7 @@ namespace StaxLang {
                 stopOnFixPoint = lowerSpec == 'i',
                 stopOnTargetVal = lowerSpec == 't',
                 postPop = char.IsUpper(spec);
-            Block genblock = shorthand ? new Block(restOfProgram) : Pop(), 
+            Block genblock = shorthand ? rest : Pop(), 
                 filter = null;
             dynamic targetVal = null;
             int? targetCount = null;
@@ -810,7 +819,7 @@ namespace StaxLang {
                 _ = Peek();
 
                 if (Index > 0 || postPop) {
-                    foreach (var s in RunSteps(genblock.Program)) {
+                    foreach (var s in RunSteps(genblock)) {
                         if (s.Cancel && stopOnCancel) goto GenComplete;
                         if (s.Cancel) goto Cancelled;
                         yield return s;
@@ -821,7 +830,7 @@ namespace StaxLang {
                 bool passed = true;
                 if (filter != null) {
                     _ = generated;
-                    foreach (var s in RunSteps(filter.Program)) {
+                    foreach (var s in RunSteps(filter)) {
                         if (s.Cancel && stopOnCancel) goto GenComplete;
                         if (s.Cancel) goto Cancelled;
                         yield return s;
@@ -884,7 +893,7 @@ namespace StaxLang {
 
         private void DoListify() {
             var newList = new List<object>();
-            while (TotalSize > 0) newList.Add(Pop());
+            while (TotalStackSize > 0) newList.Add(Pop());
             Push(newList);
         }
 
@@ -1007,7 +1016,7 @@ namespace StaxLang {
                 foreach (Match match in matches) {
                     result += ts.Substring(consumed, match.Index - consumed);
                     Push(_ = S2A(match.Value));
-                    foreach (var s in RunSteps(replace.Program)) yield return s;
+                    foreach (var s in RunSteps((Block)replace)) yield return s;
                     Index++;
                     result += A2S(Pop());
                     consumed = match.Index + match.Length;
@@ -1109,7 +1118,7 @@ namespace StaxLang {
                 foreach (var e in list) {
                     _ = e;
                     Push(e);
-                    foreach (var s in RunSteps(arg.Program)) yield return s;
+                    foreach (var s in RunSteps((Block)arg)) yield return s;
                     combined.Add((e, Pop()));
                     ++Index;
                 }
@@ -1176,7 +1185,7 @@ namespace StaxLang {
                 var result = new List<object>();
                 for (Index = 0; Index < list.Count; Index++) {
                     Push(_ = list[(int)Index]);
-                    foreach (var s in RunSteps(target.Program)) yield return s;
+                    foreach (var s in RunSteps((Block)target)) yield return s;
                     if (IsTruthy(Pop())) result.Add(Index);
                 }
                 PopStackFrame();
@@ -1334,11 +1343,11 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoPreCheckWhile(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoPreCheckWhile(Block rest) {
             if (!IsBlock(Peek())) {
                 PushStackFrame();
                 while (true) {
-                    foreach (var s in RunSteps(restOfProgram)) {
+                    foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) {
                             PopStackFrame();
                             yield break;
@@ -1353,7 +1362,7 @@ namespace StaxLang {
             PushStackFrame();
                 
             while (true) {
-                foreach (var s in RunSteps(block.Program)) {
+                foreach (var s in RunSteps(block)) {
                     if (s.Cancel) {
                         PopStackFrame();
                         yield break;
@@ -1364,11 +1373,11 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoWhile(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoWhile(Block rest) {
             if (!IsBlock(Peek())) {
                 PushStackFrame();
                 do {
-                    foreach (var s in RunSteps(restOfProgram)) {
+                    foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) {
                             PopStackFrame();
                             yield break;
@@ -1384,7 +1393,7 @@ namespace StaxLang {
             Block block = Pop();
             PushStackFrame();
             do {
-                foreach (var s in RunSteps(block.Program)) {
+                foreach (var s in RunSteps(block)) {
                     if (s.Cancel) {
                         PopStackFrame();
                         yield break;
@@ -1399,7 +1408,7 @@ namespace StaxLang {
             dynamic @else = Pop(), then = Pop(), condition = Pop();
             Push(IsTruthy(condition) ? then : @else);
             if (IsBlock(Peek())) {
-                foreach (var s in RunSteps(Pop().Program)) yield return s;
+                foreach (var s in RunSteps((Block)Pop())) yield return s;
             }
         }
 
@@ -1414,13 +1423,13 @@ namespace StaxLang {
             else Output.Write(arg);
         }
 
-        private IEnumerable<ExecutionState> DoFilter(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoFilter(Block rest) {
             if (IsInt(Peek())) { // n times do
                 var n = Pop();
                 PushStackFrame();
                 for (Index = BigInteger.Zero; Index < n; Index++) {
                     _ = Index + 1;
-                    foreach (var s in RunSteps(restOfProgram)) yield return s;
+                    foreach (var s in RunSteps(rest)) yield return s;
                 }
                 PopStackFrame();
                 yield break;
@@ -1429,7 +1438,7 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(restOfProgram)) yield return s;
+                    foreach (var s in RunSteps(rest)) yield return s;
                     if (IsTruthy(Pop())) Print(e);
                     Index++;
                 }
@@ -1446,7 +1455,7 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(b.Program)) yield return s;
+                    foreach (var s in RunSteps((Block)b)) yield return s;
                     Index++;
                     if (IsTruthy(Pop())) result.Add(e);
                 }
@@ -1458,7 +1467,7 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoReduce(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoReduce(Block rest) {
             dynamic b = Pop(), a = Pop();
             if (IsInt(a) && IsBlock(b)) a = Range(1, a);
             if (IsArray(a) && IsBlock(b)) {
@@ -1472,7 +1481,7 @@ namespace StaxLang {
                 a.RemoveAt(0);
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(((Block)b).Program)) {
+                    foreach (var s in RunSteps((Block)b)) {
                         if (s.Cancel) {
                             PopStackFrame();
                             yield break;
@@ -1488,13 +1497,13 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoFor(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoFor(Block rest) {
             if (IsInt(Peek())) Push(Range(1, Pop()));
             if (IsArray(Peek())) {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(restOfProgram)) {
+                    foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) break;
                         yield return s;
                     }
@@ -1510,7 +1519,7 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(((Block)b).Program)) {
+                    foreach (var s in RunSteps((Block)b)) {
                         if (s.Cancel) {
                             PopStackFrame();
                             yield break;
@@ -1544,13 +1553,13 @@ namespace StaxLang {
             Push(result);
         }
 
-        private IEnumerable<ExecutionState> DoMap(string restOfProgram) {
+        private IEnumerable<ExecutionState> DoMap(Block rest) {
             if (IsInt(Peek())) {
                 var n = Pop();
                 PushStackFrame();
                 for (Index = BigInteger.Zero; Index < n; Index++) {
                     Push(_ = Index + 1);
-                    foreach (var s in RunSteps(restOfProgram)) {
+                    foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) goto NextIndex;
                         yield return s;
                     }
@@ -1564,7 +1573,7 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(restOfProgram)) {
+                    foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) goto NextElement;
                         yield return s;
                     }
@@ -1586,7 +1595,7 @@ namespace StaxLang {
                 foreach (var e in a) {
                     Push(_ = e);
 
-                    foreach (var s in RunSteps(((Block)b).Program)) {
+                    foreach (var s in RunSteps((Block)b)) {
                         if (s.Cancel) goto NextElement;
                         yield return s;
                     }
@@ -1603,7 +1612,7 @@ namespace StaxLang {
         }
 
         private void DoPlus() {
-            if (TotalSize < 2) return;
+            if (TotalStackSize < 2) return;
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -1695,7 +1704,7 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoStar() {
-            if (TotalSize < 2) yield break;
+            if (TotalStackSize < 2) yield break;
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a)) (a, b) = (b, a);
@@ -1714,7 +1723,7 @@ namespace StaxLang {
                 else if (IsBlock(a)) {
                     PushStackFrame();
                     for (Index = 0; Index < b; Index++) {
-                        foreach (var s in RunSteps(((Block)a).Program)) yield return s;
+                        foreach (var s in RunSteps((Block)a)) yield return s;
                     }
                     PopStackFrame();
                     yield break;
@@ -1833,6 +1842,7 @@ namespace StaxLang {
                 ++ip;
                 return double.Parse(value + "." + ParseNumber(program, ref ip));
             }
+            --ip;
             return value;
         }
 
@@ -1840,7 +1850,6 @@ namespace StaxLang {
             string compressed = "";
             while (ip < program.Length - 1 && program[++ip] != '`') compressed += program[ip];
             implicitEnd = ip == program.Length - 1;
-            ++ip; // final delimiter
 
             var decompressed = HuffmanCompressor.Decompress(compressed);
             return S2A(decompressed);
@@ -1853,38 +1862,37 @@ namespace StaxLang {
                 result += program[ip];
             }
             implicitEnd = ip == program.Length - 1;
-            ++ip; // final quote
             return S2A(result);
         }
 
-        private Block ParseBlock(string program, ref int ip) {
+        private Block ParseBlock(Block block, ref int ip) {
+            string contents = block.Contents;
             int depth = 0;
             int start = ip + 1;
             do {
-                if (program[ip] == '|' || program[ip] == '\'' || program[ip] == 'V') {
+                if (contents[ip] == '|' || contents[ip] == '\'' || contents[ip] == 'V') {
                     ip++; // 2-char tokens
                     continue;
                 }
 
-                if (program[ip] == '"') {
-                    ParseString(program, ref ip, out bool implicitEnd);
-                    --ip;
+                if (contents[ip] == '"') {
+                    ParseString(contents, ref ip, out bool implicitEnd);
                     continue;
                 }
 
-                if (program[ip] == '.') {
-                    ParseCompressedString(program, ref ip, out bool implicitEnd);
-                    --ip;
+                if (contents[ip] == '.') {
+                    ParseCompressedString(contents, ref ip, out bool implicitEnd);
                     continue;
                 }
 
-                if (program[ip] == '{') ++depth;
-                if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
+                if (contents[ip] == '{') ++depth;
+                if (contents[ip] == '}' && --depth == 0) return block.SubBlock(start, ip);
 
                 // shortcut block terminators
-                if ("wWmfFkgO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
-            } while (++ip < program.Length);
-            return new Block(program.Substring(start));
+                if ("wWmfFkgO".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
+            } while (++ip < contents.Length);
+            --ip;
+            return block.SubBlock(start);
         }
 
         class Comparer : IComparer<object>, IEqualityComparer<object> {

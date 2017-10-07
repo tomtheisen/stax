@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CodeViewForm.Designer.cs">
+      <DependentUpon>CodeViewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="CompressorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CodeViewForm.resx">
+      <DependentUpon>CodeViewForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CompressorForm.resx">
       <DependentUpon>CompressorForm.cs</DependentUpon>
     </EmbeddedResource>
