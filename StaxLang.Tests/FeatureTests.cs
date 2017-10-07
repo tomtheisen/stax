@@ -208,6 +208,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void FilterShorthand() => RunProgram("5rf2%", "1\r\n3");
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
         [TestMethod] public void Map() => RunProgram("5R {c*m ',*", "1,4,9,16,25");
+        [TestMethod] public void Reduce() => RunProgram("5R {*k", "120");
         [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");
         [TestMethod] public void IterationIndex() => RunProgram("'x]4* {p ':p ip ' p F", "x:0 x:1 x:2 x:3 ");
         [TestMethod] public void OuterIterationIndex() => RunProgram("2F 2F |ip", "0011");

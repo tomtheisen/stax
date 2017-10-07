@@ -8,10 +8,9 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  .:DGkKnoSZ
+    //  .:DGKnoSZ
     /* To add:
      *     find-index-all by regex
-     *     reduce
      *     running "total" / reduce-collect
      *     flatten
      *     map-many
@@ -375,6 +374,13 @@ namespace StaxLang {
                     case 'J':
                         if (IsArray(Peek())) RunMacro("' *"); // join with spaces
                         else if (IsNumber(Peek())) Push(Peek() * Pop()); // square
+                        break;
+                    case 'k': // reduce
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoReduce(program.Substring(ip))) yield return s;
+                            if (shorthand) ip = program.Length;
+                        }
                         break;
                     case 'l': // listify-n
                         DoListifyN();
@@ -1452,6 +1458,36 @@ namespace StaxLang {
             }
         }
 
+        private IEnumerable<ExecutionState> DoReduce(string restOfProgram) {
+            dynamic b = Pop(), a = Pop();
+            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
+            if (IsArray(a) && IsBlock(b)) {
+                if (a.Count < 2) {
+                    Push(a);
+                    yield break;
+                }
+
+                PushStackFrame();
+                Push(a[0]);
+                a.RemoveAt(0);
+                foreach (var e in a) {
+                    Push(_ = e);
+                    foreach (var s in RunSteps(((Block)b).Program)) {
+                        if (s.Cancel) {
+                            PopStackFrame();
+                            yield break;
+                        }
+                        yield return s;
+                    }
+                    Index++;
+                }
+                PopStackFrame();
+            }
+            else {
+                throw new Exception("Bad types for reduce");
+            }
+        }
+
         private IEnumerable<ExecutionState> DoFor(string restOfProgram) {
             if (IsInt(Peek())) Push(Range(1, Pop()));
             if (IsArray(Peek())) {
@@ -1469,7 +1505,6 @@ namespace StaxLang {
             }
 
             dynamic b = Pop(), a = Pop();
-
             if (IsInt(a) && IsBlock(b)) a = Range(1, a);
             if (IsArray(a) && IsBlock(b)) {
                 PushStackFrame();
@@ -1847,7 +1882,7 @@ namespace StaxLang {
                 if (program[ip] == '}' && --depth == 0) return new Block(program.Substring(start, ip++ - start));
 
                 // shortcut block terminators
-                if ("wWmfFgO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
+                if ("wWmfFkgO".Contains(program[ip]) && --depth == 0) return new Block(program.Substring(start, ip - start));
             } while (++ip < program.Length);
             return new Block(program.Substring(start));
         }
