@@ -232,64 +232,6 @@ namespace StaxLang.Tests {
 
         // Generators
         // TODO: add examples of each (!!?!)
-        /*
-         *  End condition
-         *      duplicate -    u
-         *      n reached -    n
-         *      filter false - f
-         *      cancelled -	   c
-         *      invariant pt - i
-         *      target value - t
-         *
-         *  Collection type
-         *      pre-peek - lower case
-         *      post-pop - upper case
-         *
-         *  Filter
-         *      yes
-         *      no
-         *
-         *   {filter}{project}gu
-         *   {filter}{project}gi
-         *   {filter}{project}gf
-         *   {filter}{project}gc
-         *  0{filter}{project}gn
-         *   {filter}{project}g9
-         *  t{filter}{project}gt
-         *           {project}gu
-         *           {project}gi
-         *           {project}gc
-         *  0        {project}gn
-         *           {project}g9
-         *  t        {project}gt
-         *   {filter}{project}gU
-         *   {filter}{project}gI
-         *   {filter}{project}gF
-         *   {filter}{project}gC
-         *  0{filter}{project}gN
-         *   {filter}{project}g(
-         *  t{filter}{project}gT
-         *           {project}gU
-         *           {project}gI
-         *           {project}gC
-         *  0        {project}gN
-         *           {project}g(
-         *  t        {project}gT
-         *           
-         *           gu project
-         *           gi project
-         *           gc project
-         *         0 gn project
-         *           g9 project
-         *         t gt project
-         *           gU project
-         *           gI project
-         *           gC project
-         *         0 gN project
-         *           g( project
-         *         t gT project
-         *
-         */
     }
 }
 

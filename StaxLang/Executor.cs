@@ -43,12 +43,10 @@ namespace StaxLang {
      *     RLE
      *     popcount (2|E|+)
      *     version string
-     *     generator shorthand
      *     
      *     code explainer
      *     debugger
      *     docs
-     *     stop using CancelException.  it's super slow. put it inside ExecutionState instead
      *     tests in portable files
      */
 
@@ -345,8 +343,13 @@ namespace StaxLang {
                         break;
                     case 'g': // generator
                         {
-                            bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoGenerator(program[ip++], program.Substring(ip))) yield return s;
+                            // shorthand is indicated by
+                            //   no trailing block
+                            //   OR trailing block with explicit close }, in which case it becomes a filter
+                            bool shorthand = !IsBlock(Peek()) || (ip >= 2 && program[ip - 2] == '}');
+                            foreach (var s in DoGenerator(shorthand, program[ip++], program.Substring(ip))) {
+                                yield return s;
+                            }
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -698,7 +701,7 @@ namespace StaxLang {
             Push(result);
         }
 
-        private IEnumerable<ExecutionState> DoGenerator(char spec, string restOfProgram) {
+        private IEnumerable<ExecutionState> DoGenerator(bool shorthand, char spec, string restOfProgram) {
             /*
              *  End condition
 	         *      duplicate -    u
@@ -759,7 +762,6 @@ namespace StaxLang {
              */
 
             char lowerSpec = char.ToLower(spec);
-            bool shorthand = !IsBlock(Peek());
             bool stopOnDupe = lowerSpec == 'u',
                 stopOnFilter = lowerSpec == 'f',
                 stopOnCancel = lowerSpec == 'c',
@@ -771,7 +773,7 @@ namespace StaxLang {
             dynamic targetVal = null;
             int? targetCount = null;
 
-            if (IsBlock(Peek()) && !shorthand) filter = Pop();
+            if (IsBlock(Peek())) filter = Pop();
             else if (stopOnFilter) throw new Exception("generator can't stop on filter failure when there is no filter");
 
             if (stopOnTargetVal) targetVal = Pop();
