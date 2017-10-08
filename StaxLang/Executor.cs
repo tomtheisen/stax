@@ -40,6 +40,7 @@ namespace StaxLang {
      *     clamp
      *     FeatureTests for generators
      *     RLE
+     *     RLE prime factorization [(prime, exp)]
      *     popcount (2|E|+)
      *     version string
      *     contains 1 unique element (u%1=)
