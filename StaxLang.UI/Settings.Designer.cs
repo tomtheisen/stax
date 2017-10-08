@@ -46,5 +46,17 @@ namespace StaxLang.UI {
                 this["Input"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Annotate {
+            get {
+                return ((bool)(this["Annotate"]));
+            }
+            set {
+                this["Annotate"] = value;
+            }
+        }
     }
 }

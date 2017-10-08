@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace StaxLang {
+    public enum InstructionType { Normal = 0, Value, Block, Comparison, }
+
     class Block {
         private Block Root;
         private string Program;
         private int Start;
         private int End;
-
         private List<string> Descs;
         private int[] InstrDescLine;
+        private bool[] IndexDescribed;
 
         public string Contents { get; }
+        // used to align the explanations
+        public int InstrStartPtr { get; internal set; }
+        public InstructionType LastInstrType { get; internal set; }
 
         public Block(string program) {
             Root = this;
@@ -22,6 +27,7 @@ namespace StaxLang {
 
             Descs = new List<string> { };
             InstrDescLine = new int[program.Length];
+            IndexDescribed = new bool[program.Length];
 
             // -1 means use last
             for (int i = 0; i < program.Length; i++) InstrDescLine[i] = -1;
@@ -34,13 +40,13 @@ namespace StaxLang {
             int lastLine = 0;
             for (int i = 0; i < Program.Length; i++) {
                 int line = InstrDescLine[i];
-
                 if (line == -1) line = lastLine;
 
                 if (line < result.Count) { // use existing
                     result[line] = result[line].PadRight(i) + Contents[i];
                 }
-                else if (line == result.Count) { // make new
+                else if (line >= result.Count) { // make new
+                    while (result.Count < line) result.Add("");
                     result.Add("".PadLeft(i) + Contents[i]);
                 }
                 else throw new Exception("description line index skipped");
@@ -66,9 +72,22 @@ namespace StaxLang {
         public Block SubBlock(int start, int end) => new Block(this, start, end);
         public Block SubBlock(int start) => new Block(this, start, Contents.Length);
 
-        internal void AddDesc(int ip, string text) {
+        internal void AddDesc(string text) {
+            int progptr = Start + InstrStartPtr; // index in original program
+            if (Root.IndexDescribed[progptr]) return; // already described
+            Root.IndexDescribed[progptr] = true;
+
             Root.Descs.Add(text);
-            Root.InstrDescLine[Start + ip] = Root.Descs.Count - 1;
+            Root.InstrDescLine[progptr] = Root.Descs.Count - 1;
+        }
+
+        internal void AmendDesc(Func<string, string> transform) {
+            int progptr = Start + InstrStartPtr; // index in original program
+            if (Root.IndexDescribed[progptr]) return; // already described
+            Root.IndexDescribed[progptr] = true;
+
+            int idx = Root.Descs.Count - 1;
+            Root.Descs[idx] = transform(Root.Descs[idx]); 
         }
     }
 }

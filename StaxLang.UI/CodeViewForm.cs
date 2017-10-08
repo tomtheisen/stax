@@ -13,5 +13,9 @@ namespace StaxLang.UI {
         public CodeViewForm() {
             InitializeComponent();
         }
+
+        private void CloseButton_Click(object sender, EventArgs e) {
+            this.Hide();
+        }
     }
 }

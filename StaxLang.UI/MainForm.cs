@@ -6,6 +6,8 @@ using System.Windows.Forms;
 
 namespace StaxLang.UI {
     public partial class MainForm : Form {
+        private CodeViewForm AnnotationForm = new CodeViewForm();
+
         public MainForm() {
             InitializeComponent();
         }
@@ -23,7 +25,8 @@ namespace StaxLang.UI {
                 OutputTextbox.Text = output.ToString();
                 if (annotate) {
                     string formatted = string.Join(Environment.NewLine, runner.Annotation);
-                    new CodeViewForm { CodeTextbox = { Text = formatted } }.Show(this);
+                    AnnotationForm.CodeTextbox.Text = formatted;
+                    if (!AnnotationForm.Visible) AnnotationForm.Show(this);
                 }
             }
             catch (Exception ex) {
@@ -58,11 +61,13 @@ namespace StaxLang.UI {
         private void MainForm_Load(object sender, EventArgs e) {
             ProgramTextbox.Text = Settings.Default.Program;
             InputTextbox.Text = Settings.Default.Input;
+            AnnotateMenuItem.Checked = Settings.Default.Annotate;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
             Settings.Default.Program = ProgramTextbox.Text;
             Settings.Default.Input = InputTextbox.Text;
+            Settings.Default.Annotate = AnnotateMenuItem.Checked;
             Settings.Default.Save();
         }
 

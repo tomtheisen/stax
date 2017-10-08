@@ -53,7 +53,7 @@
             // InputLabel
             // 
             InputLabel.AutoSize = true;
-            InputLabel.Location = new System.Drawing.Point(7, 0);
+            InputLabel.Location = new System.Drawing.Point(9, 0);
             InputLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             InputLabel.Name = "InputLabel";
             InputLabel.Size = new System.Drawing.Size(31, 13);
@@ -104,7 +104,7 @@
             this.OutputTextbox.Name = "OutputTextbox";
             this.OutputTextbox.ReadOnly = true;
             this.OutputTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputTextbox.Size = new System.Drawing.Size(378, 170);
+            this.OutputTextbox.Size = new System.Drawing.Size(378, 163);
             this.OutputTextbox.TabIndex = 4;
             this.OutputTextbox.WordWrap = false;
             // 
@@ -132,7 +132,7 @@
             this.MainSplit.Panel2.Controls.Add(this.OutputTextbox);
             this.MainSplit.Panel2.Controls.Add(OutputLabel);
             this.MainSplit.Size = new System.Drawing.Size(397, 435);
-            this.MainSplit.SplitterDistance = 112;
+            this.MainSplit.SplitterDistance = 120;
             this.MainSplit.SplitterWidth = 3;
             this.MainSplit.TabIndex = 7;
             // 
@@ -155,7 +155,7 @@
             this.ProgramTextbox.Margin = new System.Windows.Forms.Padding(2);
             this.ProgramTextbox.Multiline = true;
             this.ProgramTextbox.Name = "ProgramTextbox";
-            this.ProgramTextbox.Size = new System.Drawing.Size(380, 88);
+            this.ProgramTextbox.Size = new System.Drawing.Size(380, 96);
             this.ProgramTextbox.TabIndex = 1;
             this.ProgramTextbox.TextChanged += new System.EventHandler(this.ProgramTextbox_TextChanged);
             this.ProgramTextbox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ProgramTextbox_KeyUp);
@@ -168,7 +168,7 @@
             this.MainStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StepCountLabel,
             this.ElapsedTimeLabel});
-            this.MainStatus.Location = new System.Drawing.Point(0, 298);
+            this.MainStatus.Location = new System.Drawing.Point(0, 290);
             this.MainStatus.Name = "MainStatus";
             this.MainStatus.Size = new System.Drawing.Size(397, 22);
             this.MainStatus.TabIndex = 7;
@@ -226,11 +226,11 @@
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "&Options";
             // 
-            // annotateToolStripMenuItem
+            // AnnotateMenuItem
             // 
             this.AnnotateMenuItem.CheckOnClick = true;
-            this.AnnotateMenuItem.Name = "annotateToolStripMenuItem";
-            this.AnnotateMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.AnnotateMenuItem.Name = "AnnotateMenuItem";
+            this.AnnotateMenuItem.Size = new System.Drawing.Size(123, 22);
             this.AnnotateMenuItem.Text = "Annotate";
             // 
             // MainForm
