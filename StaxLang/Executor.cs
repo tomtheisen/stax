@@ -313,7 +313,8 @@ namespace StaxLang {
                         break;
                     case 'v':
                         if (IsNumber(Peek())) {
-                            block.AddDesc("decrement");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " - 1");
+                            else block.AddDesc("decrement");
                             Push(Pop() - 1); 
                         }
                         else if (IsArray(Peek())) {
@@ -324,7 +325,8 @@ namespace StaxLang {
                         break;
                     case '^':
                         if (IsNumber(Peek())) {
-                            block.AddDesc("increment");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " + 1");
+                            else block.AddDesc("increment");
                             Push(Pop() + 1); 
                         }
                         else if (IsArray(Peek())) {
@@ -461,7 +463,8 @@ namespace StaxLang {
                         break;
                     case 'i':
                         if (CallStackFrames.Any()) {
-                            block.AddDesc("get iteration count of current loop - 0 based");
+                            type = InstructionType.Value;
+                            block.AddDesc("iteration index");
                             Push(Index);
                         }
                         break;
@@ -630,6 +633,7 @@ namespace StaxLang {
                         }
                         break;
                     case '_':
+                        type = InstructionType.Value;
                         if (CallStackFrames.Any()) block.AddDesc("get current iteration variable");
                         else block.AddDesc("get entire standard input in one string");
                         Push(_);
@@ -841,7 +845,8 @@ namespace StaxLang {
                                 RunMacro("16|b");
                                 break;
                             case 'i':
-                                block.AddDesc("get 0-based iteration index of outer loop");
+                                type = InstructionType.Value;
+                                block.AddDesc("iteration index of outer loop");
                                 Push(IndexOuter);
                                 break;
                             case 'I':
