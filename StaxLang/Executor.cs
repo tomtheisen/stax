@@ -44,6 +44,7 @@ namespace StaxLang {
      *     version string
      *     contains 1 unique element (u%1=)
      *     data-driven macro namespace maybe ':' - it's 100% macros dispatched by trees of types peeked off the stack
+     *     every nth [::n], the |R kind of sucks
      *     
      *     debugger
      *     docs
