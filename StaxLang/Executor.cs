@@ -2202,6 +2202,15 @@ namespace StaxLang {
                     continue;
                 }
 
+                if (contents[ip] == '\t') {
+                    ip = contents.IndexOf('\n', ip);
+                    if (ip == -1) {
+                        ip = contents.Length;
+                        break;
+                    }
+                    continue;
+                }
+
                 if (contents[ip] == '"') {
                     ParseString(contents, ref ip, out bool implicitEnd);
                     continue;
