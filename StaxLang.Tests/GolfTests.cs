@@ -143,8 +143,8 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void DigitTallyTest() {
             http://golf.shinh.org/p.rb?Digit+Tally
-            RunProgram("d10r{$ys/%v$mP", "176093677603", "2102003301");
-            RunProgram("Xd10r{$xs/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
+            RunProgram("dAr{$ys/%v$mP", "176093677603", "2102003301");
+            RunProgram("XdAr{$xs/%v$mP}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$[/%v$mPd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$[/%v$pF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");
             RunProgram("Ar{$[/%vpF|Pd}", "27204322879364\n82330228112748", "1042201211", "1242100130");

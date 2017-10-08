@@ -14,7 +14,9 @@ namespace StaxLang.Tests {
         // Numerics
         [TestMethod] public void IntLiteral() => RunProgram("123", "123");
         [TestMethod] public void BigIntLiteral() => RunProgram("999999999999999999999999999999999999999", "999999999999999999999999999999999999999");
-        [TestMethod] public void FloatLiteral() => RunProgram("1.23", "1.23");
+        [TestMethod] public void TenIsReallyOneZero() => RunProgram("10", "0");
+        [TestMethod] public void FloatLiteral() => RunProgram("1!23", "1.23");
+        [TestMethod] public void FloatNoTrailingZero() => RunProgram("1!230", "0");
         [TestMethod] public void Addition() => RunProgram("2 3+", "5");
         [TestMethod] public void AdditionOneValNoop() => RunProgram("2 +", "2");
         [TestMethod] public void Subtraction() => RunProgram("2 3-", "-1");
@@ -82,8 +84,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Inequality() => RunProgram("3 4=", "0");
         [TestMethod] public void LessThan() => RunProgram("1 2<", "1");
         [TestMethod] public void GreaterThan() => RunProgram("1 2>", "0");
-        [TestMethod] public void NotTrue() => RunProgram("7!", "0");
-        [TestMethod] public void NotFalse() => RunProgram("0!", "1");
+        [TestMethod] public void NotTrue() => RunProgram("7 !", "0");
+        [TestMethod] public void NotFalse() => RunProgram("0 !", "1");
         [TestMethod] public void If() => RunProgram("1 2= \"equal\" \"not equal\" ?", "not equal");
 
         // String

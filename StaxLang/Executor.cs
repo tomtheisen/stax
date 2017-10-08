@@ -35,7 +35,7 @@ namespace StaxLang {
      *     string starts-with / ends-with
      *     combinatorics: powerset, permutations
      *     Rotate chars (like translate on a ring)
-     *     call into next line
+     *     call into trailing }
      *     between
      *     clamp
      *     FeatureTests for generators
@@ -200,6 +200,7 @@ namespace StaxLang {
                     case '1': case '2': case '3': case '4': case '5':
                     case '6': case '7': case '8': case '9':
                         Push(ParseNumber(program, ref ip));
+                        --ip;
                         block.AddDesc(Peek().ToString());
                         type = InstructionType.Value;
                         break;
@@ -2149,7 +2150,8 @@ namespace StaxLang {
 
         private static bool IsInt(object b) => b is BigInteger;
         private static bool IsFrac(object b) => b is Rational;
-        private static bool IsNumber(object b) => IsInt(b) || IsFrac(b);
+        private static bool IsFloat(object b) => b is double;
+        private static bool IsNumber(object b) => IsInt(b) || IsFrac(b) || IsFloat(b);
         private static bool IsArray(object b) => b is List<object>;
         private static bool IsBlock(object b) => b is Block;
         private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
@@ -2178,17 +2180,24 @@ namespace StaxLang {
         }
 
         private object ParseNumber(string program, ref int ip) {
-            BigInteger value = 0;
-
-            while (ip < program.Length && char.IsDigit(program[ip]))
-                value = value * 10 + program[ip++] - '0';
-
-            if (ip < program.Length && program[ip] == '.') {
-                ++ip;
-                return double.Parse(value + "." + ParseNumber(program, ref ip));
+            var substring = program.Substring(ip);
+            var match = Regex.Match(program.Substring(ip), @"^\d!(\d*[1-9])?");
+            if (match.Success) {
+                ip += match.Value.Length;
+                return double.Parse(match.Value.Replace('!', '.'));
             }
-            --ip;
-            return value;
+
+            match = Regex.Match(program.Substring(ip), @"^0|[1-9]\d*");
+            if (match.Success) {
+                if (match.Value == "10") { // 1 0 (ten is A)
+                    ip += 1;
+                    return BigInteger.One;
+                }
+                ip += match.Value.Length;
+                return BigInteger.Parse(match.Value);
+            }
+
+            throw new InvalidOperationException("tried to parse a number, but there was only " + substring);
         }
 
         private List<object> ParseCompressedString(string program, ref int ip, out bool implicitEnd) {
