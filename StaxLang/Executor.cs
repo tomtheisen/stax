@@ -45,7 +45,6 @@ namespace StaxLang {
      *     contains 1 unique element (u%1=)
      *     data-driven macro namespace maybe ':' - it's 100% macros dispatched by trees of types peeked off the stack
      *     
-     *     code explainer
      *     debugger
      *     docs
      *     tests in portable files
@@ -94,8 +93,8 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps it took</returns>
         public int Run(string program, string[] input) {
-            Initialize(program, input);
             var block = new Block(program);
+            Initialize(block, input);
             int step = 0;
             try {
                 foreach (var s in RunSteps(block)) {
@@ -110,7 +109,7 @@ namespace StaxLang {
             return step;
         }
 
-        private void Initialize(string program, string[] input) {
+        private void Initialize(Block programBlock, string[] input) {
             IndexOuter = Index = 0;
             X = BigInteger.Zero;
             Y = S2A("");
@@ -124,11 +123,15 @@ namespace StaxLang {
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
 
-            if (program.FirstOrDefault() == 'e') {
+            if (programBlock.Contents.FirstOrDefault() == 'e') {
                 // if first instruction is 'e', eval all lines and put back on stack in same order
                 RunMacro("L{eFw~|d");
+                programBlock.AddDesc("eval line mode; parse each line - push all values to input stack");
             }
-            else if (input.Length == 1 & program.FirstOrDefault() != 'i') {
+            else if (programBlock.Contents.FirstOrDefault() == 'i') {
+                programBlock.AddDesc("suppress single line eval; treat input as raw string");
+            }
+            else if (input.Length == 1) {
                 try {
                     DoEval();
                     if (TotalStackSize == 0) {
@@ -289,19 +292,22 @@ namespace StaxLang {
                         DoAssignIndex(block);
                         break;
                     case '$': 
-                        if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert " + e + "to string");
+                        if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert " + e + " to string");
                         else block.AddDesc("convert to string");
                         Push(ToString(Pop()));
                         break;
                     case '<':
+                        type = InstructionType.Comparison;
                         DoLessThan(block);
                         break;
                     case '>':
+                        type = InstructionType.Comparison;
                         DoGreaterThan(block);
                         break;
                     case '=':
+                        type = InstructionType.Comparison;
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "equals " + e);
-                        else block.AddDesc("is equal to");
+                        else block.AddDesc("equal to");
                         Push(AreEqual(Pop(), Pop()) ? BigInteger.One : BigInteger.Zero);
                         break;
                     case 'v':
@@ -452,12 +458,15 @@ namespace StaxLang {
                             Push(Peek()[Pop().Count - 1]);
                         }
                         break;
-                    case 'i': 
-
-                        if (CallStackFrames.Any()) Push(Index);
+                    case 'i':
+                        if (CallStackFrames.Any()) {
+                            block.AddDesc("get iteration count of current loop - 0 based");
+                            Push(Index);
+                        }
                         break;
                     case 'I':
-                        block.AddDesc("get iteration count of current loop - 0 based");
+                        if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "find first index of " + e);
+                        else block.AddDesc("find first index");
                         DoFindIndex();
                         break;
                     case 'j':
@@ -624,8 +633,9 @@ namespace StaxLang {
                         else block.AddDesc("get entire standard input in one string");
                         Push(_);
                         break;
-                    case 'x': 
-                        block.AddDesc("get current value of x");
+                    case 'x':
+                        type = InstructionType.Value;
+                        block.AddDesc("current value of x");
                         Push(X);
                         break;
                     case 'X': 
@@ -633,7 +643,8 @@ namespace StaxLang {
                         X = Peek();
                         break;
                     case 'y': 
-                        block.AddDesc("get current value of y");
+                        type = InstructionType.Value;
+                        block.AddDesc("current value of y");
                         Push(Y);
                         break;
                     case 'Y':
@@ -1349,14 +1360,14 @@ namespace StaxLang {
 
         private void DoLessThan(Block block) {
             dynamic b = Pop(), a = Pop();
-            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "is less than " + e);
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "less than " + e);
             block.AddDesc("less than");
             Push(Comparer.Instance.Compare(a, b) < 0 ? BigInteger.One : BigInteger.Zero);
         }
 
         private void DoGreaterThan(Block block) {
             dynamic b = Pop(), a = Pop();
-            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "is greater than " + e);
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "greater than " + e);
             block.AddDesc("greater than");
             Push(Comparer.Instance.Compare(a, b) > 0 ? BigInteger.One : BigInteger.Zero);
         }
