@@ -1075,5 +1075,20 @@ namespace StaxLang.Tests {
                 " Z",
                 "ZZZZZ");
         }
+
+        [TestMethod]
+        public void RationalPrimeFactorialTest() {
+            https://codegolf.stackexchange.com/questions/144571/writing-rational-numbers-as-ratio-of-factorials-of-primes
+            RunProgram(
+                "u*~zXYd{cl{|f1s+HmcEy+Ydx+Xd{{/FuFcvwx1-JPy1-JP",
+                    "10,9",
+                    "2 5",
+                    "3 3 3");
+            RunProgram(
+                "u*~zXYd{cl{|f1s+HmcEy+Ydx+Xd{{/FuFcvwx1-JPy1-JP",
+                    "6,1",
+                    "3",
+                    "");
+        }
     }
 }

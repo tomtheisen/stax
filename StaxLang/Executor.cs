@@ -46,6 +46,7 @@ namespace StaxLang {
      *     contains 1 unique element (u%1=)
      *     data-driven macro namespace maybe ':' - it's 100% macros dispatched by trees of types peeked off the stack
      *     every nth [::n], the |R kind of sucks
+     *     factorial, this reduce ain't cutting it for 0
      *     
      *     debugger
      *     docs
@@ -1783,7 +1784,7 @@ namespace StaxLang {
             }
             if (IsArray(a) && IsBlock(b)) {
                 if (a.Count < 2) {
-                    Push(a);
+                    Push(a[0]);
                     yield break;
                 }
 

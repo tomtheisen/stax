@@ -155,6 +155,7 @@
             this.ProgramTextbox.Margin = new System.Windows.Forms.Padding(2);
             this.ProgramTextbox.Multiline = true;
             this.ProgramTextbox.Name = "ProgramTextbox";
+            this.ProgramTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.ProgramTextbox.Size = new System.Drawing.Size(380, 96);
             this.ProgramTextbox.TabIndex = 1;
             this.ProgramTextbox.TextChanged += new System.EventHandler(this.ProgramTextbox_TextChanged);

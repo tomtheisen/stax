@@ -28,5 +28,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void ScopeIndexTest() => RunProgram("2R{d 9R{dF ipF", "01");
         [TestMethod] public void RotateStringsTest() => RunProgram("'a'bL|) h", "a");
         [TestMethod] public void NegativeHalfTest() => RunProgram("Uh", "-1");
+        [TestMethod] public void SingletonReduce() => RunProgram("1{*k", "1");
     }
 }
