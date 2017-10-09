@@ -206,7 +206,8 @@ namespace StaxLang {
                         type = InstructionType.Value;
                         break;
                     case ' ': case '\n': case '\r':
-                        break;
+                        ++ip;
+                        continue;
                     case '\t': // line comment
                         ip = program.IndexOf('\n', ip);
                         if (ip == -1) yield break;
@@ -822,8 +823,9 @@ namespace StaxLang {
                                 block.AddDesc("is even?");
                                 Push(Pop() % 2 ^ 1);
                                 break;
-                            case 'E': 
-                                block.AddDesc("generate array of digits in base n");
+                            case 'E':
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "generate array of digits in base " + e);
+                                else block.AddDesc("generate array of digits in base n");
                                 DoBaseConvert(false);
                                 break;
                             case 'f':
