@@ -43,8 +43,9 @@ namespace StaxLang {
      *     RLE prime factorization [(prime, exp)]
      *     popcount (2|E|+)
      *     version string
-     *     contains 1 unique element (u%1=)
-     *     data-driven macro namespace maybe ':' - it's 100% macros dispatched by trees of types peeked off the stack
+     *     contains 1 distinct element (u%1=)
+     *     data-driven macro namespace maybe ':' - 
+     *          it's 100% macros dispatched by trees (or maybe exactly 2?) of types peeked off the stack
      *     every nth [::n], the |R kind of sucks
      *     factorial, this reduce ain't cutting it for 0
      *     
