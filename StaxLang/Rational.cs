@@ -43,6 +43,7 @@ namespace StaxLang {
 
         public static implicit operator Rational(int n) => new Rational(n, 1);
         public static implicit operator Rational(BigInteger n) => new Rational(n, 1);
+        public static explicit operator double(Rational r) => (double)r.Num / (double)r.Den;
 
         public BigInteger Floor() {
             if (Num < 0) {

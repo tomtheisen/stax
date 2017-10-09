@@ -17,6 +17,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void TenIsReallyOneZero() => RunProgram("10", "0");
         [TestMethod] public void FloatLiteral() => RunProgram("1!23", "1.23");
         [TestMethod] public void FloatNoTrailingZero() => RunProgram("1!230", "0");
+        [TestMethod] public void FloatFloor() => RunProgram("12!345 @", "12");
         [TestMethod] public void Addition() => RunProgram("2 3+", "5");
         [TestMethod] public void AdditionOneValNoop() => RunProgram("2 +", "2");
         [TestMethod] public void Subtraction() => RunProgram("2 3-", "-1");
@@ -67,6 +68,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void ExplodeNumber() => RunProgram("147 E {Hm J", "2 8 14");
         [TestMethod] public void Base36Encode() => RunProgram("9999999 |3", "5yc1r");
         [TestMethod] public void Base36Decode() => RunProgram("\"5yc1r\" |3", "9999999");
+        [TestMethod] public void SquareRoot() => RunProgram("2|Q", "1.4142135623731");
+        [TestMethod] public void NegativeSquareRoot() => RunProgram("|Q", "1.4142135623731", "-2");
         [TestMethod] public void IntSquareRoot() => RunProgram("170 |q", "13");
         [TestMethod] public void IntNegativeSquareRoot() => RunProgram("|q", "13", "-170");
         [TestMethod] public void Square() => RunProgram("7J", "49");

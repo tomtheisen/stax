@@ -23,7 +23,6 @@ namespace StaxLang {
      *     increase-to-multiple
      *     non-regex replace
      *     replace first only
-     *     compare / sign (c|a/)
      *     uneval
      *     entire array ref inside for/filter/map 
      *     rectangularize (center/center-trim/left/right align, fill el)
@@ -45,7 +44,9 @@ namespace StaxLang {
      *          clamp    (a|m|M)
      *          every nth [::n], the |R kind of sucks   (/{hm)
      *          string starts-with / ends-with
+     *          compare / sign (c|a/)
      *     factorial, reduce ain't cutting it for 0
+     *     add-to/transform at index maybe - array index {transform}&
      *     
      *     debugger
      *     docs
@@ -927,6 +928,10 @@ namespace StaxLang {
                                 block.AddDesc("floor square root");
                                 Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
                                 break;
+                            case 'Q': // float square root
+                                block.AddDesc("square root");
+                                Push(Math.Sqrt(Math.Abs((double)Pop())));
+                                break;
                             case 't': // translate
                                 block.AddDesc("translate; replace using adjacent pairs in map");
                                 DoTranslate();
@@ -1606,6 +1611,12 @@ namespace StaxLang {
                 return;
             }
 
+            if (IsFloat(top)) { // floor
+                block.AddDesc("floor floating point to integer");
+                Push(new BigInteger(Math.Floor(top)));
+                return;
+            }
+
             var list = Pop();
 
             dynamic ReadAt(List<object> arr, int idx) {
@@ -2215,7 +2226,7 @@ namespace StaxLang {
 
         private object ParseNumber(string program, ref int ip) {
             var substring = program.Substring(ip);
-            var match = Regex.Match(program.Substring(ip), @"^\d!(\d*[1-9])?");
+            var match = Regex.Match(program.Substring(ip), @"^\d+!(\d*[1-9])?");
             if (match.Success) {
                 ip += match.Value.Length;
                 return double.Parse(match.Value.Replace('!', '.'));
