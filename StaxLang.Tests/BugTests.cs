@@ -29,5 +29,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void RotateStringsTest() => RunProgram("'a'bL|) h", "a");
         [TestMethod] public void NegativeHalfTest() => RunProgram("Uh", "-1");
         [TestMethod] public void SingletonReduce() => RunProgram("1{*k", "1");
+        [TestMethod] public void BatchedSubarrays() => RunProgram("'a'b\"cd\"3l 3Bm", "abcd");
     }
 }

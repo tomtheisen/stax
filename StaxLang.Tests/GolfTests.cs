@@ -1090,5 +1090,16 @@ namespace StaxLang.Tests {
                     "3",
                     "");
         }
+
+        [TestMethod]
+        public void ExpandComparisonChainsTest() {
+            https://codegolf.stackexchange.com/questions/144700/expand-comparison-chains
+            RunProgramSingleInputs(@"""(\D+)""|s3B{i|ef"" && ""*",
+                "3<4<5", "3<4 && 4<5",
+                "3<4<5<6<7<8<9", "3<4 && 4<5 && 5<6 && 6<7 && 7<8 && 8<9",
+                "3<5==6<19", "3<5 && 5==6 && 6<19",
+                "10>=5<7!=20", "10>=5 && 5<7 && 7!=20",
+                "15==15==15==15==15", "15==15 && 15==15 && 15==15 && 15==15");
+        }
     }
 }

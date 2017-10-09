@@ -17,7 +17,6 @@ namespace StaxLang {
      *     zip-short
      *     log
      *     trig
-     *     floats
      *     sqrt float 
      *     string interpolate
      *     repeat-to-length
@@ -25,19 +24,15 @@ namespace StaxLang {
      *     non-regex replace
      *     replace first only
      *     compare / sign (c|a/)
-     *     eval fractions and floats
      *     uneval
      *     entire array ref inside for/filter/map 
      *     rectangularize (center/center-trim/left/right align, fill el)
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
      *     CLI STDIN / STDOUT
-     *     string starts-with / ends-with
      *     combinatorics: powerset, permutations
      *     Rotate chars (like translate on a ring)
      *     call into trailing }
-     *     between
-     *     clamp
      *     FeatureTests for generators
      *     RLE
      *     RLE prime factorization [(prime, exp)]
@@ -46,8 +41,11 @@ namespace StaxLang {
      *     contains 1 distinct element (u%1=)
      *     data-driven macro namespace maybe ':' - 
      *          it's 100% macros dispatched by trees (or maybe exactly 2?) of types peeked off the stack
-     *     every nth [::n], the |R kind of sucks
-     *     factorial, this reduce ain't cutting it for 0
+     *          between  (a~;>s,>!*)
+     *          clamp    (a|m|M)
+     *          every nth [::n], the |R kind of sucks   (/{hm)
+     *          string starts-with / ends-with
+     *     factorial, reduce ain't cutting it for 0
      *     
      *     debugger
      *     docs
@@ -379,9 +377,7 @@ namespace StaxLang {
                         break;
                     case 'B':
                         if (IsInt(Peek())) {
-                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "overlapping batches of " + e);
-                            else block.AddDesc("get overlapping batches of specified length");
-                            RunMacro("ss ~ c;v( [s;vN) {+;)cm sdsd ,d");
+                            DoOverlappingBatch(block);
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("uncons; remove first element from array and push both");
@@ -959,6 +955,21 @@ namespace StaxLang {
             yield return new ExecutionState();
         }
 
+        private void DoOverlappingBatch(Block block) {
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "overlapping batches of " + e);
+            else block.AddDesc("get overlapping batches of specified length");
+
+            int b = (int)Pop();
+            List<object> a = Pop();
+            var result = new List<object>();
+
+            for (int i = 0; i < a.Count - b + 1; i++) {
+                result.Add(a.Skip(i).Take(b).ToList());
+            }
+
+            Push(result);
+        }
+
         private void DoSurround() {
             dynamic b = Pop(), a = Pop();
 
@@ -1234,11 +1245,32 @@ namespace StaxLang {
                     case '-':
                     case '0': case '1': case '2': case '3': case '4':
                     case '5': case '6': case '7': case '8': case '9':
-                        int endPos;
-                        for (endPos = i + 1; endPos < arg.Length && char.IsDigit(arg[endPos]); endPos++);
-                        NewValue(BigInteger.Parse(arg.Substring(i, endPos - i)));
-                        i = endPos - 1;
-                        break;
+                        var substring = arg.Substring(i);
+                        var match = Regex.Match(substring, @"-?\d+\.\d+");
+                        if (match.Success) {
+                            NewValue(double.Parse(match.Value));
+                            i += match.Value.Length - 1;
+                            break;
+                        }
+
+                        match = Regex.Match(substring, @"(-?\d+)/(-?\d+)");
+                        if (match.Success) {
+                            var frac = new Rational(
+                                BigInteger.Parse(match.Groups[1].Value),
+                                BigInteger.Parse(match.Groups[2].Value));
+                            NewValue(frac);
+                            i += match.Value.Length - 1;
+                            break;
+                        }
+
+                        match = Regex.Match(substring, @"-?\d+");
+                        if (match.Success) {
+                            NewValue(BigInteger.Parse(match.Value));
+                            i += match.Value.Length - 1;
+                            break;
+                        }
+                        throw new StaxException("expected a number, but just found this garbage: " + substring);
+
                     case ' ': case '\t': case '\r': case '\n': case ',':
                         break;
                     default: throw new StaxException($"Bad char {arg[i]} during eval");

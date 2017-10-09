@@ -192,6 +192,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Print() => RunProgram("1 2P 3", "2");
         [TestMethod] public void SuppressedNewline() => RunProgram("1p 2P 3", "12");
         [TestMethod] public void ImplicitEvalTokenizeInput() => RunProgram("+", "7", "3 4");
+        [TestMethod] public void FloatsAreEvaled() => RunProgram("", "1.23", "01.230");
+        [TestMethod] public void FractionsAreEvaled() => RunProgram("", "3/7", "6/14");
         [TestMethod] public void PeekPrint() => RunProgram("7qqQ", "777");
         [TestMethod] public void PrintNewline() => RunProgram("|P", "");
         [TestMethod] public void ImplicitEval() => RunProgram("|+", "6", "[1, 2, 3]");
