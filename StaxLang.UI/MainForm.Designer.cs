@@ -39,6 +39,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AnnotateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PackButton = new System.Windows.Forms.Button();
             InputLabel = new System.Windows.Forms.Label();
             OutputLabel = new System.Windows.Forms.Label();
             ProgramLabel = new System.Windows.Forms.Label();
@@ -104,7 +105,7 @@
             this.OutputTextbox.Name = "OutputTextbox";
             this.OutputTextbox.ReadOnly = true;
             this.OutputTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputTextbox.Size = new System.Drawing.Size(378, 163);
+            this.OutputTextbox.Size = new System.Drawing.Size(378, 164);
             this.OutputTextbox.TabIndex = 4;
             this.OutputTextbox.WordWrap = false;
             // 
@@ -124,6 +125,7 @@
             // 
             // MainSplit.Panel2
             // 
+            this.MainSplit.Panel2.Controls.Add(this.PackButton);
             this.MainSplit.Panel2.Controls.Add(this.MainStatus);
             this.MainSplit.Panel2.Controls.Add(this.CompressorButton);
             this.MainSplit.Panel2.Controls.Add(this.RunButton);
@@ -234,6 +236,18 @@
             this.AnnotateMenuItem.Size = new System.Drawing.Size(123, 22);
             this.AnnotateMenuItem.Text = "Annotate";
             // 
+            // PackButton
+            // 
+            this.PackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PackButton.Location = new System.Drawing.Point(158, 91);
+            this.PackButton.Margin = new System.Windows.Forms.Padding(2);
+            this.PackButton.Name = "PackButton";
+            this.PackButton.Size = new System.Drawing.Size(74, 34);
+            this.PackButton.TabIndex = 8;
+            this.PackButton.Text = "&Pack";
+            this.PackButton.UseVisualStyleBackColor = true;
+            this.PackButton.Click += new System.EventHandler(this.PackButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,6 +290,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem AnnotateMenuItem;
+        private System.Windows.Forms.Button PackButton;
     }
 }
 

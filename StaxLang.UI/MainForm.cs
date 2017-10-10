@@ -37,6 +37,7 @@ namespace StaxLang.UI {
         }
 
         private void ProgramTextbox_TextChanged(object sender, EventArgs e) {
+            UpdatePackStatus();
             UpdateMetrics();
         }
 
@@ -48,6 +49,20 @@ namespace StaxLang.UI {
             UpdateMetrics();
         }
 
+        private void UpdatePackStatus() {
+            string code = ProgramTextbox.Text;
+            PackButton.Text = "&Pack";
+            if (code.Contains("\n")) {
+                PackButton.Enabled = false;
+                return;
+            }
+
+            PackButton.Enabled = true;
+            if (StaxPacker.IsPacked(code)) {
+                PackButton.Text = "Un&pack";
+            }
+        }
+
         private void UpdateMetrics() {
             ProgramSizeLabel.Text = $"{ProgramTextbox.Text.Length} characters";
             if (ProgramTextbox.SelectedText.Length == 1) {
@@ -55,6 +70,9 @@ namespace StaxLang.UI {
             }
             else if (ProgramTextbox.SelectedText != "") {
                 ProgramSizeLabel.Text += $" ({ProgramTextbox.SelectedText.Length} selected)";
+            }
+            else if (StaxPacker.IsPacked(ProgramTextbox.Text)) {
+                ProgramSizeLabel.Text += " (packed)";
             }
         }
 
@@ -73,6 +91,17 @@ namespace StaxLang.UI {
 
         private void CompressorButton_Click(object sender, EventArgs e) {
             new CompressorForm().Show(this);
+        }
+
+        private void PackButton_Click(object sender, EventArgs e) {
+            string code = ProgramTextbox.Text;
+
+            if (StaxPacker.IsPacked(code)) {
+                ProgramTextbox.Text = StaxPacker.Unpack(code);
+            }
+            else {
+                ProgramTextbox.Text = StaxPacker.Pack(code);
+            }
         }
     }
 }

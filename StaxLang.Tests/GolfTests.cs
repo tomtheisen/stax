@@ -236,6 +236,7 @@ namespace StaxLang.Tests {
         public void FizzBuzzTest() {
             RunProgram("R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mm", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
             RunProgram("m3%!`M\"(`*_5 %!`-C`*+c_?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("─22¶←P¿√L√£L◘≈║ätÅ↔0", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
         }
 
         [TestMethod]
@@ -1089,6 +1090,12 @@ namespace StaxLang.Tests {
                     "6,1",
                     "3",
                     "");
+            RunProgram(
+                "ü-ΘôDê┴↑öøí╟≡▓Z▲W1═aé¥<_τΔ÷╗Σ┘¥.♥╖²>A↑",
+                    "6,1",
+                    "3",
+                    "");
+            
         }
 
         [TestMethod]
@@ -1100,6 +1107,13 @@ namespace StaxLang.Tests {
                 "3<5==6<19", "3<5 && 5==6 && 6<19",
                 "10>=5<7!=20", "10>=5 && 5<7 && 7!=20",
                 "15==15==15==15==15", "15==15 && 15==15 && 15==15 && 15==15");
+        }
+
+        [TestMethod]
+        public void FloorLog2Test() {
+            http://golf.shinh.org/p.rb?floor+log2
+            RunProgram("me|B%v", "1\n2\n3\n4\n5\n6\n7\n8",
+                "0", "1", "1", "2", "2", "2", "2", "3");
         }
     }
 }

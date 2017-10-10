@@ -88,6 +88,7 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps it took</returns>
         public int Run(string program, string[] input) {
+            if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
             Initialize(block, input);
             int step = 0;
