@@ -17,12 +17,7 @@ namespace StaxLang {
      *     zip-short
      *     log
      *     trig
-     *     sqrt float 
      *     string interpolate
-     *     repeat-to-length
-     *     increase-to-multiple
-     *     non-regex replace
-     *     replace first only
      *     uneval
      *     entire array ref inside for/filter/map 
      *     rectangularize (center/center-trim/left/right align, fill el)
@@ -44,10 +39,15 @@ namespace StaxLang {
      *          clamp    (a|m|M)
      *          every nth [::n], the |R kind of sucks   (/{hm)
      *          string starts-with / ends-with
-     *          compare / sign (c|a/)
+     *          compare / sign (c{c|a/}0?)
+     *          repeat-to-length     (bs%/^a*s()
+     *          increase-to-multiple (ss~;|%10?+,*)
+     *          non-regex replace    (aa/s*)
+     *          replace first only
      *     factorial, reduce ain't cutting it for 0
      *     add-to/transform at index maybe - array index {transform}&
      *     
+     *     "packed stax" arithmetic conversion to base 256, and encoded with a modified cp437
      *     debugger
      *     docs
      *     tests in portable files
@@ -322,7 +322,8 @@ namespace StaxLang {
                             Push(Pop() - 1); 
                         }
                         else if (IsArray(Peek())) {
-                            block.AddDesc("to lower case");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in lower case");
+                            else block.AddDesc("to lower case");
                             Push(S2A(A2S(Pop()).ToLower())); 
                         }
                         else throw new StaxException("Bad type for v");
@@ -334,7 +335,8 @@ namespace StaxLang {
                             Push(Pop() + 1); 
                         }
                         else if (IsArray(Peek())) {
-                            block.AddDesc("to upper case");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in upper case");
+                            else block.AddDesc("to upper case");
                             Push(S2A(A2S(Pop()).ToUpper())); 
                         }
                         else throw new StaxException("Bad type for ^");
@@ -388,7 +390,8 @@ namespace StaxLang {
                         else throw new StaxException("Bad type for B");
                         break;
                     case 'c': 
-                        block.AddDesc("copy top element of stack");
+                        block.AddDesc("copy of top element in stack");
+                        type = InstructionType.Value;
                         Push(Peek());
                         break;
                     case 'C':
@@ -419,7 +422,7 @@ namespace StaxLang {
                     case 'F': // for loop
                         {
                             bool shorthand = !IsBlock(Peek());
-                            foreach (var s in DoFor(block.SubBlock(ip + 1))) yield return s;
+                            foreach (var s in DoFor(block, block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
@@ -935,7 +938,8 @@ namespace StaxLang {
                                 Push(Math.Sqrt(Math.Abs((double)Pop())));
                                 break;
                             case 't': // translate
-                                block.AddDesc("translate; replace using adjacent pairs in map");
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "translate using adjacent pairs in map string: " + e);
+                                block.AddDesc("translate; replace using adjacent pairs in map string");
                                 DoTranslate();
                                 break;
                             case 'x': // decrement X, push
@@ -1855,9 +1859,16 @@ namespace StaxLang {
             }
         }
 
-        private IEnumerable<ExecutionState> DoFor(Block rest) {
-            if (IsInt(Peek())) Push(Range(1, Pop()));
+        private IEnumerable<ExecutionState> DoFor(Block block, Block rest) {
+            bool implicitRange = false;
+            if (IsInt(Peek())) {
+                Push(Range(1, Pop()));
+                implicitRange = true;
+            }
             if (IsArray(Peek())) {
+                if (implicitRange) block.AddDesc("for 1 to n, using rest of program");
+                else block.AddDesc("foreach element, using rest of program");
+
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
@@ -1872,8 +1883,14 @@ namespace StaxLang {
             }
 
             dynamic b = Pop(), a = Pop();
-            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
+            if (IsInt(a) && IsBlock(b)) {
+                a = Range(1, a);
+                implicitRange = true;
+            }
             if (IsArray(a) && IsBlock(b)) {
+                if (implicitRange) block.AddDesc("for 1 to n, push and execute block");
+                else block.AddDesc("foreach element, push and execute block");
+
                 PushStackFrame();
                 foreach (var e in a) {
                     Push(_ = e);
