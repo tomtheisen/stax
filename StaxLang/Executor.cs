@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  .:DGKnoSZ
+    //  .DGKnoSZ
     /* To add:
      *     find-index-all by regex
      *     running "total" / reduce-collect
@@ -32,20 +32,12 @@ namespace StaxLang {
      *     RLE prime factorization [(prime, exp)]
      *     popcount (2|E|+)
      *     version string
-     *     contains 1 distinct element (u%1=)
      *     data-driven macro namespace maybe ':' - 
      *          it's 100% macros dispatched by trees (or maybe exactly 2?) of types peeked off the stack
-     *          between  (a~;>s,>!*)
-     *          clamp    (a|m|M)
-     *          every nth [::n], the |R kind of sucks   (/{hm)
-     *          string starts-with / ends-with
      *          compare / sign (c{c|a/}0?)
-     *          repeat-to-length     (bs%/^a*s()
-     *          increase-to-multiple (ss~;|%10?+,*)
-     *          non-regex replace    (aa/s*)
      *          replace first only
-     *     factorial, reduce ain't cutting it for 0
      *     add-to/transform at index maybe - array index {transform}&
+     *     cross product sucks
      *     
      *     "packed stax" arithmetic conversion to base 256, and encoded with a modified cp437
      *     debugger
@@ -666,6 +658,9 @@ namespace StaxLang {
                         type = InstructionType.Value;
                         Push(S2A(""));
                         break;
+                    case ':':
+                        DoMacroAlias(block, program[++ip]);
+                        break;
                     case '|': // extended operations
                         switch (program[++ip]) {
                             case ' ':
@@ -833,13 +828,24 @@ namespace StaxLang {
                                 break;
                             case 'f':
                                 if (IsInt(Peek())) {
-                                    block.AddDesc("prime factorize");
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "prime factorize " + e);
+                                    else block.AddDesc("prime factorize");
                                     Push(PrimeFactors(Pop()));
                                 }
                                 else if (IsArray(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "regex find all " + e);
                                     else block.AddDesc("regex find all");
                                     DoRegexFind(); 
+                                }
+                                break;
+                            case 'F':
+                                if (IsInt(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "factorial of " + e);
+                                    else block.AddDesc("factorial");
+                                    var result = BigInteger.One;
+                                    var n = Pop();
+                                    for (int i = 1; i <= n; i++) result *= i;
+                                    Push(result);
                                 }
                                 break;
                             case 'g':
@@ -964,6 +970,23 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoMacroAlias(Block block, char alias) {
+            var typeTree = MacroTree.GetMacroTree(alias);
+            var resPopped = new Stack<object>();
+            // follow type tree as far as necessary
+            while (typeTree.HasChildren) {
+                resPopped.Push(Pop());
+                char type = MacroTree.GetTypeChar(resPopped.Peek());
+                typeTree = typeTree.Children[type];
+            }
+            // return inspected values to stack
+            while (resPopped.Count > 0) Push(resPopped.Pop());
+
+            block.AddDesc(typeTree.Description);
+            // disable line modes
+            RunMacro(' ' + typeTree.Code);
         }
 
         private void DoOverlappingBatch(Block block) {
@@ -2327,16 +2350,23 @@ namespace StaxLang {
 
             private Comparer() { }
 
+            private int CompareScalars(dynamic a, dynamic b) {
+                if (IsFloat(a) || IsFloat(b)) return ((double)a).CompareTo((double)b);
+                if (IsFrac(a) || IsFrac(b)) return ((Rational)a).CompareTo((Rational)b);
+                if (IsInt(a) || IsInt(b)) return ((BigInteger)a).CompareTo((BigInteger)b);
+                throw new StaxException("what types even are they?");
+            }
+
             public int Compare(dynamic a, dynamic b) {
                 if (a == null || b == null) return object.ReferenceEquals(a, b);
                 if (IsNumber(a)) {
                     while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
-                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsNumber(b)) return CompareScalars(a, b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsNumber(b)) {
                     while (IsArray(a) && a.Count > 0) a = ((IList<object>)a)[0];
-                    if (IsNumber(b)) return ((IComparable)a).CompareTo(b);
+                    if (IsNumber(b)) return CompareScalars(a, b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsArray(a) && IsArray(b)) {

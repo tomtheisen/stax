@@ -73,6 +73,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IntSquareRoot() => RunProgram("170 |q", "13");
         [TestMethod] public void IntNegativeSquareRoot() => RunProgram("|q", "13", "-170");
         [TestMethod] public void Square() => RunProgram("7J", "49");
+        [TestMethod] public void Factorial() => RunProgram("5|F", "120");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -132,6 +133,11 @@ namespace StaxLang.Tests {
         [TestMethod] public void CompressedLiterals() => RunProgram("`5Is1%", "literal");
         [TestMethod] public void SubstringOccurrences() => RunProgram("\"drab cab\" \"ab\" #", "2");
         [TestMethod] public void AutoRangeBounds() => RunProgram("\"asdf\"X 2x|r '/ &", "as//");
+        [TestMethod] public void StringReplace() => RunProgram(" \"a.b.c\" '. 'x :r", "axbxc");
+        [TestMethod] public void StartsWith() => RunProgram("\"He\" :[", "1", "Hello world");
+        [TestMethod] public void NotStartsWith() => RunProgram("\"e\" :[", "0", "Hello world");
+        [TestMethod] public void EndsWith() => RunProgram("\"rld\" :]", "1", "Hello world");
+        [TestMethod] public void NotEndsWith() => RunProgram("\"rld!\" :]", "0", "Hello world");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -171,6 +177,15 @@ namespace StaxLang.Tests {
         [TestMethod] public void ElementRepeat() => RunProgram("3R4|*$","111122223333");
         [TestMethod] public void CrossProduct() => RunProgram("\"abc\" \"xyz\" |* J", "ax ay az bx by bz cx cy cz");
         [TestMethod] public void SurroundWith() => RunProgram("'a'b |S", "bab");
+        [TestMethod] public void GetEveryNth() => RunProgram("2:: J", "1 3 5", "[1, 2, 3, 4, 5, 6]");
+        [TestMethod] public void BetweenTest() => RunProgram("3 5 :b", "1", "4");
+        [TestMethod] public void NotBetweenTest() => RunProgram("3 5 :b", "0", "6");
+        [TestMethod] public void ClampTest() => RunProgram("3 5 :c", "5", "7");
+        [TestMethod] public void AlreadyClampedTest() => RunProgram("3 5 :c", "4", "4");
+        [TestMethod] public void RepeatToLengthTest() => RunProgram("3R 7 :m J", "1 2 3 1 2 3 1");
+        [TestMethod] public void IncreaseToMultipleTest() => RunProgram("25 7 :m", "28");
+        [TestMethod] public void SingleUniqueElement() => RunProgram(":u", "1", "[3 3 3]");
+        [TestMethod] public void NonSingleUniqueElement() => RunProgram(":u", "0", "[3 3 3 4]");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");

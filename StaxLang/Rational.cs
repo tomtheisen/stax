@@ -46,12 +46,8 @@ namespace StaxLang {
         public static explicit operator double(Rational r) => (double)r.Num / (double)r.Den;
 
         public BigInteger Floor() {
-            if (Num < 0) {
-                return (Num - Den + 1) / Den; 
-            }
-            else {
-                return Num / Den;
-            }
+            if (Num < 0) return (Num - Den + 1) / Den; 
+            else return Num / Den;
         }
 
         public BigInteger Ceil() {
@@ -68,7 +64,7 @@ namespace StaxLang {
         public override int GetHashCode() => Num.GetHashCode() ^ (Den.GetHashCode() * 37);
 
         public int CompareTo(object obj) {
-            if (!(obj is Rational r)) return -1;
+            var r = (Rational)obj;
             if (this > r) return 1;
             if (this < r) return -1;
             if (this == r) return 0;
