@@ -1019,12 +1019,13 @@ namespace StaxLang {
         private IEnumerable<ExecutionState> DoGenerator(Block block, bool shorthand, char spec, Block rest) {
             /*
              *  End condition
-	         *      duplicate -    u
-	         *      n reached -    n
-	         *      filter false - f
-	         *      cancelled -	   c
-             *      invariant pt - i
-             *      target value - t
+	         *      duplicate -     u
+	         *      n reached -     n
+	         *      filter false -  f
+	         *      cancelled -	    c
+             *      invariant pt -  i
+             *      target value -  t
+             *      first as scalar s
              *
              *  Collection type
 	         *      pre-peek - lower case
@@ -1038,6 +1039,7 @@ namespace StaxLang {
              *   {filter}{project}gi
              *   {filter}{project}gf
              *   {filter}{project}gc
+             *   {filter}{project}gs
              *  0{filter}{project}gn
              *   {filter}{project}g9
              *  t{filter}{project}gt
@@ -1051,6 +1053,7 @@ namespace StaxLang {
              *   {filter}{project}gI
              *   {filter}{project}gF
              *   {filter}{project}gC
+             *   {filter}{project}gS
              *  0{filter}{project}gN
              *   {filter}{project}g(
              *  t{filter}{project}gT
@@ -1082,6 +1085,7 @@ namespace StaxLang {
                 stopOnCancel = lowerSpec == 'c',
                 stopOnFixPoint = lowerSpec == 'i',
                 stopOnTargetVal = lowerSpec == 't',
+                scalarMode = lowerSpec == 's',
                 postPop = char.IsUpper(spec);
             Block genblock = shorthand ? rest : Pop(), 
                 filter = null;
@@ -1102,12 +1106,13 @@ namespace StaxLang {
                 postPop = idx >= 10;
             }
 
-            if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !targetCount.HasValue) {
+            if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !scalarMode && !targetCount.HasValue) {
                 throw new StaxException("no end condition for generator");
             }
 
-            block.AddDesc("generate and collect values "
-                + (filter != null ? "using filter " : "")
+            block.AddDesc(
+                (scalarMode ? "get first value " : "generate and collect values ")
+                + (filter != null ? "matching filter " : "")
                 + (shorthand ? "from rest of program " : "")
                 + (stopOnDupe ? "until a duplicate is found, " : "")
                 + (stopOnFilter ? "until a value fails the filter, ": "")
@@ -1154,6 +1159,10 @@ namespace StaxLang {
                 if (passed) { // check for dupe
                     if (stopOnDupe && result.Contains(generated, Comparer.Instance)) break;
                     if (stopOnFixPoint && AreEqual(generated, lastGenerated)) break;
+                    if (scalarMode) {
+                        Push(generated);
+                        break;
+                    }
                     result.Add(generated);
                     if (stopOnTargetVal && AreEqual(generated, targetVal)) break;
                 }

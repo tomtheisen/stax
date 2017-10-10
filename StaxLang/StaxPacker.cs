@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,10 +14,15 @@ namespace StaxLang {
             .ToDictionary(t => t.c, t => (byte)t.i);
 
         public static string Pack(string stax) {
-            BigInteger big = 1;
-            for (int i = stax.Length - 1; i >= 0; i--) big = big * 95 + stax[i] - ' ';
+            var bytes = PackBytes(stax);
+            var result = string.Concat(bytes.Reverse().Select(b => CodePage[b]));
+            return result;
+        }
 
-            string result = "";
+        public static byte[] PackBytes(string stax) {
+            BigInteger big = 1;
+            var result = new List<byte>();
+            for (int i = stax.Length - 1; i >= 0; i--) big = big * 95 + stax[i] - ' ';
             while (big > 0) {
                 byte b = (byte)(big % 0x100);
                 if (big == b) {
@@ -24,14 +30,14 @@ namespace StaxLang {
                         b |= 0x80; // set leading bit for packing flag
                     }
                     else { // we need a whole nother byte to set the flag
-                        result = CodePage[b] + result;
+                        result.Add(b);
                         b = 0x80; // so many wasted bits
                     }
                 }
-                result = CodePage[b] + result;
+                result.Add(b);
                 big /= 0x100;
             }
-            return result;
+            return result.ToArray();
         }
 
         public static string Unpack(string packed) {
