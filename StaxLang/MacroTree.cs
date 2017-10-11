@@ -48,6 +48,7 @@ namespace StaxLang {
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
+                ('f', "a", "{+k", "flatten array"),
                 ('m', "ai", "bs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),

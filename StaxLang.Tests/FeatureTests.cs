@@ -163,8 +163,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Head() => RunProgram("5R h", "1");
         [TestMethod] public void Tail() => RunProgram("5R H", "5");
         [TestMethod] public void Sum() => RunProgram("5R |+", "15");
-        [TestMethod] public void MinimumArray() => RunProgram("5R Oh", "1");
-        [TestMethod] public void MaximumArray() => RunProgram("5R OH", "5");
+        [TestMethod] public void MinimumArray() => RunProgram("5R oh", "1");
+        [TestMethod] public void MaximumArray() => RunProgram("5R oH", "5");
         [TestMethod] public void Delta() => RunProgram("1] 1]+ 3]+ 8]+ |- ',*", "0,2,5");
         [TestMethod] public void JoinWithNewlines() => RunProgram("\"abcd\" 2/ |J r", "dc\r\nba");
         [TestMethod] public void Palindromize() => RunProgram("\"abcb\" |p", "abcbcba");
@@ -187,6 +187,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IncreaseToMultipleTest() => RunProgram("25 7 :m", "28");
         [TestMethod] public void SingleUniqueElement() => RunProgram(":u", "1", "[3 3 3]");
         [TestMethod] public void NonSingleUniqueElement() => RunProgram(":u", "0", "[3 3 3 4]");
+        [TestMethod] public void Flatten() => RunProgram(":f J", "1 2 3 4", "[[1 2] [3 4]]");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -203,8 +204,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
         [TestMethod] public void Newline() => RunProgram("Vn 'x+", Environment.NewLine + "x");
         [TestMethod] public void Rational0() => RunProgram("V0", "0/1");
-        [TestMethod] public void Rational1() => RunProgram("V1", "1/1");
-        [TestMethod] public void RationalHalf() => RunProgram("V2", "1/2");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");
@@ -232,7 +231,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ForEach() => RunProgram("5R {3+pF", "45678");
         [TestMethod] public void Map() => RunProgram("5R {c*m ',*", "1,4,9,16,25");
         [TestMethod] public void Reduce() => RunProgram("5R {*k", "120");
-        [TestMethod] public void OrderBy() => RunProgram("5R {c*5%O ',*", "5,1,4,2,3");
+        [TestMethod] public void OrderBy() => RunProgram("5R {c*5%o ',*", "5,1,4,2,3");
         [TestMethod] public void IterationIndex() => RunProgram("'x]4* {p ':p ip ' p F", "x:0 x:1 x:2 x:3 ");
         [TestMethod] public void OuterIterationIndex() => RunProgram("2F 2F |ip", "0011");
         [TestMethod] public void IteratingVariable() => RunProgram("3R {$_*pF", "122333");
