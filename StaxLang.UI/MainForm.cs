@@ -20,7 +20,7 @@ namespace StaxLang.UI {
             try {
                 bool annotate = AnnotateMenuItem.Checked;
                 var runner = new Executor(output) { Annotate = annotate };
-                int steps = runner.Run(program, input);
+                int steps = runner.Run(program, input, TimeSpan.FromSeconds(10));
                 StepCountLabel.Text = $"{steps} steps.";
                 OutputTextbox.Text = output.ToString();
                 if (annotate) {

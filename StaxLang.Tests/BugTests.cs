@@ -31,7 +31,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void SingletonReduce() => RunProgram("1{*k", "1");
         [TestMethod] public void BatchedSubarrays() => RunProgram("'a'b\"cd\"3l 3Bm", "abcd");
         [TestMethod] public void MultiDigitIntPartFloat() => RunProgram("12!345", "12.345");
-        [TestMethod] public void RationalSqrt() => RunProgram("V1|Q", "1");
+        [TestMethod] public void RationalSqrt() => RunProgram("2u|Q", "0.707106781186548");
         [TestMethod] public void IntRationalCompare() => RunProgram("01u<", "1");
         [TestMethod] public void RationalIntCompare() => RunProgram("1u0>", "1");
     }

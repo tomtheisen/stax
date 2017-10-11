@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -8,11 +9,10 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     // available chars
-    //  .DGKnoSZ
+    //  .DGKnS
     /* To add:
      *     find-index-all by regex
      *     running "total" / reduce-collect
-     *     flatten
      *     map-many
      *     zip-short
      *     log
@@ -36,10 +36,16 @@ namespace StaxLang {
      *          it's 100% macros dispatched by trees (or maybe exactly 2?) of types peeked off the stack
      *          compare / sign (c{c|a/}0?)
      *          replace first only
+     *          all rotations left/right
+     *          is-letter (VAVa+s#)
      *     add-to/transform at index maybe - array index {transform}&
      *     cross product sucks
+     *     float to string - n decimal places
+     *     while loops continue to next
+     *     constants
+     *          all letters
+     *          word chars
      *     
-     *     "packed stax" arithmetic conversion to base 256, and encoded with a modified cp437
      *     debugger
      *     docs
      *     tests in portable files
@@ -53,8 +59,6 @@ namespace StaxLang {
 
         private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
             ['0'] = new Rational(0, 1),
-            ['1'] = new Rational(1, 1),
-            ['2'] = new Rational(1, 2),
             ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
             ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
@@ -87,15 +91,17 @@ namespace StaxLang {
         /// <param name="program"></param>
         /// <param name="input"></param>
         /// <returns>number of steps it took</returns>
-        public int Run(string program, string[] input) {
+        public int Run(string program, string[] input, TimeSpan? timeout = null) {
             if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
             Initialize(block, input);
             int step = 0;
             try {
+                var sw = Stopwatch.StartNew();
                 foreach (var s in RunSteps(block)) {
                     if (s.Cancel) break;
-                    if (++step > 100000) throw new StaxException("program is running too long");
+                    if (sw.Elapsed > timeout) throw new StaxException("program is running too long");
+                    ++step;
                 }
             }
             catch (InvalidOperationException) { }
@@ -350,7 +356,7 @@ namespace StaxLang {
                         Push(new List<object> { Pop() });
                         break;
                     case '?': // if
-                        block.AddDesc("pop 3 elements, (bottom ? middle : top)");
+                        block.AddDesc("if; pop 3 elements - (bottom ? middle : top)");
                         foreach (var s in DoIf()) yield return s;
                         break;
                     case 'a': // alter stack
@@ -524,8 +530,12 @@ namespace StaxLang {
                         }
                         else throw new StaxException("Bad type for N");
                         break;
-                    case 'O': // order
+                    case 'o': // order
                         foreach (var s in DoOrder(block)) yield return s;
+                        break;
+                    case 'O':
+                        block.AddDesc("push 1 under top element");
+                        RunMacro("1s");
                         break;
                     case 'p':
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "print " + e + " with no newline");
@@ -658,6 +668,10 @@ namespace StaxLang {
                         block.AddDesc("empty string/array");
                         type = InstructionType.Value;
                         Push(S2A(""));
+                        break;
+                    case 'Z':
+                        block.AddDesc("push 0 under top element");
+                        RunMacro("0s");
                         break;
                     case ':':
                         DoMacroAlias(block, program[++ip]);
@@ -1026,6 +1040,7 @@ namespace StaxLang {
              *      invariant pt -  i
              *      target value -  t
              *      first as scalar s
+             *      element@ index  e
              *
              *  Collection type
 	         *      pre-peek - lower case
@@ -1041,12 +1056,14 @@ namespace StaxLang {
              *   {filter}{project}gc
              *   {filter}{project}gs
              *  0{filter}{project}gn
+             *  0{filter}{project}ge
              *   {filter}{project}g9
              *  t{filter}{project}gt
 	         *           {project}gu
 	         *           {project}gi
 	         *           {project}gc
 	         *  0        {project}gn
+	         *  0        {project}ge
 	         *           {project}g9
 	         *  t        {project}gt
              *   {filter}{project}gU
@@ -1055,25 +1072,31 @@ namespace StaxLang {
              *   {filter}{project}gC
              *   {filter}{project}gS
              *  0{filter}{project}gN
+             *  0{filter}{project}gE
              *   {filter}{project}g(
              *  t{filter}{project}gT
 	         *           {project}gU
 	         *           {project}gI
 	         *           {project}gC
 	         *  0        {project}gN
+	         *  0        {project}gE
 	         *           {project}g(
 	         *  t        {project}gT
              *           
              *           gu project
              *           gi project
              *           gc project
+             *           gs project
              *         0 gn project
+             *         0 ge project
              *           g9 project
              *         t gt project
              *           gU project
              *           gI project
              *           gC project
+             *           gS project
              *         0 gN project
+             *         0 gE project
              *           g( project
              *         t gT project
              *
@@ -1085,7 +1108,7 @@ namespace StaxLang {
                 stopOnCancel = lowerSpec == 'c',
                 stopOnFixPoint = lowerSpec == 'i',
                 stopOnTargetVal = lowerSpec == 't',
-                scalarMode = lowerSpec == 's',
+                scalarMode = lowerSpec == 's' || lowerSpec == 'e',
                 postPop = char.IsUpper(spec);
             Block genblock = shorthand ? rest : Pop(), 
                 filter = null;
@@ -1097,28 +1120,41 @@ namespace StaxLang {
 
             if (stopOnTargetVal) targetVal = Pop();
 
-            if (char.ToLower(spec) == 'n') {
-                targetCount = (int)Pop();
+            bool hardCodedTargetCount = false;
+            if (lowerSpec == 'n') targetCount = (int)Pop();
+            else if (lowerSpec == 'e') targetCount = (int)Pop() + 1;
+            else if (lowerSpec == 's') {
+                targetCount = 1;
+                hardCodedTargetCount = true;
             }
             else {
                 int idx = "1234567890!@#$%^&*()".IndexOf(spec);
                 if (idx >= 0) targetCount = idx % 10 + 1;
                 postPop = idx >= 10;
+                hardCodedTargetCount = true;
             }
 
-            if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !scalarMode && !targetCount.HasValue) {
+            if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !targetCount.HasValue) {
                 throw new StaxException("no end condition for generator");
             }
 
+            string targetCountClause = 
+                targetCount.HasValue  
+                    ? hardCodedTargetCount 
+                        ? "until " + targetCount + " element" + (targetCount == 1 ? "s are" : " is") + " found," 
+                        : "until specified number of elements are found, " 
+                    : "";
+
             block.AddDesc(
-                (scalarMode ? "get first value " : "generate and collect values ")
+                (scalarMode ? "generate values, keeping only the last,  " : "generate and collect values ")
                 + (filter != null ? "matching filter " : "")
                 + (shorthand ? "from rest of program " : "")
                 + (stopOnDupe ? "until a duplicate is found, " : "")
                 + (stopOnFilter ? "until a value fails the filter, ": "")
                 + (stopOnCancel ? "until cancelled, " : "")
-                + (stopOnFixPoint ? "until the same value appears adjacently, " : "")
-                + (stopOnTargetVal ? "until specified target value, " :"")
+                + (stopOnFixPoint ? "until the same value appears successively, " : "")
+                + (stopOnTargetVal ? "until specified target value, " : "")
+                + targetCountClause
                 + (postPop ? "popping each value" : "including the initial value"));
 
             if (targetCount == 0) { // 0 elements requested ??
@@ -1156,14 +1192,13 @@ namespace StaxLang {
                 }
 
                 if (postPop) Pop();
-                if (passed) { // check for dupe
+                if (passed) {
+                    // dupe
                     if (stopOnDupe && result.Contains(generated, Comparer.Instance)) break;
+                    // successive equal values
                     if (stopOnFixPoint && AreEqual(generated, lastGenerated)) break;
-                    if (scalarMode) {
-                        Push(generated);
-                        break;
-                    }
                     result.Add(generated);
+                    // got to target val
                     if (stopOnTargetVal && AreEqual(generated, targetVal)) break;
                 }
                 lastGenerated = generated;
@@ -1180,8 +1215,14 @@ namespace StaxLang {
             GenComplete:
             PopStackFrame();
 
-            if (shorthand) foreach (var e in result) Print(e);
-            else Push(result);
+            if (shorthand) {
+                if (scalarMode) Print(result.Last());
+                else foreach (var e in result) Print(e);
+            }
+            else {
+                if (scalarMode) Push(result.Last());
+                else Push(result);
+            }
         }
 
         enum RotateDirection { Left, Right };
@@ -2321,7 +2362,7 @@ namespace StaxLang {
             int depth = 0;
             int start = ip + 1;
             do {
-                if (contents[ip] == '|' || contents[ip] == '\'' || contents[ip] == 'V') {
+                if (contents[ip] == '|' || contents[ip] == ':' || contents[ip] == '\'' || contents[ip] == 'V') {
                     ip++; // 2-char tokens
                     continue;
                 }
@@ -2349,7 +2390,7 @@ namespace StaxLang {
                 if (contents[ip] == '}' && --depth == 0) return block.SubBlock(start, ip);
 
                 // shortcut block terminators
-                if ("wWmfFkgO".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
+                if ("wWmfFkgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
             } while (++ip < contents.Length);
             --ip;
             return block.SubBlock(start);
