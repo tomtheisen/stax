@@ -1124,6 +1124,7 @@ namespace StaxLang.Tests {
                 "  c      C");
         }
 
+        [Ignore]
         [TestMethod]
         public void SingerLettersTest() {
             https://codegolf.stackexchange.com/questions/144848/26-singers-26-letters

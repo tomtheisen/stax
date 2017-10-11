@@ -830,9 +830,9 @@ namespace StaxLang {
                                     else block.AddDesc("center string in n spaces");
                                     int size = (int)Pop();
                                     var str = Pop();
-                                    var result = new List<object>(Enumerable.Repeat(new BigInteger(32) as object, (size - str.Count) / 2));
+                                    var result = new List<object>(Enumerable.Repeat(BigInteger.Zero as object, (size - str.Count) / 2));
                                     result.AddRange(str);
-                                    result.AddRange(Enumerable.Repeat(new BigInteger(32) as object, size - result.Count));
+                                    result.AddRange(Enumerable.Repeat(BigInteger.Zero as object, size - result.Count));
                                     Push(result);
                                 }
                                 else if (IsArray(Peek())) { 
@@ -843,8 +843,8 @@ namespace StaxLang {
                                     var result = new List<object>();
                                     foreach (var line in list) {
                                         var newLine = new List<object>(line);
-                                        newLine.InsertRange(0, Enumerable.Repeat(new BigInteger(32) as object, (maxLen - newLine.Count) / 2));
-                                        newLine.AddRange(Enumerable.Repeat(new BigInteger(32) as object, maxLen - newLine.Count));
+                                        newLine.InsertRange(0, Enumerable.Repeat(BigInteger.Zero as object, (maxLen - newLine.Count) / 2));
+                                        newLine.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - newLine.Count));
                                         result.Add(newLine);
                                     }
                                     Push(result);
@@ -1761,7 +1761,7 @@ namespace StaxLang {
                 else block.AddDesc("left pad/truncate with spaces");
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
-                if (a.Count < b) a.InsertRange(0, Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
+                if (a.Count < b) a.InsertRange(0, Enumerable.Repeat(BigInteger.Zero as object, (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange(0, a.Count - (int)b);
                 Push(a);
             }
@@ -1782,7 +1782,7 @@ namespace StaxLang {
                 else block.AddDesc("right pad/truncate with spaces");
                 a = new List<object>(a);
                 if (b < 0) b += a.Count;
-                if (a.Count < b) a.AddRange(Enumerable.Repeat((object)new BigInteger(32), (int)b - a.Count));
+                if (a.Count < b) a.AddRange(Enumerable.Repeat(BigInteger.Zero as object, (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange((int)b, a.Count - (int)b);
                 Push(a);
             }
@@ -2020,7 +2020,7 @@ namespace StaxLang {
             foreach (List<object> row in list) maxLen = Math.Max(maxLen, row.Count);
 
             foreach (List<object> line in list) {
-                line.AddRange(Enumerable.Repeat(new BigInteger(32) as object, maxLen - line.Count));
+                line.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - line.Count));
             }
 
             for (int i = 0; i < maxLen; i++) {
@@ -2315,7 +2315,7 @@ namespace StaxLang {
             throw new StaxException("Bad type for ToString");
         }
 
-        private bool AreEqual(dynamic a, dynamic b) => Comparer.Instance.Compare(a, b) == 0;
+        private static bool AreEqual(dynamic a, dynamic b) => Comparer.Instance.Compare(a, b) == 0;
 
         private static bool IsInt(object b) => b is BigInteger;
         private static bool IsFrac(object b) => b is Rational;
@@ -2327,9 +2327,14 @@ namespace StaxLang {
 
         private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
         private static string A2S(List<object> arg) {
-            return string.Concat(arg.Select(e => IsInt(e)
-                ? ((char)(int)((BigInteger)e & ushort.MaxValue)).ToString()
-                : A2S((List<object>)e)));
+            string Convert(object e) {
+                if (IsInt(e)) {
+                    if (AreEqual(e, BigInteger.Zero)) return " ";
+                    return ((char)(int)((BigInteger)e & ushort.MaxValue)).ToString();
+                }
+                return A2S((List<object>)e);
+            }
+            return string.Concat(arg.Select(Convert));
         }
 
         private static List<object> Range(BigInteger start, BigInteger count) =>
