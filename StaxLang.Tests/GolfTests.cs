@@ -1124,11 +1124,10 @@ namespace StaxLang.Tests {
                 "  c      C");
         }
 
-        [Ignore]
         [TestMethod]
         public void SingerLettersTest() {
             https://codegolf.stackexchange.com/questions/144848/26-singers-26-letters
-            RunProgramSingleInputs("m|+98%40%c27 31:b18*-]\" 7`\"9#;$<&=\"{40%m|th65+]",
+            RunProgramSingleInputs("|+98%40%c27 31:b18*-]\" 7`\"9#;$<&=\"{40%m|th65+]",
                 "Aretha Franklin", "V",
                 "Ray Charles", "S",
                 "Elvis Presley", "N",

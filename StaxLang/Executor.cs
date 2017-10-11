@@ -1454,11 +1454,10 @@ namespace StaxLang {
 
             if (IsArray(input) && IsArray(translation)) {
                 var result = new List<object>();
-                var map = new Dictionary<char, char>();
-                var ts = A2S(translation);
+                var map = new Dictionary<BigInteger, BigInteger>();
 
-                for (int i = 0; i < ts.Length; i += 2) map[ts[i]] = ts[i + 1];
-                foreach (var e in A2S(input)) result.AddRange(S2A("" + (map.ContainsKey(e) ? map[e] : e)));
+                for (int i = 0; i < translation.Count; i += 2) map[translation[i]] = translation[i + 1];
+                foreach (var e in input) result.Add(map.ContainsKey(e) ? map[e] : e);
                 Push(result);
             }
             else {
