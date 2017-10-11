@@ -299,8 +299,6 @@ namespace StaxLang.Tests {
         public void Rule30Test() {
             http://golf.shinh.org/p.rb?Rule+30
             RunProgram("\"  \"s+X{2%Hxi^@2%xi^^@2%++\" ## \"s@m", "##  #   #", "## #### ###");
-            RunProgram("\"  \"+{c' s+}2*cLM{0s{2%+F\" ## \"s@m", "##  #   #", "## #### ###");
-            RunProgram("\"  \"+{c' s+}2*cLM{\" ## \"s{2%m|+@m", "##  #   #", "## #### ###");
             RunProgram("\"  \"Xs+x+3B{\" 0#1\"|t|Bv4/' '#?m", "##  #   #", "## #### ###");
             RunProgram("\"  \"Xs+x+3B{{2%$m|Bv4/' '#?m", "##  #   #", "## #### ###");
             RunProgram("\"  \"Xs+x+3B{h_+'##vh' '#?m", "##  #   #", "## #### ###");

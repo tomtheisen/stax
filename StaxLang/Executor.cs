@@ -20,7 +20,7 @@ namespace StaxLang {
      *     string interpolate
      *     uneval
      *     entire array ref inside for/filter/map 
-     *     rectangularize (center/center-trim/left/right align, fill el)
+     *     rectangularize modes (center/center-trim/left/right align, fill el)
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
      *     CLI STDIN / STDOUT
@@ -1944,18 +1944,22 @@ namespace StaxLang {
         }
 
         private void DoTranspose() {
-            var list = Pop();
+            List<object> list = Pop();
             var result = new List<object>();
 
             if (list.Count > 0 && !IsArray(list[0])) list = new List<object> { list };
 
-            int? count = null;
-            foreach (var series in list) count = Math.Min(count ?? int.MaxValue, series.Count);
+            int maxLen = 0;
+            foreach (List<object> row in list) maxLen = Math.Max(maxLen, row.Count);
 
-            for (int i = 0; i < (count ?? 0); i++) {
-                var tuple = new List<object>();
-                foreach (var series in list) tuple.Add(series[i]);
-                result.Add(tuple);
+            foreach (List<object> line in list) {
+                line.AddRange(Enumerable.Repeat(new BigInteger(32) as object, maxLen - line.Count));
+            }
+
+            for (int i = 0; i < maxLen; i++) {
+                var column = new List<object>();
+                foreach (dynamic row in list) column.Add(row[i]);
+                result.Add(column);
             }
 
             Push(result);

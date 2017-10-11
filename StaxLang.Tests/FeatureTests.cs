@@ -112,7 +112,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void FindAllIndexes() => RunProgram("\"Hello World\" \"o\" |I J", "4 7");
         [TestMethod] public void UnfoundIndex() => RunProgram("\"Hello World\" \"Wr\" I", "-1");
         [TestMethod] public void ChunkString() => RunProgram("\"abcdefgh\" 3/ ',*", "abc,def,gh");
-        [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh");
+        [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh,cf ");
+        [TestMethod] public void TransposeFills() => RunProgram("M ', *", "lxl,o o,n n,g g,  e,  r", "[\"long\" \"x\" \"longer\"]");
         [TestMethod] public void TrimLeft() => RunProgram("\"  abc  \" t", "abc  ");
         [TestMethod] public void TrimRight() => RunProgram("\"  abc  \" T", "  abc");
         [TestMethod] public void TrimLeftBy() => RunProgram("\"hello world\" 2 t", "llo world");
