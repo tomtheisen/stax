@@ -20,7 +20,6 @@ namespace StaxLang {
      *     string interpolate
      *     uneval
      *     entire array ref inside for/filter/map 
-     *     rectangularize modes (center/center-trim/left/right align, fill el)
      *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
      *     copy 2nd
      *     CLI STDIN / STDOUT
@@ -64,6 +63,7 @@ namespace StaxLang {
             ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
             ['c'] = S2A("bcdfghjklmnpqrstvwxyz"),
             ['d'] = S2A("0123456789"),
+            ['P'] = Math.PI,
             ['V'] = S2A("AEIOU"),
             ['v'] = S2A("aeiou"),
             ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
@@ -823,6 +823,32 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in binary");
                                 else block.AddDesc("convert to binary");
                                 RunMacro("2|b");
+                                break;
+                            case 'C':
+                                if (IsInt(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "center in " + e + " spaces");
+                                    else block.AddDesc("center string in n spaces");
+                                    int size = (int)Pop();
+                                    var str = Pop();
+                                    var result = new List<object>(Enumerable.Repeat(new BigInteger(32) as object, (size - str.Count) / 2));
+                                    result.AddRange(str);
+                                    result.AddRange(Enumerable.Repeat(new BigInteger(32) as object, size - result.Count));
+                                    Push(result);
+                                }
+                                else if (IsArray(Peek())) { 
+                                    block.AddDesc("center lines");
+                                    int maxLen = 0;
+                                    var list = Pop();
+                                    foreach (var line in list) maxLen = Math.Max(maxLen, line.Count);
+                                    var result = new List<object>();
+                                    foreach (var line in list) {
+                                        var newLine = new List<object>(line);
+                                        newLine.InsertRange(0, Enumerable.Repeat(new BigInteger(32) as object, (maxLen - newLine.Count) / 2));
+                                        newLine.AddRange(Enumerable.Repeat(new BigInteger(32) as object, maxLen - newLine.Count));
+                                        result.Add(newLine);
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case 'd': 
                                 block.AddDesc("depth of main stack");
@@ -2196,6 +2222,7 @@ namespace StaxLang {
                         b *= -1;
                         block.AddDesc("repeat array - negative number reverses");
                     }
+                    else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "repeat array " + e + " times");
                     else block.AddDesc("repeat array");
                     var result = new List<object>();
                     for (int i = 0; i < b; i++) result.AddRange(a);

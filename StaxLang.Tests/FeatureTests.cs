@@ -139,6 +139,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void NotStartsWith() => RunProgram("\"e\" :[", "0", "Hello world");
         [TestMethod] public void EndsWith() => RunProgram("\"rld\" :]", "1", "Hello world");
         [TestMethod] public void NotEndsWith() => RunProgram("\"rld!\" :]", "0", "Hello world");
+        [TestMethod] public void Center() => RunProgram("'a 5 |C", "  a  ");
+        [TestMethod] public void CenterBlock() => RunProgram("|[ |C ',*", " a  , ab ,abc ,abcd", "abcd");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -204,6 +206,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
         [TestMethod] public void Newline() => RunProgram("Vn 'x+", Environment.NewLine + "x");
         [TestMethod] public void Rational0() => RunProgram("V0", "0/1");
+        [TestMethod] public void Pi() => RunProgram("VP", "3.14159265358979");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");

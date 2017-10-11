@@ -1114,5 +1114,46 @@ namespace StaxLang.Tests {
             RunProgram("me|B%v", "1\n2\n3\n4\n5\n6\n7\n8",
                 "0", "1", "1", "2", "2", "2", "2", "3");
         }
+
+        [TestMethod]
+        public void AlphabetRain() {
+            https://codegolf.stackexchange.com/questions/144868/make-some-alphabet-rain
+            RunProgram("Q{]Va_]vI:mmMm", "abc !@ ABC",
+                "abc !@ ABC",
+                " bc     BC",
+                "  c      C");
+        }
+
+        [TestMethod]
+        public void SingerLettersTest() {
+            https://codegolf.stackexchange.com/questions/144848/26-singers-26-letters
+            RunProgramSingleInputs("m|+98%40%c27 31:b18*-]\" 7`\"9#;$<&=\"{40%m|th65+]",
+                "Aretha Franklin", "V",
+                "Ray Charles", "S",
+                "Elvis Presley", "N",
+                "Sam Cooke", "R",
+                "John Lennon", "L",
+                "Marvin Gaye", "X",
+                "Bob Dylan", "J",
+                "Otis Redding", "M",
+                "Stevie Wonder", "F",
+                "James Brown", "K",
+                "Paul McCartney", "W",
+                "Little Richard", "B",
+                "Roy Orbison", "A",
+                "Al Green", "Q",
+                "Robert Plant", "H",
+                "Mick Jagger", "P",
+                "Tina Turner", "I",
+                "Freddie Mercury", "O",
+                "Bob Marley", "D",
+                "Smokey Robinson", "U",
+                "Johnny Cash", "Z",
+                "Etta James", "E",
+                "David Bowie", "C",
+                "Van Morrison", "G",
+                "Michael Jackson", "Y",
+                "Jackie Wilson", "T");
+        }
     }
 }
