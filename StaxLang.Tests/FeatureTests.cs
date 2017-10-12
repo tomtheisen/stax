@@ -187,6 +187,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void SingleUniqueElement() => RunProgram(":u", "1", "[3 3 3]");
         [TestMethod] public void NonSingleUniqueElement() => RunProgram(":u", "0", "[3 3 3 4]");
         [TestMethod] public void Flatten() => RunProgram(":f J", "1 2 3 4", "[[1 2] [3 4]]");
+        [TestMethod] public void AllLeftRotations() => RunProgram(":( J", "ABC BCA CAB", "ABC");
+        [TestMethod] public void AllRightRotations() => RunProgram(":) J", "ABC CAB BCA", "ABC");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -203,6 +205,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void Whitespace() => RunProgram("Vs", " \t\r" + Environment.NewLine + "\v");
         [TestMethod] public void Newline() => RunProgram("Vn 'x+", Environment.NewLine + "x");
         [TestMethod] public void Rational0() => RunProgram("V0", "0/1");
+        [TestMethod] public void AllLetters() => RunProgram("Vl", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        [TestMethod] public void AllIdentifierChars() => RunProgram("VL", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");

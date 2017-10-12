@@ -510,6 +510,7 @@ namespace StaxLang.Tests {
             RunProgram("VA26fQ|(", "", expected);
             RunProgram("VA{|(gum", "", expected);
             RunProgram("VAgu|(", "", expected);
+            RunProgram("VA:(m", "", expected);
         }
 
         [TestMethod]
@@ -552,6 +553,7 @@ namespace StaxLang.Tests {
             RunProgram("VAQc2B{|tQF", "", expected);
             RunProgram("VAQc2BF|tQ", "", expected);
             RunProgram("VAmVA{[|Mm", "", expected);
+            RunProgram("VAmVA\\{|Mm", "", expected);
         }
 
         [TestMethod]

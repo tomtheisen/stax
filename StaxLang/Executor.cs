@@ -33,18 +33,13 @@ namespace StaxLang {
      *     popcount (2|E|+)
      *     version string
      *     data-driven macro namespace maybe ':' - 
-     *          it's 100% macros dispatched by trees (or maybe exactly 2?) of types peeked off the stack
      *          compare / sign (c{c|a/}0?)
      *          replace first only
-     *          all rotations left/right
      *          is-letter (VAVa+s#)
      *     add-to/transform at index maybe - array index {transform}&
      *     cross product sucks
      *     float to string - n decimal places
      *     while loops continue to next
-     *     constants
-     *          all letters
-     *          word chars
      *     
      *     debugger
      *     docs
@@ -64,12 +59,14 @@ namespace StaxLang {
             ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
             ['c'] = S2A("bcdfghjklmnpqrstvwxyz"),
             ['d'] = S2A("0123456789"),
+            ['l'] = S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ['L'] = S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            ['n'] = S2A("\n"),  // also just A]
+            ['s'] = S2A(" \t\r\n\v"),
             ['V'] = S2A("AEIOU"),
             ['v'] = S2A("aeiou"),
             ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
             ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
-            ['s'] = S2A(" \t\r\n\v"),
-            ['n'] = S2A("\n"),  // also just A]
         };
 
         private BigInteger Index; // loop iteration
@@ -105,7 +102,10 @@ namespace StaxLang {
                 }
             }
             catch (InvalidOperationException) { }
-            if (!OutputWritten) Print(Pop());
+            if (!OutputWritten) {
+                block.AddAmbient("top of stack implicitly printed");
+                Print(Pop());
+            }
 
             if (Annotate) Annotation = block.Annotate(); 
             return step;
@@ -140,6 +140,7 @@ namespace StaxLang {
                         InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
                     }
                     else {
+                        programBlock.AddAmbient("program input is implicitly parsed");
                         (MainStack, InputStack) = (InputStack, MainStack);
                     }
                 }
@@ -222,11 +223,13 @@ namespace StaxLang {
                         break;
                     case '#': 
                         if (IsArray(Peek())) {
-                            block.AddDesc("count number of times substring is found");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "count number of times " + e + " is found as a substring");
+                            else block.AddDesc("count number of times substring is found");
                             RunMacro("/%v");
                         }
                         else if (IsNumber(Peek())) {
-                            block.AddDesc("count number of times element appears in array");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "count number of times " + e + " is found in array");
+                            else block.AddDesc("count number of times element appears in array");
                             RunMacro("]|&%");
                         }
                         break;
@@ -559,8 +562,8 @@ namespace StaxLang {
                         break;
                     case 'r':
                         if (IsInt(Peek())) {
-                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "0-based range with " + e + " elements");
-                            block.AddDesc("0-based range");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "0 ... " + e + "-1");
+                            block.AddDesc("0 ... n");
                             Push(Range(0, Pop()));
                         }
                         else if (IsArray(Peek())) {
@@ -573,8 +576,8 @@ namespace StaxLang {
                         break;
                     case 'R':
                         if (IsInt(Peek())) {
-                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "range from 1 to " + e);
-                            block.AddDesc("1-based range");
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "1 ... " + e);
+                            block.AddDesc("1 ... n");
                             Push(Range(1, Pop()));
                         }
                         else {

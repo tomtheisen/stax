@@ -8,15 +8,20 @@ namespace StaxLang {
     class Block {
         private Block Root;
         private string Program;
+        // absolute offset from root
         private int Start;
+        // absolute offset from root
         private int End;
         private List<string> Descs;
         private int[] InstrDescLine;
         private bool[] IndexDescribed;
+        private HashSet<(int InstrPtr, string AmbientDesc)> Ambients = new HashSet<(int, string)>();
 
         public string Contents { get; }
         // used to align the explanations
         public int InstrStartPtr { get; internal set; }
+        // instrptr in absolute terms in original program
+        public int RootInstrStartPtr => Start + InstrStartPtr;
         public InstructionType LastInstrType { get; internal set; }
 
         public Block(string program) {
@@ -33,29 +38,21 @@ namespace StaxLang {
             for (int i = 0; i < program.Length; i++) InstrDescLine[i] = -1;
         }
 
-        public List<string> Annotate() {
-            if (InstrDescLine.Max() < 0) return new List<string> { "Description not available" };
+        public string[] Annotate() {
+            if (Descs.Count == 0) return new [] { "Description not available" };
 
-            var result = new List<string>();
+            var result = Descs.Select(_ => "").ToArray();
             int lastLine = 0;
             for (int i = 0; i < Program.Length; i++) {
                 int line = InstrDescLine[i];
                 if (line == -1) line = lastLine;
-
-                if (line < result.Count) { // use existing
-                    result[line] = result[line].PadRight(i) + Contents[i];
-                }
-                else if (line >= result.Count) { // make new
-                    while (result.Count < line) result.Add("");
-                    result.Add("".PadLeft(i) + Contents[i]);
-                }
-                else throw new Exception("description line index skipped");
+                result[line] = result[line].PadRight(i) + Contents[i];
                 lastLine = line;
             }
 
             // rectangularize, add descriptions
             int maxlen = result.Max(r => r.Length);
-            for (int i = 0; i < result.Count; i++) {
+            for (int i = 0; i < result.Length; i++) {
                 result[i] = result[i].PadRight(maxlen) + '\t' + Descs[i];
             }
             return result;
@@ -72,19 +69,24 @@ namespace StaxLang {
         public Block SubBlock(int start, int end) => new Block(this, start, end);
         public Block SubBlock(int start) => new Block(this, start, Contents.Length);
 
+        internal void AddAmbient(string text) {
+            if (!Root.Ambients.Contains((RootInstrStartPtr, text))) {
+                Root.Ambients.Add((RootInstrStartPtr, text));
+                Root.Descs.Add(text);
+            }
+        }
+
         internal void AddDesc(string text) {
-            int progptr = Start + InstrStartPtr; // index in original program
-            if (Root.IndexDescribed[progptr]) return; // already described
-            Root.IndexDescribed[progptr] = true;
+            if (Root.IndexDescribed[RootInstrStartPtr]) return; // already described
+            Root.IndexDescribed[RootInstrStartPtr] = true;
 
             Root.Descs.Add(text);
-            Root.InstrDescLine[progptr] = Root.Descs.Count - 1;
+            Root.InstrDescLine[RootInstrStartPtr] = Root.Descs.Count - 1;
         }
 
         internal void AmendDesc(Func<string, string> transform) {
-            int progptr = Start + InstrStartPtr; // index in original program
-            if (Root.IndexDescribed[progptr]) return; // already described
-            Root.IndexDescribed[progptr] = true;
+            if (Root.IndexDescribed[RootInstrStartPtr]) return; // already described
+            Root.IndexDescribed[RootInstrStartPtr] = true;
 
             int idx = Root.Descs.Count - 1;
             Root.Descs[idx] = transform(Root.Descs[idx]); 

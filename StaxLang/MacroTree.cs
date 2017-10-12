@@ -43,6 +43,8 @@ namespace StaxLang {
                 (':', "ai", "/{hm", "get every nth element"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
+                ('(', "a", "c%r{[|(msd", "all left rotations"),
+                (')', "a", "c%r{[|)msd", "all right rotations"),
                 ('b', "iii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
