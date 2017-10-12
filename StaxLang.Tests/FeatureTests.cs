@@ -112,7 +112,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void FindAllIndexes() => RunProgram("\"Hello World\" \"o\" |I J", "4 7");
         [TestMethod] public void UnfoundIndex() => RunProgram("\"Hello World\" \"Wr\" I", "-1");
         [TestMethod] public void ChunkString() => RunProgram("\"abcdefgh\" 3/ ',*", "abc,def,gh");
-        [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh");
+        [TestMethod] public void Transpose() => RunProgram("\"abcdefgh\" 3/ M ',*", "adg,beh,cf ");
+        [TestMethod] public void TransposeFills() => RunProgram("M ', *", "lxl,o o,n n,g g,  e,  r", "[\"long\" \"x\" \"longer\"]");
         [TestMethod] public void TrimLeft() => RunProgram("\"  abc  \" t", "abc  ");
         [TestMethod] public void TrimRight() => RunProgram("\"  abc  \" T", "  abc");
         [TestMethod] public void TrimLeftBy() => RunProgram("\"hello world\" 2 t", "llo world");
@@ -138,6 +139,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void NotStartsWith() => RunProgram("\"e\" :[", "0", "Hello world");
         [TestMethod] public void EndsWith() => RunProgram("\"rld\" :]", "1", "Hello world");
         [TestMethod] public void NotEndsWith() => RunProgram("\"rld!\" :]", "0", "Hello world");
+        [TestMethod] public void Center() => RunProgram("'a 5 |C", "  a  ");
+        [TestMethod] public void CenterBlock() => RunProgram("|[ |C ',*", " a  , ab ,abc ,abcd", "abcd");
 
         // Array
         [TestMethod] public void ZeroRange() => RunProgram("5r',*", "0,1,2,3,4");
@@ -207,6 +210,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void Rational0() => RunProgram("V0", "0/1");
         [TestMethod] public void AllLetters() => RunProgram("Vl", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void AllIdentifierChars() => RunProgram("VL", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        [TestMethod] public void Pi() => RunProgram("VP", "3.14159265358979");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");
