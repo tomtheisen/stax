@@ -34,5 +34,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void RationalSqrt() => RunProgram("2u|Q", "0.707106781186548");
         [TestMethod] public void IntRationalCompare() => RunProgram("01u<", "1");
         [TestMethod] public void RationalIntCompare() => RunProgram("1u0>", "1");
+        [TestMethod] public void BlockCompressNestParse() => RunProgram("1{`m`'am", "a");
     }
 }

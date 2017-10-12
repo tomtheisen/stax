@@ -20,7 +20,7 @@ namespace StaxLang {
         }
 
         public static byte[] PackBytes(string stax) {
-            BigInteger big = 1;
+            BigInteger big = 0;
             var result = new List<byte>();
             for (int i = stax.Length - 1; i >= 0; i--) big = big * 95 + stax[i] - ' ';
             while (big > 0) {
@@ -50,7 +50,7 @@ namespace StaxLang {
             BigInteger big = 0;
             bytes[0] &= 0x7f;
             for (int i = 0; i < bytes.Length; i++) big = big * 0x100 + bytes[i];
-            while (big > 1) {
+            while (big > 0) {
                 result += (char)((int)(big % 95) + ' ');
                 big /= 95;
             }

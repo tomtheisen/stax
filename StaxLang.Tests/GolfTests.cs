@@ -236,7 +236,7 @@ namespace StaxLang.Tests {
         public void FizzBuzzTest() {
             RunProgram("R{3%!\"Fizz\"*_5%!\"Buzz\"*+c!_$*+mm", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
             RunProgram("m3%!`M\"(`*_5 %!`-C`*+c_?", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
-            RunProgram("─22¶←P¿√L√£L◘≈║ätÅ↔0", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
+            RunProgram("æ♀⌠vôk§O╝S⌠Pp5÷\\φ♦V/", "15", "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz");
         }
 
         [TestMethod]
@@ -1092,7 +1092,7 @@ namespace StaxLang.Tests {
                     "3",
                     "");
             RunProgram(
-                "â-ô►π╠#JP┘H*⌠gY>σô¡}U1$◙å╢º┌∟<íR∩k╗╫☺",
+                "ü↕┬_H¥%C╪}┌º?~¡∩0L↓▀LëA☼₧E¡}☻F═âΦε0▀Ç",
                     "6,1",
                     "3",
                     "");
@@ -1129,7 +1129,7 @@ namespace StaxLang.Tests {
         [TestMethod]
         public void SingerLettersTest() {
             https://codegolf.stackexchange.com/questions/144848/26-singers-26-letters
-            RunProgramSingleInputs("|+98%40%c27 31:b18*-]\" 7`\"9#;$<&=\"{40%m|th65+]",
+            string[] expected = {
                 "Aretha Franklin", "V",
                 "Ray Charles", "S",
                 "Elvis Presley", "N",
@@ -1155,7 +1155,11 @@ namespace StaxLang.Tests {
                 "David Bowie", "C",
                 "Van Morrison", "G",
                 "Michael Jackson", "Y",
-                "Jackie Wilson", "T");
+                "Jackie Wilson", "T"
+            };
+
+            RunProgramSingleInputs("VA`G$Umz$I0Q#`+s|+98%40%]@", expected);
+            RunProgramSingleInputs("ékîΣø/►ô]╙☼τ±O½⌡)Uù«Ä╨", expected);  
         }
     }
 }

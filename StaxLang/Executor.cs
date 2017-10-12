@@ -29,7 +29,6 @@ namespace StaxLang {
      *     FeatureTests for generators
      *     RLE
      *     RLE prime factorization [(prime, exp)]
-     *     popcount (2|E|+)
      *     version string
      *     data-driven macro namespace maybe ':' - 
      *          compare / sign (c{c|a/}0?)
@@ -51,22 +50,25 @@ namespace StaxLang {
         public bool Annotate { get; set; }
         public IReadOnlyList<string> Annotation { get; private set; } = null;
 
-        private static IReadOnlyDictionary<char, object> Constants = new Dictionary<char, object> {
-            ['0'] = new Rational(0, 1),
-            ['A'] = S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            ['a'] = S2A("abcdefghijklmnopqrstuvwxyz"),
-            ['C'] = S2A("BCDFGHJKLMNPQRSTVWXYZ"),
-            ['c'] = S2A("bcdfghjklmnpqrstvwxyz"),
-            ['d'] = S2A("0123456789"),
-            ['l'] = S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            ['L'] = S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            ['n'] = S2A("\n"),  // also just A]
-            ['s'] = S2A(" \t\r\n\v"),
-            ['P'] = Math.PI,
-            ['V'] = S2A("AEIOU"),
-            ['v'] = S2A("aeiou"),
-            ['W'] = S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-            ['w'] = S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
+        private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
+            ['0'] = (new Rational(0, 1), "0/1"),
+            ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
+            ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
+            ['B'] = (new BigInteger(256), "256"),
+            ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
+            ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
+            ['d'] = (S2A("0123456789"), "decimal digits"),
+            ['k'] = (new BigInteger(1000), "one thousand"),
+            ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
+            ['L'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all alphanumerics"),
+            ['M'] = (new BigInteger(1000000), "one million"),
+            ['P'] = (Math.PI, "pi"),
+            ['V'] = (S2A("AEIOU"), "uppercase vowels"),
+            ['v'] = (S2A("aeiou"), "lowercase vowels"),
+            ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
+            ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
+            ['s'] = (S2A(" \t\r\n\v"), "all ascii whitespace"),
+            ['n'] = (S2A("\n"), "newline"),  // also just A]
         };
 
         private BigInteger Index; // loop iteration
@@ -134,19 +136,16 @@ namespace StaxLang {
                 programBlock.AddDesc("suppress single line eval; treat input as raw string");
             }
             else if (input.Length == 1) {
-                try {
-                    DoEval();
-                    if (TotalStackSize == 0) {
-                        InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
-                    }
-                    else {
-                        programBlock.AddAmbient("program input is implicitly parsed");
-                        (MainStack, InputStack) = (InputStack, MainStack);
-                    }
-                }
-                catch {
+                if (!DoEval()) {
                     MainStack.Clear();
                     InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                }
+                else if (TotalStackSize == 0) {
+                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                }
+                else {
+                    programBlock.AddAmbient("program input is implicitly parsed");
+                    (MainStack, InputStack) = (InputStack, MainStack);
                 }
             }
         }
@@ -408,7 +407,7 @@ namespace StaxLang {
                     case 'e': 
                         if (CallStackFrames.Any() || ip > 0) {
                             block.AddDesc("eval - parse strings, arrays, and numbers");
-                            DoEval();
+                            if (!DoEval()) throw new StaxException("eval failed");
                         }
                         break;
                     case 'E': // explode (de-listify)
@@ -484,6 +483,11 @@ namespace StaxLang {
                         if (IsArray(Peek())) {
                             block.AddDesc("un-join (split) by spaces");
                             RunMacro("' /");
+                        }
+                        else if (IsInt(Peek())) {
+                            BigInteger digits = Pop();
+                            double num = Pop();
+                            Push(S2A(Math.Round(num, (int)digits).ToString()));
                         }
                         break;
                     case 'J':
@@ -626,8 +630,8 @@ namespace StaxLang {
                         Push(BigInteger.MinusOne);
                         break;
                     case 'V': // constant value
-                        Push(Constants[program[++ip]]);
-                        block.AddDesc(Format(Peek()));
+                        Push(Constants[program[++ip]].Value);
+                        block.AddDesc(Constants[program[ip]].Name);
                         break;
                     case 'w': // do-while
                         {
@@ -1330,7 +1334,7 @@ namespace StaxLang {
         }
 
         // not an eval of stax code, but a json-like data parse
-        private void DoEval() {
+        private bool DoEval() {
             string arg = A2S(Pop());
             var activeArrays = new Stack<List<object>>();
 
@@ -1383,13 +1387,14 @@ namespace StaxLang {
                             i += match.Value.Length - 1;
                             break;
                         }
-                        throw new StaxException("expected a number, but just found this garbage: " + substring);
+                        return false;
 
                     case ' ': case '\t': case '\r': case '\n': case ',':
                         break;
-                    default: throw new StaxException($"Bad char {arg[i]} during eval");
+                    default: return false;
                 }
             }
+            return true;
         }
 
         private void DoRegexFind() {
@@ -1563,10 +1568,9 @@ namespace StaxLang {
             var number = Pop();
 
             if (IsInt(number)) {
-                long n = (long)number;
                 var result = new List<object>();
                 do {
-                    BigInteger digit = n % @base;
+                    BigInteger digit = number % @base;
                     if (stringRepresentation) {
                         char d = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)digit];
                         result.Insert(0, new BigInteger(d + 0));
@@ -1574,8 +1578,8 @@ namespace StaxLang {
                     else { //digit mode
                         result.Insert(0, digit);
                     }
-                    n /= @base;
-                } while (n > 0);
+                    number /= @base;
+                } while (number > 0);
 
                 Push(result);
             }
@@ -2416,6 +2420,11 @@ namespace StaxLang {
 
                 if (contents[ip] == '"') {
                     ParseString(contents, ref ip, out bool implicitEnd);
+                    continue;
+                }
+
+                if (contents[ip] == '`') {
+                    ParseCompressedString(contents, ref ip, out bool implicitEnd);
                     continue;
                 }
 

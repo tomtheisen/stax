@@ -65,7 +65,7 @@ namespace StaxLang {
                 var tree = Trees[result.Substring(result.Length - 2)];
                 result += tree.Traverse(path, ref pathidx);
             }
-            return result.Substring(2);
+            return MemoizedDecompress[compressed] = result.Substring(2);
         }
 
         public static string Compress(string input) {

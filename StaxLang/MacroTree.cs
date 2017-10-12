@@ -40,6 +40,7 @@ namespace StaxLang {
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
             var macros = new (char alias, string types, string code, string desc)[] {
+                ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
                 (':', "ai", "/{hm", "get every nth element"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
@@ -51,6 +52,7 @@ namespace StaxLang {
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('f', "a", "{+k", "flatten array"),
+                ('I', "aa", "{[Imsd", "get all indexes of"),
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
