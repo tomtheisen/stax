@@ -74,6 +74,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void IntNegativeSquareRoot() => RunProgram("|q", "13", "-170");
         [TestMethod] public void Square() => RunProgram("7J", "49");
         [TestMethod] public void Factorial() => RunProgram("5|F", "120");
+        [TestMethod] public void FloatFormatPlaces() => RunProgram("2 j", "123.46", "123.456789");
 
         // Bitwise
         [TestMethod] public void BitwiseNot() => RunProgram("3|~", "-4");
@@ -190,6 +191,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void SingleUniqueElement() => RunProgram(":u", "1", "[3 3 3]");
         [TestMethod] public void NonSingleUniqueElement() => RunProgram(":u", "0", "[3 3 3 4]");
         [TestMethod] public void Flatten() => RunProgram(":f J", "1 2 3 4", "[[1 2] [3 4]]");
+        [TestMethod] public void GetIndexOfAll() => RunProgram("\"eo\" :I J", "1 4", "hello");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
