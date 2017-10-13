@@ -7,37 +7,37 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace StaxLang {
-    // available chars
-    //  .DGnS
-    /* To add:
-     *     find-index-all by regex
-     *     running "total" / reduce-collect
-     *     log
-     *     trig
-     *     string interpolate
-     *     uneval
-     *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
-     *     CLI STDIN / STDOUT
-     *     combinatorics: powerset, permutations
-     *     Rotate chars (like translate on a ring)
-     *     call into trailing }
-     *     FeatureTests for generators
-     *     RLE
-     *     RLE prime factorization [(prime, exp)]
-     *     version string
-     *     data-driven macro namespace maybe ':' - 
-     *          compare / sign (c{c|a/}0?)
-     *          replace first only
-     *     while loops continue to next
-     *     hypotenuse type operation
-     *     
-     *     debugger
-     *     docs
-     *     tests in portable files
-     *     executable annotation
-     */
+// available chars
+//  .DGS
+/* To add:
+ *     find-index-all by regex
+ *     running "total" / reduce-collect
+ *     log
+ *     trig
+ *     string interpolate
+ *     uneval
+ *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
+ *     CLI STDIN / STDOUT
+ *     combinatorics: powerset, permutations
+ *     Rotate chars (like translate on a ring)
+ *     call into trailing }
+ *     FeatureTests for generators
+ *     RLE
+ *     RLE prime factorization [(prime, exp)]
+ *     version string
+ *     data-driven macro namespace maybe ':' - 
+ *          compare / sign (c{c|a/}0?)
+ *          replace first only
+ *     while loops continue to next
+ *     hypotenuse type operation
+ *     
+ *     debugger
+ *     docs
+ *     tests in portable files
+ *     executable annotation
+ */
 
+namespace StaxLang {
     public class Executor {
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -677,20 +677,20 @@ namespace StaxLang {
                         break;
                     case 'x':
                         type = InstructionType.Value;
-                        block.AddDesc("current value of x");
+                        block.AddDesc("register x");
                         Push(X);
                         break;
                     case 'X': 
-                        block.AddDesc("peek store x");
+                        block.AddDesc("peek and store register x");
                         X = Peek();
                         break;
                     case 'y': 
                         type = InstructionType.Value;
-                        block.AddDesc("current value of y");
+                        block.AddDesc("register y");
                         Push(Y);
                         break;
                     case 'Y':
-                        block.AddDesc("peek store y");
+                        block.AddDesc("peek and store register y");
                         Y = Peek();
                         break;
                     case 'z': 
