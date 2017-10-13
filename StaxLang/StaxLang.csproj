@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IteratorPair.cs" />
     <Compile Include="MacroTree.cs" />
     <Compile Include="StaxPacker.cs" />
     <Compile Include="Rational.cs" />
