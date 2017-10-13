@@ -1705,16 +1705,27 @@ namespace StaxLang {
 
             if (IsArray(list)) {
                 var result = new List<object>(list);
-                foreach (int index in indexes) {
-                    var modindex = ((index % result.Count) + result.Count) % result.Count;
+                foreach (int arg in indexes) {
+                    int index = arg;
+                    if (index < 0) {
+                        index += result.Count;
+                        if (index < 0) {
+                            result.InsertRange(0, Enumerable.Repeat((object)BigInteger.Zero, -index));
+                            index = 0;
+                        }
+                    }
+                    else if (index + 1 > result.Count) {
+                        result.AddRange(Enumerable.Repeat((object)BigInteger.Zero, index + 1 - result.Count));
+                    }
+
                     if (IsBlock(element)) {
-                        Push(result[modindex]);
+                        Push(result[index]);
                         bool cancelled = false;
                         foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
-                        if (!cancelled) result[modindex] = Pop();
+                        if (!cancelled) result[index] = Pop();
                     }
                     else {
-                        result[modindex] = element;
+                        result[index] = element;
                     }
                 }
                 Push(result);
