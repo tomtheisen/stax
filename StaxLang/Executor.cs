@@ -33,11 +33,9 @@ namespace StaxLang {
      *     data-driven macro namespace maybe ':' - 
      *          compare / sign (c{c|a/}0?)
      *          replace first only
-     *          is-letter (VAVa+s#)
-     *     add-to/transform at index maybe - array index {transform}&
      *     cross product sucks
-     *     float to string - n decimal places
      *     while loops continue to next
+     *     hypotenuse type operation
      *     
      *     debugger
      *     docs
@@ -1174,7 +1172,7 @@ namespace StaxLang {
             string targetCountClause = 
                 targetCount.HasValue  
                     ? hardCodedTargetCount 
-                        ? "until " + targetCount + " element" + (targetCount == 1 ? "s are" : " is") + " found," 
+                        ? "until " + targetCount + " element" + (targetCount == 1 ? " is" : "s are") + " found, " 
                         : "until specified number of elements are found, " 
                     : "";
 
@@ -1695,16 +1693,29 @@ namespace StaxLang {
 
             if (IsInt(indexes)) {
                 indexes = new List<object> { indexes };
-                block.AddDesc("assign element at index to array");
+                if (IsBlock(element)) block.AddDesc("modify array element at index");
+                else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "assign " + e + " at index to array");
+                else block.AddDesc("assign element at index to array");
             }
             else {
-                block.AddDesc("assign element to array at all indices");
+                if (IsBlock(element)) block.AddDesc("modify array elements at indices");
+                else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "assign " + e + " to array at all indices");
+                else block.AddDesc("assign element to array at all indices");
             }
 
             if (IsArray(list)) {
                 var result = new List<object>(list);
                 foreach (int index in indexes) {
-                    result[((index % result.Count) + result.Count) % result.Count] = element;
+                    var modindex = ((index % result.Count) + result.Count) % result.Count;
+                    if (IsBlock(element)) {
+                        Push(result[modindex]);
+                        bool cancelled = false;
+                        foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
+                        if (!cancelled) result[modindex] = Pop();
+                    }
+                    else {
+                        result[modindex] = element;
+                    }
                 }
                 Push(result);
             }

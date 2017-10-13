@@ -16,6 +16,7 @@ namespace StaxLang {
         private int[] InstrDescLine;
         private bool[] IndexDescribed;
         private HashSet<(int InstrPtr, string AmbientDesc)> Ambients = new HashSet<(int, string)>();
+        private int NestingDepth;
 
         public string Contents { get; }
         // used to align the explanations
@@ -26,8 +27,8 @@ namespace StaxLang {
 
         public Block(string program) {
             Root = this;
+            NestingDepth = Start = 0;
             Program = Contents = program;
-            Start = 0;
             End = program.Length;
 
             Descs = new List<string> { };
@@ -60,6 +61,7 @@ namespace StaxLang {
 
         private Block(Block parent, int start, int end) {
             Root = parent.Root;
+            NestingDepth = parent.NestingDepth + 1;
             Program = parent.Program;
             Start = parent.Start + start;
             End = parent.Start + end;
@@ -69,10 +71,12 @@ namespace StaxLang {
         public Block SubBlock(int start, int end) => new Block(this, start, end);
         public Block SubBlock(int start) => new Block(this, start, Contents.Length);
 
+        private string IndentSpaces => new string(' ', NestingDepth * 2);
+
         internal void AddAmbient(string text) {
             if (!Root.Ambients.Contains((RootInstrStartPtr, text))) {
                 Root.Ambients.Add((RootInstrStartPtr, text));
-                Root.Descs.Add(text);
+                Root.Descs.Add(IndentSpaces + text);
             }
         }
 
@@ -80,7 +84,7 @@ namespace StaxLang {
             if (Root.IndexDescribed[RootInstrStartPtr]) return; // already described
             Root.IndexDescribed[RootInstrStartPtr] = true;
 
-            Root.Descs.Add(text);
+            Root.Descs.Add(IndentSpaces + text);
             Root.InstrDescLine[RootInstrStartPtr] = Root.Descs.Count - 1;
         }
 
@@ -89,7 +93,7 @@ namespace StaxLang {
             Root.IndexDescribed[RootInstrStartPtr] = true;
 
             int idx = Root.Descs.Count - 1;
-            Root.Descs[idx] = transform(Root.Descs[idx]); 
+            Root.Descs[idx] = IndentSpaces + transform(Root.Descs[idx].TrimStart()); 
         }
     }
 }
