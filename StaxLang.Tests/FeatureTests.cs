@@ -198,6 +198,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void GetIndexOfAll() => RunProgram("\"eo\" :I J", "1 4", "hello");
         [TestMethod] public void AllLeftRotations() => RunProgram(":( J", "ABC BCA CAB", "ABC");
         [TestMethod] public void AllRightRotations() => RunProgram(":) J", "ABC CAB BCA", "ABC");
+        [TestMethod] public void ZipShort() => RunProgram("\"abcde\" \"xyz\" |\\ J", "ax by cz");
 
         // Constants
         [TestMethod] public void Ten() => RunProgram("A", "10");
@@ -252,6 +253,7 @@ namespace StaxLang.Tests {
         [TestMethod] public void ConditionalCancel() => RunProgram("12p 1C 34p", "12");
         [TestMethod] public void FindAllIndexesPredicate() => RunProgram("\"[1 2 2 3 3 4 4 5]\"e {|e} |I J", "1 2 5 6");
         [TestMethod] public void MapCancelFilter() => RunProgram("5R {|eC_$2*m", "113355");
+        [TestMethod] public void CrossMap() => RunProgram("cK' ++", "AA AB AC \r\nBA BB BC \r\nCA CB CC ", "ABC");
 
         // Stack operations
         [TestMethod] public void Copy() => RunProgram("1c+", "2");
@@ -265,6 +267,8 @@ namespace StaxLang.Tests {
         [TestMethod] public void AlterStack() => RunProgram("1 2 3 4 a pppp", "2431");
         [TestMethod] public void CopyBoth() => RunProgram("1 2 3 b ppppp", "32321");
         [TestMethod] public void CopyUnder() => RunProgram("1 2 3 [ pppp ", "3221");
+        [TestMethod] public void CopyNext() => RunProgram("1 2 3 n pppp ", "2321");
+
 
         // Generators
         // TODO: add examples of each (!!?!)

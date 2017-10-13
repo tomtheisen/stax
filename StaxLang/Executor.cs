@@ -7,41 +7,37 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace StaxLang {
-    // available chars
-    //  .DGKnS
-    /* To add:
-     *     find-index-all by regex
-     *     running "total" / reduce-collect
-     *     map-many
-     *     zip-short
-     *     log
-     *     trig
-     *     string interpolate
-     *     uneval
-     *     entire array ref inside for/filter/map 
-     *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
-     *     copy 2nd
-     *     CLI STDIN / STDOUT
-     *     combinatorics: powerset, permutations
-     *     Rotate chars (like translate on a ring)
-     *     call into trailing }
-     *     FeatureTests for generators
-     *     RLE
-     *     RLE prime factorization [(prime, exp)]
-     *     version string
-     *     data-driven macro namespace maybe ':' - 
-     *          compare / sign (c{c|a/}0?)
-     *          replace first only
-     *     cross product sucks
-     *     while loops continue to next
-     *     hypotenuse type operation
-     *     
-     *     debugger
-     *     docs
-     *     tests in portable files
-     */
+// available chars
+//  .DGS
+/* To add:
+ *     find-index-all by regex
+ *     running "total" / reduce-collect
+ *     log
+ *     trig
+ *     string interpolate
+ *     uneval
+ *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
+ *     CLI STDIN / STDOUT
+ *     combinatorics: powerset, permutations
+ *     Rotate chars (like translate on a ring)
+ *     call into trailing }
+ *     FeatureTests for generators
+ *     RLE
+ *     RLE prime factorization [(prime, exp)]
+ *     version string
+ *     data-driven macro namespace maybe ':' - 
+ *          compare / sign (c{c|a/}0?)
+ *          replace first only
+ *     while loops continue to next
+ *     hypotenuse type operation
+ *     
+ *     debugger
+ *     docs
+ *     tests in portable files
+ *     executable annotation
+ */
 
+namespace StaxLang {
     public class Executor {
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -505,6 +501,13 @@ namespace StaxLang {
                             if (shorthand) ip = program.Length;
                         }
                         break;
+                    case 'K': // cross-map
+                        {
+                            bool shorthand = !IsBlock(Peek());
+                            foreach (var s in DoCrossMap(block, block.SubBlock(ip + 1))) yield return s;
+                            if (shorthand) ip = program.Length;
+                        }
+                        break;
                     case 'l': // listify-n
                         DoListifyN(block);
                         break;
@@ -522,6 +525,15 @@ namespace StaxLang {
                     case 'M': 
                         block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
                         DoTranspose();
+                        break;
+                    case 'n': 
+                        {
+                            type = InstructionType.Value;
+                            block.AddDesc("copy of 2nd value in stack");
+                            dynamic top = Pop(), second = Peek();
+                            Push(top);
+                            Push(second);
+                        }
                         break;
                     case 'N':
                         if (IsNumber(Peek())) {
@@ -646,27 +658,39 @@ namespace StaxLang {
                         }
                         break;
                     case '_':
-                        type = InstructionType.Value;
-                        if (CallStackFrames.Any()) block.AddDesc("get current iteration variable");
-                        else block.AddDesc("get entire standard input in one string");
-                        Push(_);
+                        {
+                            type = InstructionType.Value;
+                            if (CallStackFrames.Any()) {
+                                block.AddDesc("current iteration value");
+                                Push(_);
+                            }
+                            else if (_ is IteratorPair p) {
+                                block.AddDesc("push outer and inner iteration values");
+                                Push(p.Outer);
+                                Push(p.Inner);
+                            }
+                            else {
+                                block.AddDesc("entire standard input in one string");
+                                Push(_);
+                            }
+                        }
                         break;
                     case 'x':
                         type = InstructionType.Value;
-                        block.AddDesc("current value of x");
+                        block.AddDesc("register x");
                         Push(X);
                         break;
                     case 'X': 
-                        block.AddDesc("peek store x");
+                        block.AddDesc("peek and store register x");
                         X = Peek();
                         break;
                     case 'y': 
                         type = InstructionType.Value;
-                        block.AddDesc("current value of y");
+                        block.AddDesc("register y");
                         Push(Y);
                         break;
                     case 'Y':
-                        block.AddDesc("peek store y");
+                        block.AddDesc("peek and store register y");
                         Y = Peek();
                         break;
                     case 'z': 
@@ -772,6 +796,10 @@ namespace StaxLang {
                                 else block.AddDesc("divide by n until no longer a multiple");
                                 RunMacro("ss~;*{;/c;%!w,d");
                                 break;
+                            case '\\':
+                                block.AddDesc("zip; truncate to shorter");
+                                RunMacro("b%s% |m~ ;(s,(s \\");
+                                break;
                             case ')': 
                                 DoRotate(block, RotateDirection.Right);
                                 break;
@@ -830,30 +858,7 @@ namespace StaxLang {
                                 RunMacro("2|b");
                                 break;
                             case 'C':
-                                if (IsInt(Peek())) {
-                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "center in " + e + " spaces");
-                                    else block.AddDesc("center string in n spaces");
-                                    int size = (int)Pop();
-                                    var str = Pop();
-                                    var result = new List<object>(Enumerable.Repeat(BigInteger.Zero as object, (size - str.Count) / 2));
-                                    result.AddRange(str);
-                                    result.AddRange(Enumerable.Repeat(BigInteger.Zero as object, size - result.Count));
-                                    Push(result);
-                                }
-                                else if (IsArray(Peek())) { 
-                                    block.AddDesc("center lines");
-                                    int maxLen = 0;
-                                    var list = Pop();
-                                    foreach (var line in list) maxLen = Math.Max(maxLen, line.Count);
-                                    var result = new List<object>();
-                                    foreach (var line in list) {
-                                        var newLine = new List<object>(line);
-                                        newLine.InsertRange(0, Enumerable.Repeat(BigInteger.Zero as object, (maxLen - newLine.Count) / 2));
-                                        newLine.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - newLine.Count));
-                                        result.Add(newLine);
-                                    }
-                                    Push(result);
-                                }
+                                DoCenter(block);
                                 break;
                             case 'd': 
                                 block.AddDesc("depth of main stack");
@@ -1016,6 +1021,33 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoCenter(Block block) {
+            dynamic top = Pop();
+            if (IsInt(top)) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "center in " + e + " spaces");
+                else block.AddDesc("center string in n spaces");
+                int size = (int)top;
+                var str = Pop();
+                var result = new List<object>(Enumerable.Repeat(BigInteger.Zero as object, (size - str.Count) / 2));
+                result.AddRange(str);
+                result.AddRange(Enumerable.Repeat(BigInteger.Zero as object, size - result.Count));
+                Push(result);
+            }
+            else if (IsArray(top)) {
+                block.AddDesc("center lines");
+                int maxLen = 0;
+                foreach (var line in top) maxLen = Math.Max(maxLen, line.Count);
+                var result = new List<object>();
+                foreach (var line in top) {
+                    var newLine = new List<object>(line);
+                    newLine.InsertRange(0, Enumerable.Repeat(BigInteger.Zero as object, (maxLen - newLine.Count) / 2));
+                    newLine.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - newLine.Count));
+                    result.Add(newLine);
+                }
+                Push(result);
+            }
         }
 
         private void DoMacroAlias(Block block, char alias) {
@@ -1782,7 +1814,8 @@ namespace StaxLang {
         private void DoPadLeft(Block block) {
             dynamic b = Pop(), a = Pop();
 
-            if (IsInt(a)) (a, b) = (b, a);
+            if (IsArray(b) && IsInt(a)) (a, b) = (b, a);
+            if (IsInt(a)) a = ToString(a);
 
             if (IsArray(a) && IsInt(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "left pad/truncate to " + e);
@@ -1801,8 +1834,7 @@ namespace StaxLang {
         private void DoPadRight(Block block) {
             dynamic b = Pop(), a = Pop();
 
-            if (IsArray(b)) (a, b) = (b, a);
-
+            if (IsArray(b) && IsInt(a)) (a, b) = (b, a);
             if (IsInt(a)) a = ToString(a);
 
             if (IsArray(a) && IsInt(b)) {
@@ -2058,6 +2090,53 @@ namespace StaxLang {
             }
 
             Push(result);
+        }
+
+        private IEnumerable<ExecutionState> DoCrossMap(Block block, Block rest) {
+            bool shorthand = false;
+            Block map;
+            if (IsBlock(Peek())) {
+                block.AddDesc("cross-map arrays a and b into result; output[i,j] = f(a[i], b[i])");
+                map = Pop();
+            }
+            else {
+                block.AddDesc("cross-map arrays a and b, printing each resulting row");
+                shorthand = true;
+                map = rest;
+            }
+
+            dynamic inner = Pop(), outer = Pop();
+            if (IsInt(inner)) inner = Range(1, inner);
+            if (IsInt(outer)) outer = Range(1, inner);
+
+            var result = new List<object>();
+            PushStackFrame();
+            foreach (var e in outer) {
+                var row = new List<object>();
+                PushStackFrame();
+                foreach (var f in inner) {
+                    Push(e);
+                    Push(f);
+                    _ = new IteratorPair(e, f);
+
+                    try {
+                        foreach (var s in RunSteps(map)) {
+                            if (s.Cancel) continue;
+                            yield return s;
+                        }
+                    }
+                    finally { ++Index; }
+
+                    row.Add(Pop());
+                }
+                PopStackFrame();
+                ++Index;
+                if (shorthand) Print(row);
+                else result.Add(row);
+            }
+            PopStackFrame();
+
+            if (!shorthand) Push(result);
         }
 
         private IEnumerable<ExecutionState> DoMap(Block block, Block rest) {
@@ -2417,7 +2496,7 @@ namespace StaxLang {
                 if (program[ip] == '`') ++ip;
                 result += program[ip];
             }
-            implicitEnd = ip == program.Length - 1;
+            implicitEnd = program[ip] != '"';
             return S2A(result);
         }
 
@@ -2459,7 +2538,7 @@ namespace StaxLang {
                 if (contents[ip] == '}' && --depth == 0) return block.SubBlock(start, ip);
 
                 // shortcut block terminators
-                if ("wWmfFkgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
+                if ("wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
             } while (++ip < contents.Length);
             --ip;
             return block.SubBlock(start);

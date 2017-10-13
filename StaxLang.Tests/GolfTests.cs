@@ -552,6 +552,7 @@ namespace StaxLang.Tests {
             RunProgram("VAQc2BF|tQ", "", expected);
             RunProgram("VAmVA{[|Mm", "", expected);
             RunProgram("VAmVA\\{|Mm", "", expected);
+            RunProgram("VAcK|M", "", expected);
         }
 
         [TestMethod]
@@ -1160,6 +1161,54 @@ namespace StaxLang.Tests {
 
             RunProgramSingleInputs("VA`G$Umz$I0Q#`+s|+98%40%]@", expected);
             RunProgramSingleInputs("ékîΣø/►ô]╙☼τ±O½⌡)Uù«Ä╨", expected);  
+        }
+
+        [TestMethod]
+        public void PlustTest() {
+            http://golf.shinh.org/p.rb?Plus
+            string[] expected = {
+                "  +  ",
+                "  +  ",
+                "+++++",
+                "  +  ",
+                "  +  ",
+            };
+
+            RunProgram("'+x|CYmy{[|Mm", "5", expected);
+            RunProgram("'+x|CcK|M", "5", expected);
+        }
+
+        [TestMethod]
+        public void SortedKnightMoves() {
+            http://golf.shinh.org/p.rb?Knight+move+sorted
+            RunProgram("mVa8(8R$|*{[\\{E-JmE+5=fJ",
+                "h8\na1\nd7\ne6\nc3\nb2\nh2\ne8\ne7",
+                "f7 g6",
+                "b3 c2",
+                "b6 b8 c5 e5 f6 f8",
+                "c5 c7 d4 d8 f4 f8 g5 g7",
+                "a2 a4 b1 b5 d1 d5 e2 e4",
+                "a4 c4 d1 d3",
+                "f1 f3 g4",
+                "c7 d6 f6 g7",
+                "c6 c8 d5 f5 g6 g8");
+        }
+
+        [TestMethod]
+        public void ExpressionForAppreciationTest() {
+            http://golf.shinh.org/p.rb?Expression+for+appreciation
+            string[] expected = {
+                "        1 * 9 +  2 = 11",
+                "       12 * 9 +  3 = 111",
+                "      123 * 9 +  4 = 1111",
+                "     1234 * 9 +  5 = 11111",
+                "    12345 * 9 +  6 = 111111",
+                "   123456 * 9 +  7 = 1111111",
+                "  1234567 * 9 +  8 = 11111111",
+                " 12345678 * 9 +  9 = 111111111",
+                "123456789 * 9 + 10 = 1111111111",
+            };
+            RunProgram("9m^'1*'=_^2)'+'9'*_R$9)LJ", "", expected);
         }
     }
 }
