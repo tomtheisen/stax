@@ -182,34 +182,34 @@ chars	|Types        	|Name           	|Description
 `T`  	|arr int      	|remove-right   	|Trim n elements from right of array.
 `u`  	|arr          	|unique         	|Keep only unique elements in array, maintaining first order of appearance.
 `z`  	|             	|               	|Push empty array/string.
-`|+  	|arr          	|sum            	|Sum of array.
-`|-  	|arr          	|deltas         	|Pairwise difference of array.
-`|&  	|arr arr      	|arr-intersect  	|Keep all elements from a that are in b.
-`|^  	|arr arr      	|arr-mismatch   	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
-`|*  	|arr int      	|repeat-elements	|Repeat each element n times.
-`|*  	|arr arr      	|cross-product  	|Cartesian join of arrays, producing a flat array of pairs.
-`|\  	|arr arr      	|zip-short      	|Zip arrays producing pairs.  The longer array is truncated.
-`|)  	|arr          	|rotate-right   	|Move the last element of an array to the front.
-`|)  	|arr int      	|rotate-right-n 	|Shift array n places to the right, rotating the end to the front.
-`|(  	|arr          	|rotate-left    	|Move the first element of an array to the end.
-`|(  	|arr int      	|rotate-left-n  	|Shift array n places to the right, rotating the front to the end.
-`|[  	|arr          	|prefixes       	|All prefixes of array.
-`|]  	|arr          	|suffixes       	|All suffixes of array.
-`|g  	|arr          	|gcd            	|Greatest common denominator of array.
-`|I  	|arr num      	|find-all       	|Find all indexes of occurrences of the value.
-`|l  	|arr          	|lcm            	|Least common multiple of array.
-`|m  	|arr          	|min            	|Minimum value in array.
-`|M  	|arr          	|max            	|Maximum value in array.
-`|r  	|int int      	|explicit-range 	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
-`|R  	|int int int  	|stride-range   	|Range [a .. b) with stride of c.
-`::  	|arr int      	|every-nth      	|Every nth element in array, starting from the first.
-`:(  	|arr          	|left-rotations 	|All left rotations, starting from original.
-`:)  	|arr          	|right-rotations	|All right rotations, starting from original.
-`:f  	|arr          	|flatten        	|Flatten array of arrays one time.
-`:I  	|arr arr      	|find-index-all 	|For each element in b, find the index of the first occurrence in a.
-`:m  	|arr int      	|repeat-to      	|Repeat array until it is exactly length n.
-`:r  	|arr arr      	|replace-all    	|Replace all substring occurrences.
-`:u  	|arr          	|multi-single   	|Array contains exactly 1 distinct element?
+`\|+`	|arr          	|sum            	|Sum of array.
+`\|-`	|arr          	|deltas         	|Pairwise difference of array.
+`\|&`	|arr arr      	|arr-intersect  	|Keep all elements from a that are in b.
+`\|^`	|arr arr      	|arr-mismatch   	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
+`\|*`	|arr int      	|repeat-elements	|Repeat each element n times.
+`\|*`	|arr arr      	|cross-product  	|Cartesian join of arrays, producing a flat array of pairs.
+`\|\`	|arr arr      	|zip-short      	|Zip arrays producing pairs.  The longer array is truncated.
+`\|)`	|arr          	|rotate-right   	|Move the last element of an array to the front.
+`\|)`	|arr int      	|rotate-right-n 	|Shift array n places to the right, rotating the end to the front.
+`\|(`	|arr          	|rotate-left    	|Move the first element of an array to the end.
+`\|(`	|arr int      	|rotate-left-n  	|Shift array n places to the right, rotating the front to the end.
+`\|[`	|arr          	|prefixes       	|All prefixes of array.
+`\|]`	|arr          	|suffixes       	|All suffixes of array.
+`\|g`	|arr          	|gcd            	|Greatest common denominator of array.
+`\|I`	|arr num      	|find-all       	|Find all indexes of occurrences of the value.
+`\|l`	|arr          	|lcm            	|Least common multiple of array.
+`\|m`	|arr          	|min            	|Minimum value in array.
+`\|M`	|arr          	|max            	|Maximum value in array.
+`\|r`	|int int      	|explicit-range 	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
+`\|R`	|int int int  	|stride-range   	|Range [a .. b) with stride of c.
+`::` 	|arr int      	|every-nth      	|Every nth element in array, starting from the first.
+`:(` 	|arr          	|left-rotations 	|All left rotations, starting from original.
+`:)` 	|arr          	|right-rotations	|All right rotations, starting from original.
+`:f` 	|arr          	|flatten        	|Flatten array of arrays one time.
+`:I` 	|arr arr      	|find-index-all 	|For each element in b, find the index of the first occurrence in a.
+`:m` 	|arr int      	|repeat-to      	|Repeat array until it is exactly length n.
+`:r` 	|arr arr      	|replace-all    	|Replace all substring occurrences.
+`:u` 	|arr          	|multi-single   	|Array contains exactly 1 distinct element?
 
 
 ## Blocks
