@@ -1177,8 +1177,8 @@ namespace StaxLang {
                 stopOnTargetVal = lowerSpec == 't',
                 scalarMode = lowerSpec == 's' || lowerSpec == 'e',
                 postPop = char.IsUpper(spec);
-            Block genblock = shorthand ? rest : Pop(), 
-                filter = null;
+            Block genblock = shorthand ? rest : Pop();
+            Block filter = null;
             dynamic targetVal = null;
             int? targetCount = null;
 
@@ -1223,6 +1223,8 @@ namespace StaxLang {
                 + (stopOnTargetVal ? "until specified target value, " : "")
                 + targetCountClause
                 + (postPop ? "popping each value" : "including the initial value"));
+            if (genblock.Contents == "") block.AddAmbient("generator block is empty; using increment");
+
 
             if (targetCount == 0) { // 0 elements requested ??
                 Push(new List<object>()); 
@@ -1237,10 +1239,15 @@ namespace StaxLang {
                 _ = Peek();
 
                 if (Index > 0 || postPop) {
-                    foreach (var s in RunSteps(genblock)) {
-                        if (s.Cancel && stopOnCancel) goto GenComplete;
-                        if (s.Cancel) goto Cancelled;
-                        yield return s;
+                    if (genblock.Contents != "") {
+                        foreach (var s in RunSteps(genblock)) {
+                            if (s.Cancel && stopOnCancel) goto GenComplete;
+                            if (s.Cancel) goto Cancelled;
+                            yield return s;
+                        }
+                    }
+                    else { // empty gen block, use (^)
+                        RunMacro("^");
                     }
                 }
                 object generated = Peek();
