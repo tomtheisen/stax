@@ -30,11 +30,11 @@ using System.Text.RegularExpressions;
  *          replace first only
  *     while loops continue to next
  *     hypotenuse type operation
+ *     squarify array
  *     
  *     debugger
  *     docs
  *     tests in portable files
- *     executable annotation
  */
 
 namespace StaxLang {
@@ -47,6 +47,7 @@ namespace StaxLang {
         public IReadOnlyList<string> Annotation { get; private set; } = null;
 
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
+            ['?'] = (S2A(Version), "version info"),
             ['0'] = (new Rational(0, 1), "0/1"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
@@ -2230,8 +2231,7 @@ namespace StaxLang {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(a) && IsArray(b)) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove all matching substrings");
-                else block.AddDesc("remove all occurrences of substring");
+                block.AddDesc("remove all matching elements");
                 a = new List<object>(a);
                 var bl = (List<object>)b;
                 a.RemoveAll((Predicate<object>)(e => bl.Contains(e, Comparer.Instance)));
@@ -2403,7 +2403,7 @@ namespace StaxLang {
         }
 
         private List<object> ToString(dynamic arg) {
-            if (IsInt(arg)) {
+            if (IsNumber(arg)) {
                 return S2A(arg.ToString());
             }
             else if (IsArray(arg)) {

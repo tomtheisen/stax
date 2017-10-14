@@ -36,5 +36,6 @@ namespace StaxLang.Tests {
         [TestMethod] public void RationalIntCompare() => RunProgram("1u0>", "1");
         [TestMethod] public void BlockCompressNestParse() => RunProgram("1{`m`'am", "a");
         [TestMethod] public void TerminatedStringEndTest() => RunProgram("1m\"x\"", "x");
+        [TestMethod] public void RationalToString() => RunProgram("2u$", "1/2");
     }
 }
