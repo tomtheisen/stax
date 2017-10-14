@@ -39,6 +39,8 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
+        public const string Version = "Stax 0.0.0";
+
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
         public bool Annotate { get; set; }
@@ -87,6 +89,7 @@ namespace StaxLang {
         public int Run(string program, string[] input, TimeSpan? timeout = null) {
             if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
+            block.UnAnnotate();
             Initialize(block, input);
             int step = 0;
             try {
