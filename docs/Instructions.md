@@ -256,6 +256,7 @@ chars	|Description
 
 ## Prefix Modes
 Some instructions behave differently when they are the first character in a program.
+
 char	|Name        	|Description
 --- 	|---         	|---
 `f` 	|line-filter 	|Use the rest of the program to filter input lines.  Print lines that produce a truthy result.
