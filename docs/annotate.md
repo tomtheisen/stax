@@ -2,7 +2,7 @@
 Stax is kind of hard to read.  You can actually add comments, which is a luxury not afforded in many golfing languages.  A tab character introduces a line comment.
 
     5m	(tab) foreach [1..5] print
-    '#*  (tab) that many # characters
+    '#*	(tab) that many # characters
 
 If you replace `(tab)` with actual tabs, this code is executable in stax.  It will produce this output.
 
