@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
  *     string interpolate
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     CLI STDIN / STDOUT
  *     combinatorics: powerset, permutations
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
@@ -85,7 +84,18 @@ namespace StaxLang {
         /// </summary>
         /// <param name="program"></param>
         /// <param name="input"></param>
-        /// <returns>number of steps it took</returns>
+        /// <returns>number of steps the program ran</returns>
+        public int Run(byte[] programBytes, string[] input, TimeSpan? timeout = null) {
+            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : Encoding.ASCII;
+            return Run(e.GetString(programBytes), input, timeout);
+        }
+
+        /// <summary>
+        /// run a stax program
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="input"></param>
+        /// <returns>number of steps the program ran</returns>
         public int Run(string program, string[] input, TimeSpan? timeout = null) {
             if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
@@ -111,6 +121,8 @@ namespace StaxLang {
         }
 
         private void Initialize(Block programBlock, string[] input) {
+            input = input ?? Array.Empty<string>();
+
             IndexOuter = Index = 0;
             X = BigInteger.Zero;
             Y = S2A("");
@@ -174,11 +186,11 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
             var program = block.Contents;
-            if (program.Length > 0) switch (program[0]) {
+            if (TotalStackSize > 0 && !IsInt(Peek())) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
-                    if (TotalStackSize > 0 && !IsInt(Peek())) DoListify();
+                    DoListify();
                     break;
             }
 

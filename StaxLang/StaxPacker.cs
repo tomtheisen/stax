@@ -13,10 +13,28 @@ namespace StaxLang {
             .Select((c, i) => (c, i))
             .ToDictionary(t => t.c, t => (byte)t.i);
 
+        public static readonly Encoding Encoding = new StaxEncoding();
+
+        private class StaxEncoding : Encoding {
+            public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex) {
+                for (int i = 0; i < charCount; i++) bytes[i + byteIndex] = CodePageIndex[chars[i + charIndex]];
+                return charCount;
+            }
+
+            public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex) {
+                for (int i = 0; i < byteCount; i++) chars[i + charIndex] = StaxPacker.CodePage[bytes[i + byteIndex]];
+                return byteCount;
+            }
+
+            public override int GetCharCount(byte[] bytes, int index, int count) => count;
+            public override int GetByteCount(char[] chars, int index, int count) => count;
+            public override int GetMaxByteCount(int charCount) => charCount;
+            public override int GetMaxCharCount(int byteCount) => byteCount;
+        }
+
         public static string Pack(string stax) {
             var bytes = PackBytes(stax);
-            var result = string.Concat(bytes.Reverse().Select(b => CodePage[b]));
-            return result;
+            return string.Concat(bytes.Reverse().Select(b => CodePage[b]));
         }
 
         public static byte[] PackBytes(string stax) {
@@ -58,5 +76,6 @@ namespace StaxLang {
         }
 
         public static bool IsPacked(string stax) => stax.Length > 0 && stax[0] >= 0x80;
+        public static bool IsPacked(byte[] stax) => stax.Length > 0 && stax[0] >= 0x80;
     }
 }
