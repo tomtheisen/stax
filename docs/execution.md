@@ -10,10 +10,10 @@
 At the beginning each line from standard input is pushed to the input stack in reverse.  The top of the stack is the first line from input.
 
 ## Unpack
-The high bit of the first byte of the program is checked.  If its set, then the packed stax code is transformed into plain ascii.
+The high bit of the first byte of the program is checked.  If it's set, then the packed stax code is transformed into plain ASCII.
 
 ## Unannotate
-Annotated code is executable directly.  But that only works in non-trivial cases because this step transforms it appropriately.  If the first character is a tab, then a reverse annotation transform is applied.  The effect is extra whitespace, newlines, and comments are all removed.
+Annotated code is executable directly.  But that only works in non-trivial cases because this step transforms it appropriately.  If the first character is a tab, then a reverse annotation transform is applied.  The effect is that extra whitespace, newlines, and comments are all removed.
 
 ## Special First Characters
 Some instruction characters have special meaning when in the first position of a program.  These behaviors are explained in the Instructions section.
