@@ -9,7 +9,9 @@ For display purposes, a clipboard-friendly variant of [CP437](https://en.wikiped
 
 ## Packed Stax character set
 This is the character set used to present packed stax.  The charcters themselves aren't meaningful.  It's identical to CP437 except for 00 and FF.
-|\_0|\_1|\_2|\_3|\_4|\_5|\_6|\_7|\_8|\_9|\_a|\_b|\_c|\_d|\_e|\_f
+
+\_\_|\_0|\_1|\_2|\_3|\_4|\_5|\_6|\_7|\_8|\_9|\_a|\_b|\_c|\_d|\_e|\_f
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 0\_|ø|☺|☻|♥|♦|♣|♠|•|◘|○|◙|♂|♀|♪|♫|☼
 1\_|►|◄|↕|‼|¶|§|▬|↨|↑|↓|→|←|∟|↔|▲|▼
 2\_| |!|"|#|$|%|&|'|(|)|\*|+|,|-|.|/
