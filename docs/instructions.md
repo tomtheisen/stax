@@ -70,7 +70,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|^`        	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
 `\|*`        	|int int    	|pow           	|a ** b             	|Exponent.	
 `\|*`        	|frac int   	|pow           	|a ** b             	|Exponent.	
-`\|/`        	|int int    	|div-all       	|                   	|Divide Divide a by b as many times as it will go evenly.
+`\|/`        	|int int    	|div-all       	|                   	|Divide a by b as many times as it will go evenly.
 `\|<`        	|int int    	|shift-left    	|a << b             	|Bitshift left.
 `\|>`        	|int int    	|shift-right   	|a >> b             	|Bitshift right.
 `\|1`        	|int        	|parity-sign   	|(-1) ** a          	|Power of negative one.
