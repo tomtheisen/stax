@@ -1,7 +1,7 @@
 # Stax
 Stax Golfing Language
 
-Stax is yet another stack-based programming language, optimized for code golf.  Stax is influenced by [GS2](https://github.com/nooodl/gs2), [05AB1E](https://github.com/Adriandmen/05AB1E), and others.  Stax is written in printable ASCII characters, although it can be optionally packed into bytes.  The language isn't stable yet, and I haven't publicized it much yet.
+Stax is yet another stack-based programming language, optimized for code golf.  Stax is influenced by [GS2](https://github.com/nooodl/gs2), [05AB1E](https://github.com/Adriandmen/05AB1E), and others.  Stax is written in printable ASCII characters, although it can be optionally packed into bytes.  The language isn't stable yet, and I haven't publicized it much yet.  For more detail check the [docs](docs/index.md).  Or, you know, the code.
 
 ## Types
 Falsy values are numeric zeroes and empty arrays.  All other values are truthy.
