@@ -33,7 +33,6 @@ using System.Text.RegularExpressions;
  *     squarify array
  *     
  *     debugger
- *     docs
  *     tests in portable files
  */
 

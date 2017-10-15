@@ -200,6 +200,7 @@ chars	|Types        	|Name           	|Description
 `\|l`	|arr          	|lcm            	|Least common multiple of array.
 `\|m`	|arr          	|min            	|Minimum value in array.
 `\|M`	|arr          	|max            	|Maximum value in array.
+`\|p`	|arr          	|palindromize   	|a + reversed(a[:-1]).  Always has an odd length.
 `\|r`	|int int      	|explicit-range 	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range   	|Range [a .. b) with stride of c.
 `::` 	|arr int      	|every-nth      	|Every nth element in array, starting from the first.
@@ -227,7 +228,7 @@ chars	|Types        	|Name           	|Description
 `F`  	|arr block    	|foreach        	|Terminate a block.  Push each element of the array, and execute the block for each.
 `F`  	|arr          	|foreach-short  	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
 `F`  	|int          	|for-short      	|Perform `foreach-short` using the range [1 .. n].
-`g`  	|             	|               	|Generate values.  See `generators` for details.
+`g`  	|             	|generator      	|Generate values.  See `generators` for details.
 `i`  	|             	|index          	|Get the current 0-based iteration index of the inner loop.
 `\|i`	|             	|outer-index    	|Get the 0-based iteration index of the outer loop.
 `k`  	|arr block    	|reduce         	|Terminate a block and reduce (fold) using the block.
@@ -254,7 +255,7 @@ chars	|Description
 `y`  	|Value of register y.  Default is first line of standard input.
 `Y`  	|Peek and write register y.
 
-## Prefix Modes
+## Prefix Directives
 Some instructions behave differently when they are the first character in a program.
 
 char	|Name        	|Description
