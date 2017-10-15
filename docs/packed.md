@@ -17,7 +17,7 @@ This is the character set used to present packed stax.  The charcters themselves
 2\_| |!|"|#|$|%|&|'|(|)|\*|+|,|-|.|/
 3\_|0|1|2|3|4|5|6|7|8|9|:|;|<|=|>|?
 4\_|@|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O
-5\_|P|Q|R|S|T|U|V|W|X|Y|Z|\[|\\|\]|^|_
+5\_|P|Q|R|S|T|U|V|W|X|Y|Z|\[| \\ |]|^|_
 6\_|\`|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o
 7\_|p|q|r|s|t|u|v|w|x|y|z|{|\||}|~|⌂
 8\_|Ç|ü|é|â|ä|à|å|ç|ê|ë|è|ï|î|ì|Ä|Å
