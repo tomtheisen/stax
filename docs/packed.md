@@ -1,8 +1,8 @@
 # Packed Stax
-Stax is written using the 95 printable ascii characters.  These are easy to type on most keyboards, but for golfing applications, this is pretty wasteful.  Therefore, stax code has an alternative representation called "PackedStax".  They can be executed by the same interpreter with no additional switches or settings.  The high bit of the first byte is the toggle for detecting the difference.  Converting to packed stax representation reduces code bloat by about 18%.
+Stax is written using the 95 printable ASCII characters.  These are easy to type on most keyboards, but for golfing applications, this is pretty wasteful.  Therefore, stax code has an alternative representation called "PackedStax".  They can be executed by the same interpreter with no additional switches or settings.  The high bit of the first byte is the toggle for detecting the difference.  Converting to packed stax representation reduces code bloat by about 18%.
 
 ## How does it work?
-The stax code is converted to a big integer using the ascii characters as base 95.  Then the number is converted to base 256, which gives a byte array.  There's a little extra piece to make sure leading 0s aren't lost.  
+The stax code is converted to a big integer using the ASCII characters as base 95.  Then the number is converted to base 256, which gives a byte array.  There's a little extra piece to make sure leading 0s aren't lost.  
 
 ## Portability
 For display purposes, a clipboard-friendly variant of [CP437](https://en.wikipedia.org/wiki/Code_page_437#Character_set) is used to display packed stax.  00 and FF were replaced so they can survive a round-trip through a web browser and clipboard.
