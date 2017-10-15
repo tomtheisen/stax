@@ -26,9 +26,9 @@ namespace StaxLang.CLI {
         private static void ShowUsage() {
             Console.WriteLine(Executor.Version);
             Console.WriteLine("Usage:");
-            Console.WriteLine("Run a packed or unpacked program from a source file:");
+            Console.WriteLine("Run a program from a source file:");
             Console.WriteLine("\tstax program.stax [inputfile]");
-            Console.WriteLine("Run ad-hoc ascii code:");
+            Console.WriteLine("Run ad-hoc code:");
             Console.WriteLine("\tstax -c staxcode [inputfile]");
         }
     }
