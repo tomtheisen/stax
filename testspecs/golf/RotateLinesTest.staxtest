@@ -1,0 +1,13 @@
+	#http://golf.shinh.org/p.rb?rotate+lines
+	in
+foo
+bar
+baz
+	out
+bar
+baz
+foo
+	stax
+d{P|DwyP
+	stax
+L|(m

@@ -1,0 +1,21 @@
+	#https://codegolf.stackexchange.com/questions/143278/am-i-an-insignificant-array
+	in
+[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]
+	out
+1
+	in
+[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]
+	out
+0
+	stax
+2B{E-^3/f!
+	in
+[1, 2, 3, 4, 3, 4, 5, 5, 5, 4]
+	out
+1
+	in
+[1, 2, 3, 4, 3, 4, 5, 5, 5, 3]
+	out
+0
+	stax
+|-{^3/f!

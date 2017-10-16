@@ -1,0 +1,1479 @@
+	name:SingleUniqueElement
+	in
+[3 3 3]
+	out
+1
+	stax
+:u
+	name:NonSingleUniqueElement
+	in
+[3 3 3 4]
+	out
+0
+	stax
+:u
+	name:Flatten
+	in
+[[1 2] [3 4]]
+	out
+1 2 3 4
+	stax
+:f J
+	name:GetIndexOfAll
+	in
+hello
+	out
+1 4
+	stax
+"eo" :I J
+	name:AllLeftRotations
+	in
+ABC
+	out
+ABC BCA CAB
+	stax
+:( J
+	name:AllRightRotations
+	in
+ABC
+	out
+ABC CAB BCA
+	stax
+:) J
+	name:ZipShort
+	in
+	out
+ax by cz
+	stax
+"abcde" "xyz" |\ J
+	name:Ten
+	in
+	out
+10
+	stax
+A
+	name:MinusUnit
+	in
+	out
+-1
+	stax
+U
+	name:UpperAlpha
+	in
+	out
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VA
+	name:LowerAlpha
+	in
+	out
+abcdefghijklmnopqrstuvwxyz
+	stax
+Va
+	name:UpperConsonants
+	in
+	out
+BCDFGHJKLMNPQRSTVWXYZ
+	stax
+VC
+	name:LowerConsonants
+	in
+	out
+bcdfghjklmnpqrstvwxyz
+	stax
+Vc
+	name:Digits
+	in
+	out
+0123456789
+	stax
+Vd
+	name:UpperVowels
+	in
+	out
+AEIOU
+	stax
+VV
+	name:LowerVowels
+	in
+	out
+aeiou
+	stax
+Vv
+	name:UpperWord
+	in
+	out
+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VW
+	name:LowerWord
+	in
+	out
+0123456789abcdefghijklmnopqrstuvwxyz
+	stax
+Vw
+	name:Whitespace
+	in
+	out
+32
+9
+13
+10
+11
+	stax
+Vsm
+	name:Newline
+	in
+	out
+
+x
+	stax
+Vn 'x+
+	name:Rational0
+	in
+	out
+0/1
+	stax
+V0
+	name:AllLetters
+	in
+	out
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+Vl
+	name:AllIdentifierChars
+	in
+	out
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VL
+	name:Pi
+	in
+	out
+3.14159265358979
+	stax
+VP
+	name:DefaultOutput
+	in
+	out
+3
+	stax
+1 2 3
+	name:Print
+	in
+	out
+2
+	stax
+1 2P 3
+	name:SuppressedNewline
+	in
+	out
+12
+	stax
+1p 2P 3
+	name:ImplicitEvalTokenizeInput
+	in
+3 4
+	out
+7
+	stax
++
+	name:FloatsAreEvaled
+	in
+01.230
+	out
+1.23
+	stax
+
+	name:FractionsAreEvaled
+	in
+6/14
+	out
+3/7
+	stax
+
+	name:PeekPrint
+	in
+	out
+777
+	stax
+7qqQ
+	name:PrintNewline
+	in
+	out
+
+	stax
+|P
+	name:ImplicitEval
+	in
+[1, 2, 3]
+	out
+6
+	stax
+|+
+	name:ImplicitTrailingLiteralPrint
+	in
+	out
+1abc
+	stax
+1p "abc
+	name:PrintSpace
+	in
+	out
+1 2
+	stax
+1p| 2p
+	name:RepeatBlock
+	in
+	out
+111
+	stax
+{1p}3*
+	name:ShorthandRepeatBlock
+	in
+	out
+111
+	stax
+3F1p
+	name:DoWhile
+	in
+	out
+34567
+	stax
+3{q^c8-w
+	name:DoWhileShorthand
+	in
+	out
+34567
+	stax
+3wq^c8-
+	name:While
+	in
+	out
+3-4-5-6-7
+	stax
+3{q^c8=C'-pW
+	name:WhileShorthand
+	in
+	out
+3-4-5-6-7
+	stax
+3Wq^c8=C'-p
+	name:IfBlocks
+	in
+	out
+not equal
+	stax
+ "equal" 1 2=  {} {"not "s+} ?
+	name:Filter
+	in
+	out
+1,3,5
+	stax
+5R {2%f ',*
+	name:FilterShorthand
+	in
+	out
+1
+3
+	stax
+5rf2%
+	name:ForEach
+	in
+	out
+45678
+	stax
+5R {3+pF
+	name:Map
+	in
+	out
+1,4,9,16,25
+	stax
+5R {c*m ',*
+	name:Reduce
+	in
+	out
+120
+	stax
+5R {*k
+	name:OrderBy
+	in
+	out
+5,1,4,2,3
+	stax
+5R {c*5%o ',*
+	name:IterationIndex
+	in
+	out
+x:0 x:1 x:2 x:3 
+	stax
+'x]4* {p ':p ip ' p F
+	name:OuterIterationIndex
+	in
+	out
+0011
+	stax
+2F 2F |ip
+	name:IteratingVariable
+	in
+	out
+122333
+	stax
+3R {$_*pF
+	name:RegexReplaceBlock
+	in
+	out
+a1b2c3d
+	stax
+"axbxxcxxxd" "x+"{%$}R
+	name:ConditionalCancel
+	in
+	out
+12
+	stax
+12p 1C 34p
+	name:FindAllIndexesPredicate
+	in
+	out
+1 2 5 6
+	stax
+"[1 2 2 3 3 4 4 5]"e {|e} |I J
+	name:MapCancelFilter
+	in
+	out
+113355
+	stax
+5R {|eC_$2*m
+	name:CrossMap
+	in
+ABC
+	out
+AA AB AC 
+BA BB BC 
+CA CB CC 
+	stax
+cK' ++
+	name:Copy
+	in
+	out
+2
+	stax
+1c+
+	name:ListifyStack
+	in
+	out
+5,4,3,2,1
+	stax
+1 2 3 4 5 L ',*
+	name:ListifyN
+	in
+	out
+3,4,5
+	stax
+1 2 3 4 5 3l ',*
+	name:SideStack
+	in
+	out
+23314
+	stax
+1 2 3 4 ~~p;p,ppp
+	name:Discard
+	in
+	out
+22
+	stax
+11 22 33 d
+	name:Swap
+	in
+	out
+12
+	stax
+1 2 s pp
+	name:StackDepth
+	in
+	out
+4
+	stax
+1 1 1 1 |d
+	name:SideStackDepth
+	in
+	out
+3
+	stax
+1 1 1 1 ~~~ |D
+	name:AlterStack
+	in
+	out
+2431
+	stax
+1 2 3 4 a pppp
+	name:CopyBoth
+	in
+	out
+32321
+	stax
+1 2 3 b ppppp
+	name:CopyUnder
+	in
+	out
+3221
+	stax
+1 2 3 [ pppp 
+	name:CopyNext
+	in
+	out
+2321
+	stax
+1 2 3 n pppp 
+	name:CharacterInterleave
+	in
+	out
+a-b-c-d
+	stax
+"abcd"M '- *
+	name:Upper
+	in
+	out
+HELLO
+	stax
+"Hello"^
+	name:Lower
+	in
+	out
+hello
+	stax
+"Hello"v
+	name:TruncateRight
+	in
+	out
+Hel
+	stax
+"Hello" 3(
+	name:PadRight
+	in
+	out
+Hello   
+	stax
+"Hello" 8(
+	name:TruncateLeft
+	in
+	out
+llo
+	stax
+"Hello" 3)
+	name:PadLeft
+	in
+	out
+   Hello
+	stax
+"Hello" 8)
+	name:FindIndex
+	in
+	out
+6
+	stax
+"Hello World" "Wo" I
+	name:FindAllIndexes
+	in
+	out
+4 7
+	stax
+"Hello World" "o" |I J
+	name:UnfoundIndex
+	in
+	out
+-1
+	stax
+"Hello World" "Wr" I
+	name:ChunkString
+	in
+	out
+abc,def,gh
+	stax
+"abcdefgh" 3/ ',*
+	name:Transpose
+	in
+	out
+adg,beh,cf 
+	stax
+"abcdefgh" 3/ M ',*
+	name:TransposeFills
+	in
+["long" "x" "longer"]
+	out
+lxl,o o,n n,g g,  e,  r
+	stax
+M ', *
+	name:TrimLeft
+	in
+	out
+abc  
+	stax
+"  abc  " t
+	name:TrimRight
+	in
+	out
+  abc
+	stax
+"  abc  " T
+	name:TrimLeftBy
+	in
+	out
+llo world
+	stax
+"hello world" 2 t
+	name:TrimRightBy
+	in
+	out
+hello wor
+	stax
+"hello world" 2 T
+	name:Unique
+	in
+	out
+Helo Wrd
+	stax
+"Hello World" u
+	name:RegexReplace
+	in
+	out
+azbzczd
+	stax
+"axbxxcxxxd" "x+" 'z R
+	name:Translate
+	in
+	out
+H3ll0 W0rld
+	stax
+"Hello World" "e3o0" |t
+	name:Batch
+	in
+	out
+hel,ell,llo
+	stax
+"hello" 3B ',*
+	name:RotateRight
+	in
+	out
+gasdf
+	stax
+"asdfg" |)
+	name:RotateRightDistance
+	in
+	out
+fgasd
+	stax
+"asdfg" 2 |)
+	name:RotateLeft
+	in
+	out
+sdfga
+	stax
+"asdfg" |(
+	name:RotateLeftDistance
+	in
+	out
+dfgas
+	stax
+"asdfg" 2 |(
+	name:RegexFind
+	in
+	out
+o,oo,o,o
+	stax
+"Hello. Good to see you." "o+" |f ', *
+	name:RegexSplit
+	in
+	out
+Hell,. G,d t, see y,u.
+	stax
+"Hello. Good to see you." "o+" |s ', *
+	name:Prefixes
+	in
+	out
+a,ab,abc
+	stax
+"abc" |[ ',*
+	name:Suffixes
+	in
+	out
+abc,bc,c
+	stax
+"abc" |] ',*
+	name:ZeroFill
+	in
+	out
+00abc
+	stax
+"abc" 5 |z
+	name:CompressedLiterals
+	in
+	out
+literal
+	stax
+`5Is1%
+	name:SubstringOccurrences
+	in
+	out
+2
+	stax
+"drab cab" "ab" #
+	name:AutoRangeBounds
+	in
+	out
+as//
+	stax
+"asdf"X 2x|r '/ &
+	name:StringReplace
+	in
+	out
+axbxc
+	stax
+ "a.b.c" '. 'x :r
+	name:StartsWith
+	in
+Hello world
+	out
+1
+	stax
+"He" :[
+	name:NotStartsWith
+	in
+Hello world
+	out
+0
+	stax
+"e" :[
+	name:EndsWith
+	in
+Hello world
+	out
+1
+	stax
+"rld" :]
+	name:NotEndsWith
+	in
+Hello world
+	out
+0
+	stax
+"rld!" :]
+	name:Center
+	in
+	out
+  a  
+	stax
+'a 5 |C
+	name:CenterBlock
+	in
+abcd
+	out
+ a  , ab ,abc ,abcd
+	stax
+|[ |C ',*
+	name:ZeroRange
+	in
+	out
+0,1,2,3,4
+	stax
+5r',*
+	name:OneRange
+	in
+	out
+1,2,3,4,5
+	stax
+5R',*
+	name:StartEndRange
+	in
+	out
+5 6 7
+	stax
+5 8 |r J
+	name:StartEndStrideRange
+	in
+	out
+5 7 9 11
+	stax
+5 13 2 |R J
+	name:ReverseArray
+	in
+	out
+5,4,3,2,1
+	stax
+5R r ',*
+	name:ConcatArray
+	in
+	out
+1,2,3,1,2,3,4
+	stax
+3R 4R + ',*
+	name:ConcatArrayElement
+	in
+	out
+1,2,3,7
+	stax
+3R 7 + ',*
+	name:RepeatArray
+	in
+	out
+1,2,3,1,2,3
+	stax
+3R 2* ',*
+	name:RepeatArrayBackwards
+	in
+	out
+3,2,1,3,2,1
+	stax
+3R 2N* ',*
+	name:Explode
+	in
+	out
+9
+	stax
+5R E +
+	name:StringArrayEquivalence
+	in
+	out
+97,98,99
+	stax
+"abc" ',*
+	name:ArrayLength
+	in
+	out
+5
+	stax
+5R%
+	name:ReadIndex
+	in
+	out
+3
+	stax
+5R 2@
+	name:ReadIndexes
+	in
+	out
+3,5
+	stax
+5R 2]1N]+ @ ',*
+	name:AssignIndex
+	in
+	out
+1,8,3,4,5
+	stax
+5R 1 8& ',*
+	name:AssignIndexMutate
+	in
+[1 2 3 4 5]
+	out
+1 2 3 -4 5
+	stax
+3{N}&J
+	name:AssignIndexAll
+	in
+	out
+1,8,8,4,5
+	stax
+5R 1 2\ 8& ',*
+	name:ArrayToString
+	in
+	out
+12345
+	stax
+5R$
+	name:SingletonWrap
+	in
+	out
+1
+	stax
+0]%
+	name:PairWrap
+	in
+	out
+2
+	stax
+3 7 \%
+	name:Head
+	in
+	out
+1
+	stax
+5R h
+	name:Tail
+	in
+	out
+5
+	stax
+5R H
+	name:Sum
+	in
+	out
+15
+	stax
+5R |+
+	name:MinimumArray
+	in
+	out
+1
+	stax
+5R oh
+	name:MaximumArray
+	in
+	out
+5
+	stax
+5R oH
+	name:Delta
+	in
+	out
+0,2,5
+	stax
+1] 1]+ 3]+ 8]+ |- ',*
+	name:JoinWithNewlines
+	in
+	out
+dc
+ba
+	stax
+"abcd" 2/ |J r
+	name:Palindromize
+	in
+	out
+abcbcba
+	stax
+"abcb" |p
+	name:ZipRep
+	in
+	out
+ax,by,cx,dy,ex
+	stax
+"abcde" "xy" \ ',*
+	name:Union
+	in
+	out
+1,2,2
+	stax
+1]2]+2]+3]+3]+  3r |& ',*
+	name:SymmetricDiff
+	in
+	out
+3,3,0
+	stax
+1]2]+2]+3]+3]+  3r |^ ',*
+	name:CountInTest
+	in
+	out
+2
+	stax
+1]2]+2]+3]+3]+ 3 #
+	name:IndexAllArray
+	in
+	out
+2 6
+	stax
+"[1 2 3 2 1 2 3]"e 3|I J
+	name:Uncons
+	in
+	out
+97bcd
+	stax
+"abcd" B pP
+	name:UnconsRight
+	in
+	out
+100abc
+	stax
+"abcd" N pP
+	name:ElementRepeat
+	in
+	out
+111122223333
+	stax
+3R4|*$
+	name:CrossProduct
+	in
+	out
+ax ay az bx by bz cx cy cz
+	stax
+"abc" "xyz" |* J
+	name:SurroundWith
+	in
+	out
+bab
+	stax
+'a'b |S
+	name:GetEveryNth
+	in
+[1, 2, 3, 4, 5, 6]
+	out
+1 3 5
+	stax
+2:: J
+	name:BetweenTest
+	in
+4
+	out
+1
+	stax
+3 5 :b
+	name:NotBetweenTest
+	in
+6
+	out
+0
+	stax
+3 5 :b
+	name:ClampTest
+	in
+7
+	out
+5
+	stax
+3 5 :c
+	name:AlreadyClampedTest
+	in
+4
+	out
+4
+	stax
+3 5 :c
+	name:RepeatToLengthTest
+	in
+	out
+1 2 3 1 2 3 1
+	stax
+3R 7 :m J
+	name:IncreaseToMultipleTest
+	in
+	out
+28
+	stax
+25 7 :m
+	name:IntLiteral
+	in
+	out
+123
+	stax
+123
+	name:BigIntLiteral
+	in
+	out
+999999999999999999999999999999999999999
+	stax
+999999999999999999999999999999999999999
+	name:TenIsReallyOneZero
+	in
+	out
+0
+	stax
+10
+	name:FloatLiteral
+	in
+	out
+1.23
+	stax
+1!23
+	name:FloatNoTrailingZero
+	in
+	out
+0
+	stax
+1!230
+	name:FloatFloor
+	in
+	out
+12
+	stax
+12!345 @
+	name:Addition
+	in
+	out
+5
+	stax
+2 3+
+	name:AdditionOneValNoop
+	in
+	out
+2
+	stax
+2 +
+	name:Subtraction
+	in
+	out
+-1
+	stax
+2 3-
+	name:Multiplication
+	in
+	out
+6
+	stax
+2 3*
+	name:MulOneValNoop
+	in
+	out
+2
+	stax
+2 *
+	name:Division
+	in
+	out
+4
+	stax
+14 3/
+	name:Modulus
+	in
+	out
+3
+	stax
+11 4%
+	name:DivMod
+	in
+	out
+2 3
+	stax
+17 5 |% p ' p p
+	name:Increment
+	in
+	out
+8
+	stax
+7^
+	name:Decrement
+	in
+	out
+6
+	stax
+7v
+	name:LeadingZero
+	in
+	out
+0
+	stax
+04*
+	name:NumberToString
+	in
+	out
+34
+	stax
+3$4$+
+	name:Halve
+	in
+	out
+6
+	stax
+13h
+	name:Unhalve
+	in
+	out
+12
+	stax
+6H
+	name:Negate
+	in
+	out
+-4
+	stax
+4N
+	name:Exponent
+	in
+	out
+81
+	stax
+3 4|*
+	name:PowerOfTen
+	in
+	out
+1000
+	stax
+3 |A
+	name:PowerOfTwo
+	in
+	out
+512
+	stax
+9 |2
+	name:PowerOfMinusOne
+	in
+	out
+-1
+	stax
+9 |1
+	name:BaseConvert
+	in
+	out
+ff
+	stax
+255 16 |b
+	name:BaseUnconvert
+	in
+	out
+255
+	stax
+"ff" 16 |b
+	name:BaseUnconvertDigits
+	in
+	out
+1234
+	stax
+4R A |b
+	name:BaseExplodeDigits
+	in
+	out
+8
+	stax
+255 2 |E |+ 
+	name:BinaryConvert
+	in
+	out
+101
+	stax
+5 |B
+	name:BinaryUnConvert
+	in
+	out
+5
+	stax
+"101" |B
+	name:HexConvert
+	in
+	out
+ff
+	stax
+255 |H
+	name:HexUnconvert
+	in
+	out
+255
+	stax
+"ff" |H
+	name:PrimeFactorize
+	in
+	out
+2,2,3
+	stax
+12 |f ',*
+	name:GCD
+	in
+	out
+6
+	stax
+12 18 |g
+	name:LCM
+	in
+	out
+36
+	stax
+12 18 |l
+	name:PrimeTest
+	in
+	out
+1
+	stax
+97 |p
+	name:IsEven
+	in
+	out
+0
+	stax
+3 |e
+	name:IncDecXTest
+	in
+	out
+1232
+	stax
+|X|X|X|x Lr $
+	name:Minimum
+	in
+	out
+3
+	stax
+3 7 |m
+	name:Maximum
+	in
+	out
+7
+	stax
+3 7 |M
+	name:AbsoluteValue
+	in
+	out
+5
+	stax
+5|a
+	name:NegativeAbsoluteValue
+	in
+	out
+5
+	stax
+5N|a
+	name:RepeatedDivide
+	in
+	out
+3
+	stax
+12 2 |/
+	name:UpsideDownInteger
+	in
+	out
+1/5
+	stax
+5u
+	name:Fraction
+	in
+	out
+1/3
+	stax
+2 6 u*
+	name:Numerator
+	in
+	out
+1
+	stax
+2 6 u* h
+	name:Denominator
+	in
+	out
+3
+	stax
+2 6 u* H
+	name:UpsideDownFraction
+	in
+	out
+5/2
+	stax
+2 5u* u
+	name:FractionListify
+	in
+	out
+1 3
+	stax
+1 3u* l J
+	name:FractionArithmetic
+	in
+	out
+11/15
+	stax
+1 3u* 2 5u* +
+	name:FractionPower
+	in
+	out
+8/27
+	stax
+2 3u* 3 |*
+	name:FractionFloor
+	in
+	out
+2
+	stax
+7 3u* @
+	name:ExplodeNumber
+	in
+	out
+2 8 14
+	stax
+147 E {Hm J
+	name:Base36Encode
+	in
+	out
+5yc1r
+	stax
+9999999 |3
+	name:Base36Decode
+	in
+	out
+9999999
+	stax
+"5yc1r" |3
+	name:SquareRoot
+	in
+	out
+1.4142135623731
+	stax
+2|Q
+	name:NegativeSquareRoot
+	in
+-2
+	out
+1.4142135623731
+	stax
+|Q
+	name:IntSquareRoot
+	in
+	out
+13
+	stax
+170 |q
+	name:IntNegativeSquareRoot
+	in
+-170
+	out
+13
+	stax
+|q
+	name:Square
+	in
+	out
+49
+	stax
+7J
+	name:Factorial
+	in
+	out
+120
+	stax
+5|F
+	name:FloatFormatPlaces
+	in
+123.456789
+	out
+123.46
+	stax
+2 j
+	name:BitwiseNot
+	in
+	out
+-4
+	stax
+3|~
+	name:BitwiseAnd
+	in
+	out
+1
+	stax
+3 5|&
+	name:BitwiseOr
+	in
+	out
+7
+	stax
+3 5||
+	name:BitwiseXor
+	in
+	out
+6
+	stax
+3 5|^
+	name:ShiftLeft
+	in
+	out
+56
+	stax
+7 3 |<
+	name:ShiftRight
+	in
+	out
+63
+	stax
+255 2 |>
+	name:Equality
+	in
+	out
+1
+	stax
+3 3=
+	name:Inequality
+	in
+	out
+0
+	stax
+3 4=
+	name:LessThan
+	in
+	out
+1
+	stax
+1 2<
+	name:GreaterThan
+	in
+	out
+0
+	stax
+1 2>
+	name:NotTrue
+	in
+	out
+0
+	stax
+7 !
+	name:NotFalse
+	in
+	out
+1
+	stax
+0 !
+	name:If
+	in
+	out
+not equal
+	stax
+1 2= "equal" "not equal" ?
+	name:Char
+	in
+	out
+a
+	stax
+'a
+	name:StringLiteral
+	in
+	out
+hello
+	stax
+"hello"
+	name:UnterminatedStringLiteral
+	in
+	out
+hello
+	stax
+"hello
+	name:EscapedString
+	in
+	out
+a"b`c
+	stax
+"a`"b``c
+	name:Concat
+	in
+	out
+helloworld
+	stax
+"hello" "world"+
+	name:RepeatString
+	in
+	out
+abcabcabcabc
+	stax
+"abc"4*
+	name:StringSubtraction
+	in
+	out
+he wrd
+	stax
+"hello world" "ol" -
+	name:StringJoin
+	in
+	out
+d-c-b-a
+	stax
+'a'b'c'd L '-*
+	name:LineModeEval
+	in
+5
+8
+	out
+3
+	stax
+e-
+	name:GCD
+	in
+42
+56
+	out
+14
+	stax
+e|g
+	name:TwoCharLiteral
+	in
+	out
+abcd
+	stax
+.ab.cd +

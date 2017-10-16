@@ -1,0 +1,33 @@
+	#https://codegolf.stackexchange.com/questions/8696/print-this-diamond
+	in
+
+	out
+        1
+       121
+      12321
+     1234321
+    123454321
+   12345654321
+  1234567654321
+ 123456787654321
+12345678987654321
+ 123456787654321
+  1234567654321
+   12345654321
+    123454321
+     1234321
+      12321
+       121
+        1
+	stax
+9R8Rr+{R$9)_vRr$+PF
+	stax
+9R8Rr+{9s-' *_R_vRr+$+PF
+	stax
+9R8Rr+{9s-' *_|A9/c*$+PF
+	stax
+9R8Rr+{9s-' *'1_*ec*$+PF
+	stax
+9R|p{R$9)|pTPF
+	stax
+9R|pmR$9)|pT

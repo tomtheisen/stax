@@ -1,0 +1,22 @@
+	#https://codegolf.stackexchange.com/questions/141372/fit-a-word-into-an-alphabet-grid
+	in
+ANTIDISESTABLISHMENTARIANISM
+	out
+A            N     T      
+        I                 
+   D    I         S       
+    E             ST      
+AB         L              
+        I         S       
+       H    M             
+    E        N     T      
+A                R        
+        I                 
+A            N            
+        I         S       
+            M             
+                          
+	stax
+wVA{[I' {1t_}?mQT
+	stax
+wVA{[I' {B}?mQT

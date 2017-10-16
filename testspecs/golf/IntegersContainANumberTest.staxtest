@@ -1,0 +1,27 @@
+	#https://codegolf.stackexchange.com/questions/98470/how-many-integers-contain-a-number-in-a-specific-range
+	in
+"3" 1 100
+	out
+19
+	in
+"12" -200 200
+	out
+24
+	in
+"123" 1 3
+	out
+0
+	in
+"3" 33 34
+	out
+2
+	in
+"0" -1 1
+	out
+1
+	in
+"127" -12 27
+	out
+0
+	stax
+^|r{$[s#f%

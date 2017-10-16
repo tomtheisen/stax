@@ -18,7 +18,7 @@ namespace StaxLang {
         private HashSet<(int InstrPtr, string AmbientDesc)> Ambients = new HashSet<(int, string)>();
         private int NestingDepth;
 
-        public string Contents { get; }
+        public string Contents { get; private set; }
         // used to align the explanations
         public int InstrStartPtr { get; internal set; }
         // instrptr in absolute terms in original program
@@ -42,7 +42,7 @@ namespace StaxLang {
         public string[] Annotate() {
             if (Descs.Count == 0) return new [] { "Description not available" };
 
-            var result = Descs.Select(_ => "").ToArray();
+            var result = Descs.Select(_ => "").ToList();
             int lastLine = 0;
             for (int i = 0; i < Program.Length; i++) {
                 int line = InstrDescLine[i];
@@ -53,10 +53,11 @@ namespace StaxLang {
 
             // rectangularize, add descriptions
             int maxlen = result.Max(r => r.Length);
-            for (int i = 0; i < result.Length; i++) {
+            for (int i = 0; i < result.Count; i++) {
                 result[i] = result[i].PadRight(maxlen) + '\t' + Descs[i];
             }
-            return result;
+            result.Insert(0, "\t" + Executor.Version);
+            return result.ToArray();
         }
 
         private Block(Block parent, int start, int end) {
@@ -94,6 +95,22 @@ namespace StaxLang {
 
             int idx = Root.Descs.Count - 1;
             Root.Descs[idx] = IndentSpaces + transform(Root.Descs[idx].TrimStart()); 
+        }
+
+        internal void UnAnnotate() {
+            if (this != Root || !Contents.StartsWith("\t")) return; // not annotated
+            var lines = Contents
+                .Split('\r', '\n')
+                .Select(l => l.Split(new[] { '\t' }, 2)[0])
+                .ToArray();
+            int maxlen = lines.Max(l => l.Length);
+            char[] result = new char[maxlen];
+
+            for (int i = 0; i < maxlen; i++) {
+                result[i] = lines.Max(l => l.ElementAtOrDefault(i));
+            }
+
+            Program = Contents = new string(result);
         }
     }
 }

@@ -1,0 +1,12 @@
+	#https://codegolf.stackexchange.com/questions/144136/remove-ambiguous-plurals
+	in
+one banana(s) two apple(s)
+	out
+one banana two apples
+	in
+1 banana(s) 11 apple(s)
+	out
+1 banana 11 apples
+	stax
+"(\b(an?|one|1) \S+)\(s\)"X"$1"Rx5)'sR
+"(\b(an?|one|1) \S+)\(s\)"X.$1Rx5)'sR

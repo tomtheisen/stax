@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 // available chars
-//  .DGS
+//  DGS
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
  *     string interpolate
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     CLI STDIN / STDOUT
  *     combinatorics: powerset, permutations
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
@@ -80,10 +79,9 @@ using System.Text.RegularExpressions;
  *     is superset
  *     sign c{c|a/}{d0}?
  *     rot13
+ *     squarify array
  *     
  *     debugger
- *     docs
- *     tests in portable files
  */
 
 namespace StaxLang {
@@ -138,10 +136,22 @@ namespace StaxLang {
         /// </summary>
         /// <param name="program"></param>
         /// <param name="input"></param>
-        /// <returns>number of steps it took</returns>
+        /// <returns>number of steps the program ran</returns>
+        public int Run(byte[] programBytes, string[] input, TimeSpan? timeout = null) {
+            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : Encoding.ASCII;
+            return Run(e.GetString(programBytes), input, timeout);
+        }
+
+        /// <summary>
+        /// run a stax program
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="input"></param>
+        /// <returns>number of steps the program ran</returns>
         public int Run(string program, string[] input, TimeSpan? timeout = null) {
             if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
+            block.UnAnnotate();
             Initialize(block, input);
             int step = 0;
             try {
@@ -163,6 +173,8 @@ namespace StaxLang {
         }
 
         private void Initialize(Block programBlock, string[] input) {
+            input = input ?? Array.Empty<string>();
+
             IndexOuter = Index = 0;
             X = BigInteger.Zero;
             Y = S2A("");
@@ -173,24 +185,28 @@ namespace StaxLang {
                 if (BigInteger.TryParse(input[0], out var d)) X = d;
             }
 
+            var transformedInput = input
+                .Reverse()
+                .SkipWhile(s => s == "")
+                .Select(S2A).ToArray();
             MainStack = new Stack<dynamic>();
-            InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+            InputStack = new Stack<dynamic>(transformedInput);
 
-            if (programBlock.Contents.FirstOrDefault() == 'e') {
+            if (programBlock.Contents.StartsWith("e")) {
                 // if first instruction is 'e', eval all lines and put back on stack in same order
                 RunMacro("L{eFw~|d");
                 programBlock.AddDesc("eval line mode; parse each line - push all values to input stack");
             }
-            else if (programBlock.Contents.FirstOrDefault() == 'i') {
+            else if (programBlock.Contents.StartsWith("i")) {
                 programBlock.AddDesc("suppress single line eval; treat input as raw string");
             }
-            else if (input.Length == 1) {
+            else if (transformedInput.Length == 1) {
                 if (!DoEval()) {
                     MainStack.Clear();
-                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                    InputStack = new Stack<dynamic>(transformedInput);
                 }
                 else if (TotalStackSize == 0) {
-                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                    InputStack = new Stack<dynamic>(transformedInput);
                 }
                 else {
                     programBlock.AddAmbient("program input is implicitly parsed");
@@ -226,11 +242,11 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
             var program = block.Contents;
-            if (program.Length > 0) switch (program[0]) {
+            if (TotalStackSize > 0 && !IsInt(Peek())) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
-                    if (TotalStackSize > 0 && !IsInt(Peek())) DoListify();
+                    DoListify();
                     break;
             }
 
@@ -307,6 +323,12 @@ namespace StaxLang {
                         block.AddDesc("single character string literal");
                         type = InstructionType.Value;
                         Push(S2A(program.Substring(++ip, 1)));
+                        break;
+                    case '.':
+                        block.AddDesc("two character string literal");
+                        type = InstructionType.Value;
+                        Push(S2A(program.Substring(ip + 1, 2)));
+                        ip += 2;
                         break;
                     case '{': 
                         block.AddDesc("code block");
@@ -1228,8 +1250,8 @@ namespace StaxLang {
                 stopOnTargetVal = lowerSpec == 't',
                 scalarMode = lowerSpec == 's' || lowerSpec == 'e',
                 postPop = char.IsUpper(spec);
-            Block genblock = shorthand ? rest : Pop(), 
-                filter = null;
+            Block genblock = shorthand ? rest : Pop();
+            Block filter = null;
             dynamic targetVal = null;
             int? targetCount = null;
 
@@ -1274,6 +1296,8 @@ namespace StaxLang {
                 + (stopOnTargetVal ? "until specified target value, " : "")
                 + targetCountClause
                 + (postPop ? "popping each value" : "including the initial value"));
+            if (genblock.Contents == "") block.AddAmbient("generator block is empty; using increment");
+
 
             if (targetCount == 0) { // 0 elements requested ??
                 Push(new List<object>()); 
@@ -1288,10 +1312,15 @@ namespace StaxLang {
                 _ = Peek();
 
                 if (Index > 0 || postPop) {
-                    foreach (var s in RunSteps(genblock)) {
-                        if (s.Cancel && stopOnCancel) goto GenComplete;
-                        if (s.Cancel) goto Cancelled;
-                        yield return s;
+                    if (genblock.Contents != "") {
+                        foreach (var s in RunSteps(genblock)) {
+                            if (s.Cancel && stopOnCancel) goto GenComplete;
+                            if (s.Cancel) goto Cancelled;
+                            yield return s;
+                        }
+                    }
+                    else { // empty gen block, use (^)
+                        RunMacro("^");
                     }
                 }
                 object generated = Peek();
@@ -2293,8 +2322,7 @@ namespace StaxLang {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(a) && IsArray(b)) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove all matching substrings");
-                else block.AddDesc("remove all occurrences of substring");
+                block.AddDesc("remove all matching elements");
                 a = new List<object>(a);
                 var bl = (List<object>)b;
                 a.RemoveAll((Predicate<object>)(e => bl.Contains(e, Comparer.Instance)));
@@ -2466,7 +2494,7 @@ namespace StaxLang {
         }
 
         private List<object> ToString(dynamic arg) {
-            if (IsInt(arg)) {
+            if (IsNumber(arg)) {
                 return S2A(arg.ToString());
             }
             else if (IsArray(arg)) {
@@ -2565,6 +2593,11 @@ namespace StaxLang {
                     continue;
                 }
 
+                if (contents[ip] == '.') {
+                    ip += 2; // 2-char literal
+                    continue;
+                }
+
                 if (contents[ip] == '\t') {
                     ip = contents.IndexOf('\n', ip);
                     if (ip == -1) {
@@ -2580,11 +2613,6 @@ namespace StaxLang {
                 }
 
                 if (contents[ip] == '`') {
-                    ParseCompressedString(contents, ref ip, out bool implicitEnd);
-                    continue;
-                }
-
-                if (contents[ip] == '.') {
                     ParseCompressedString(contents, ref ip, out bool implicitEnd);
                     continue;
                 }

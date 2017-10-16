@@ -1,0 +1,32 @@
+	#https://codegolf.stackexchange.com/questions/141725/make-an-alphabet-searchlight
+	in
+
+	out
+                         ZYXWVUTSRQPONMLKJIHGFEDCBA
+                        YXWVUTSRQPONMLKJIHGFEDCBA
+                       XWVUTSRQPONMLKJIHGFEDCBA
+                      WVUTSRQPONMLKJIHGFEDCBA
+                     VUTSRQPONMLKJIHGFEDCBA
+                    UTSRQPONMLKJIHGFEDCBA
+                   TSRQPONMLKJIHGFEDCBA
+                  SRQPONMLKJIHGFEDCBA
+                 RQPONMLKJIHGFEDCBA
+                QPONMLKJIHGFEDCBA
+               PONMLKJIHGFEDCBA
+              ONMLKJIHGFEDCBA
+             NMLKJIHGFEDCBA
+            MLKJIHGFEDCBA
+           LKJIHGFEDCBA
+          KJIHGFEDCBA
+         JIHGFEDCBA
+        IHGFEDCBA
+       HGFEDCBA
+      GFEDCBA
+     FEDCBA
+    EDCBA
+   DCBA
+  CBA
+ BA
+A
+	stax
+VAr|]mc%Hv)

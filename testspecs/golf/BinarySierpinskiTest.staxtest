@@ -1,0 +1,45 @@
+	#https://codegolf.stackexchange.com/questions/67497/compute-the-binary-sierpinski-triangle-sequence
+	in
+0
+	out
+1
+	in
+1
+	out
+3
+	in
+2
+	out
+5
+	in
+3
+	out
+15
+	in
+4
+	out
+17
+	stax
+1{cH|^},*
+	in
+0
+	out
+1
+	in
+1
+	out
+3
+	in
+2
+	out
+5
+	in
+3
+	out
+15
+	in
+4
+	out
+17
+	stax
+OfcH|^

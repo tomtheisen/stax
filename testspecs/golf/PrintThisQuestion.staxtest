@@ -1,0 +1,19 @@
+	# https://codegolf.stackexchange.com/questions/55857/print-this-question-%E2%86%93
+	out
+The basic idea of a [tag:kolmogorov-complexity] challenge is to print a set output in the shortest code (though that meaning has changed now). We have had many of them, from [Borromean Rings](http://codegolf.stackexchange.com/questions/53417/ascii-borromean-rings) to [The Gettysburg Address](http://codegolf.stackexchange.com/questions/15395/how-random-is-the-gettysburg-address).
+
+##Your Task
+
+This question is similar, except that it requires printing of a special text - the text of this question. Specifically, the very Markdown code that I am typing right now.
+
+To prevent an infinite recursion in the question, the exact text you have to print can be found [here](http://codegolf.stackexchange.com/revisions/1f731ea3-0950-4b03-ae95-24fa812a9a28/view-source).
+
+##Clarifications
+
+- You are not allowed to use any external sources like the internet.
+- This means that the purpose of this question is not to download this question text and parse it, but instead to store it in you program.
+- This is [tag:code-golf], so shortest code in **bytes** wins!
+	stax
+`#@7fz^$J,.(`'[+`1(~(C27v5$q_c3($`+']+`x0cgCV$^dYd4=<za]K-kyl#`+'(+`rHeAPV)k6'zup*)$`+.).+`76gWvPm\(M]^%H*`+'[+`I 47mr"]3#`Y+"](http://"`=uc0SvQ1`"/questions/"++X+"53417/ascii-"+yv. -~;|t+") to ["+`?AlT63$nX8"gJnj$`Y+x+"15395/"+`E+z'Ww0"`yv+,|t+.).+.##Y`~(YqW!`+`_7%(pQ+@lhib~tI!Aw8eCdRA;.-4ZQ5|a/Hfn\?"fO0@> N'[9F+@\5g};+vb3w#iy7L3!``+a"fLx6!1EcE|U5Q>but<AT]'hv]g/\>[CDxL?`"[here"+xAT+"revisions/1f731ea3-0950-4b03-ae95-24fa812a9a28/view-source)."+y`[V7{FG'`+`O:0I;y\jqjb3#9h7dehn:gQ?? R<O`LrAA\*P`'+LP[C5X25.>/Vh%R|(|%fGseXjA2*kb@t_e3!e(9 H+ k"V<5C67#`P`5b:o!`'[+`bS1>fO`+']+`5nXZ+0+q6H`+p"**bytes** wins!
+	stax
+╦┘⌐êµñ╤µ┌Γ░╤ÉHÄφM╗╔"Ω≥≡√VK─[∟∟≥ä╧ß¡▓┴═²α¶δr:q4⌂⌂┌≥▒◙R~▐Ñ╪$>4x╙╝▒┼○j♣c_▼≈ø≥8KqF♪iè+╣p#◄¿=5↑Θ¥│M┤·♪╛¡?#₧?(π╣╪\/xºzR¥ß═Ü+Ç9<Ö■àì(ä¢⌠ä‼Ñà┴τ◘3▒◙E▼o|Ω¼¶$c┤%£•6▐Si╓ï▐╦m`z[Ü▲é╝:▐:╚↓-óGÇ•&○ß}Φ↕i&↕ÑbÉ☻┌♪J²Ö₧»◄A╧•◙Φ┌Xg◄h[φA╪↓cê·╫Φ║←Φ☻↑ap½!|r╤R,╨>♥>Xì╤▀g}≈\╨ôσ"ó¥)╤║├¼a┘└&Ωτæ╩÷B}⌠╨└₧▒∞▐╙eó[¡Çp⌠;Ü▐4○&⌂ε↔┼╛óNz☼e⌡○ä°²0%◙☺╬Γ¶æÖæH⌂→WgQ♥╫╗C₧Kz╛`¡∞ÄNX▒yRα)LÖ╙ΓnFU8(┤∙l♣=T )3▓┬=à▌ε ▓○δ▼."∟÷σ û♂'ÑÆß⌠°û>ò╠☻*û╝░§ƒ☼Mîë^◘o▒F£cαα▒]▀#ö╢█♥]┘C▄╢X┐Φ╦Σ☼ÆuZw¼─½¿=6│æd<↓RA▀∟áñà└S▓¬.♥■Ä▲├@J╩üì♠▬║á¥/éù█↔FDµ;f├¬╧,╢═┼É\.ä═√╤│º²↨vÿéC

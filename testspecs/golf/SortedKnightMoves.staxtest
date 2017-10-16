@@ -1,0 +1,23 @@
+	#http://golf.shinh.org/p.rb?Knight+move+sorted
+	in
+h8
+a1
+d7
+e6
+c3
+b2
+h2
+e8
+e7
+	out
+f7 g6
+b3 c2
+b6 b8 c5 e5 f6 f8
+c5 c7 d4 d8 f4 f8 g5 g7
+a2 a4 b1 b5 d1 d5 e2 e4
+a4 c4 d1 d3
+f1 f3 g4
+c7 d6 f6 g7
+c6 c8 d5 f5 g6 g8
+	stax
+mVa8(8R$|*{[\{E-JmE+5=fJ

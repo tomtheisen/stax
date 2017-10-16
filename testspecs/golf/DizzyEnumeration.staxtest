@@ -1,0 +1,53 @@
+	#https://codegolf.stackexchange.com/questions/142893/dizzy-integer-enumeration
+	in
+0
+	out
+0
+	in
+1
+	out
+1
+	in
+2
+	out
+-1
+	in
+3
+	out
+-2
+	in
+4
+	out
+2
+	in
+5
+	out
+3
+	stax
+^h{N}xh*
+	in
+0
+	out
+0
+	in
+1
+	out
+1
+	in
+2
+	out
+-1
+	in
+3
+	out
+-2
+	in
+4
+	out
+2
+	in
+5
+	out
+3
+	stax
+^hxhfN

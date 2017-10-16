@@ -1,0 +1,19 @@
+	#https://codegolf.stackexchange.com/questions/143000/calculate-the-longest-series-of-1s-in-an-integers-binary-value
+	in
+142
+	out
+1
+	in
+48
+	out
+4
+	in
+750
+	out
+5
+	in
+0
+	out
+0
+	stax
+{cch|&cwd|B%v

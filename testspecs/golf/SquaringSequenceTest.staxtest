@@ -1,0 +1,111 @@
+	#https://codegolf.stackexchange.com/questions/101961/the-squaring-sequence
+	in
+0
+	out
+1111
+	in
+7
+	out
+6840
+	in
+14
+	out
+7584
+	in
+19
+	out
+1425
+	in
+79
+	out
+4717
+	stax
+1111,{c*4(e}*
+	in
+0
+	out
+1111
+	in
+7
+	out
+6840
+	in
+14
+	out
+7584
+	in
+19
+	out
+1425
+	in
+79
+	out
+4717
+	stax
+'14*,{ec*4(}*
+	in
+1
+	out
+1111
+	in
+8
+	out
+6840
+	in
+15
+	out
+7584
+	in
+20
+	out
+1425
+	in
+80
+	out
+4717
+	stax
+1,{c*$4*4(e}*
+	in
+1
+	out
+1111
+	in
+8
+	out
+6840
+	in
+15
+	out
+7584
+	in
+20
+	out
+1425
+	in
+80
+	out
+4717
+	stax
+1,fJ$4*4(e
+	in
+1
+	out
+1111
+	in
+8
+	out
+6840
+	in
+15
+	out
+7584
+	in
+20
+	out
+1425
+	in
+80
+	out
+4717
+	stax
+OfJ$4*4(e

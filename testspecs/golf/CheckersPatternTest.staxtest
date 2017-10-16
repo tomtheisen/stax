@@ -1,0 +1,19 @@
+	#http://golf.shinh.org/p.rb?checkers+pattern
+	in
+3 19
+	out
+1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1
+0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0
+1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1
+	stax
+ssv~{i2%{!cp' p};*!P}*
+	stax
+ssv~Fi2%{!cp' p};*!P
+	stax
+ssv~Fi|e{q!' p};*P
+	stax
+vXdmi|exfq!' p
+	stax
+vXdm2%xfq!' p
+	stax
+vXdm2%xfq!| 

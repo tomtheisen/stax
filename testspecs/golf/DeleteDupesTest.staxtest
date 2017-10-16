@@ -1,0 +1,12 @@
+	#http://golf.shinh.org/p.rb?delete+duplicate+lines
+	in
+a
+b
+a
+c
+	out
+a
+b
+c
+	stax
+Lum

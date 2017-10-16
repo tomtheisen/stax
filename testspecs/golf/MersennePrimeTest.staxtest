@@ -1,0 +1,67 @@
+	#https://codegolf.stackexchange.com/questions/104508/is-it-a-mersenne-prime
+	in
+5
+	out
+0
+	in
+6
+	out
+0
+	in
+7
+	out
+1
+	in
+15
+	out
+0
+	in
+8191
+	out
+1
+	stax
+c^|&!x|f%1=*
+	in
+5
+	out
+0
+	in
+6
+	out
+0
+	in
+7
+	out
+1
+	in
+15
+	out
+0
+	in
+8191
+	out
+1
+	stax
+c^|&!x|fx-!*
+	in
+5
+	out
+0
+	in
+6
+	out
+0
+	in
+7
+	out
+1
+	in
+15
+	out
+0
+	in
+8191
+	out
+1
+	stax
+c^|&!x|p*

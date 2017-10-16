@@ -1,0 +1,19 @@
+	#http://golf.shinh.org/p.rb?Bracket+Matching
+	in
+)
+	out
+failed at: )
+	in
+()
+	out
+yes
+	in
+{()[]}
+	out
+yes
+	in
+()}()
+	out
+failed at: }()
+	stax
+mUY~{"[](){}"|tX_={,_={}{iYd}?}{x~}?y^CFyU=`SN``1%HJrq_`_yt+?

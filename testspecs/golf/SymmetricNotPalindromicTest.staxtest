@@ -1,0 +1,71 @@
+	#https://codegolf.stackexchange.com/questions/142248/im-symmetric-not-palindromic
+	in
+()()
+	out
+1
+	in
+()()()
+	out
+1
+	in
+[A + A]
+	out
+1
+	in
+WOW ! WOW
+	out
+1
+	in
+OH-AH_wx'xw_HA-HO
+	out
+1
+	in
+(<<[[[T*T]]]>>)
+	out
+1
+	in
+(:)
+	out
+1
+	in
+)-(
+	out
+1
+	in
+())(()
+	out
+1
+	in
+qpqp
+	out
+1
+	in
+())(
+	out
+0
+	in
+((B))
+	out
+0
+	in
+11
+	out
+0
+	in
++-*+-
+	out
+0
+	in
+WOW ! wow
+	out
+0
+	in
+(;)
+	out
+0
+	in
+qppq
+	out
+0
+	stax
+r"()<>[]{}qpbd/\"Xcr+|t" !`"'+*-.:=AHIMOTUVWXY^_ovwx|"x+|&_=
