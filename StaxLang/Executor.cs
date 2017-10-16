@@ -24,27 +24,79 @@ using System.Text.RegularExpressions;
  *     FeatureTests for generators
  *     RLE
  *     RLE prime factorization [(prime, exp)]
- *     version string
- *     data-driven macro namespace maybe ':' - 
+ *     data-driven macro namespace ':' - 
  *          compare / sign (c{c|a/}0?)
  *          replace first only
  *     while loops continue to next
  *     hypotenuse type operation
+ *     get indices of truthy elements
+ *     get index of first truthy element
+ *     get indices of falsy elements
+ *     get index of first falsy element
+ *     get first truthy element
+ *     squarify array
+ *     get indices of maxes
+ *     get indices of mins
+ *     array mul {*k
+ *     all {!f!
+ *     any {f
+ *     sorted indices by value
+ *     all combinations
+ *     n-combinations
+ *     permutations
+ *     log 2/10/n
+ *     mirror cr+
+ *     trim element(s)
+ *     absolute difference -|a
+ *     multiplicity 0~{b%C caa / s ,^~ Wdd,
+ *     custom base encoding
+ *     all factors c%{[%!fsd
+ *     distinct prime factors |fu
+ *     distinct prime factor count |fu%
+ *     all factor count
+ *     prime factorization exponents
+ *     nth prime
+ *     next prime >=
+ *     last prime <
+ *     nth fibonacci element
+ *     totient c{[|g1=f%sd
+ *     mode
+ *     centered range |aNcN^|r
+ *     multiset intersection
+ *     multiset subtract
+ *     multiset xor
+ *     multiset union
+ *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
+ *     insert at
+ *     if (no else) like {^D
+ *     all sub-arrays |]{|[m{+k
+ *     copy thrice ccc
+ *     hasupper VA |&
+ *     haslower Va |&
+ *     hasletter Vl |&
+ *     2-char string literal
+ *     assign to array using predicate instead of index
+ *     is subset
+ *     is superset
+ *     sign c{c|a/}{d0}?
+ *     rot13
  *     
  *     debugger
  *     docs
  *     tests in portable files
- *     executable annotation
  */
 
 namespace StaxLang {
     public class Executor {
+        public const string VersionInfo = "Stax 0.0.0 - Tom Theisen - https://github.com/ttheisen/stax";
+
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
         public bool Annotate { get; set; }
         public IReadOnlyList<string> Annotation { get; private set; } = null;
 
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
+            ['?'] = (S2A(VersionInfo), "version info"),
             ['0'] = (new Rational(0, 1), "0/1"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
@@ -52,10 +104,13 @@ namespace StaxLang {
             ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
             ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
             ['d'] = (S2A("0123456789"), "decimal digits"),
+            ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
+            ['h'] = (S2A("0123456789abcdef"), "lowercase hex digits"),
             ['k'] = (new BigInteger(1000), "one thousand"),
             ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
             ['L'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all alphanumerics"),
             ['M'] = (new BigInteger(1000000), "one million"),
+            ['p'] = (S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"), "all printable ascii characters"),
             ['P'] = (Math.PI, "pi"),
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),

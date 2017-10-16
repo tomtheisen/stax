@@ -218,6 +218,9 @@ namespace StaxLang.Tests {
         [TestMethod] public void AllLetters() => RunProgram("Vl", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void AllIdentifierChars() => RunProgram("VL", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         [TestMethod] public void Pi() => RunProgram("VP", "3.14159265358979");
+        [TestMethod] public void LowercaseHex() => RunProgram("Vh", "0123456789abcdef");
+        [TestMethod] public void UppercaseHex() => RunProgram("VH", "0123456789ABCDEF");
+        [TestMethod] public void PrintableAscii() => RunProgram("Vp", " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~");
 
         // I/O
         [TestMethod] public void DefaultOutput() => RunProgram("1 2 3", "3");
