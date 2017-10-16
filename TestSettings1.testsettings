@@ -3,7 +3,7 @@
   <Description>These are default test settings for a local test run.</Description>
   <Deployment enabled="false" />
   <Execution>
-    <Timeouts runTimeout="5000" testTimeout="1000" />
+    <Timeouts runTimeout="15000" testTimeout="5000" />
     <TestTypeSpecific>
       <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
         <AssemblyResolution>

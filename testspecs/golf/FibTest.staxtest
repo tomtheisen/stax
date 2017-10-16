@@ -1,0 +1,20 @@
+	in
+7
+	out
+1
+1
+2
+3
+5
+8
+13
+	stax
+1 0a{b+Q}*
+	stax
+1 0{b+Q},*
+	stax
+01{QX+xs},*
+	stax
+01,fQX+xs
+	stax
+01,fQb+

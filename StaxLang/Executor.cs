@@ -133,24 +133,28 @@ namespace StaxLang {
                 if (BigInteger.TryParse(input[0], out var d)) X = d;
             }
 
+            var transformedInput = input
+                .Reverse()
+                .SkipWhile(s => s == "")
+                .Select(S2A).ToArray();
             MainStack = new Stack<dynamic>();
-            InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+            InputStack = new Stack<dynamic>(transformedInput);
 
-            if (programBlock.Contents.FirstOrDefault() == 'e') {
+            if (programBlock.Contents.StartsWith("e")) {
                 // if first instruction is 'e', eval all lines and put back on stack in same order
                 RunMacro("L{eFw~|d");
                 programBlock.AddDesc("eval line mode; parse each line - push all values to input stack");
             }
-            else if (programBlock.Contents.FirstOrDefault() == 'i') {
+            else if (programBlock.Contents.StartsWith("i")) {
                 programBlock.AddDesc("suppress single line eval; treat input as raw string");
             }
-            else if (input.Length == 1) {
+            else if (transformedInput.Length == 1) {
                 if (!DoEval()) {
                     MainStack.Clear();
-                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                    InputStack = new Stack<dynamic>(transformedInput);
                 }
                 else if (TotalStackSize == 0) {
-                    InputStack = new Stack<dynamic>(input.Reverse().Select(S2A));
+                    InputStack = new Stack<dynamic>(transformedInput);
                 }
                 else {
                     programBlock.AddAmbient("program input is implicitly parsed");

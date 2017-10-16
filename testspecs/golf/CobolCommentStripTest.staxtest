@@ -1,0 +1,13 @@
+	in
+000000 blah blah
+000001* apples
+000002 oranges ?
+000003* yeah, oranges.
+000*04 love me some oranges
+
+	out
+blah blah
+oranges ?
+love me some oranges
+	stax
+m6@4%C_7t

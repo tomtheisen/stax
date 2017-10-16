@@ -98,7 +98,7 @@ namespace StaxLang {
         }
 
         internal void UnAnnotate() {
-            if (this != Root || Contents.FirstOrDefault() != '\t') return; // not annotated
+            if (this != Root || !Contents.StartsWith("\t")) return; // not annotated
             var lines = Contents
                 .Split('\r', '\n')
                 .Select(l => l.Split(new[] { '\t' }, 2)[0])

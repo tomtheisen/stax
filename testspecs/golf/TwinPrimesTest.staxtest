@@ -1,0 +1,25 @@
+	in
+100
+	out
+3,5
+5,7
+11,13
+17,19
+29,31
+41,43
+59,61
+71,73
+	stax
+R1-{|f%_2+|f%*1=f{p',p_2+PF
+	stax
+R1-{c2+*|f%2=f{p',p_2+PF
+	stax
+R1-{^c*v|f%2=f{p',p_2+PF
+	stax
+R1-{^c*v|f%2={_p',p_2+P}*F
+	stax
+{|p_2+|p*fFp',p_2+P
+	stax
+{c*v|f%2=fmvq',p2+
+	stax
+mJv|f%2-Ciq',p2+

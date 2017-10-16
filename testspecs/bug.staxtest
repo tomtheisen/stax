@@ -1,0 +1,156 @@
+	name:NegativeDivision
+	in
+	out
+-1
+	stax
+U2/
+	name:NegativeMod
+	in
+	out
+1
+	stax
+U2%
+	name:RegexReplaceIndex
+	in
+	out
+01
+	stax
+'x'x+ 'x {i$} R
+	name:EmptyTranspose
+	in
+	out
+1
+	stax
+1p zMp
+	name:StringArrayDiff
+	in
+	out
+0
+	stax
+"abc"] "abc"] |^ %
+	name:ZeroFillNumber
+	in
+	out
+06
+	stax
+6 2 |z
+	name:UnfoundMulticharSubstringIndex
+	in
+	out
+-1
+	stax
+"abc" "xy" I
+	name:UnfoundMulticharSubstringOverlap
+	in
+	out
+-1
+	stax
+"abc" "cd" I
+	name:TooMuchTrim
+	in
+	out
+
+	stax
+'a 3t
+	name:ShorthandLoopIndex
+	in
+	out
+0101
+	stax
+2F2Fip
+	name:CompressedInBlock
+	in
+	out
+Thg
+	stax
+1{`N`F
+	name:MixedEqualityEmpty
+	in
+	out
+0
+	stax
+z 1 =
+	name:NegativeEval
+	in
+	out
+-1
+	stax
+U$e
+	name:ScopeElementTest
+	in
+	out
+12
+	stax
+2R{d 9R{dF _pF
+	name:ScopeIndexTest
+	in
+	out
+01
+	stax
+2R{d 9R{dF ipF
+	name:RotateStringsTest
+	in
+	out
+a
+	stax
+'a'bL|) h
+	name:NegativeHalfTest
+	in
+	out
+-1
+	stax
+Uh
+	name:SingletonReduce
+	in
+	out
+1
+	stax
+1{*k
+	name:BatchedSubarrays
+	in
+	out
+abcd
+	stax
+'a'b"cd"3l 3Bm
+	name:MultiDigitIntPartFloat
+	in
+	out
+12.345
+	stax
+12!345
+	name:RationalSqrt
+	in
+	out
+0.707106781186548
+	stax
+2u|Q
+	name:IntRationalCompare
+	in
+	out
+1
+	stax
+01u<
+	name:RationalIntCompare
+	in
+	out
+1
+	stax
+1u0>
+	name:BlockCompressNestParse
+	in
+	out
+a
+	stax
+1{`m`'am
+	name:TerminatedStringEndTest
+	in
+	out
+x
+	stax
+1m"x"
+	name:RationalToString
+	in
+	out
+1/2
+	stax
+2u$
