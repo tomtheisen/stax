@@ -56,7 +56,7 @@ namespace StaxLang {
             for (int i = 0; i < result.Count; i++) {
                 result[i] = result[i].PadRight(maxlen) + '\t' + Descs[i];
             }
-            result.Insert(0, "\t" + Executor.Version);
+            result.Insert(0, "\t" + Executor.VersionInfo);
             return result.ToArray();
         }
 

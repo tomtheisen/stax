@@ -119,7 +119,7 @@ namespace StaxLang.CLI {
         }
 
         private static void ShowUsage() {
-            Console.WriteLine(Executor.Version);
+            Console.WriteLine(Executor.VersionInfo);
             Console.WriteLine("Usage:");
             Console.WriteLine("Run a program from a source file:");
             Console.WriteLine("\tstax program.stax [inputfile]");

@@ -129,6 +129,24 @@ Vsm
 x
 	stax
 Vn 'x+
+	name:LowercaseHex
+	in
+	out
+0123456789abcdef
+	stax
+Vh
+	name:UppercaseHex
+	in
+	out
+0123456789ABCDEF
+	stax
+VH
+	name:PrintableAscii
+	in
+	out
+ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+	stax
+Vp
 	name:Rational0
 	in
 	out
@@ -774,6 +792,24 @@ abcd
 1,8,8,4,5
 	stax
 5R 1 2\ 8& ',*
+	name:AssignIndexOOB
+	in
+	out
+1 2 3 0 0 0 77
+	stax
+3R 6 77& J
+	name:AssignIndexNegative
+	in
+	out
+1 2 3 77 5
+	stax
+5R 2N 77& J
+	name:AssignIndexNegativeOOB
+	in
+	out
+77 0 0 1 2 3
+	stax
+3R 6N 77& J
 	name:ArrayToString
 	in
 	out
