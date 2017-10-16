@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -2515,7 +2516,16 @@ namespace StaxLang {
         private static bool IsBlock(object b) => b is Block;
         private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
-        private static List<object> S2A(string arg) => arg.ToCharArray().Select(c => (BigInteger)(int)c as object).ToList();
+        private static List<object> S2A(string arg) {
+            var result = new List<object>();
+            var e = StringInfo.GetTextElementEnumerator(arg);
+            while (e.MoveNext()) {
+                int codepoint = char.ConvertToUtf32((string)e.Current, 0);
+                result.Add(new BigInteger(codepoint));
+            }
+            return result;
+        }
+
         private static string A2S(List<object> arg) {
             string Convert(object e) {
                 if (IsInt(e)) {

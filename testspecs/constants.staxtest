@@ -1,0 +1,151 @@
+	name:UpperAlpha
+	in
+	out
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VA
+	name:LowerAlpha
+	in
+	out
+abcdefghijklmnopqrstuvwxyz
+	stax
+Va
+	name:UpperConsonants
+	in
+	out
+BCDFGHJKLMNPQRSTVWXYZ
+	stax
+VC
+	name:LowerConsonants
+	in
+	out
+bcdfghjklmnpqrstvwxyz
+	stax
+Vc
+	name:Digits
+	in
+	out
+0123456789
+	stax
+Vd
+	name:UpperVowels
+	in
+	out
+AEIOU
+	stax
+VV
+	name:LowerVowels
+	in
+	out
+aeiou
+	stax
+Vv
+	name:UpperWord
+	in
+	out
+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VW
+	name:LowerWord
+	in
+	out
+0123456789abcdefghijklmnopqrstuvwxyz
+	stax
+Vw
+	name:LowercaseHex
+	in
+	out
+0123456789abcdef
+	stax
+Vh
+	name:UppercaseHex
+	in
+	out
+0123456789ABCDEF
+	stax
+VH
+	name:PrintableAscii
+	in
+	out
+ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+	stax
+Vp
+	name:Rational0
+	in
+	out
+0/1
+	stax
+V0
+	name:AllLetters
+	in
+	out
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+Vl
+	name:AllIdentifierChars
+	in
+	out
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+	stax
+VL
+	name:Pi
+	in
+	out
+3.14159265358979
+	stax
+VP
+	name:Ten
+	in
+	out
+10
+	stax
+A
+	name:MinusUnit
+	in
+	out
+-1
+	stax
+U
+	name:Whitespace
+	in
+	out
+32
+9
+13
+10
+11
+	stax
+Vsm
+	name:Newline
+	in
+	out
+
+	name:Ten
+	in
+	out
+10
+	stax
+A
+	name:MinusUnit
+	in
+	out
+-1
+	stax
+U
+	name:Whitespace
+	in
+	out
+32
+9
+13
+10
+11
+	stax
+Vsm
+	name:Newline
+	in
+	out
+
+x
+	stax
+Vn 'x+
