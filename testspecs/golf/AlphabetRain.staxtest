@@ -1,3 +1,4 @@
+	#https://codegolf.stackexchange.com/questions/144868/make-some-alphabet-rain
 	in
 abc !@ ABC
 	out

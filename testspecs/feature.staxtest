@@ -1455,3 +1455,19 @@ he wrd
 d-c-b-a
 	stax
 'a'b'c'd L '-*
+	name:LineModeEval
+	in
+5
+8
+	out
+3
+	stax
+e-
+	name:GCD
+	in
+42
+56
+	out
+14
+	stax
+e|g

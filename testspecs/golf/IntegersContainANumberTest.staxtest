@@ -1,3 +1,4 @@
+	#https://codegolf.stackexchange.com/questions/98470/how-many-integers-contain-a-number-in-a-specific-range
 	in
 "3" 1 100
 	out

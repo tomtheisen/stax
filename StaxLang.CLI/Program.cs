@@ -77,6 +77,9 @@ namespace StaxLang.CLI {
                 else if (line.StartsWith("\tstax")) {
                     mode = ReadMode.Code;
                 }
+                else if (line.StartsWith("\t#")) {
+                    // comment
+                }
                 else {
                     switch (mode) {
                         case ReadMode.Input:
