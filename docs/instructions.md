@@ -119,6 +119,7 @@ chars    	|Types      	|Name             	|Description
 `"…"`    	|           	|string-literal   	|String literal stored as an array of codepoints. `` ` `` is the escape character.  Unterminated string literals will be printed implicitly.
 `` `…` ``	|           	|compressed-string	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
 `'a`     	|           	|char-literal     	|Create a single character string literal.
+`.ab`    	|           	|two-char-literal 	|Create a two character string literal.
 `/`      	|arr arr    	|split            	|Split on substrings.
 `*`      	|arr int    	|repeat           	|Repeat string n times.  If n is negative, reverse array.
 `*`      	|int arr    	|repeat           	|Repeat string n times.  If n is negative, reverse array.

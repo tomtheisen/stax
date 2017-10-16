@@ -9,3 +9,4 @@ one banana two apples
 1 banana 11 apples
 	stax
 "(\b(an?|one|1) \S+)\(s\)"X"$1"Rx5)'sR
+"(\b(an?|one|1) \S+)\(s\)"X.$1Rx5)'sR

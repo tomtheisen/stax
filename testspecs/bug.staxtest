@@ -154,3 +154,9 @@ x
 1/2
 	stax
 2u$
+	name:TwoCharBlockParsing
+	in
+	out
+md
+	stax
+1{.mdm

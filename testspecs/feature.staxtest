@@ -1471,3 +1471,9 @@ e-
 14
 	stax
 e|g
+	name:TwoCharLiteral
+	in
+	out
+abcd
+	stax
+.ab.cd +

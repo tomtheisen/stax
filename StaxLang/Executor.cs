@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 // available chars
-//  .DGS
+//  DGS
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
@@ -270,6 +270,12 @@ namespace StaxLang {
                         block.AddDesc("single character string literal");
                         type = InstructionType.Value;
                         Push(S2A(program.Substring(++ip, 1)));
+                        break;
+                    case '.':
+                        block.AddDesc("two character string literal");
+                        type = InstructionType.Value;
+                        Push(S2A(program.Substring(ip + 1, 2)));
+                        ip += 2;
                         break;
                     case '{': 
                         block.AddDesc("code block");
@@ -2523,6 +2529,11 @@ namespace StaxLang {
                     continue;
                 }
 
+                if (contents[ip] == '.') {
+                    ip += 2; // 2-char literal
+                    continue;
+                }
+
                 if (contents[ip] == '\t') {
                     ip = contents.IndexOf('\n', ip);
                     if (ip == -1) {
@@ -2538,11 +2549,6 @@ namespace StaxLang {
                 }
 
                 if (contents[ip] == '`') {
-                    ParseCompressedString(contents, ref ip, out bool implicitEnd);
-                    continue;
-                }
-
-                if (contents[ip] == '.') {
                     ParseCompressedString(contents, ref ip, out bool implicitEnd);
                     continue;
                 }
