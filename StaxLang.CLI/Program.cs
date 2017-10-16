@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace StaxLang.CLI {
     class Program {
@@ -35,6 +35,7 @@ namespace StaxLang.CLI {
         private static void Overwrite(string msg) => Console.Write(msg.PadRight(Console.BufferWidth));
 
         private static void DoTests(string path) {
+            var sw = Stopwatch.StartNew();
             var canon = Path.GetFullPath(path);
             var files = Directory.GetFiles(canon, "*.staxtest", SearchOption.AllDirectories);
             int i = 0;
@@ -47,9 +48,12 @@ namespace StaxLang.CLI {
 
                 DoTest(file);
             }
-            Overwrite(string.Format("[{0}/{0}] Complete", files.Length));
+            Overwrite(string.Format("[{0}/{0}] specifications complete", files.Length));
+            Console.WriteLine("{0} programs executed", ProgramsExecuted);
+            Console.WriteLine(sw.Elapsed);
         }
 
+        private static int ProgramsExecuted = 0;
         private enum ReadMode { Input = 1, Expected, Code }
         private static void DoTest(string file) {
             string name = Path.GetFileNameWithoutExtension(file);
@@ -57,6 +61,7 @@ namespace StaxLang.CLI {
             var expected = new List<string>();
             ReadMode mode = 0;
 
+            int i = 0;
             foreach (var line in File.ReadLines(file)) {
                 if (line.StartsWith("\tname:")) {
                     name = line.Split(new[] { ':' }, 2)[1];
@@ -81,6 +86,7 @@ namespace StaxLang.CLI {
                             expected.Add(line);
                             break;
                         case ReadMode.Code:
+                            ++ProgramsExecuted;
                             var writer = new StringWriter();
                             var executor = new Executor(writer);
                             executor.Run(line, input.ToArray(), TimeSpan.FromSeconds(2));
@@ -90,7 +96,7 @@ namespace StaxLang.CLI {
                             if (!outLines.SequenceEqual(expected)) {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Error in {0}", name);
-                                Console.WriteLine(file);
+                                Console.WriteLine("{0}:{1}", file, i + 1);
                                 Console.WriteLine("Expected: ");
                                 foreach (var e in expected) {
                                     Console.WriteLine(e);
@@ -105,6 +111,7 @@ namespace StaxLang.CLI {
                             break;
                     }
                 }
+                ++i;
             }
         }
 

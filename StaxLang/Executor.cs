@@ -32,7 +32,6 @@ using System.Text.RegularExpressions;
  *     squarify array
  *     
  *     debugger
- *     tests in portable files
  */
 
 namespace StaxLang {
