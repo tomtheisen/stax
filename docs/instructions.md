@@ -160,7 +160,7 @@ chars	|Types        	|Name           	|Description
 `\`  	|arr num      	|array-pair     	|Make array of pairs, all having identical second element.
 `\`  	|num arr      	|array-pair     	|Make array of pairs, all having identical first element.
 `\`  	|arr arr      	|zip-repeat     	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
-`@`  	|arr int      	|element-at     	|Get element at 0-based index.
+`@`  	|arr int      	|element-at     	|Get element at 0-based modular index.  (-1 is the last element)
 `@`  	|arr arr      	|elements-at    	|Get elements at all indices.
 `&`  	|arr int any  	|assign-index   	|Assign element at index.
 `&`  	|arr arr any  	|assign-indices 	|Assign element at all indices.
