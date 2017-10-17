@@ -46,6 +46,9 @@ namespace StaxLang {
                 (']', "aa", "~;%),=", "starts with"),
                 ('(', "a", "c%r{[|(msd", "all left rotations"),
                 (')', "a", "c%r{[|)msd", "all right rotations"),
+                ('-', "ii", "-|a", "absolute difference"),
+                ('-', "rr", "-|a", "absolute difference"),
+                ('-', "ff", "-|a", "absolute difference"),
                 ('b', "iii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
@@ -55,6 +58,7 @@ namespace StaxLang {
                 ('I', "aa", "{[Imsd", "get all indexes of"),
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
+                ('m', "a", "cr+", "mirror"),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };

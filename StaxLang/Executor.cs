@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
  *     find-index-all by regex
  *     running "total" / reduce-collect
  *     log
+ *     log 2/10/n
  *     trig
  *     string interpolate
  *     uneval
@@ -42,10 +43,7 @@ using System.Text.RegularExpressions;
  *     all combinations
  *     n-combinations
  *     permutations
- *     log 2/10/n
- *     mirror cr+
  *     trim element(s)
- *     absolute difference -|a
  *     multiplicity 0~{b%C caa / s ,^~ Wdd,
  *     custom base encoding
  *     all factors c%{[%!fsd

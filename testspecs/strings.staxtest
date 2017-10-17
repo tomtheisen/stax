@@ -292,3 +292,9 @@ d-c-b-a
 abcd
 	stax
 .ab.cd +
+	name:Char
+	in
+	out
+a
+	stax
+'a

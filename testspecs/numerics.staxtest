@@ -519,9 +519,10 @@ e|g
 not equal
 	stax
 1 2= "equal" "not equal" ?
-	name:Char
+	name:AbsoluteDifference
 	in
+5 9
 	out
-a
+4
 	stax
-'a
+:-

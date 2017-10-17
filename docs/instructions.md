@@ -95,6 +95,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
+`:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
@@ -212,6 +213,7 @@ chars	|Types        	|Name           	|Description
 `:f` 	|arr          	|flatten        	|Flatten array of arrays one time.
 `:I` 	|arr arr      	|find-index-all 	|For each element in b, find the index of the first occurrence in a.
 `:m` 	|arr int      	|repeat-to      	|Repeat array until it is exactly length n.
+`:m` 	|arr          	|mirror         	|Append reversed copy to array.
 `:r` 	|arr arr      	|replace-all    	|Replace all substring occurrences.
 `:u` 	|arr          	|multi-single   	|Array contains exactly 1 distinct element?
 
