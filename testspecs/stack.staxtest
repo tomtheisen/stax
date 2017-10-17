@@ -1,0 +1,72 @@
+	name:Copy
+	in
+	out
+2
+	stax
+1c+
+	name:ListifyStack
+	in
+	out
+5,4,3,2,1
+	stax
+1 2 3 4 5 L ',*
+	name:ListifyN
+	in
+	out
+3,4,5
+	stax
+1 2 3 4 5 3l ',*
+	name:SideStack
+	in
+	out
+23314
+	stax
+1 2 3 4 ~~p;p,ppp
+	name:Discard
+	in
+	out
+22
+	stax
+11 22 33 d
+	name:Swap
+	in
+	out
+12
+	stax
+1 2 s pp
+	name:StackDepth
+	in
+	out
+4
+	stax
+1 1 1 1 |d
+	name:SideStackDepth
+	in
+	out
+3
+	stax
+1 1 1 1 ~~~ |D
+	name:AlterStack
+	in
+	out
+2431
+	stax
+1 2 3 4 a pppp
+	name:CopyBoth
+	in
+	out
+32321
+	stax
+1 2 3 b ppppp
+	name:CopyUnder
+	in
+	out
+3221
+	stax
+1 2 3 [ pppp 
+	name:CopyNext
+	in
+	out
+2321
+	stax
+1 2 3 n pppp 

@@ -1,0 +1,79 @@
+"abcde" "xyz" |\ J
+	name:DefaultOutput
+	in
+	out
+3
+	stax
+1 2 3
+	name:Print
+	in
+	out
+2
+	stax
+1 2P 3
+	name:SuppressedNewline
+	in
+	out
+12
+	stax
+1p 2P 3
+	name:ImplicitEvalTokenizeInput
+	in
+3 4
+	out
+7
+	stax
++
+	name:FloatsAreEvaled
+	in
+01.230
+	out
+1.23
+	stax
+
+	name:FractionsAreEvaled
+	in
+6/14
+	out
+3/7
+	stax
+
+	name:PeekPrint
+	in
+	out
+777
+	stax
+7qqQ
+	name:PrintNewline
+	in
+	out
+
+	stax
+|P
+	name:ImplicitEval
+	in
+[1, 2, 3]
+	out
+6
+	stax
+|+
+	name:ImplicitTrailingLiteralPrint
+	in
+	out
+1abc
+	stax
+1p "abc
+	name:PrintSpace
+	in
+	out
+1 2
+	stax
+1p| 2p
+	name:LineModeEval
+	in
+5
+8
+	out
+3
+	stax
+e-

@@ -1,4 +1,4 @@
-	name:NegativeDivision
+﻿	name:NegativeDivision
 	in
 	out
 -1
@@ -160,10 +160,16 @@ x
 md
 	stax
 1{.mdm
-	name:SurrogatePair
+	name:SurrogatePairParse
 	in
 𒀠
 	out
 1
 	stax
 %
+	name:SurrogatePairOut
+	in
+	out
+𒀠
+	stax
+73760]

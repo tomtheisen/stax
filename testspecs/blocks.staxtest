@@ -1,0 +1,130 @@
+	name:RepeatBlock
+	in
+	out
+111
+	stax
+{1p}3*
+	name:ShorthandRepeatBlock
+	in
+	out
+111
+	stax
+3F1p
+	name:DoWhile
+	in
+	out
+34567
+	stax
+3{q^c8-w
+	name:DoWhileShorthand
+	in
+	out
+34567
+	stax
+3wq^c8-
+	name:While
+	in
+	out
+3-4-5-6-7
+	stax
+3{q^c8=C'-pW
+	name:WhileShorthand
+	in
+	out
+3-4-5-6-7
+	stax
+3Wq^c8=C'-p
+	name:IfBlocks
+	in
+	out
+not equal
+	stax
+ "equal" 1 2=  {} {"not "s+} ?
+	name:Filter
+	in
+	out
+1,3,5
+	stax
+5R {2%f ',*
+	name:FilterShorthand
+	in
+	out
+1
+3
+	stax
+5rf2%
+	name:ForEach
+	in
+	out
+45678
+	stax
+5R {3+pF
+	name:Map
+	in
+	out
+1,4,9,16,25
+	stax
+5R {c*m ',*
+	name:Reduce
+	in
+	out
+120
+	stax
+5R {*k
+	name:OrderBy
+	in
+	out
+5,1,4,2,3
+	stax
+5R {c*5%o ',*
+	name:IterationIndex
+	in
+	out
+x:0 x:1 x:2 x:3 
+	stax
+'x]4* {p ':p ip ' p F
+	name:OuterIterationIndex
+	in
+	out
+0011
+	stax
+2F 2F |ip
+	name:IteratingVariable
+	in
+	out
+122333
+	stax
+3R {$_*pF
+	name:RegexReplaceBlock
+	in
+	out
+a1b2c3d
+	stax
+"axbxxcxxxd" "x+"{%$}R
+	name:ConditionalCancel
+	in
+	out
+12
+	stax
+12p 1C 34p
+	name:FindAllIndexesPredicate
+	in
+	out
+1 2 5 6
+	stax
+"[1 2 2 3 3 4 4 5]"e {|e} |I J
+	name:MapCancelFilter
+	in
+	out
+113355
+	stax
+5R {|eC_$2*m
+	name:CrossMap
+	in
+ABC
+	out
+AA AB AC 
+BA BB BC 
+CA CB CC 
+	stax
+cK' ++

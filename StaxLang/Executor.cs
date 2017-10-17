@@ -2530,7 +2530,7 @@ namespace StaxLang {
             string Convert(object e) {
                 if (IsInt(e)) {
                     if (AreEqual(e, BigInteger.Zero)) return " ";
-                    return ((char)(int)((BigInteger)e & ushort.MaxValue)).ToString();
+                    return char.ConvertFromUtf32((int)(BigInteger)e);
                 }
                 return A2S((List<object>)e);
             }

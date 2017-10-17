@@ -1,0 +1,294 @@
+	name:CharacterInterleave
+	in
+	out
+a-b-c-d
+	stax
+"abcd"M '- *
+	name:Upper
+	in
+	out
+HELLO
+	stax
+"Hello"^
+	name:Lower
+	in
+	out
+hello
+	stax
+"Hello"v
+	name:TruncateRight
+	in
+	out
+Hel
+	stax
+"Hello" 3(
+	name:PadRight
+	in
+	out
+Hello   
+	stax
+"Hello" 8(
+	name:TruncateLeft
+	in
+	out
+llo
+	stax
+"Hello" 3)
+	name:PadLeft
+	in
+	out
+   Hello
+	stax
+"Hello" 8)
+	name:FindIndex
+	in
+	out
+6
+	stax
+"Hello World" "Wo" I
+	name:FindAllIndexes
+	in
+	out
+4 7
+	stax
+"Hello World" "o" |I J
+	name:UnfoundIndex
+	in
+	out
+-1
+	stax
+"Hello World" "Wr" I
+	name:ChunkString
+	in
+	out
+abc,def,gh
+	stax
+"abcdefgh" 3/ ',*
+	name:Transpose
+	in
+	out
+adg,beh,cf 
+	stax
+"abcdefgh" 3/ M ',*
+	name:TransposeFills
+	in
+["long" "x" "longer"]
+	out
+lxl,o o,n n,g g,  e,  r
+	stax
+M ', *
+	name:TrimLeft
+	in
+	out
+abc  
+	stax
+"  abc  " t
+	name:TrimRight
+	in
+	out
+  abc
+	stax
+"  abc  " T
+	name:TrimLeftBy
+	in
+	out
+llo world
+	stax
+"hello world" 2 t
+	name:TrimRightBy
+	in
+	out
+hello wor
+	stax
+"hello world" 2 T
+	name:Unique
+	in
+	out
+Helo Wrd
+	stax
+"Hello World" u
+	name:RegexReplace
+	in
+	out
+azbzczd
+	stax
+"axbxxcxxxd" "x+" 'z R
+	name:Translate
+	in
+	out
+H3ll0 W0rld
+	stax
+"Hello World" "e3o0" |t
+	name:Batch
+	in
+	out
+hel,ell,llo
+	stax
+"hello" 3B ',*
+	name:RotateRight
+	in
+	out
+gasdf
+	stax
+"asdfg" |)
+	name:RotateRightDistance
+	in
+	out
+fgasd
+	stax
+"asdfg" 2 |)
+	name:RotateLeft
+	in
+	out
+sdfga
+	stax
+"asdfg" |(
+	name:RotateLeftDistance
+	in
+	out
+dfgas
+	stax
+"asdfg" 2 |(
+	name:RegexFind
+	in
+	out
+o,oo,o,o
+	stax
+"Hello. Good to see you." "o+" |f ', *
+	name:RegexSplit
+	in
+	out
+Hell,. G,d t, see y,u.
+	stax
+"Hello. Good to see you." "o+" |s ', *
+	name:Prefixes
+	in
+	out
+a,ab,abc
+	stax
+"abc" |[ ',*
+	name:Suffixes
+	in
+	out
+abc,bc,c
+	stax
+"abc" |] ',*
+	name:ZeroFill
+	in
+	out
+00abc
+	stax
+"abc" 5 |z
+	name:CompressedLiterals
+	in
+	out
+literal
+	stax
+`5Is1%
+	name:SubstringOccurrences
+	in
+	out
+2
+	stax
+"drab cab" "ab" #
+	name:AutoRangeBounds
+	in
+	out
+as//
+	stax
+"asdf"X 2x|r '/ &
+	name:StringReplace
+	in
+	out
+axbxc
+	stax
+ "a.b.c" '. 'x :r
+	name:StartsWith
+	in
+Hello world
+	out
+1
+	stax
+"He" :[
+	name:NotStartsWith
+	in
+Hello world
+	out
+0
+	stax
+"e" :[
+	name:EndsWith
+	in
+Hello world
+	out
+1
+	stax
+"rld" :]
+	name:NotEndsWith
+	in
+Hello world
+	out
+0
+	stax
+"rld!" :]
+	name:Center
+	in
+	out
+  a  
+	stax
+'a 5 |C
+	name:CenterBlock
+	in
+abcd
+	out
+ a  , ab ,abc ,abcd
+	stax
+|[ |C ',*
+	name:StringLiteral
+	in
+	out
+hello
+	stax
+"hello"
+	name:UnterminatedStringLiteral
+	in
+	out
+hello
+	stax
+"hello
+	name:EscapedString
+	in
+	out
+a"b`c
+	stax
+"a`"b``c
+	name:Concat
+	in
+	out
+helloworld
+	stax
+"hello" "world"+
+	name:RepeatString
+	in
+	out
+abcabcabcabc
+	stax
+"abc"4*
+	name:StringSubtraction
+	in
+	out
+he wrd
+	stax
+"hello world" "ol" -
+	name:StringJoin
+	in
+	out
+d-c-b-a
+	stax
+'a'b'c'd L '-*
+	name:TwoCharLiteral
+	in
+	out
+abcd
+	stax
+.ab.cd +
