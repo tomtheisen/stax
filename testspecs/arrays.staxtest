@@ -342,3 +342,12 @@ orld
 140
 	stax
 :*
+	name:RunLength
+	in
+[7 7 4 9 9 9]
+	out
+7 2
+4 1
+9 3
+	stax
+|RmJ

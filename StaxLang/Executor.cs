@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
- *     RLE
  *     RLE prime factorization [(prime, exp)]
  *     data-driven macro namespace ':' - 
  *          compare / sign (c{c|a/}0?)
@@ -76,6 +75,7 @@ using System.Text.RegularExpressions;
  *     sign c{c|a/}{d0}?
  *     rot13
  *     binary digit explode
+ *     peek assert c!C
  *     
  *     debugger
  */
@@ -1075,13 +1075,17 @@ namespace StaxLang {
                                     Push(Range(start, end - start));
                                     break;
                                 }
-                            case 'R': // start-end-stride range
-                                block.AddDesc("explicit range with stride"); 
-                                {
+                            case 'R': 
+                                if (IsInt(Peek())) { // start-end-stride range
+                                    block.AddDesc("explicit range with stride");
                                     int stride = (int)Pop(), end = (int)Pop(), start = (int)Pop();
                                     Push(Enumerable.Range(0, end - start).Select(n => n * stride + start).TakeWhile(n => n < end).Select(n => new BigInteger(n) as object).ToList());
-                                    break;
                                 }
+                                else if (IsArray(Peek())) { // RLE
+                                    block.AddDesc("run length encode into [element count] pairs");
+                                    Push(RunLength(Pop()));
+                                }
+                                break;
                             case 's': // regex split
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "regex split on " + e);
                                 else block.AddDesc("regex split");
@@ -1200,77 +1204,6 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoGenerator(Block block, bool shorthand, char spec, Block rest) {
-            /*
-             *  End condition
-	         *      duplicate -     u
-	         *      n reached -     n
-	         *      filter false -  f
-	         *      cancelled -	    c
-             *      invariant pt -  i
-             *      target value -  t
-             *      first as scalar s
-             *      element@ index  e
-             *
-             *  Collection type
-	         *      pre-peek - lower case
-	         *      post-pop - upper case
-             *
-             *  Filter
-	         *      yes
-	         *      no
-             *
-             *   {filter}{project}gu
-             *   {filter}{project}gi
-             *   {filter}{project}gf
-             *   {filter}{project}gc
-             *   {filter}{project}gs
-             *  0{filter}{project}gn
-             *  0{filter}{project}ge
-             *   {filter}{project}g9
-             *  t{filter}{project}gt
-	         *           {project}gu
-	         *           {project}gi
-	         *           {project}gc
-	         *  0        {project}gn
-	         *  0        {project}ge
-	         *           {project}g9
-	         *  t        {project}gt
-             *   {filter}{project}gU
-             *   {filter}{project}gI
-             *   {filter}{project}gF
-             *   {filter}{project}gC
-             *   {filter}{project}gS
-             *  0{filter}{project}gN
-             *  0{filter}{project}gE
-             *   {filter}{project}g(
-             *  t{filter}{project}gT
-	         *           {project}gU
-	         *           {project}gI
-	         *           {project}gC
-	         *  0        {project}gN
-	         *  0        {project}gE
-	         *           {project}g(
-	         *  t        {project}gT
-             *           
-             *           gu project
-             *           gi project
-             *           gc project
-             *           gs project
-             *         0 gn project
-             *         0 ge project
-             *           g9 project
-             *         t gt project
-             *           gU project
-             *           gI project
-             *           gC project
-             *           gS project
-             *         0 gN project
-             *         0 gE project
-             *           g( project
-             *         t gT project
-             *
-             */
-
             char lowerSpec = char.ToLower(spec);
             bool stopOnDupe = lowerSpec == 'u',
                 stopOnFilter = lowerSpec == 'f',
@@ -2536,6 +2469,25 @@ namespace StaxLang {
 
         private static bool AreEqual(dynamic a, dynamic b) => Comparer.Instance.Compare(a, b) == 0;
 
+        private List<object> RunLength(List<object> arr) {
+            if (arr.Count == 0) return arr;
+            var result = new List<object>();
+            object last = null;
+            int run = 0;
+            foreach (var e in arr) {
+                if (AreEqual(e, last)) {
+                    run += 1;
+                }
+                else {
+                    if (run > 0) result.Add(new List<object> { last, new BigInteger(run) });
+                    last = e;
+                    run = 1;
+                }
+            }
+            result.Add(new List<object> { last, new BigInteger(run) });
+            return result;
+        }
+
         private static bool IsInt(object b) => b is BigInteger;
         private static bool IsFrac(object b) => b is Rational;
         private static bool IsFloat(object b) => b is double;
@@ -2678,7 +2630,9 @@ namespace StaxLang {
             }
 
             public int Compare(dynamic a, dynamic b) {
-                if (a == null || b == null) return object.ReferenceEquals(a, b);
+                if (a == null) return b == null ? 0 : 1;
+                if (b == null) return -1;
+
                 if (IsNumber(a)) {
                     while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
                     if (IsNumber(b)) return CompareScalars(a, b);

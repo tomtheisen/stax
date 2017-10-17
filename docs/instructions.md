@@ -209,6 +209,7 @@ chars	|Types        	|Name           	|Description
 `\|p`	|arr          	|palindromize   	|a + reversed(a[:-1]).  Always has an odd length.
 `\|r`	|int int      	|explicit-range 	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range   	|Range [a .. b) with stride of c.
+`\|R`	|arr          	|run-length     	|Encode runs of elements into an array of [element, count] pairs.
 `::` 	|arr int      	|every-nth      	|Every nth element in array, starting from the first.
 `:*` 	|arr          	|product        	|Product of numbers in array.
 `:(` 	|arr          	|left-rotations 	|All left rotations, starting from original.
