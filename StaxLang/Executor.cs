@@ -187,12 +187,7 @@ namespace StaxLang {
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(transformedInput);
 
-            if (programBlock.Contents.StartsWith("e")) {
-                // if first instruction is 'e', eval all lines and put back on stack in same order
-                RunMacro("L{eFw~|d");
-                programBlock.AddDesc("eval line mode; parse each line - push all values to input stack");
-            }
-            else if (programBlock.Contents.StartsWith("i")) {
+            if (programBlock.Contents.StartsWith("i")) {
                 programBlock.AddDesc("suppress single line eval; treat input as raw string");
             }
             else if (transformedInput.Length == 1) {
@@ -471,7 +466,7 @@ namespace StaxLang {
                         Pop();
                         break;
                     case 'e': 
-                        if (IsArray(Peek()) && (CallStackFrames.Any() || ip > 0)) {
+                        if (IsArray(Peek())) {
                             block.AddDesc("eval - parse strings, arrays, and numbers");
                             if (!DoEval()) throw new StaxException("eval failed");
                         }

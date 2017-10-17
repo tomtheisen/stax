@@ -99,7 +99,7 @@ namespace StaxLang.CLI {
                                     .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
                                 if (!outLines.SequenceEqual(expected)) {
                                     Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine("Error in {0}", name);
+                                    Overwrite(string.Format("Error in {0}", name));
                                     Console.WriteLine("{0}:{1}", file, i + 1);
                                     Console.WriteLine("Expected: ");
                                     foreach (var e in expected) {
@@ -115,7 +115,7 @@ namespace StaxLang.CLI {
                             }
                             catch (Exception ex) {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Error in {0}", name);
+                                Overwrite(string.Format("Error in {0}", name));
                                 Console.WriteLine("{0}:{1}", file, i + 1);
                                 Console.WriteLine(ex.Message);
                                 Console.WriteLine(ex.StackTrace);

@@ -495,12 +495,11 @@ ff
 1 2>
 	name:GCD
 	in
-42
-56
+42 56
 	out
 14
 	stax
-e|g
+|g
 	name:NotTrue
 	in
 	out

@@ -271,7 +271,6 @@ char	|Name        	|Description
 `f` 	|line-filter 	|Use the rest of the program to filter input lines.  Print lines that produce a truthy result.
 `F` 	|line-foreach	|Execute the rest of the program once for each line of input.
 `m` 	|line-map    	|Map each line of standard input.  Print each result with a newline.
-`e` 	|line-eval   	|Auto-evaluation normally only happens if there is exactly one line of standard input.  This mode performs it even if there are more.
 `i` 	|no-eval     	|Suppress auto-eval.  e.g. If the input is a binary number, this will prevent incorrectly parsing it as an integer.
 
 ## Constants
