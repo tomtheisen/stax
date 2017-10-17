@@ -335,3 +335,10 @@ orld
 !   
 	stax
 :J m
+	name:Array Product
+	in
+[4 7 5]
+	out
+140
+	stax
+:*

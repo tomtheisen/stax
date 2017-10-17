@@ -34,10 +34,11 @@ using System.Text.RegularExpressions;
  *     get index of first truthy element
  *     get indices of falsy elements
  *     get index of first falsy element
- *     get first truthy element
+ *     get indices by block predicate
+ *     get index by block predicate
+ *     get first truthy element (coalesce)
  *     get indices of maxes
  *     get indices of mins
- *     array mul {*k
  *     sorted indices by value
  *     all combinations
  *     n-combinations

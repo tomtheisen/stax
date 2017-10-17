@@ -210,6 +210,7 @@ chars	|Types        	|Name           	|Description
 `\|r`	|int int      	|explicit-range 	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range   	|Range [a .. b) with stride of c.
 `::` 	|arr int      	|every-nth      	|Every nth element in array, starting from the first.
+`:*` 	|arr          	|product        	|Product of numbers in array.
 `:(` 	|arr          	|left-rotations 	|All left rotations, starting from original.
 `:)` 	|arr          	|right-rotations	|All right rotations, starting from original.
 `:f` 	|arr          	|flatten        	|Flatten array of arrays one time.

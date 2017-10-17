@@ -42,6 +42,7 @@ namespace StaxLang {
             var macros = new (char alias, string types, string code, string desc)[] {
                 ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
                 (':', "ai", "/{hm", "get every nth element"),
+                ('*', "a", "{*k", "array product"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
                 ('(', "a", "c%r{[|(msd", "all left rotations"),
