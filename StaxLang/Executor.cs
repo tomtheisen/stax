@@ -70,13 +70,10 @@ using System.Text.RegularExpressions;
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
- *     2-char string literal
  *     assign to array using predicate instead of index
- *     is subset
- *     is superset
+ *     is subset    s-!
  *     sign c{c|a/}{d0}?
  *     rot13
- *     squarify array
  *     binary digit explode
  *     
  *     debugger
