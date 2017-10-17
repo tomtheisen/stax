@@ -47,6 +47,8 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `%`          	|int int    	|mod           	|a % b              	|Modulus.
 `@`          	|frac       	|floor         	|floor(a)           	|Integer floor of fraction.
 `@`          	|float      	|floor         	|floor(a)           	|Integer floor of float.
+`&`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
+`&`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
 `v`          	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`          	|num        	|inc           	|a + 1              	|Increment by 1.
 `E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.
@@ -212,6 +214,7 @@ chars	|Types        	|Name           	|Description
 `:)` 	|arr          	|right-rotations	|All right rotations, starting from original.
 `:f` 	|arr          	|flatten        	|Flatten array of arrays one time.
 `:I` 	|arr arr      	|find-index-all 	|For each element in b, find the index of the first occurrence in a.
+`:J` 	|arr          	|squarify       	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m` 	|arr int      	|repeat-to      	|Repeat array until it is exactly length n.
 `:m` 	|arr          	|mirror         	|Append reversed copy to array.
 `:r` 	|arr arr      	|replace-all    	|Replace all substring occurrences.

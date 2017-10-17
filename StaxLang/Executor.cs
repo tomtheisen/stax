@@ -35,7 +35,6 @@ using System.Text.RegularExpressions;
  *     get indices of falsy elements
  *     get index of first falsy element
  *     get first truthy element
- *     squarify array
  *     get indices of maxes
  *     get indices of mins
  *     array mul {*k
@@ -64,6 +63,7 @@ using System.Text.RegularExpressions;
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
  *     insert at
+ *     remove at
  *     if (no else) like {^D
  *     all sub-arrays |]{|[m{+k
  *     copy thrice ccc
@@ -1831,6 +1831,19 @@ namespace StaxLang {
         }
 
         private void DoAssignIndex(Block block) {
+            if (IsFloat(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
+                else block.AddDesc("ceiling");
+                Push(new BigInteger(Math.Ceiling(Pop())));
+                return;
+            }
+            else if (IsFrac(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
+                else block.AddDesc("ceiling");
+                Push(((Rational)Pop()).Ceil());
+                return;
+            }
+
             dynamic element = Pop(), indexes = Pop(), list = Pop();
 
             if (IsInt(indexes)) {

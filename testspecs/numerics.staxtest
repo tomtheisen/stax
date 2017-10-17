@@ -526,3 +526,17 @@ not equal
 4
 	stax
 :-
+	name:CeilingFraction
+	in
+7/2
+	out
+4
+	stax
+&
+	name:CeilingFloat
+	in
+2.7
+	out
+3
+	stax
+&
