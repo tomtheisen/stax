@@ -471,9 +471,19 @@ namespace StaxLang {
                         Pop();
                         break;
                     case 'e': 
-                        if (CallStackFrames.Any() || ip > 0) {
+                        if (IsArray(Peek()) && (CallStackFrames.Any() || ip > 0)) {
                             block.AddDesc("eval - parse strings, arrays, and numbers");
                             if (!DoEval()) throw new StaxException("eval failed");
+                        }
+                        else if (IsFloat(Peek())) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
+                            else block.AddDesc("ceiling");
+                            Push(new BigInteger(Math.Ceiling(Pop())));
+                        }
+                        else if (IsFrac(Peek())) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
+                            else block.AddDesc("ceiling");
+                            Push(((Rational)Pop()).Ceil());
                         }
                         break;
                     case 'E': // explode (de-listify)
@@ -1828,19 +1838,6 @@ namespace StaxLang {
         }
 
         private void DoAssignIndex(Block block) {
-            if (IsFloat(Peek())) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
-                else block.AddDesc("ceiling");
-                Push(new BigInteger(Math.Ceiling(Pop())));
-                return;
-            }
-            else if (IsFrac(Peek())) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "ceiling of " + e);
-                else block.AddDesc("ceiling");
-                Push(((Rational)Pop()).Ceil());
-                return;
-            }
-
             dynamic element = Pop(), indexes = Pop(), list = Pop();
 
             if (IsInt(indexes)) {

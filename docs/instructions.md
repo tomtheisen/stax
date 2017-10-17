@@ -47,10 +47,10 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `%`          	|int int    	|mod           	|a % b              	|Modulus.
 `@`          	|frac       	|floor         	|floor(a)           	|Integer floor of fraction.
 `@`          	|float      	|floor         	|floor(a)           	|Integer floor of float.
-`&`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
-`&`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
 `v`          	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`          	|num        	|inc           	|a + 1              	|Increment by 1.
+`e`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
+`e`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
 `E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.
 `E`          	|frac       	|num-den       	|                   	|Push numerator and denominator separately.
 `h`          	|int        	|halve         	|a / 2              	|Floor divide by 2.

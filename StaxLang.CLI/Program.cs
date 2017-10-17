@@ -92,22 +92,33 @@ namespace StaxLang.CLI {
                             ++ProgramsExecuted;
                             var writer = new StringWriter();
                             var executor = new Executor(writer);
-                            executor.Run(line, input.ToArray(), TimeSpan.FromSeconds(2));
-                            var outLines = writer.ToString()
-                                .TrimEnd('\n', '\r')
-                                .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
-                            if (!outLines.SequenceEqual(expected)) {
+                            try {
+                                executor.Run(line, input.ToArray(), TimeSpan.FromSeconds(2));
+                                var outLines = writer.ToString()
+                                    .TrimEnd('\n', '\r')
+                                    .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
+                                if (!outLines.SequenceEqual(expected)) {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("Error in {0}", name);
+                                    Console.WriteLine("{0}:{1}", file, i + 1);
+                                    Console.WriteLine("Expected: ");
+                                    foreach (var e in expected) {
+                                        Console.WriteLine(e);
+                                    }
+                                    Console.WriteLine("Actual: ");
+                                    foreach (var a in outLines) {
+                                        Console.WriteLine(a);
+                                    }
+                                    Console.WriteLine();
+                                    Console.ResetColor();
+                                }
+                            }
+                            catch (Exception ex) {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("Error in {0}", name);
                                 Console.WriteLine("{0}:{1}", file, i + 1);
-                                Console.WriteLine("Expected: ");
-                                foreach (var e in expected) {
-                                    Console.WriteLine(e);
-                                }
-                                Console.WriteLine("Actual: ");
-                                foreach (var a in outLines) {
-                                    Console.WriteLine(a);
-                                }
+                                Console.WriteLine(ex.Message);
+                                Console.WriteLine(ex.StackTrace);
                                 Console.WriteLine();
                                 Console.ResetColor();
                             }

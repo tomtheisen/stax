@@ -56,7 +56,7 @@ namespace StaxLang {
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('f', "a", "{+k", "flatten array"),
                 ('I', "aa", "{[Imsd", "get all indexes of"),
-                ('J', "a", "c%|Q&~;J(,/", "squarify"),
+                ('J', "a", "c%|Qe~;J(,/", "squarify"),
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror"),
