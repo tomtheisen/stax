@@ -71,7 +71,6 @@ using System.Text.RegularExpressions;
  *     haslower Va |&
  *     hasletter Vl |&
  *     assign to array using predicate instead of index
- *     is subset    s-!
  *     sign c{c|a/}{d0}?
  *     rot13
  *     binary digit explode

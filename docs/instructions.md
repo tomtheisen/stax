@@ -220,6 +220,7 @@ chars	|Types        	|Name           	|Description
 `:m` 	|arr int      	|repeat-to      	|Repeat array until it is exactly length n.
 `:m` 	|arr          	|mirror         	|Append reversed copy to array.
 `:r` 	|arr arr      	|replace-all    	|Replace all substring occurrences.
+`:S` 	|arr arr      	|is-superset-of 	|Is a a (non-strict) superset of b?
 `:u` 	|arr          	|multi-single   	|Array contains exactly 1 distinct element?
 
 

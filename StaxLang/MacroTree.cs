@@ -62,6 +62,7 @@ namespace StaxLang {
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror"),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
+                ('S', "aa", "s-!", "is superset of"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };
 

@@ -12,11 +12,12 @@ namespace StaxLang.CLI {
                 return;
             }
 
+            bool @throw = args.Contains("-throw");
             if (args[0] == "-tests") {
-                DoTests(args[1]);
+                DoTests(args[1], @throw);
             }
             else if (args[0] == "-test") {
-                DoTest(args[1]);
+                DoTest(args[1], @throw);
             }
             else if (args[0] == "-c") {
                 string program = args[1];
@@ -34,7 +35,7 @@ namespace StaxLang.CLI {
 
         private static void Overwrite(string msg) => Console.Write(msg.PadRight(Console.BufferWidth));
 
-        private static void DoTests(string path) {
+        private static void DoTests(string path, bool @throw) {
             var sw = Stopwatch.StartNew();
             var canon = Path.GetFullPath(path);
             var files = Directory.GetFiles(canon, "*.staxtest", SearchOption.AllDirectories);
@@ -46,7 +47,7 @@ namespace StaxLang.CLI {
                 Overwrite(msg);
                 Console.CursorTop -= 1;
 
-                DoTest(file);
+                DoTest(file, @throw);
             }
             Overwrite(string.Format("[{0}/{0}] specifications complete", files.Length));
             Console.WriteLine("{0} programs executed", ProgramsExecuted);
@@ -55,7 +56,7 @@ namespace StaxLang.CLI {
 
         private static int ProgramsExecuted = 0;
         private enum ReadMode { Input = 1, Expected, Code }
-        private static void DoTest(string file) {
+        private static void DoTest(string file, bool @throw) {
             string name = Path.GetFileNameWithoutExtension(file);
             var input = new List<string>();
             var expected = new List<string>();
@@ -113,7 +114,7 @@ namespace StaxLang.CLI {
                                     Console.ResetColor();
                                 }
                             }
-                            catch (Exception ex) {
+                            catch (Exception ex) when (!@throw) {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 Overwrite(string.Format("Error in {0}", name));
                                 Console.WriteLine("{0}:{1}", file, i + 1);
