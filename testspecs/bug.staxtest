@@ -160,3 +160,10 @@ x
 md
 	stax
 1{.mdm
+	name:SurrogatePair
+	in
+𒀠
+	out
+1
+	stax
+%
