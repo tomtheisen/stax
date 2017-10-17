@@ -196,6 +196,8 @@ chars	|Types        	|Name           	|Description
 `\|(`	|arr int      	|rotate-left-n  	|Shift array n places to the right, rotating the front to the end.
 `\|[`	|arr          	|prefixes       	|All prefixes of array.
 `\|]`	|arr          	|suffixes       	|All suffixes of array.
+`\|a`	|arr          	|any            	|Any elements of array are truthy?
+`\|A`	|arr          	|all            	|All elements of array are truthy?
 `\|g`	|arr          	|gcd            	|Greatest common denominator of array.
 `\|I`	|arr num      	|find-all       	|Find all indexes of occurrences of the value.
 `\|l`	|arr          	|lcm            	|Least common multiple of array.

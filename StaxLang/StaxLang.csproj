@@ -60,7 +60,6 @@
     <Compile Include="StaxException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\Instructions.md" />
     <None Include="packages.config" />
     <EmbeddedResource Include="english-huffman.json" />
   </ItemGroup>

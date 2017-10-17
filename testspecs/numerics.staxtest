@@ -296,6 +296,20 @@ ff
 5
 	stax
 5N|a
+	name:FloatAbsoluteValue
+	in
+-1.23
+	out
+1.23
+	stax
+|a
+	name:RationalAbsoluteValue
+	in
+3/4
+	out
+3/4
+	stax
+|a
 	name:RepeatedDivide
 	in
 	out

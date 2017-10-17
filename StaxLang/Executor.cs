@@ -38,8 +38,6 @@ using System.Text.RegularExpressions;
  *     get indices of maxes
  *     get indices of mins
  *     array mul {*k
- *     all {!f!
- *     any {f
  *     sorted indices by value
  *     all combinations
  *     n-combinations
@@ -917,14 +915,42 @@ namespace StaxLang {
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
                                 break;
-                            case 'a': 
-                                block.AddDesc("absolute value");
-                                Push(BigInteger.Abs(Pop()));
+                            case 'a':
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("absolute value");
+                                    if (IsInt(Peek())) Push(BigInteger.Abs(Pop()));
+                                    else if (IsFloat(Peek())) Push(Math.Abs(Pop()));
+                                    else if (IsFrac(Peek())) Push(((Rational)Pop()).AbsoluteValue());
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("any");
+                                    BigInteger result = 0;
+                                    foreach (var e in Pop()) {
+                                        if (IsTruthy(e)) {
+                                            result = 1;
+                                            break;
+                                        }
+                                    }
+                                    Push(result);
+                                }
                                 break;
-                            case 'A': 
-                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "10 to the " + e);
-                                else block.AddDesc("power of 10");
-                                Push(BigInteger.Pow(10, (int)Pop()));
+                            case 'A':
+                                if (IsInt(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "10 to the " + e);
+                                    else block.AddDesc("power of 10");
+                                    Push(BigInteger.Pow(10, (int)Pop()));
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("all");
+                                    BigInteger result = 1;
+                                    foreach (var e in Pop()) {
+                                        if (!IsTruthy(e)) {
+                                            result = 0;
+                                            break;
+                                        }
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case 'b': 
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert to base " + e);

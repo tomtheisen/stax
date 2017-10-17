@@ -304,3 +304,17 @@ bab
 1 3 5
 	stax
 2:: J
+	name:Any
+	in
+[0 0 0 2 0]
+	out
+1
+	stax
+|a
+	name:All
+	in
+[0 0 0 2 0]
+	out
+0
+	stax
+|A
