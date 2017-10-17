@@ -241,28 +241,32 @@ ax,by,cx,dy,ex
 "abcde" "xy" \ ',*
 	name:Union
 	in
+[1 2 2 3 3] [0 1 2]
 	out
 1,2,2
 	stax
-1]2]+2]+3]+3]+  3r |& ',*
+|& ',*
 	name:SymmetricDiff
 	in
+[1 2 2 3 3] [0 1 2]
 	out
 3,3,0
 	stax
-1]2]+2]+3]+3]+  3r |^ ',*
+|^ ',*
 	name:CountInTest
 	in
+[1 2 2 3 3] 3
 	out
 2
 	stax
-1]2]+2]+3]+3]+ 3 #
+#
 	name:IndexAllArray
 	in
+[1 2 3 2 1 2 3]
 	out
 2 6
 	stax
-"[1 2 3 2 1 2 3]"e 3|I J
+3|I J
 	name:Uncons
 	in
 	out

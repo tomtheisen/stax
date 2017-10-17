@@ -81,6 +81,7 @@ using System.Text.RegularExpressions;
  *     sign c{c|a/}{d0}?
  *     rot13
  *     squarify array
+ *     binary digit explode
  *     
  *     debugger
  */
@@ -2542,13 +2543,13 @@ namespace StaxLang {
 
         private string Format(dynamic e) {
             if (IsArray(e)) {
-                var formatted = e;
-                formatted = '"' + A2S(e).Replace("\n", "\\n") + '"';
-                if (((string)formatted).Any(char.IsControl) || ((IList<object>)e).Any(IsArray)) {
+                if (((List<object>)e).TrueForAll(ee => ee is BigInteger bi && (bi >= 32 && bi < 127 || bi == 0))) {
+                    return '"' + A2S(e).Replace("\n", "\\n") + '"';
+                }
+                else {
                     var inner = ((IList<object>)e).Select(Format);
                     return '[' + string.Join(", ", inner) + ']';
                 }
-                return formatted;
             }
             return e.ToString();
         }

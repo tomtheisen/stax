@@ -1,0 +1,31 @@
+	#https://codegolf.stackexchange.com/questions/145246/the-speed-of-letters
+	in
+AZ
+	out
+A                         Z
+	stax
+z,FVAIi+_&
+	in
+ABC
+	out
+A B C
+	stax
+z,FVAIi+_&
+	in
+ACE
+	out
+A  C  E
+	stax
+z,FVAIi+_&
+	in
+CBA
+	out
+  A
+	stax
+z,FVAIi+_&
+	in
+HELLOWORLD
+	out
+     E H    DLL   OLO   R  W
+	stax
+z,FVAIi+_&
