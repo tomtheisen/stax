@@ -13,8 +13,8 @@ using System.Text.RegularExpressions;
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
- *     log
- *     log 2/10/n
+ *     log/floor log
+ *     log/floor log 2/10/n
  *     trig
  *     string interpolate
  *     uneval
