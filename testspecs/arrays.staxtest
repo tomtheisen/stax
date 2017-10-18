@@ -3,9 +3,6 @@
 [3 3 3]
 	out
 1
-	stax
-:u
-	name:NonSingleUniqueElement
 	in
 [3 3 3 4]
 	out

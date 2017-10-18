@@ -181,3 +181,17 @@ md
 444
 	stax
 e*
+	name:ClosingBraceInput
+	in
+]
+	out
+]
+	stax
+
+	name:OpenBraceInput
+	in
+[
+	out
+[
+	stax
+

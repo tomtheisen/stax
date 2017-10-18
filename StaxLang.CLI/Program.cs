@@ -58,9 +58,18 @@ namespace StaxLang.CLI {
         private enum ReadMode { Input = 1, Expected, Code }
         private static void DoTest(string file, bool @throw) {
             string name = Path.GetFileNameWithoutExtension(file);
-            var input = new List<string>();
-            var expected = new List<string>();
+            var cases = new List<(List<string> Input, List<string> Expected)>();
+            bool executed = true;
+            var lastInput = new List<string>();
+            var lastExpected = new List<string>();
             ReadMode mode = 0;
+
+            void NewCaseSet() {
+                lastInput.Clear();
+                lastExpected.Clear();
+                cases.Clear();
+                executed = false;
+            }
 
             int i = 0;
             foreach (var line in File.ReadLines(file)) {
@@ -68,14 +77,27 @@ namespace StaxLang.CLI {
                     name = line.Split(new[] { ':' }, 2)[1];
                 }
                 else if (line.StartsWith("\tin")) {
-                    input.Clear();
+                    if (executed) {
+                        NewCaseSet();
+                    }
+                    else {
+                        cases.Add((lastInput, lastExpected));
+                        lastInput = new List<string>();
+                    }
                     mode = ReadMode.Input;
                 }
                 else if (line.StartsWith("\tout")) {
-                    expected.Clear();
+                    if (executed) NewCaseSet();
+                    lastExpected = new List<string>();
                     mode = ReadMode.Expected;
                 }
                 else if (line.StartsWith("\tstax")) {
+                    if (!executed) {
+                        cases.Add((lastInput, lastExpected));
+                        lastInput = new List<string>();
+                        lastExpected = new List<string>();
+                    }
+                    executed = true;
                     mode = ReadMode.Code;
                 }
                 else if (line.StartsWith("\t#")) {
@@ -84,49 +106,60 @@ namespace StaxLang.CLI {
                 else {
                     switch (mode) {
                         case ReadMode.Input:
-                            input.Add(line);
+                            lastInput.Add(line);
                             break;
                         case ReadMode.Expected:
-                            expected.Add(line);
+                            lastExpected.Add(line);
                             break;
                         case ReadMode.Code:
-                            ++ProgramsExecuted;
-                            var writer = new StringWriter();
-                            var executor = new Executor(writer);
-                            try {
-                                executor.Run(line, input.ToArray(), TimeSpan.FromSeconds(2));
-                                var outLines = writer.ToString()
-                                    .TrimEnd('\n', '\r')
-                                    .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
-                                if (!outLines.SequenceEqual(expected)) {
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Overwrite(string.Format("Error in {0}", name));
-                                    Console.WriteLine("{0}:{1}", file, i + 1);
-                                    Console.WriteLine("Expected: ");
-                                    foreach (var e in expected) {
-                                        Console.WriteLine(e);
-                                    }
-                                    Console.WriteLine("Actual: ");
-                                    foreach (var a in outLines) {
-                                        Console.WriteLine(a);
-                                    }
-                                    Console.WriteLine();
-                                    Console.ResetColor();
-                                }
-                            }
-                            catch (Exception ex) when (!@throw) {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Overwrite(string.Format("Error in {0}", name));
-                                Console.WriteLine("{0}:{1}", file, i + 1);
-                                Console.WriteLine(ex.Message);
-                                Console.WriteLine(ex.StackTrace);
-                                Console.WriteLine();
-                                Console.ResetColor();
+                            string fileLocation = string.Format("{0}:{1}", file, i+1);
+                            string stax = line;
+                            foreach (var c in cases) {
+                                ++ProgramsExecuted;
+                                ExecuteCase(fileLocation, name, stax, c.Input, c.Expected, @throw);
                             }
                             break;
                     }
                 }
                 ++i;
+            }
+        }
+
+        private static void ExecuteCase(string fileSpecifier, string name, string stax, List<string> input, List<string> expected, bool @throw) {
+            var writer = new StringWriter();
+            var executor = new Executor(writer);
+
+            try {
+                executor.Run(stax, input.ToArray(), TimeSpan.FromSeconds(2));
+                var outLines = writer.ToString()
+                    .TrimEnd('\n', '\r')
+                    .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
+                if (!outLines.SequenceEqual(expected)) {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Overwrite(string.Format("Error in {0}", name));
+                    Console.WriteLine(fileSpecifier);
+                    Console.WriteLine("Expected: ");
+                    foreach (var e in expected) {
+                        Console.WriteLine(e);
+                    }
+                    Console.WriteLine("Actual: ");
+                    foreach (var a in outLines) {
+                        Console.WriteLine(a);
+                    }
+                    Console.WriteLine();
+                    Console.ResetColor();
+                }
+            }
+            catch (Exception ex) when (!@throw) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Overwrite(string.Format("Error in {0}", name));
+                Console.WriteLine(fileSpecifier);
+                Console.WriteLine("Input:");
+                input.ForEach(Console.WriteLine);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine();
+                Console.ResetColor();
             }
         }
 

@@ -1508,6 +1508,7 @@ namespace StaxLang {
                         activeArrays.Push(new List<object>());
                         break;
                     case ']':
+                        if (activeArrays.Count == 0) return false;
                         NewValue(activeArrays.Pop());
                         break;
                     case '"':

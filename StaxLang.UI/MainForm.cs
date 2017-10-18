@@ -14,7 +14,7 @@ namespace StaxLang.UI {
 
         private void RunButton_Click(object sender, EventArgs e) {
             var output = new StringWriter();
-            var input = InputTextbox.Lines.Reverse().SkipWhile(l => l == "").Reverse().ToArray();
+            var input = InputTextbox.Lines.ToArray();
             var program = ProgramTextbox.SelectedText == "" ? ProgramTextbox.Text : ProgramTextbox.SelectedText;
             var sw = Stopwatch.StartNew();
             try {

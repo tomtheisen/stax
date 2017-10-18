@@ -120,6 +120,8 @@ Vsm
 	in
 	out
 
+	stax
+Vn
 	name:Ten
 	in
 	out

@@ -1,0 +1,44 @@
+	#https://codegolf.stackexchange.com/questions/68739/which-row-is-the-key-on
+	in
+$
+	out
+1
+	in
+4
+	out
+1
+	in
+q
+	out
+2
+	in
+Y
+	out
+2
+	in
+]
+	out
+2
+	in
+f
+	out
+3
+	in
+
+
+	out
+3
+	in
+v
+	out
+4
+	in
+?
+	out
+4
+	in
+ 
+	out
+5
+	stax
+"qwertyuiop[]\{}|""asdfghjkl;':`""A+"zxcvbnm,./<>?"' 4l1\_v/h1#^5%^
