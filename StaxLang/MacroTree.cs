@@ -60,6 +60,7 @@ namespace StaxLang {
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('f', "a", "{+k", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),
+                ('F', "i", "|fu", "distinct prime factors"),
                 ('I', "aa", "{[Imsd", "get all indexes of"),
                 ('J', "a", "c%|Qe~;J(,/", "squarify"),
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),

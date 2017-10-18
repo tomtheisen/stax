@@ -549,3 +549,10 @@ e
 7 1
 	stax
 :f mJ
+	name:DistinctPrimeFactors
+	in
+72
+	out
+2 3
+	stax
+:F J

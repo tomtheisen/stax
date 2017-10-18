@@ -102,6 +102,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
+`:F`         	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:m`         	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b
 
 ## Logic

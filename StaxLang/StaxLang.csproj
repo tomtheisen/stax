@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="IteratorPair.cs" />
     <Compile Include="MacroTree.cs" />
+    <Compile Include="PrimeHelper.cs" />
     <Compile Include="StaxPacker.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Block.cs" />

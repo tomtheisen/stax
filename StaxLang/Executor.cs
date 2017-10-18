@@ -2498,15 +2498,16 @@ namespace StaxLang {
 
         private List<object> PrimeFactors(BigInteger n) {
             var result = new List<object>();
-            BigInteger d = 2;
-            while (n > 1) {
+            n = BigInteger.Abs(n);
+            if (n <= 1) return result;
+            foreach (var d in PrimeHelper.AllPrimes()) {
                 while (n % d == 0) {
                     result.Add(d);
                     n /= d;
                 }
-                ++d;
+                if (n == 1) return result;
             }
-            return result;
+            throw new Exception("Reality mismatch.  Ran out of primes.");
         }
 
         private void DoGCD() {
