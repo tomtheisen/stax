@@ -40,7 +40,6 @@ using System.Text.RegularExpressions;
  *     multiplicity 0~{b%C caa / s ,^~ Wdd,
  *     custom base encoding
  *     all factors c%{[%!fsd
- *     distinct prime factors |fu
  *     distinct prime factor count |fu%
  *     all factor count
  *     prime factorization exponents
