@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
- *     RLE prime factorization [(prime, exp)]
  *     data-driven macro namespace ':' - 
  *          compare / sign (c{c|a/}0?)
  *          replace first only

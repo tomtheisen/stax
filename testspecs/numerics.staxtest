@@ -539,3 +539,13 @@ e
 3
 	stax
 e
+	name:PrimeFactorizeWithExponents
+	in
+5040
+	out
+2 4
+3 2
+5 1
+7 1
+	stax
+:f mJ
