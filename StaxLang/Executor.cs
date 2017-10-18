@@ -898,9 +898,39 @@ namespace StaxLang {
                                 block.AddDesc("bit shift right");
                                 RunMacro("|2/");
                                 break;
-                            case '1': 
-                                block.AddDesc("power of -1");
-                                RunMacro("2%U1?");
+                            case '0':
+                                if (IsArray(Peek())) {
+                                    block.AddDesc("get index of first falsy element");
+                                    BigInteger result = -1;
+                                    int i = 0;
+                                    foreach (var e in Pop()) {
+                                        if (!IsTruthy(e)) {
+                                            result = i;
+                                            break;
+                                        }
+                                        ++i;
+                                    }
+                                    Push(result);
+                                }
+                                break;
+                            case '1':
+                                if (IsArray(Peek())) {
+                                    block.AddDesc("get index of first truthy element");
+                                    BigInteger result = -1;
+                                    int i = 0;
+                                    foreach (var e in Pop()) {
+                                        if (IsTruthy(e)) {
+                                            result = i;
+                                            break;
+                                        }
+                                        ++i;
+                                    }
+                                    Push(result);
+                                }
+                                else if (IsInt(Peek())) {
+                                    block.AddDesc("power of -1");
+                                    RunMacro("2%U1?");
+                                }
                                 break;
                             case '2': 
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "2 to the " + e);

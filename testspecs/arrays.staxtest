@@ -407,3 +407,17 @@ orld
 0 1 2 4 5 7
 	stax
 :0 J
+	name:FirstTruthyIndex
+	in
+[0 0 0 23 0 0 76 0]
+	out
+3
+	stax
+|1
+	name:FirstFalsyIndex
+	in
+[9 8 4 4 3 6 0 2 3 4]
+	out
+6
+	stax
+|0

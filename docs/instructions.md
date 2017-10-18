@@ -187,6 +187,8 @@ chars	|Types        	|Name             	|Description
 `T`  	|arr int      	|remove-right     	|Trim n elements from right of array.
 `u`  	|arr          	|unique           	|Keep only unique elements in array, maintaining first order of appearance.
 `z`  	|             	|                 	|Push empty array/string.
+`\|0`	|arr          	|falsy-index      	|Get index of first falsy element.
+`\|1`	|arr          	|truthy-index     	|Get index of first truthy element.
 `\|+`	|arr          	|sum              	|Sum of array.
 `\|@`	|arr int      	|remove-at        	|Remove element from array at index.
 `\|@`	|arr int num  	|insert-at        	|Insert element to array at index.
