@@ -58,12 +58,10 @@ using System.Text.RegularExpressions;
  *     mode
  *     centered range |aNcN^|r
  *     multiset intersection
- *     multiset subtract
  *     multiset xor
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
- *     insert at
- *     remove at
+ *     split at
  *     if (no else) like {^D
  *     all sub-arrays |]{|[m{+k
  *     copy thrice ccc
@@ -801,12 +799,14 @@ namespace StaxLang {
                                 RunMacro("0s{+F");
                                 break;
                             case '-':
-                                block.AddDesc("pairwise difference of array");
-                                RunMacro("2B{Es-m");
+                                DoMultisetSubtract(block);
                                 break;
                             case '~':
                                 block.AddDesc("bitwise not");
                                 Push(~Pop());
+                                break;
+                            case '@':
+                                DoRemoveOrInsert(block);
                                 break;
                             case '&':
                                 if (IsArray(Peek())) {
@@ -973,8 +973,9 @@ namespace StaxLang {
                                 block.AddDesc("depth of main stack");
                                 Push(new BigInteger(InputStack.Count));
                                 break;
-                            case 'e': 
-                                block.AddDesc("is even?");
+                            case 'e':
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "is " + e + " even?");
+                                else block.AddDesc("is even?");
                                 Push(Pop() % 2 ^ 1);
                                 break;
                             case 'E':
@@ -1021,15 +1022,15 @@ namespace StaxLang {
                                 block.AddDesc("find all indexes of");
                                 foreach (var s in DoFindIndexAll()) yield return s;
                                 break;
+                            case 'J':
+                                block.AddDesc("join with newlines");
+                                RunMacro("Vn*");
+                                break;
                             case 'l':
                                 block.AddDesc("lowest common denominator");
                                 if (IsArray(Peek())) RunMacro("1s{|lF");
                                 else if (IsInt(Peek())) RunMacro("b|g~*,/");
                                 else throw new StaxException("Bad type for lcm");
-                                break;
-                            case 'J':
-                                block.AddDesc("join with newlines");
-                                RunMacro("Vn*");
                                 break;
                             case 'm':
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);
@@ -1130,6 +1131,63 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoRemoveOrInsert(Block block) {
+            dynamic b = Pop(), a = Pop();
+            if (IsArray(a)) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove at index " + e);
+                else block.AddDesc("remove at index");
+                var result = new List<object>(a);
+                if (b < 0) b += result.Count;
+                if (b >= 0 && b < result.Count) result.RemoveAt((int)b);
+                Push(result);
+            }
+            else {
+                dynamic arr = Pop();
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "insert " + e + "into array at index");
+                else block.AddDesc("insert element at index");
+                var result = new List<object>(arr);
+                if (a < 0) a += result.Count;
+                if (a < 0) {
+                    result.InsertRange(0, Enumerable.Repeat((object)BigInteger.Zero, -(int)a));
+                    result.Insert(0, b);
+                }
+                else if (a > result.Count) {
+                    result.AddRange(Enumerable.Repeat((object)BigInteger.Zero, (int)a - result.Count));
+                    result.Add(b);
+                }
+                else {
+                    result.Insert((int)a, b);
+                }
+                Push(result);
+            }
+        }
+
+        private void DoMultisetSubtract(Block block) {
+            dynamic b = Pop(), a = Pop();
+
+            if (IsArray(b)) {
+                block.AddDesc("multiset subtraction");
+            }
+            else {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove first instance of " + e);
+                else block.AddDesc("remove first instance of element");
+                b = new List<object> { b };
+            }
+
+            var result = new List<object>();
+            var bset = Multiset((List<object>)b);
+            foreach (var e in a) {
+                if (bset.ContainsKey(e)) {
+                    bset[e] -= 1;
+                    if (bset[e] == 0) bset.Remove(e);
+                }
+                else {
+                    result.Add(e);
+                }
+            }
+            Push(result);
         }
 
         private void DoCenter(Block block) {
@@ -2484,6 +2542,15 @@ namespace StaxLang {
                 }
             }
             result.Add(new List<object> { last, new BigInteger(run) });
+            return result;
+        }
+
+        private Dictionary<object, int> Multiset(List<object> arr) {
+            var result = new Dictionary<object, int>(Comparer.Instance);
+            foreach (var e in arr) {
+                if (!result.ContainsKey(e)) result[e] = 0;
+                result[e] += 1;
+            }
             return result;
         }
 

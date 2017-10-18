@@ -50,6 +50,7 @@ namespace StaxLang {
                 ('-', "ii", "-|a", "absolute difference"),
                 ('-', "rr", "-|a", "absolute difference"),
                 ('-', "ff", "-|a", "absolute difference"),
+                ('-', "a", "2B{Es-m", "pairwise difference of array"),
                 ('b', "iii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
