@@ -23,14 +23,10 @@ using System.Text.RegularExpressions;
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
- *     data-driven macro namespace ':' - 
- *          compare / sign (c{c|a/}0?)
- *          replace first only
+ *     compare / sign (c{c|a/}0?)
+ *     replace first only
  *     while loops continue to next
  *     hypotenuse type operation
- *     get index of first truthy element
- *     get index of first falsy element
- *     get indices by block predicate
  *     get index by block predicate
  *     get first truthy element (coalesce)
  *     get indices of maxes
@@ -38,6 +34,7 @@ using System.Text.RegularExpressions;
  *     sorted indices by value
  *     all combinations
  *     n-combinations
+ *     n-combinations with replacement
  *     permutations
  *     trim element(s)
  *     multiplicity 0~{b%C caa / s ,^~ Wdd,
@@ -53,7 +50,6 @@ using System.Text.RegularExpressions;
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     mode
- *     centered range |aNcN^|r
  *     multiset intersection
  *     multiset xor
  *     multiset union

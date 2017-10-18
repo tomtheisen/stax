@@ -421,3 +421,16 @@ orld
 6
 	stax
 |0
+	name:CenteredRange
+	in
+3
+	out
+-3 -2 -1 0 1 2 3
+	stax
+:r J
+	in
+-4
+	out
+-4 -3 -2 -1 0 1 2 3 4
+	stax
+:r J
