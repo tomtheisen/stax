@@ -1,3 +1,18 @@
+	name:Literals
+	in
+	out
+asdf
+	stax
+"asdf"
+	out
+as
+df
+	stax
+"as`ndf"
+	out
+as"df
+	stax
+"as`"df"
 	name:CharacterInterleave
 	in
 	out

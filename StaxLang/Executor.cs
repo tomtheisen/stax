@@ -2656,8 +2656,31 @@ namespace StaxLang {
         private List<object> ParseString(string program, ref int ip, out bool implicitEnd) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
-                if (program[ip] == '`') ++ip;
-                result += program[ip];
+                if (program[ip] == '`') {
+                    switch (program[++ip]) {
+                        case 'n':
+                            result += '\n';
+                            break;
+                        case 't':
+                            result += '\t';
+                            break;
+                        case 'v':
+                            result += '\v';
+                            break;
+                        case 'r':
+                            result += '\r';
+                            break;
+                        case '0':
+                            result += '\0';
+                            break;
+                        default:
+                            result += program[ip];
+                            break;
+                    }
+                }
+                else {
+                    result += program[ip];
+                }
             }
             implicitEnd = program[ip] != '"';
             return S2A(result);
