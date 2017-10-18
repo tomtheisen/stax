@@ -28,9 +28,7 @@ using System.Text.RegularExpressions;
  *          replace first only
  *     while loops continue to next
  *     hypotenuse type operation
- *     get indices of truthy elements
  *     get index of first truthy element
- *     get indices of falsy elements
  *     get index of first falsy element
  *     get indices by block predicate
  *     get index by block predicate

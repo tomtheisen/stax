@@ -40,6 +40,8 @@ namespace StaxLang {
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
             var macros = new (char alias, string types, string code, string desc)[] {
+                ('0', "a", "{Cim", "get indices of falsy elements"),
+                ('1', "a", "{!Cim", "get indices of truthy elements"),
                 ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
                 (':', "ai", "/{hm", "get every nth element"),
                 ('*', "a", "{*k", "array product"),

@@ -393,3 +393,17 @@ orld
 2 4 6 99 8 10
 	stax
 3 99 |@ J
+	name:TruthyIndices
+	in
+[0 0 0 23 0 0 76 0]
+	out
+3 6
+	stax
+:1 J
+	name:FalsyIndices
+	in
+[0 0 0 23 0 0 76 0]
+	out
+0 1 2 4 5 7
+	stax
+:0 J
