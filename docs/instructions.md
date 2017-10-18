@@ -278,7 +278,7 @@ chars	|Description
 `Y`  	|Peek and write register y.
 
 ## Prefix Directives
-Some instructions behave differently when they are the first character in a program.
+Some instructions behave differently when they are the first character in a program.  These directives do not apply if the implicit eval of standard input succeeded.
 
 char	|Name        	|Description
 --- 	|---         	|---

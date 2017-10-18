@@ -69,3 +69,10 @@
 1 2
 	stax
 1p| 2p
+	name:ImplicitEvalSuppressesLineMode
+	in
+[1 2]
+	out
+2
+	stax
+F

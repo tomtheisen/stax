@@ -65,7 +65,13 @@ using System.Text.RegularExpressions;
  *     rot13
  *     binary digit explode
  *     peek assert c!C
+ *     is increasing
+ *     is decreasing
+ *     is non-increasing
+ *     is non-decreasing
+ *     contains all unique elements
  *     
+ *     suppress line modes when implicit evaled
  *     debugger
  */
 
@@ -190,6 +196,7 @@ namespace StaxLang {
                 }
                 else {
                     programBlock.AddAmbient("program input is implicitly parsed");
+                    programBlock.ImplicitEval = true;
                     (MainStack, InputStack) = (InputStack, MainStack);
                 }
             }
@@ -222,7 +229,7 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
             var program = block.Contents;
-            if (TotalStackSize > 0 && !IsInt(Peek())) switch (program.FirstOrDefault()) {
+            if (TotalStackSize > 0 && !block.ImplicitEval) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
@@ -1476,8 +1483,14 @@ namespace StaxLang {
                 return;
             }
 
-            if (!IsArray(a)) a = new List<object> { a };
-            if (!IsArray(b)) b = new List<object> { b };
+            if (!IsArray(a)) {
+                if (b.Count == 0) a = new List<object>();
+                else a = new List<object> { a };
+            }
+            if (!IsArray(b)) {
+                if (a.Count == 0) b = new List<object>();
+                else b = new List<object> { b };
+            }
 
             block.AddDesc("zip two arrays; non-arrays are wrapped, and the shorter one is repeated");
             var result = new List<object>();

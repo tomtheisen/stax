@@ -18,6 +18,9 @@ namespace StaxLang {
         private HashSet<(int InstrPtr, string AmbientDesc)> Ambients = new HashSet<(int, string)>();
         private int NestingDepth;
 
+        // implicit eval happened
+        public bool ImplicitEval { get; internal set; }
+
         public string Contents { get; private set; }
         // used to align the explanations
         public int InstrStartPtr { get; internal set; }

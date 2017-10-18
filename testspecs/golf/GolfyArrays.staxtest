@@ -1,0 +1,43 @@
+	#https://codegolf.stackexchange.com/questions/145699/am-i-a-golfy-array
+	in
+[3]
+	out
+1
+	in
+[2, 12]
+	out
+1
+	in
+[1, 4, 3, 8, 6]
+	out
+1
+	in
+[1, 2, 3, 4, 5]
+	out
+1
+	in
+[6, 6, 6, 6, 6]
+	out
+1
+	in
+[3, 2]
+	out
+0
+	in
+[4, 5, 6, 4]
+	out
+0
+	in
+[4, 2, 1, 5, 7]
+	out
+0
+	in
+[45, 45, 46, 43]
+	out
+0
+	in
+[32, 9, 15, 19, 10]
+	out
+0
+	stax
+Fi^*x_+X<!*
