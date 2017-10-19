@@ -92,6 +92,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|H`        	|int        	|base-16       	|                   	|Convert to base 16.
 `\|H`        	|arr        	|base-16       	|                   	|Convert from base 16.
 `\|l`        	|int int    	|lcm           	|                   	|Least common multiple.
+`\|L`        	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 `\|m`        	|num num    	|min           	|min(a, b)          	|Lower of two values.
 `\|M`        	|num num    	|max           	|max(a, b)          	|Higher of two values.
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
@@ -99,6 +100,8 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
+`:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
+`:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].

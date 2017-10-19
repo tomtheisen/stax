@@ -39,10 +39,13 @@ namespace StaxLang {
         private static readonly IReadOnlyDictionary<char, TreeNode> MacroTrees;
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
-            var macros = new (char alias, string types, string code, string desc)[] {
+            var macros = new(char alias, string types, string code, string desc)[] {
                 ('0', "a", "{Cim", "get indices of falsy elements"),
                 ('1', "a", "{!Cim", "get indices of truthy elements"),
                 ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
+                ('2', "i", "2|L@", "floor log base 2"),
+                ('2', "f", "2|L@", "floor log base 2"),
+                ('2', "r", "2|L@", "floor log base 2"),
                 (':', "ai", "/{hm", "get every nth element"),
                 ('*', "a", "{*k", "array product"),
                 ('[', "aa", "~;%(,=", "starts with"),
@@ -53,6 +56,9 @@ namespace StaxLang {
                 ('-', "rr", "-|a", "absolute difference"),
                 ('-', "ff", "-|a", "absolute difference"),
                 ('-', "a", "2B{Es-m", "pairwise difference of array"),
+                ('A', "i", "A|L@", "floor log base A"),
+                ('A', "f", "A|L@", "floor log base A"),
+                ('A', "r", "A|L@", "floor log base A"),
                 ('b', "iii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),

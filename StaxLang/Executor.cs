@@ -13,10 +13,8 @@ using System.Text.RegularExpressions;
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
- *     log/floor log
- *     log/floor log 2/10/n
  *     trig
- *     string interpolate
+ *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     combinatorics: powerset, permutations
@@ -66,7 +64,6 @@ using System.Text.RegularExpressions;
  *     peek assert c!C
  *     use predicate instead of index and element for &
  *     default body for map and reduce
- *     string literal template instructions
  *     
  *     debugger
  */
@@ -1057,6 +1054,14 @@ namespace StaxLang {
                                 if (IsArray(Peek())) RunMacro("1s{|lF");
                                 else if (IsInt(Peek())) RunMacro("b|g~*,/");
                                 else throw new StaxException("Bad type for lcm");
+                                break;
+                            case 'L': 
+                                {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "log base " + e);
+                                    else block.AddDesc("log with base");
+                                    double b = (double)Pop(), a = (double)Pop();
+                                    Push(Math.Log(a, b));
+                                }
                                 break;
                             case 'm':
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);

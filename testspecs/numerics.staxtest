@@ -556,3 +556,30 @@ e
 2 3
 	stax
 :F J
+	name:Log
+	in
+	out
+1.77124374916142
+	stax
+7 3 |L
+	name:LogFloorShortcuts
+	in
+100
+	out
+6
+	in
+1
+	out
+0
+	stax
+:2
+	in
+100
+	out
+2
+	in
+7
+	out
+0
+	stax
+:A
