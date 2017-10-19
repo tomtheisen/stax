@@ -36,7 +36,6 @@ using System.Text.RegularExpressions;
  *     permutations
  *     trim element(s)
  *     multiplicity 0~{b%C caa / s ,^~ Wdd,
- *     custom base encoding
  *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
  *     all factor count
@@ -51,9 +50,7 @@ using System.Text.RegularExpressions;
  *     multiset xor
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
- *     split at
  *     all sub-arrays |]{|[m{+k
- *     copy thrice ccc
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&

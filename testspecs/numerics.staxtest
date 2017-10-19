@@ -583,3 +583,10 @@ e
 0
 	stax
 :A
+	name:CustomBase
+	in
+97
+	out
+babcb
+	stax
+"abc" :B
