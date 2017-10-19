@@ -202,3 +202,34 @@ e*
 	stax
 z5\
 5z\
+	name:ArithmeticCoerce
+	in
+1.5 2
+	out
+3
+	stax
+*
+	in
+1.5 2
+	out
+3.5
+	stax
++
+	in
+1.5 2
+	out
+-0.5
+	stax
+-
+	in
+1.5 2
+	out
+0.75
+	stax
+/
+	name:Leading0FloatLiteral
+	in
+	out
+0.5
+	stax
+0!5

@@ -128,3 +128,32 @@ BA BB BC
 CA CB CC 
 	stax
 cK' ++
+	name:Maybe
+	in
+10
+	out
+A
+ab
+ABC
+abcd
+ABCDE
+abcdef
+ABCDEFG
+abcdefgh
+ABCDEFGHI
+abcdefghij
+	stax
+mVa(_2%{^}M
+	name:Contend
+	in
+10
+	out
+1
+2
+1
+2
+1
+2
+1
+	stax
+m3%|c

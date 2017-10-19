@@ -13,10 +13,7 @@ using System.Text.RegularExpressions;
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
- *     log/floor log
- *     log/floor log 2/10/n
- *     trig
- *     string interpolate
+ *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     combinatorics: powerset, permutations
@@ -37,15 +34,11 @@ using System.Text.RegularExpressions;
  *     n-combinations with replacement
  *     permutations
  *     trim element(s)
- *     multiplicity 0~{b%C caa / s ,^~ Wdd,
- *     custom base encoding
  *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
  *     all factor count
  *     prime factorization exponents
  *     nth prime
- *     next prime >=
- *     last prime <
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     mode
@@ -53,16 +46,12 @@ using System.Text.RegularExpressions;
  *     multiset xor
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
- *     split at
- *     if (no else) like {^D
  *     all sub-arrays |]{|[m{+k
- *     copy thrice ccc
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
- *     rot13
  *     binary digit explode
  *     peek assert c!C
  *     is increasing
@@ -71,7 +60,6 @@ using System.Text.RegularExpressions;
  *     is non-decreasing
  *     contains all unique elements
  *     
- *     suppress line modes when implicit evaled
  *     debugger
  */
 
@@ -244,13 +232,8 @@ namespace StaxLang {
 
                 yield return new ExecutionState();
                 switch (program[ip]) {
-                    case '0':
-                        Push(BigInteger.Zero);
-                        block.AddDesc("0");
-                        type = InstructionType.Value;
-                        break;
-                    case '1': case '2': case '3': case '4': case '5':
-                    case '6': case '7': case '8': case '9':
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
                         Push(ParseNumber(program, ref ip));
                         --ip;
                         block.AddDesc(Peek().ToString());
@@ -456,7 +439,10 @@ namespace StaxLang {
                     case 'C':
                         if (CallStackFrames.Any()) block.AddDesc("cancel iteration if true");
                         else block.AddDesc("terminate if true");
-                        if (IsTruthy(Pop())) yield return ExecutionState.CancelState;
+                        if (IsTruthy(Pop())) {
+                            yield return ExecutionState.CancelState;
+                            yield break;
+                        }
                         break;
                     case 'd': 
                         block.AddDesc("pop and discard");
@@ -596,9 +582,8 @@ namespace StaxLang {
                             if (shorthand) ip = program.Length;
                         }
                         break;
-                    case 'M': 
-                        block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
-                        DoTranspose();
+                    case 'M':
+                        foreach (var s in DoTransposeOrMaybe(block)) yield return s;
                         break;
                     case 'n': 
                         {
@@ -944,6 +929,18 @@ namespace StaxLang {
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
                                 break;
+                            case '7':
+                                block.AddDesc("cosine in radians");
+                                Push(Math.Cos((double)Pop()));
+                                break;
+                            case '8':
+                                block.AddDesc("sine in radians");
+                                Push(Math.Sin((double)Pop()));
+                                break;
+                            case '9':
+                                block.AddDesc("tangent in radians");
+                                Push(Math.Tan((double)Pop()));
+                                break;
                             case 'a':
                                 if (IsNumber(Peek())) {
                                     block.AddDesc("absolute value");
@@ -990,6 +987,13 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in binary");
                                 else block.AddDesc("convert to binary");
                                 RunMacro("2|b");
+                                break;
+                            case 'c':
+                                block.AddDesc("contend; assert top of stack is truthy, don't pop");
+                                if (!IsTruthy(Peek())) {
+                                    yield return ExecutionState.CancelState;
+                                    yield break;
+                                }
                                 break;
                             case 'C':
                                 DoCenter(block);
@@ -1060,6 +1064,14 @@ namespace StaxLang {
                                 if (IsArray(Peek())) RunMacro("1s{|lF");
                                 else if (IsInt(Peek())) RunMacro("b|g~*,/");
                                 else throw new StaxException("Bad type for lcm");
+                                break;
+                            case 'L': 
+                                {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "log base " + e);
+                                    else block.AddDesc("log with base");
+                                    double b = (double)Pop(), a = (double)Pop();
+                                    Push(Math.Log(a, b));
+                                }
                                 break;
                             case 'm':
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);
@@ -1682,6 +1694,10 @@ namespace StaxLang {
                 block.AddDesc("invert fraction");
                 Push(1 / arg);
             }
+            else if (IsFloat(arg)) { // invert
+                block.AddDesc("invert float");
+                Push(1.0 / arg);
+            }
             else {
                 throw new StaxException("Bad type for unique");
             }
@@ -2209,7 +2225,20 @@ namespace StaxLang {
             }
         }
 
-        private void DoTranspose() {
+        private IEnumerable<ExecutionState> DoTransposeOrMaybe(Block block) {
+            if (IsBlock(Peek())) {
+                block.AddDesc("execute block if value is truthy");
+                Block b = Pop();
+                if (IsTruthy(Pop())) {
+                    foreach (var s in RunSteps(b)) {
+                        if (s.Cancel) yield break;
+                        yield return s;
+                    }
+                }
+                yield break;
+            }
+
+            block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
             List<object> list = Pop();
             var result = new List<object>();
 
@@ -2347,6 +2376,10 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "add " + e);
                 else block.AddDesc("add");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a + b);
             }
             else if (IsArray(a) && IsArray(b)) {
@@ -2393,6 +2426,10 @@ namespace StaxLang {
             else if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minus " + e);
                 else block.AddDesc("substract");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a - b);
             }
             else {
@@ -2406,7 +2443,11 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "floor division by " + e);
                 else block.AddDesc("floor division");
-                if (IsInt(a) && IsInt(b) && a < 0) {
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
+                if (IsNumber(a) && IsNumber(b) && a < 0) {
                     Push((a - b + 1) / b); // int division is floor always
                 }
                 else {
@@ -2442,9 +2483,13 @@ namespace StaxLang {
             }
 
             var a = Pop();
-            if (IsInt(a) && IsInt(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "modulo " + e);
                 else block.AddDesc("modulus");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 BigInteger result = a % b;
                 if (result < 0) result += b;
                 Push(result);
@@ -2502,6 +2547,10 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "times " + e);
                 else block.AddDesc("multiply");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a * b);
                 yield break;
             }

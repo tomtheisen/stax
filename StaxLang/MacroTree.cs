@@ -39,11 +39,17 @@ namespace StaxLang {
         private static readonly IReadOnlyDictionary<char, TreeNode> MacroTrees;
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
-            var macros = new (char alias, string types, string code, string desc)[] {
+            var macros = new(char alias, string types, string code, string desc)[] {
                 ('0', "a", "{Cim", "get indices of falsy elements"),
                 ('1', "a", "{!Cim", "get indices of truthy elements"),
                 ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
+                ('2', "i", "2|L@", "floor log base 2"),
+                ('2', "f", "2|L@", "floor log base 2"),
+                ('2', "r", "2|L@", "floor log base 2"),
+                ('3', "a", "Vac13|)\\:fc^+|t", "rot13"),
                 (':', "ai", "/{hm", "get every nth element"),
+                ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
+                ('/', "ai", "n%%b(aat", "split array at index; push both"),
                 ('*', "a", "{*k", "array product"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
@@ -53,9 +59,13 @@ namespace StaxLang {
                 ('-', "rr", "-|a", "absolute difference"),
                 ('-', "ff", "-|a", "absolute difference"),
                 ('-', "a", "2B{Es-m", "pairwise difference of array"),
+                ('A', "i", "A|L@", "floor log base A"),
+                ('A', "f", "A|L@", "floor log base A"),
+                ('A', "r", "A|L@", "floor log base A"),
                 ('b', "iii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
+                ('B', "ia", "~;%|E{;@m,d", "number in custom base"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('f', "a", "{+k", "flatten array"),
@@ -66,6 +76,8 @@ namespace StaxLang {
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror"),
+                ('p', "i", "v{|p}gsv", "last prime <"),
+                ('P', "i", "{|p}gs", "next prime >="),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('r', "i", "|aNcN^|r", "centered range [-n ... n]"),
                 ('S', "aa", "s-!", "is superset of"),

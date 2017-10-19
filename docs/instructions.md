@@ -64,6 +64,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `l`          	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
 `u`          	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.
 `u`          	|frac       	|invert-frac   	|1 / a              	|Turn fraction upside down; invert.
+`u`          	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`          	|           	|              	|-1                 	|Negative unit.
 `\|%`        	|int int    	|divmod        	|a / b, a % b       	|Perform division and modulus.
 `\|~`        	|int        	|bit-not       	|~a                 	|Bitwise not.
@@ -79,6 +80,9 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|2`        	|int        	|2-power       	|2 ** a             	|Power of two.
 `\|3`        	|int        	|base-36       	|                   	|Convert to base 36.
 `\|3`        	|arr        	|base-36       	|                   	|Convert from base 36.
+`\|7`        	|num        	|cosine        	|cos(a)             	|Cosine in radians.
+`\|8`        	|num        	|sine          	|sin(a)             	|Sine in radians.
+`\|9`        	|num        	|tangent       	|tan(a)             	|Tangent in radians.
 `\|a`        	|num        	|abs           	|abs(a)             	|Absolute value.
 `\|A`        	|int        	|10-power      	|10 ** a            	|Power of ten.
 `\|b`        	|int int    	|convert-base  	|                   	|Convert to base, up to 36.
@@ -92,18 +96,25 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|H`        	|int        	|base-16       	|                   	|Convert to base 16.
 `\|H`        	|arr        	|base-16       	|                   	|Convert from base 16.
 `\|l`        	|int int    	|lcm           	|                   	|Least common multiple.
+`\|L`        	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 `\|m`        	|num num    	|min           	|min(a, b)          	|Lower of two values.
 `\|M`        	|num num    	|max           	|max(a, b)          	|Higher of two values.
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
+`:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
+`:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
+`:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
+`:B`         	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
 `:F`         	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:m`         	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b
+`:p`         	|int        	|last-prime    	|                   	|Last prime < n
+`:P`         	|int        	|next-prime    	|                   	|Next prime >= n
 
 ## Logic
 chars	|Name        	|Description
@@ -149,6 +160,7 @@ chars    	|Types      	|Name             	|Description
 `\|z`    	|arr int    	|zero-fill        	|Fill on the left with "0" to specified length.
 `:[`     	|arr arr    	|starts-with      	|String starts with?
 `:]`     	|arr arr    	|starts-with      	|String ends with?
+`:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
 
 ## Array
 chars	|Types        	|Name             	|Description
@@ -222,6 +234,7 @@ chars	|Types        	|Name             	|Description
 `::` 	|arr int      	|every-nth        	|Every nth element in array, starting from the first.
 `:*` 	|arr          	|product          	|Product of numbers in array.
 `:-` 	|arr          	|deltas           	|Pairwise difference of array.
+`:/` 	|arr int      	|split-at         	|Split array at index; push both parts.
 `:(` 	|arr          	|left-rotations   	|All left rotations, starting from original.
 `:)` 	|arr          	|right-rotations  	|All right rotations, starting from original.
 `:f` 	|arr          	|flatten          	|Flatten array of arrays one time.
@@ -259,12 +272,14 @@ chars	|Types        	|Name           	|Description
 `m`  	|arr block    	|map            	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
 `m`  	|arr          	|map-short      	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`  	|int          	|map-range-short	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
+`M`  	|any block    	|maybe          	|Execute block if value is truthy.  Does not terminate a block.
 `o`  	|arr block    	|order          	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
 `w`  	|block        	|do-while       	|Terminate a block and iterate until it produces a falsy value.
 `w`  	|             	|do-while-short 	|If there is no open block, use the rest of the program as the block.
 `W`  	|block        	|while          	|Terminate a block and iterate forever.  Cancelling will terminate, as with all blocks.
 `W`  	|             	|while-short    	|If there is no open block, use the rest of the program as the block.
 `_`  	|             	|current        	|Get the current iteration value.  If there are no blocks executing, this will be all of standard input, as one string.
+`\|c`	|             	|contend        	|Assert top of stack is truthy.  Cancel if not.  Do not pop.
 `\|I`	|arr block    	|filter-index   	|Get all indexes in the array that produce a truthy value from the block.
 
 ## Registers

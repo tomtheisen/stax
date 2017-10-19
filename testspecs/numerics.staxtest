@@ -556,3 +556,160 @@ e
 2 3
 	stax
 :F J
+	name:Log
+	in
+	out
+1.77124374916142
+	stax
+7 3 |L
+	name:LogFloorShortcuts
+	in
+100
+	out
+6
+	in
+1
+	out
+0
+	stax
+:2
+	in
+100
+	out
+2
+	in
+7
+	out
+0
+	stax
+:A
+	name:CustomBase
+	in
+97
+	out
+babcb
+	stax
+"abc" :B
+	name:Multiplicity
+	in
+10
+	out
+0
+1
+0
+2
+0
+1
+0
+3
+0
+1
+	stax
+m2:/
+	name:Cosine
+	in
+20
+	out
+   #
+ #
+#
+ #
+   #
+    #
+    #
+  #
+#
+#
+  #
+    #
+    #
+  #
+#
+#
+ #
+   #
+    #
+   #
+	stax
+m|72*3!5+@'#)
+	name:Sine
+	in
+20
+	out
+    #
+    #
+  #
+#
+#
+ #
+   #
+    #
+   #
+ #
+#
+ #
+   #
+    #
+   #
+ #
+#
+#
+  #
+    #
+	stax
+m|82*3!5+@'#)
+	name:Tangent
+	in
+20
+	out
+#
+#
+#
+ #
+ #
+ #
+  #
+   #
+    #
+      #
+          #
+                            #
+                                    #
+           #
+      #
+    #
+   #
+  #
+ #
+ #
+	stax
+m8!/|92*|a^@'#)
+	name:NextPrime
+	in
+1000
+	out
+1009
+	in
+1009
+	out
+1009
+	stax
+:P
+	name:LastPrime
+	in
+1000
+	out
+997
+	in
+997
+	out
+991
+	stax
+:p
+	name:InvertFloat
+	in
+2.5
+	out
+0.4
+	stax
+u
