@@ -259,6 +259,7 @@ chars	|Types        	|Name           	|Description
 `m`  	|arr block    	|map            	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
 `m`  	|arr          	|map-short      	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`  	|int          	|map-range-short	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
+`M`  	|any block    	|maybe          	|Execute block if value is truthy.  Does not terminate a block.
 `o`  	|arr block    	|order          	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
 `w`  	|block        	|do-while       	|Terminate a block and iterate until it produces a falsy value.
 `w`  	|             	|do-while-short 	|If there is no open block, use the rest of the program as the block.

@@ -54,7 +54,6 @@ using System.Text.RegularExpressions;
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
  *     split at
- *     if (no else) like {^D
  *     all sub-arrays |]{|[m{+k
  *     copy thrice ccc
  *     hasupper VA |&
@@ -65,6 +64,9 @@ using System.Text.RegularExpressions;
  *     rot13
  *     binary digit explode
  *     peek assert c!C
+ *     use predicate instead of index and element for &
+ *     default body for map and reduce
+ *     string literal template instructions
  *     
  *     debugger
  */
@@ -449,7 +451,10 @@ namespace StaxLang {
                     case 'C':
                         if (CallStackFrames.Any()) block.AddDesc("cancel iteration if true");
                         else block.AddDesc("terminate if true");
-                        if (IsTruthy(Pop())) yield return ExecutionState.CancelState;
+                        if (IsTruthy(Pop())) {
+                            yield return ExecutionState.CancelState;
+                            yield break;
+                        }
                         break;
                     case 'd': 
                         block.AddDesc("pop and discard");
@@ -589,9 +594,8 @@ namespace StaxLang {
                             if (shorthand) ip = program.Length;
                         }
                         break;
-                    case 'M': 
-                        block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
-                        DoTranspose();
+                    case 'M':
+                        foreach (var s in DoTransposeOrMaybe(block)) yield return s;
                         break;
                     case 'n': 
                         {
@@ -2196,7 +2200,20 @@ namespace StaxLang {
             }
         }
 
-        private void DoTranspose() {
+        private IEnumerable<ExecutionState> DoTransposeOrMaybe(Block block) {
+            if (IsBlock(Peek())) {
+                block.AddDesc("execute block if value is truthy");
+                Block b = Pop();
+                if (IsTruthy(Pop())) {
+                    foreach (var s in RunSteps(b)) {
+                        if (s.Cancel) yield break;
+                        yield return s;
+                    }
+                }
+                yield break;
+            }
+
+            block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
             List<object> list = Pop();
             var result = new List<object>();
 
