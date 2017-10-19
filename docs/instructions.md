@@ -271,6 +271,7 @@ chars	|Types        	|Name           	|Description
 `W`  	|block        	|while          	|Terminate a block and iterate forever.  Cancelling will terminate, as with all blocks.
 `W`  	|             	|while-short    	|If there is no open block, use the rest of the program as the block.
 `_`  	|             	|current        	|Get the current iteration value.  If there are no blocks executing, this will be all of standard input, as one string.
+`\|c`	|             	|contend        	|Assert top of stack is truthy.  Cancel if not.  Do not pop.
 `\|I`	|arr block    	|filter-index   	|Get all indexes in the array that produce a truthy value from the block.
 
 ## Registers

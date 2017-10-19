@@ -58,7 +58,6 @@ using System.Text.RegularExpressions;
  *     sign c{c|a/}{d0}?
  *     rot13
  *     binary digit explode
- *     peek assert c!C
  *     use predicate instead of index and element for &
  *     default body for map and reduce
  *     
@@ -981,6 +980,13 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in binary");
                                 else block.AddDesc("convert to binary");
                                 RunMacro("2|b");
+                                break;
+                            case 'c':
+                                block.AddDesc("contend; assert top of stack is truthy, don't pop");
+                                if (!IsTruthy(Peek())) {
+                                    yield return ExecutionState.CancelState;
+                                    yield break;
+                                }
                                 break;
                             case 'C':
                                 DoCenter(block);
