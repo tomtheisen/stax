@@ -54,7 +54,6 @@ using System.Text.RegularExpressions;
  *     hasletter Vl |&
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
- *     rot13
  *     binary digit explode
  *     use predicate instead of index and element for &
  *     default body for map and reduce

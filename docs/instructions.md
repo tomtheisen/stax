@@ -157,6 +157,7 @@ chars    	|Types      	|Name             	|Description
 `\|z`    	|arr int    	|zero-fill        	|Fill on the left with "0" to specified length.
 `:[`     	|arr arr    	|starts-with      	|String starts with?
 `:]`     	|arr arr    	|starts-with      	|String ends with?
+`:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
 
 ## Array
 chars	|Types        	|Name             	|Description

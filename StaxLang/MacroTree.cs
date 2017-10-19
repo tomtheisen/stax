@@ -46,6 +46,7 @@ namespace StaxLang {
                 ('2', "i", "2|L@", "floor log base 2"),
                 ('2', "f", "2|L@", "floor log base 2"),
                 ('2', "r", "2|L@", "floor log base 2"),
+                ('3', "a", "Vac13|)\\:fc^+|t", "rot13"),
                 (':', "ai", "/{hm", "get every nth element"),
                 ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
                 ('/', "ai", "n%%b(aat", "split array at index; push both"),
