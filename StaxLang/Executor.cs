@@ -9,14 +9,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 // available chars
-//  DGS
+//  DG
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
  *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     combinatorics: powerset, permutations
+ *     permutations, n-permutations
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
@@ -59,6 +59,7 @@ using System.Text.RegularExpressions;
  *     is non-increasing
  *     is non-decreasing
  *     contains all unique elements
+ *     next lexicographic permutation
  *     
  *     debugger
  */
@@ -667,6 +668,9 @@ namespace StaxLang {
                             Push(bottom);
                         }
                         break;
+                    case 'S':
+                        DoPowerset(block);
+                        break;
                     case 't': 
                         if (IsArray(Peek())) {
                             block.AddDesc("trim whitespace from left");
@@ -1172,6 +1176,43 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoPowerset(Block block) {
+            if (IsInt(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Combinations of length " + e);
+                else block.AddDesc("Get all combinations of specified length");
+                var len = (int)Pop();
+                List<object> arr = Pop();
+                var result = new List<object>();
+                var idxs = Enumerable.Range(0, len).ToArray();
+                while (len <= arr.Count) {
+                    result.Add(idxs.Select(idx => arr[idx]).ToList());
+                    int i;
+                    for (i = len - 1; i >= 0 && idxs[i] == i + (arr.Count - len); i--) ;
+                    if (i < 0) break;
+                    idxs[i] += 1;
+                    for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+                }
+                Push(result);
+            }
+            else if (IsArray(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "All combinations of " + e);
+                else block.AddDesc("Get all combinations");
+
+                List<object> arr = Pop();
+                var result = new List<object>();
+                foreach (var e in arr.AsEnumerable().Reverse()) {
+                    var single = new List<object> { e };
+                    result.AddRange(result.Select(r => single.Concat((List<object>)r).ToList()).ToList());
+                    result.Add(single);
+                }
+                result.Reverse();
+                Push(result);
+            }
+            else {
+                throw new StaxException("Bad types for powerset");
+            }
         }
 
         private void DoRemoveOrInsert(Block block) {

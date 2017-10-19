@@ -198,6 +198,8 @@ chars	|Types        	|Name             	|Description
 `R`  	|int          	|1-range          	|Make range [1 .. n].
 `t`  	|arr int      	|remove-left      	|Trim n elements from left of array.
 `T`  	|arr int      	|remove-right     	|Trim n elements from right of array.
+`S`  	|arr          	|powerset         	|Get all combinations of elements in array.  If the array was ordered, all combinations will be in lexicographic order.
+`S`  	|arr int      	|combinations     	|Get all combinations of specified size from array.  If the array was ordered, all combinations will be in lexicographic order.
 `u`  	|arr          	|unique           	|Keep only unique elements in array, maintaining first order of appearance.
 `z`  	|             	|                 	|Push empty array/string.
 `\|0`	|arr          	|falsy-index      	|Get index of first falsy element.

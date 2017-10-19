@@ -439,3 +439,25 @@ cdefg
 ab
 	stax
 2 :/ PP
+	name:Powerset
+	in
+ABC
+	out
+A
+AB
+ABC
+AC
+B
+BC
+C
+	stax
+S m
+	name:Choose
+	in
+ABC
+	out
+AB
+AC
+BC
+	stax
+2S m
