@@ -1683,6 +1683,10 @@ namespace StaxLang {
                 block.AddDesc("invert fraction");
                 Push(1 / arg);
             }
+            else if (IsFloat(arg)) { // invert
+                block.AddDesc("invert float");
+                Push(1.0 / arg);
+            }
             else {
                 throw new StaxException("Bad type for unique");
             }

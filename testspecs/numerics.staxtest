@@ -706,3 +706,10 @@ m8!/|92*|a^@'#)
 991
 	stax
 :p
+	name:InvertFloat
+	in
+2.5
+	out
+0.4
+	stax
+u

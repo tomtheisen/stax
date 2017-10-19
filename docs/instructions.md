@@ -64,6 +64,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `l`          	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
 `u`          	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.
 `u`          	|frac       	|invert-frac   	|1 / a              	|Turn fraction upside down; invert.
+`u`          	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`          	|           	|              	|-1                 	|Negative unit.
 `\|%`        	|int int    	|divmod        	|a / b, a % b       	|Perform division and modulus.
 `\|~`        	|int        	|bit-not       	|~a                 	|Bitwise not.
