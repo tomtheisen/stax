@@ -112,6 +112,8 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
 `:F`         	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:m`         	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b
+`:p`         	|int        	|last-prime    	|                   	|Last prime < n
+`:P`         	|int        	|next-prime    	|                   	|Next prime >= n
 
 ## Logic
 chars	|Name        	|Description

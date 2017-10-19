@@ -39,8 +39,6 @@ using System.Text.RegularExpressions;
  *     all factor count
  *     prime factorization exponents
  *     nth prime
- *     next prime >=
- *     last prime <
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     mode

@@ -630,7 +630,7 @@ m2:/
    #
     #
    #
-   stax
+	stax
 m|72*3!5+@'#)
 	name:Sine
 	in
@@ -656,7 +656,7 @@ m|72*3!5+@'#)
 #
   #
     #
-   stax
+	stax
 m|82*3!5+@'#)
 	name:Tangent
 	in
@@ -682,5 +682,27 @@ m|82*3!5+@'#)
   #
  #
  #
-   stax
+	stax
 m8!/|92*|a^@'#)
+	name:NextPrime
+	in
+1000
+	out
+1009
+	in
+1009
+	out
+1009
+	stax
+:P
+	name:LastPrime
+	in
+1000
+	out
+997
+	in
+997
+	out
+991
+	stax
+:p

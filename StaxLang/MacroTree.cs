@@ -76,6 +76,8 @@ namespace StaxLang {
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror"),
+                ('p', "i", "v{|p}gsv", "last prime <"),
+                ('P', "i", "{|p}gs", "next prime >="),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('r', "i", "|aNcN^|r", "centered range [-n ... n]"),
                 ('S', "aa", "s-!", "is superset of"),
