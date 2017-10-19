@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 /* To add:
  *     find-index-all by regex
  *     running "total" / reduce-collect
- *     trig
  *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
@@ -231,13 +230,8 @@ namespace StaxLang {
 
                 yield return new ExecutionState();
                 switch (program[ip]) {
-                    case '0':
-                        Push(BigInteger.Zero);
-                        block.AddDesc("0");
-                        type = InstructionType.Value;
-                        break;
-                    case '1': case '2': case '3': case '4': case '5':
-                    case '6': case '7': case '8': case '9':
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
                         Push(ParseNumber(program, ref ip));
                         --ip;
                         block.AddDesc(Peek().ToString());
@@ -932,6 +926,18 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in base 36");
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
+                                break;
+                            case '7':
+                                block.AddDesc("cosine in radians");
+                                Push(Math.Cos((double)Pop()));
+                                break;
+                            case '8':
+                                block.AddDesc("sine in radians");
+                                Push(Math.Sin((double)Pop()));
+                                break;
+                            case '9':
+                                block.AddDesc("tangent in radians");
+                                Push(Math.Tan((double)Pop()));
                                 break;
                             case 'a':
                                 if (IsNumber(Peek())) {
@@ -2358,6 +2364,10 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "add " + e);
                 else block.AddDesc("add");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a + b);
             }
             else if (IsArray(a) && IsArray(b)) {
@@ -2404,6 +2414,10 @@ namespace StaxLang {
             else if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minus " + e);
                 else block.AddDesc("substract");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a - b);
             }
             else {
@@ -2417,7 +2431,11 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "floor division by " + e);
                 else block.AddDesc("floor division");
-                if (IsInt(a) && IsInt(b) && a < 0) {
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
+                if (IsNumber(a) && IsNumber(b) && a < 0) {
                     Push((a - b + 1) / b); // int division is floor always
                 }
                 else {
@@ -2453,9 +2471,13 @@ namespace StaxLang {
             }
 
             var a = Pop();
-            if (IsInt(a) && IsInt(b)) {
+            if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "modulo " + e);
                 else block.AddDesc("modulus");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 BigInteger result = a % b;
                 if (result < 0) result += b;
                 Push(result);
@@ -2513,6 +2535,10 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "times " + e);
                 else block.AddDesc("multiply");
+                if (IsFloat(a) || IsFloat(b)) {
+                    a = (double)a;
+                    b = (double)b;
+                }
                 Push(a * b);
                 yield break;
             }

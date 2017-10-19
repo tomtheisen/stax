@@ -79,6 +79,9 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|2`        	|int        	|2-power       	|2 ** a             	|Power of two.
 `\|3`        	|int        	|base-36       	|                   	|Convert to base 36.
 `\|3`        	|arr        	|base-36       	|                   	|Convert from base 36.
+`\|7`        	|num        	|cosine        	|cos(a)             	|Cosine in radians.
+`\|8`        	|num        	|sine          	|sin(a)             	|Sine in radians.
+`\|9`        	|num        	|tangent       	|tan(a)             	|Tangent in radians.
 `\|a`        	|num        	|abs           	|abs(a)             	|Absolute value.
 `\|A`        	|int        	|10-power      	|10 ** a            	|Power of ten.
 `\|b`        	|int int    	|convert-base  	|                   	|Convert to base, up to 36.
