@@ -35,7 +35,6 @@ using System.Text.RegularExpressions;
  *     n-combinations with replacement
  *     permutations
  *     trim element(s)
- *     multiplicity 0~{b%C caa / s ,^~ Wdd,
  *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
  *     all factor count

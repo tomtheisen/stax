@@ -590,3 +590,19 @@ e
 babcb
 	stax
 "abc" :B
+	name:Multiplicity
+	in
+10
+	out
+0
+1
+0
+2
+0
+1
+0
+3
+0
+1
+	stax
+m2:/
