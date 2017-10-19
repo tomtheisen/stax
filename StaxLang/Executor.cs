@@ -218,7 +218,7 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
             var program = block.Contents;
-            if (TotalStackSize > 0 && !block.ImplicitEval) switch (program.FirstOrDefault()) {
+            if (TotalStackSize > 0 && CallStackFrames.Count == 0 && !block.ImplicitEval) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
                 case 'f': // line-filter
                 case 'F': // line-for
@@ -1370,9 +1370,11 @@ namespace StaxLang {
             }
             else {
                 int idx = "1234567890!@#$%^&*()".IndexOf(spec);
-                if (idx >= 0) targetCount = idx % 10 + 1;
-                postPop = idx >= 10;
-                hardCodedTargetCount = true;
+                if (idx >= 0) {
+                    targetCount = idx % 10 + 1;
+                    postPop = idx >= 10;
+                    hardCodedTargetCount = true;
+                }
             }
 
             if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && !targetCount.HasValue) {
@@ -2870,16 +2872,7 @@ namespace StaxLang {
                 return a.GetType().Name.CompareTo(b.GetType().Name);
             }
 
-            public new bool Equals(object a, object b) {
-                if (IsArray(a) && IsArray(b)) {
-                    IList<object> al = (IList<object>)a, bl = (IList<object>)b;
-                    for (int i = 0; i < al.Count && i < bl.Count; i++) {
-                        if (!Equals(al[i], bl[i])) return false;
-                    }
-                    return true;
-                }
-                return a.Equals(b);
-            }
+            public new bool Equals(object a, object b) => Compare(a, b) == 0;
 
             public int GetHashCode(object a) {
                 if (IsArray(a)) {
