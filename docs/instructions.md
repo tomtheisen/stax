@@ -240,6 +240,8 @@ chars	|Types        	|Name             	|Description
 `:/` 	|arr int      	|split-at         	|Split array at index; push both parts.
 `:(` 	|arr          	|left-rotations   	|All left rotations, starting from original.
 `:)` 	|arr          	|right-rotations  	|All right rotations, starting from original.
+`:^` 	|arr          	|non-descending   	|Is array non-descending? (has no adjacent pair of descending elements)
+`:v` 	|arr          	|non-ascending    	|Is array non-ascending? (has no adjacent pair of ascending elements)
 `:f` 	|arr          	|flatten          	|Flatten array of arrays one time.
 `:I` 	|arr arr      	|find-index-all   	|For each element in b, find the index of the first occurrence in a.
 `:J` 	|arr          	|squarify         	|Wrap array into smallest fitting square, filling any extra spaces with 0.

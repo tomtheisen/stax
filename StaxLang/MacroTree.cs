@@ -51,6 +51,8 @@ namespace StaxLang {
                 ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
                 ('/', "ai", "n%%b(aat", "split array at index; push both"),
                 ('*', "a", "{*k", "array product"),
+                ('^', "a", "co=", "array is non-descending"),
+                ('v', "a", "cor=", "array is non-ascending"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
                 ('(', "a", "c%r{[|(msd", "all left rotations"),

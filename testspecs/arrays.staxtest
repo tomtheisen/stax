@@ -461,3 +461,33 @@ AC
 BC
 	stax
 2S m
+	name:NonDescending
+	in
+[1]
+	out
+1
+	in
+[1 3 2]
+	out
+0
+	in
+[1 34 67 88]
+	out
+1
+	stax
+:^
+	name:NonAscending
+	in
+[1]
+	out
+1
+	in
+[1 3 2]
+	out
+0
+	in
+[99 54 32 12]
+	out
+1
+	stax
+:v

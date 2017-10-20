@@ -50,10 +50,6 @@ using System.Text.RegularExpressions;
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
  *     binary digit explode
- *     is increasing
- *     is decreasing
- *     is non-increasing
- *     is non-decreasing
  *     contains all unique elements
  *     next lexicographic permutation
  *     do something about all the trailing m
