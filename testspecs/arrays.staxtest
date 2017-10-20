@@ -256,6 +256,10 @@ ax,by,cx,dy,ex
 [1 2 2 3 3] 3
 	out
 2
+	in
+3 [1 2 2 3 3]
+	out
+2
 	stax
 #
 	name:IndexAllArray

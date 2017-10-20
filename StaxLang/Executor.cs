@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
  *     replace first only
  *     while loops continue to next
  *     hypotenuse type operation
- *     get index by block predicate
  *     get first truthy element (coalesce)
  *     get indices of maxes
  *     get indices of mins
@@ -52,8 +51,7 @@ using System.Text.RegularExpressions;
  *     binary digit explode
  *     contains all unique elements
  *     next lexicographic permutation
- *     do something about all the trailing m
- *     reverse # args
+ *     do something about all the trailing m - but really, what?
  *     logical or / pop falsies
  *     no way to count occurrences in a list of strings?!
  *     
@@ -253,7 +251,15 @@ namespace StaxLang {
                         InputStack.Push(Pop());
                         break;
                     case '#': 
+                        {
+                            // make sure number is on top
+                            dynamic b = Pop(), a = Pop();
+                            if (IsNumber(a)) (a, b) = (b, a);
+                            Push(a);
+                            Push(b);
+                        }
                         if (IsArray(Peek())) {
+
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "count number of times " + e + " is found as a substring");
                             else block.AddDesc("count number of times substring is found");
                             RunMacro("/%v");
@@ -528,7 +534,7 @@ namespace StaxLang {
                     case 'I':
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "find first index of " + e);
                         else block.AddDesc("find first index");
-                        DoFindIndex();
+                        foreach (var s in DoFindIndex()) yield return s;
                         break;
                     case 'j':
                         if (IsArray(Peek())) {
@@ -1869,7 +1875,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoFindIndex() {
+        private IEnumerable<ExecutionState> DoFindIndex() {
             dynamic element = Pop(), list = Pop();
 
             if (!IsArray(list)) (list, element) = (element, list);
@@ -1879,7 +1885,7 @@ namespace StaxLang {
                     if (IsArray(element)) {
                         if (i + element.Count > list.Count) {
                             Push(BigInteger.MinusOne);
-                            return;
+                            yield break;
                         }
                         bool match = true;
                         for (int j = 0; j < element.Count; j++) {
@@ -1890,16 +1896,32 @@ namespace StaxLang {
                         }
                         if (match) {
                             Push((BigInteger)i);
-                            return;
+                            yield break;
                         }
+                    }
+                    else if (IsBlock(element)) {
+                        PushStackFrame();
+                        Push(_ = list[i]);
+                        Index = i;
+                        foreach (var s in RunSteps((Block)element)) {
+                            yield return s;
+                            if (s.Cancel) goto Cancel;
+                        }
+                        if (IsTruthy(Pop())) {
+                            Push((BigInteger)i);
+                            PopStackFrame();
+                            yield break;
+                        }
+                        Cancel:
+                        PopStackFrame();
                     }
                     else if (AreEqual(element, list[i])) {
                         Push((BigInteger)i);
-                        return;
+                        yield break;
                     }
                 }
                 Push(BigInteger.MinusOne);
-                return;
+                yield break;
             }
             else {
                 throw new StaxException("Bad types for get-index");

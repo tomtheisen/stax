@@ -167,6 +167,7 @@ chars    	|Types      	|Name             	|Description
 chars	|Types        	|Name             	|Description
 ---  	|---          	|---              	|---
 `#`  	|arr num      	|count-instances  	|Count instances of b in a.
+`#`  	|num arr      	|count-instances  	|Count instances of b in a.
 `+`  	|arr arr      	|concat           	|Concatenate arrays.
 `+`  	|num arr      	|prepend          	|Prepend element to array.
 `+`  	|arr num      	|append           	|Append element to array.
@@ -271,6 +272,7 @@ chars	|Types        	|Name           	|Description
 `g`  	|             	|generator      	|Generate values.  See `generators` for details.
 `i`  	|             	|index          	|Get the current 0-based iteration index of the inner loop.
 `\|i`	|             	|outer-index    	|Get the 0-based iteration index of the outer loop.
+`I`  	|arr block    	|index-of-block 	|Get the index of the first element that yields a truthy value from the block. Does not terminate a block.
 `k`  	|arr block    	|reduce         	|Terminate a block and reduce (fold) using the block.
 `k`  	|int block    	|reduce-range   	|Terminate a block and reduce (fold) [1 .. n] using the block.
 `K`  	|arr arr block	|cross-map      	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be a single flat array.

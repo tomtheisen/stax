@@ -157,3 +157,10 @@ mVa(_2%{^}M
 1
 	stax
 m3%|c
+	name:BlockIndexOf
+	in
+Hello, world!
+	out
+6
+	stax
+{40<}I
