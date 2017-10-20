@@ -59,6 +59,9 @@ using System.Text.RegularExpressions;
  *     contains all unique elements
  *     next lexicographic permutation
  *     do something about all the trailing m
+ *     reverse # args
+ *     logical or / pop falsies
+ *     
  *     
  *     debugger
  */
@@ -1343,12 +1346,13 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> DoGenerator(Block block, bool shorthand, char spec, Block rest) {
             char lowerSpec = char.ToLower(spec);
-            bool stopOnDupe = lowerSpec == 'u',
+            bool stopOnDupe = lowerSpec == 'u' || lowerSpec == 'l',
                 stopOnFilter = lowerSpec == 'f',
                 stopOnCancel = lowerSpec == 'c',
                 stopOnFixPoint = lowerSpec == 'i',
                 stopOnTargetVal = lowerSpec == 't',
                 scalarMode = lowerSpec == 's' || lowerSpec == 'e',
+                keepOnlyLoop = lowerSpec == 'l',
                 postPop = char.IsUpper(spec);
             Block genblock = shorthand ? rest : Pop();
             Block filter = null;
@@ -1392,6 +1396,7 @@ namespace StaxLang {
                 + (filter != null ? "matching filter " : "")
                 + (shorthand ? "from rest of program " : "")
                 + (stopOnDupe ? "until a duplicate is found, " : "")
+                + (keepOnlyLoop ? "keeping only the looped portion, " : "")
                 + (stopOnFilter ? "until a value fails the filter, ": "")
                 + (stopOnCancel ? "until cancelled, " : "")
                 + (stopOnFixPoint ? "until the same value appears successively, " : "")
@@ -1443,7 +1448,10 @@ namespace StaxLang {
                 if (postPop) Pop();
                 if (passed) {
                     // dupe
-                    if (stopOnDupe && result.Contains(generated, Comparer.Instance)) break;
+                    if (stopOnDupe && result.Contains(generated, Comparer.Instance)) {
+                        while (keepOnlyLoop && !AreEqual(result[0], generated)) result.RemoveAt(0);
+                        break;
+                    }
                     // successive equal values
                     if (stopOnFixPoint && AreEqual(generated, lastGenerated)) break;
                     result.Add(generated);

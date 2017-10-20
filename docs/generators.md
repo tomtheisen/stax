@@ -20,6 +20,7 @@ Invariant	|`i`     	|`I`     	|Stops when finding two equal values subsequently
 Target   	|`t`     	|`T`     	|Stops when finding the target value, which is popped before the generator begins
 First    	|`s`     	|`S`     	|Stops after the first value;  produces a single value, not array
 Index    	|`e`     	|`E`     	|Stops after finding the nth value;  produces a single value, not array - n is popped before the generator begins
+Loop     	|`l`     	|`L`     	|Stops after finding any duplicate value - only keeps the portion that forms a loop
 Count    	|`n`     	|`N`     	|Stops after finding n values - n is popped before the generator begins
 Count 1  	|`1`     	|`!`     	|Shorthand for Count mode with n=1
 Count 2  	|`2`     	|`@`     	|Shorthand for Count mode with n=2
