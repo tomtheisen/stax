@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
  *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     permutations, n-permutations
  *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
@@ -29,7 +28,7 @@ using System.Text.RegularExpressions;
  *     get indices of maxes
  *     get indices of mins
  *     sorted indices by value
- *     all combinations
+ *     permutations, n-permutations
  *     n-combinations
  *     n-combinations with replacement
  *     permutations
@@ -53,13 +52,13 @@ using System.Text.RegularExpressions;
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
  *     binary digit explode
- *     peek assert c!C
  *     is increasing
  *     is decreasing
  *     is non-increasing
  *     is non-decreasing
  *     contains all unique elements
  *     next lexicographic permutation
+ *     do something about all the trailing m
  *     
  *     debugger
  */
