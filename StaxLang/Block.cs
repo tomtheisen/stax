@@ -44,13 +44,14 @@ namespace StaxLang {
 
         public string[] Annotate() {
             if (Descs.Count == 0) return new [] { "Description not available" };
+            string linear = Contents.Replace('\n', ' ').Replace('\r', ' ');
 
             var result = Descs.Select(_ => "").ToList();
             int lastLine = 0;
             for (int i = 0; i < Program.Length; i++) {
                 int line = InstrDescLine[i];
                 if (line == -1) line = lastLine;
-                result[line] = result[line].PadRight(i) + Contents[i];
+                result[line] = result[line].PadRight(i) + linear[i];
                 lastLine = line;
             }
 
@@ -101,7 +102,7 @@ namespace StaxLang {
         }
 
         internal void UnAnnotate() {
-            if (this != Root || !Contents.StartsWith("\t")) return; // not annotated
+            if (this != Root || !Contents.StartsWith("\tstax")) return; // not annotated
             var lines = Contents
                 .Split('\r', '\n')
                 .Select(l => l.Split(new[] { '\t' }, 2)[0])

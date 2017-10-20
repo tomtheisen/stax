@@ -67,7 +67,6 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `u`          	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`          	|           	|              	|-1                 	|Negative unit.
 `\|%`        	|int int    	|divmod        	|a / b, a % b       	|Perform division and modulus.
-`\|~`        	|int        	|bit-not       	|~a                 	|Bitwise not.
 `\|&`        	|int int    	|bit-and       	|a & b              	|Bitwise and.
 `\|\|`       	|int int    	|bit-or        	|a | b              	|Bitwise or.
 `\|^`        	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
@@ -80,6 +79,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|2`        	|int        	|2-power       	|2 ** a             	|Power of two.
 `\|3`        	|int        	|base-36       	|                   	|Convert to base 36.
 `\|3`        	|arr        	|base-36       	|                   	|Convert from base 36.
+`\|6`        	|num        	|nth-prime     	|                   	|Get nth prime; 0-indexed.
 `\|7`        	|num        	|cosine        	|cos(a)             	|Cosine in radians.
 `\|8`        	|num        	|sine          	|sin(a)             	|Sine in radians.
 `\|9`        	|num        	|tangent       	|tan(a)             	|Tangent in radians.
@@ -108,6 +108,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
 `:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
 `:B`         	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
+`:B`         	|int        	|binary-digits 	|                   	|Generate array of binary values.
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].

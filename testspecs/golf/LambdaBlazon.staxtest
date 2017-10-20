@@ -1,0 +1,24 @@
+	#https://codegolf.stackexchange.com/questions/145858/draw-the-lambda-blazon
+	in
+1
+	out
+( /\ )
+	in
+3
+	out
+(   /\   )
+|  /  \  |
+( /    \ )
+	in
+5
+	out
+(     /\     )
+|    /  \    |
+|   /    \   |
+|  /      \  |
+( /        \ )
+	stax
+.()].||]xh*+|pmh'/xi-^)+'\iH^)+x^H^(_H+
+{H. /(.\ +m|Cmiix-^*.||.()?E_s3l
+.||]*0U\.)(&MEx{H. /(.\ +m|Ca\\m
+.||]*0U\.()&mM'/iH^('\+xH2+|C*

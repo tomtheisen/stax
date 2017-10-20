@@ -433,12 +433,6 @@ ff
 123.46
 	stax
 2 j
-	name:BitwiseNot
-	in
-	out
--4
-	stax
-3|~
 	name:BitwiseAnd
 	in
 	out
@@ -713,3 +707,17 @@ m8!/|92*|a^@'#)
 0.4
 	stax
 u
+	name:NthPrime
+	in
+9
+	out
+29
+	stax
+|6
+	name:BinaryDigits
+	in
+10
+	out
+2
+	stax
+:B|+

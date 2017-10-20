@@ -14,17 +14,18 @@ using System.Text.RegularExpressions;
  *     find-index-all by regex
  *     running "total" / reduce-collect
  *     string literal template instructions  (great honking idea!)
- *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     call into trailing }
  *     FeatureTests for generators
  *     compare / sign (c{c|a/}0?)
  *     replace first only
- *     while loops continue to next
+ *     while loops continue to next (how?)
  *     hypotenuse type operation
  *     get first truthy element (coalesce)
  *     get indices of maxes
  *     get indices of mins
+ *     get indices of truthies
+ *     get indices of falsies
  *     sorted indices by value
  *     permutations, n-permutations
  *     n-combinations with replacement
@@ -34,7 +35,6 @@ using System.Text.RegularExpressions;
  *     distinct prime factor count |fu%
  *     all factor count
  *     prime factorization exponents
- *     nth prime
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     mode
@@ -54,6 +54,9 @@ using System.Text.RegularExpressions;
  *     do something about all the trailing m - but really, what?
  *     logical or / pop falsies
  *     no way to count occurrences in a list of strings?!
+ *     ascii art mirroring /\ () [] {} <> 
+ *     ascii art grid line modes (?)
+ *     right align jagged lines
  *     
  *     debugger
  */
@@ -791,10 +794,6 @@ namespace StaxLang {
                             case '-':
                                 DoMultisetSubtract(block);
                                 break;
-                            case '~':
-                                block.AddDesc("bitwise not");
-                                Push(~Pop());
-                                break;
                             case '@':
                                 DoRemoveOrInsert(block);
                                 break;
@@ -943,6 +942,10 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in base 36");
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
+                                break;
+                            case '6':
+                                block.AddDesc("0-indexed nth prime");
+                                Push(PrimeHelper.AllPrimes().ElementAt((int)Pop()));
                                 break;
                             case '7':
                                 block.AddDesc("cosine in radians");

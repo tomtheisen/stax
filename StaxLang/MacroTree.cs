@@ -68,6 +68,7 @@ namespace StaxLang {
                 ('b', "fii", "a~;>s,>!*", "value is in [range)"),
                 ('b', "rii", "a~;>s,>!*", "value is in [range)"),
                 ('B', "ia", "~;%|E{;@m,d", "number in custom base"),
+                ('B', "i", "2|E", "array of binary digit values"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('f', "a", "{+k", "flatten array"),
