@@ -61,7 +61,7 @@ using System.Text.RegularExpressions;
  *     do something about all the trailing m
  *     reverse # args
  *     logical or / pop falsies
- *     
+ *     no way to count occurrences in a list of strings?!
  *     
  *     debugger
  */
@@ -527,7 +527,7 @@ namespace StaxLang {
                     case 'i':
                         if (CallStackFrames.Any()) {
                             type = InstructionType.Value;
-                            block.AddDesc("iteration index");
+                            block.AddDesc("the iteration index");
                             Push(Index);
                         }
                         break;
@@ -801,7 +801,14 @@ namespace StaxLang {
                             case '&':
                                 if (IsArray(Peek())) {
                                     block.AddDesc("set intersection; keep all elements from left array that appear in right");
-                                    RunMacro("ss~ {;sIU>f ,d"); 
+                                    List<object> b = Pop();
+                                    var a = Pop();
+                                    if (!IsArray(a)) a = new List<object> { a };
+                                    var result = new List<object>();
+                                    foreach (object e in a) {
+                                        if (b.Contains(e, Comparer.Instance)) result.Add(e);
+                                    }
+                                    Push(result);
                                 }
                                 else {
                                     block.AddDesc("bitwise and");
@@ -908,7 +915,8 @@ namespace StaxLang {
                                 break;
                             case '1':
                                 if (IsArray(Peek())) {
-                                    block.AddDesc("get index of first truthy element");
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get index of first truthy element in " + e);
+                                    else block.AddDesc("get index of first truthy element");
                                     BigInteger result = -1;
                                     int i = 0;
                                     foreach (var e in Pop()) {
@@ -921,7 +929,8 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 else if (IsInt(Peek())) {
-                                    block.AddDesc("power of -1");
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "-1 to the power of " + e);
+                                    else block.AddDesc("power of -1");
                                     RunMacro("2%U1?");
                                 }
                                 break;

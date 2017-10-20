@@ -1,0 +1,47 @@
+	#https://codegolf.stackexchange.com/questions/145787/two-first-names
+	in
+Madison Harris
+Riley Hudson
+Addison Hills
+Riley Phillips
+Scott Hill
+Levi Murphy
+Hudson Wright
+Nathan Baker
+Harper Brooks
+Chloe Morris
+Aubrey Miller
+Hudson Lopez
+Samuel Owen
+Wyatt Victoria
+Brooklyn Cox
+Nathan Murphy
+Ryan Scott
+	out
+Riley Hudson definitely has two first names
+Ryan Scott has two first names
+	in
+Owen Parker
+Daniel Hall
+Cameron Hall
+Sofia Watson
+Mia Murphy
+Ryan Jones
+Emily Ramirez
+	out
+
+	in
+Olivia Robinson
+Jacob van-Dyke
+Jacob Ella
+Brayden De'Rosa
+Levi Brook
+Brook Bella
+Ella Hill
+Ella Anderson
+Brook-Anne van-Dyke
+	out
+Jacob Ella definitely has two first names
+Levi Brook has two first names
+	stax
+zp_.\s|sc{=i|1*K{|+m2/{|mmF,s0<Cp`]0zh,0.`_0>*p`-?!QU G1'h

@@ -255,3 +255,9 @@ z5\
 3
 	stax
 3R|[Fm
+	name:SetIntersectSubstrings
+	in
+	out
+abc
+	stax
+Va|[ "abc"] |&
