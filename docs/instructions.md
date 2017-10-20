@@ -161,6 +161,7 @@ chars    	|Types      	|Name             	|Description
 `:[`     	|arr arr    	|starts-with      	|String starts with?
 `:]`     	|arr arr    	|starts-with      	|String ends with?
 `:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
+`:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 
 ## Array
 chars	|Types        	|Name             	|Description

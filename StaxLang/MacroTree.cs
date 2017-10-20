@@ -81,6 +81,7 @@ namespace StaxLang {
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('r', "i", "|aNcN^|r", "centered range [-n ... n]"),
                 ('S', "aa", "s-!", "is superset of"),
+                ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };
 

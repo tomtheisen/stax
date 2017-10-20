@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
  *     string literal template instructions  (great honking idea!)
  *     uneval
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     Rotate chars (like translate on a ring)
  *     call into trailing }
  *     FeatureTests for generators
  *     compare / sign (c{c|a/}0?)
@@ -29,7 +28,6 @@ using System.Text.RegularExpressions;
  *     get indices of mins
  *     sorted indices by value
  *     permutations, n-permutations
- *     n-combinations
  *     n-combinations with replacement
  *     permutations
  *     trim element(s)
