@@ -24,8 +24,6 @@ using System.Text.RegularExpressions;
  *     get first truthy element (coalesce)
  *     get indices of maxes
  *     get indices of mins
- *     get indices of truthies
- *     get indices of falsies
  *     sorted indices by value
  *     permutations, n-permutations
  *     n-combinations with replacement
@@ -37,19 +35,16 @@ using System.Text.RegularExpressions;
  *     prime factorization exponents
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
- *     mode
  *     median (? how to average ?)
  *     multiset intersection
  *     multiset xor
  *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
- *     all sub-arrays |]{|[m{+k
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
- *     binary digit explode
  *     contains all unique elements
  *     next lexicographic permutation
  *     do something about all the trailing m - but really, what?
@@ -2391,7 +2386,7 @@ namespace StaxLang {
 
             dynamic inner = Pop(), outer = Pop();
             if (IsInt(inner)) inner = Range(1, inner);
-            if (IsInt(outer)) outer = Range(1, inner);
+            if (IsInt(outer)) outer = Range(1, outer);
 
             var result = new List<object>();
             PushStackFrame();

@@ -495,3 +495,22 @@ BC
 1
 	stax
 :v
+	name:Mode
+	in
+[1 2 2 3 3 4]
+	out
+3
+	stax
+:M
+	name:FalsyIndices
+	in
+[1 2 0 3 3 4 0]
+	out
+2 6
+:F J
+	name:TruthyIndices
+	in
+[1 2 0 3 3 4 0]
+	out
+0 1 3 4 5
+:T J

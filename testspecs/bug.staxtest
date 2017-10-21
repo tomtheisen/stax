@@ -261,3 +261,11 @@ z5\
 abc
 	stax
 Va|[ "abc"] |&
+	name:DoubleImplicitRangeCrossMap
+	in
+2 2
+	out
+23
+34
+	stax
+K+$

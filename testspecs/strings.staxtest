@@ -345,3 +345,15 @@ baaaaaar
 baaaaaar
 	stax
 L|>m
+	name:ContiguousExcerpts
+	in
+abc
+	out
+a
+ab
+abc
+b
+bc
+c
+	stax
+:e m

@@ -164,6 +164,7 @@ chars    	|Types      	|Name             	|Description
 `:[`     	|arr arr    	|starts-with      	|String starts with?
 `:]`     	|arr arr    	|starts-with      	|String ends with?
 `:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
+`:e`     	|arr        	|excerpts         	|Get all contiguous subarrays.
 `:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 
 ## Array
@@ -236,8 +237,8 @@ chars	|Types        	|Name             	|Description
 `\|r`	|int int      	|explicit-range   	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range     	|Range [a .. b) with stride of c.
 `\|R`	|arr          	|run-length       	|Encode runs of elements into an array of [element, count] pairs.
-`:0` 	|arr          	|falsy-indices    	|Get all indices of falsy elements
-`:1` 	|arr          	|truthy-indices   	|Get all indices of truthy elements
+`:0` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
+`:1` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.
 `::` 	|arr int      	|every-nth        	|Every nth element in array, starting from the first.
 `:*` 	|arr          	|product          	|Product of numbers in array.
 `:-` 	|arr          	|deltas           	|Pairwise difference of array.
@@ -247,13 +248,16 @@ chars	|Types        	|Name             	|Description
 `:^` 	|arr          	|non-descending   	|Is array non-descending? (has no adjacent pair of descending elements)
 `:v` 	|arr          	|non-ascending    	|Is array non-ascending? (has no adjacent pair of ascending elements)
 `:f` 	|arr          	|flatten          	|Flatten array of arrays one time.
+`:F` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
 `:I` 	|arr arr      	|find-index-all   	|For each element in b, find the index of the first occurrence in a.
 `:J` 	|arr          	|squarify         	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m` 	|arr int      	|repeat-to        	|Repeat array until it is exactly length n.
 `:m` 	|arr          	|mirror           	|Append reversed copy to array.
+`:M` 	|arr          	|mode             	|Mode.  In case of tie, the last element to appear wins.
 `:r` 	|arr arr      	|replace-all      	|Replace all substring occurrences.
 `:r` 	|int          	|centered-range   	|Make range [-n .. n] centered around 0.
 `:S` 	|arr arr      	|is-superset-of   	|Is a a (non-strict) superset of b?
+`:T` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.
 `:u` 	|arr          	|multi-single     	|Array contains exactly 1 distinct element?
 
 
