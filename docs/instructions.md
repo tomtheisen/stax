@@ -167,6 +167,7 @@ chars    	|Types      	|Name             	|Description
 `:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
 `:e`     	|arr        	|excerpts         	|Get all contiguous subarrays.
 `:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
+`:R`     	|arr        	|brace-reflect    	|Reflect string, `(\<[{/` becomes `\\}]>)`
 
 ## Array
 chars	|Types        	|Name             	|Description

@@ -89,6 +89,7 @@ namespace StaxLang {
                 ('P', "i", "{|p}gs", "next prime >="),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('r', "i", "|aNcN^|r", "centered range [-n ... n]"),
+                ('R', "a", "r\"())([]][{}}{<>><\\//\\\"|t", "reflect; reverse string entire string and braces and slashes"),
                 ('S', "aa", "s-!", "is superset of"),
                 ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
                 ('T', "a", "{!Cim", "get all truthy indices"),

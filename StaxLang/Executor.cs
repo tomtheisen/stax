@@ -44,7 +44,6 @@ using System.Text.RegularExpressions;
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
  *     next lexicographic permutation
- *     ascii art mirroring /\ () [] {} <> 
  *     ascii art grid line modes (?)
  *     left/right rotate 2d array (like transpose M)
  *     grid align lists of lists of lists

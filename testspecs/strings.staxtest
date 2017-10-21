@@ -357,3 +357,10 @@ bc
 c
 	stax
 :e m
+	name:BracketMirror
+	in
+hello (<[{/
+	out
+\}]>) olleh
+	stax
+:R
