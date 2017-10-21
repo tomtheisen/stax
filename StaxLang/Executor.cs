@@ -38,6 +38,7 @@ using System.Text.RegularExpressions;
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     mode
+ *     median (? how to average ?)
  *     multiset intersection
  *     multiset xor
  *     multiset union
@@ -56,7 +57,6 @@ using System.Text.RegularExpressions;
  *     no way to count occurrences in a list of strings?!
  *     ascii art mirroring /\ () [] {} <> 
  *     ascii art grid line modes (?)
- *     right align jagged lines
  *     left/right rotate 2d array (like transpose M)
  *     grid align lists of lists of lists
  *     
@@ -891,13 +891,49 @@ namespace StaxLang {
                                 else block.AddDesc("generate all suffixes");
                                 RunMacro("~;%R{;s)mr,d");
                                 break;
-                            case '<': 
-                                block.AddDesc("bit shift left");
-                                RunMacro("|2*");
+                            case '<':
+                                if (IsInt(Peek())) {
+                                    block.AddDesc("bit shift left");
+                                    RunMacro("|2*");
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("left-align lines");
+                                    List<object> arr = Pop();
+                                    int maxlen = 0;
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        if (!IsArray(arr[i])) arr[i] = ToString(arr[i]);
+                                        maxlen = Math.Max(maxlen, ((List<object>)arr[i]).Count);
+                                    }
+                                    var result = new List<object>();
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        var line = new List<object>(Enumerable.Repeat((object)BigInteger.Zero, maxlen - ((List<object>)arr[i]).Count));
+                                        line.InsertRange(0, (List<object>)arr[i]);
+                                        result.Add(line);
+                                    }
+                                    Push(result);
+                                }
                                 break;
-                            case '>': 
-                                block.AddDesc("bit shift right");
-                                RunMacro("|2/");
+                            case '>':
+                                if (IsInt(Peek())) {
+                                    block.AddDesc("bit shift right");
+                                    RunMacro("|2/"); 
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("right-align lines");
+                                    List<object> arr = Pop();
+                                    int maxlen = 0;
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        if (!IsArray(arr[i])) arr[i] = ToString(arr[i]);
+                                        maxlen = Math.Max(maxlen, ((List<object>)arr[i]).Count);
+                                    }
+                                    var result = new List<object>();
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        var line = new List<object>(Enumerable.Repeat((object)BigInteger.Zero, maxlen - ((List<object>)arr[i]).Count));
+                                        line.AddRange((List<object>)arr[i]);
+                                        result.Add(line);
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case '0':
                                 if (IsArray(Peek())) {

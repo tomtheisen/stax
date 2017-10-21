@@ -327,3 +327,21 @@ Hello, world.
 Hfmmp, xpsme.
 	stax
 Va :t
+	name:LeftAlign
+	in
+foo
+baaaaaar
+	out
+foo     
+baaaaaar
+	stax
+L|<m
+	name:RightAlign
+	in
+foo
+baaaaaar
+	out
+     foo
+baaaaaar
+	stax
+L|>m

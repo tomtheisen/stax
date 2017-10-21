@@ -151,6 +151,8 @@ chars    	|Types      	|Name             	|Description
 `R`      	|arr arr arr	|regex-replace    	|Regex replace using ECMA regex.
 `t`      	|arr        	|trim-left        	|Trim whitespace from left of string.
 `T`      	|arr        	|trim-right       	|Trim whitespace from right of string.
+`\|<`    	|arr        	|left-align       	|left align lines of text, padding to longest line.
+`\|>`    	|arr        	|right-align      	|right align lines of text, padding to longest line.
 `\|C`    	|arr int    	|center           	|Center string in n characters.
 `\|C`    	|arr        	|center-block     	|Center lines of text, using longest line.
 `\|I`    	|arr arr    	|str-index-all    	|Find all indexes of the substring.
