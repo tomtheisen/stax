@@ -30,7 +30,6 @@ using System.Text.RegularExpressions;
  *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
  *     all factor count
- *     prime factorization exponents
  *     nth fibonacci element
  *     totient c{[|g1=f%sd
  *     median (? how to average ?)
@@ -45,7 +44,6 @@ using System.Text.RegularExpressions;
  *     sign c{c|a/}{d0}?
  *     next lexicographic permutation
  *     ascii art grid line modes (?)
- *     left/right rotate 2d array (like transpose M)
  *     grid align lists of lists of lists
  *     
  *     debugger
@@ -1145,6 +1143,24 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) RunMacro("chs{|MF");
                                 else throw new StaxException("Bad types for max");
+                                break;
+                            case 'n': 
+                                {
+                                    block.AddDesc("exponenets of sequential primes in factorization");
+                                    BigInteger target = BigInteger.Abs(Pop());
+                                    
+                                    var result = new List<object>();
+                                    foreach (var p in PrimeHelper.AllPrimes()) {
+                                        if (target <= 1) break;
+                                        BigInteger exp = 0;
+                                        while (target % p == 0) {
+                                            target /= p;
+                                            exp++;
+                                        }
+                                        result.Add(exp);
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case 'p':
                                 if (IsInt(Peek())) {

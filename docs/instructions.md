@@ -99,6 +99,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|L`        	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 `\|m`        	|num num    	|min           	|min(a, b)          	|Lower of two values.
 `\|M`        	|num num    	|max           	|max(a, b)          	|Higher of two values.
+`\|n`        	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (eg. 20 -> [2 0 1])
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
