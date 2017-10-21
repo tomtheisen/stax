@@ -339,6 +339,7 @@ chars	|Value
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VM` 	|1000000
 `VP` 	|pi
+`VT` 	|10.0
 `VV` 	|AEIOU
 `Vv` 	|aeiou
 `VW` 	|"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

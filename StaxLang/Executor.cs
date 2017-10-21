@@ -76,6 +76,7 @@ namespace StaxLang {
             ['M'] = (new BigInteger(1000000), "one million"),
             ['p'] = (S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"), "all printable ascii characters"),
             ['P'] = (Math.PI, "pi"),
+            ['T'] = (10.0, "10.0"),
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),
             ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
