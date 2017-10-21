@@ -240,6 +240,7 @@ chars	|Types        	|Name             	|Description
 `\|r`	|int int      	|explicit-range   	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range     	|Range [a .. b) with stride of c.
 `\|R`	|arr          	|run-length       	|Encode runs of elements into an array of [element, count] pairs.
+`\|Z`	|arr          	|rectangularize   	|Rectangularize an array of arrays, using "" for missing elements.
 `:0` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
 `:1` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.
 `::` 	|arr int      	|every-nth        	|Every nth element in array, starting from the first.
@@ -327,6 +328,7 @@ chars	|Value
 `V0` 	|rational 0/1
 `VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"
+`Vb` 	|"()[]{}<>"
 `VB` 	|256
 `VC` 	|"BCDFGHJKLMNPQRSTVWXYZ"
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"

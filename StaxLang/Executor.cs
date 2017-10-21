@@ -65,6 +65,7 @@ namespace StaxLang {
             ['0'] = (new Rational(0, 1), "0/1"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
+            ['b'] = (S2A("()[]{}<>"), "matched brackets"),
             ['B'] = (new BigInteger(256), "256"),
             ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
             ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
@@ -1215,6 +1216,25 @@ namespace StaxLang {
                                 else block.AddDesc("zero-fill");
                                 RunMacro("ss ~; '0* s 2l$ ,)");
                                 break;
+                            case 'Z': // rectangularize using empty array
+                                if (IsArray(Peek())) {
+                                    block.AddDesc("rectangularize using empty array");
+                                    List<object> arr = Pop();
+                                    int maxlen = 0;
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        if (!IsArray(arr[i])) arr[i] = ToString(arr[i]);
+                                        maxlen = Math.Max(maxlen, ((List<object>)arr[i]).Count);
+                                    }
+                                    var result = new List<object>();
+                                    for (int i = 0; i < arr.Count; i++) {
+                                        var line = new List<object>(Enumerable.Repeat((object)new List<object>(), maxlen - ((List<object>)arr[i]).Count));
+                                        line.InsertRange(0, (List<object>)arr[i]);
+                                        result.Add(line);
+                                    }
+                                    Push(result);
+                                }
+                                break;
+
                             default: throw new StaxException($"Unknown extended character '{program[ip]}'");
                         }
                         break;

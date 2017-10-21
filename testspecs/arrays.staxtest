@@ -522,3 +522,10 @@ BC
 1
 	stax
 Va "abc" |#
+	name:EmptyRectangularize
+	in
+[[1 2] [3]]
+	out
+
+	stax
+|Z HH
