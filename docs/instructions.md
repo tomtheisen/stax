@@ -104,6 +104,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
+`:+`         	|num        	|sign          	|sign(a)            	|Sign; 1 for positive, -1 for negative.
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
 `:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
 `:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
@@ -213,6 +214,7 @@ chars	|Types        	|Name             	|Description
 `\|+`	|arr          	|sum              	|Sum of array.
 `\|@`	|arr int      	|remove-at        	|Remove element from array at index.
 `\|@`	|arr int num  	|insert-at        	|Insert element to array at index.
+`\|#`	|arr arr      	|verbatim-count   	|Counts number of occurrences of b as an element of a, without any string flattening.
 `\|&`	|arr arr      	|arr-intersect    	|Keep all elements from a that are in b.
 `\|^`	|arr arr      	|arr-mismatch     	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
 `\|*`	|arr int      	|repeat-elements  	|Repeat each element n times.

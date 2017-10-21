@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     call into trailing }
  *     FeatureTests for generators
- *     compare / sign (c{c|a/}0?)
  *     replace first only
  *     while loops continue to next (how?)
  *     hypotenuse type operation
@@ -27,7 +26,6 @@ using System.Text.RegularExpressions;
  *     sorted indices by value
  *     permutations, n-permutations
  *     n-combinations with replacement
- *     permutations
  *     trim element(s)
  *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
@@ -45,11 +43,7 @@ using System.Text.RegularExpressions;
  *     hasletter Vl |&
  *     assign to array using predicate instead of index
  *     sign c{c|a/}{d0}?
- *     contains all unique elements
  *     next lexicographic permutation
- *     do something about all the trailing m - but really, what?
- *     logical or / pop falsies
- *     no way to count occurrences in a list of strings?!
  *     ascii art mirroring /\ () [] {} <> 
  *     ascii art grid line modes (?)
  *     left/right rotate 2d array (like transpose M)
@@ -809,6 +803,14 @@ namespace StaxLang {
                                 else {
                                     block.AddDesc("bitwise and");
                                     Push(Pop() & Pop()); 
+                                }
+                                break;
+                            case '#':
+                                if (IsArray(Peek())) {
+                                    List<object> a = Pop(), b = Pop();
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "number of occurrences of " + e);
+                                    else block.AddDesc("number of occurrences in array");
+                                    Push(new BigInteger(a.Count(e => AreEqual(e, b))));
                                 }
                                 break;
                             case '|': 
@@ -1640,14 +1642,14 @@ namespace StaxLang {
                     case '0': case '1': case '2': case '3': case '4':
                     case '5': case '6': case '7': case '8': case '9':
                         var substring = arg.Substring(i);
-                        var match = Regex.Match(substring, @"-?\d+\.\d+");
+                        var match = Regex.Match(substring, @"^-?\d+\.\d+");
                         if (match.Success) {
                             NewValue(double.Parse(match.Value));
                             i += match.Value.Length - 1;
                             break;
                         }
 
-                        match = Regex.Match(substring, @"(-?\d+)/(-?\d+)");
+                        match = Regex.Match(substring, @"^(-?\d+)/(-?\d+)");
                         if (match.Success) {
                             var frac = new Rational(
                                 BigInteger.Parse(match.Groups[1].Value),
@@ -1657,7 +1659,7 @@ namespace StaxLang {
                             break;
                         }
 
-                        match = Regex.Match(substring, @"-?\d+");
+                        match = Regex.Match(substring, @"^-?\d+");
                         if (match.Success) {
                             NewValue(BigInteger.Parse(match.Value));
                             i += match.Value.Length - 1;

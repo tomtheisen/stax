@@ -721,3 +721,18 @@ u
 2
 	stax
 :B|+
+	name:Sign
+	in
+-123
+	out
+-1
+	in
+0
+	out
+0
+	in
+123
+	out
+1
+	stax
+:+

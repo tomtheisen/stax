@@ -507,10 +507,18 @@ BC
 [1 2 0 3 3 4 0]
 	out
 2 6
+	stax
 :F J
 	name:TruthyIndices
 	in
 [1 2 0 3 3 4 0]
 	out
 0 1 3 4 5
+	stax
 :T J
+	name:VerbatimCount
+	in
+	out
+1
+	stax
+Va "abc" |#

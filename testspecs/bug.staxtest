@@ -269,3 +269,10 @@ Va|[ "abc"] |&
 34
 	stax
 K+$
+	name:AdjacentFractionParseError
+	in
+3 1/3
+	out
+1/3
+	stax
+"noop"d
