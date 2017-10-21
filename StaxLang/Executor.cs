@@ -57,6 +57,8 @@ using System.Text.RegularExpressions;
  *     ascii art mirroring /\ () [] {} <> 
  *     ascii art grid line modes (?)
  *     right align jagged lines
+ *     left/right rotate 2d array (like transpose M)
+ *     grid align lists of lists of lists
  *     
  *     debugger
  */
