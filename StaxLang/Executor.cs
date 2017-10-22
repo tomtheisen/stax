@@ -804,7 +804,7 @@ namespace StaxLang {
                                 break;
                             case '#':
                                 if (IsArray(Peek())) {
-                                    List<object> a = Pop(), b = Pop();
+                                    List<object> b = Pop(), a = Pop();
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "number of occurrences of " + e);
                                     else block.AddDesc("number of occurrences in array");
                                     Push(new BigInteger(a.Count(e => AreEqual(e, b))));
