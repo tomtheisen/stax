@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 // available chars
 //  DG
 /* To add:
- *     find-index-all by regex
  *     running "total" / reduce-collect
  *     string literal template instructions  (great honking idea!)
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
@@ -1139,7 +1138,7 @@ namespace StaxLang {
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) < 0 ? a : b);
                                 }
-                                else if (IsArray(Peek())) RunMacro("chs{|mF");
+                                else if (IsArray(Peek())) RunMacro("{|mk");
                                 else throw new StaxException("Bad types for min");
                                 break;
                             case 'M': // max
@@ -1149,7 +1148,7 @@ namespace StaxLang {
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) > 0 ? a : b);
                                 }
-                                else if (IsArray(Peek())) RunMacro("chs{|MF");
+                                else if (IsArray(Peek())) RunMacro("{|Mk");
                                 else throw new StaxException("Bad types for max");
                                 break;
                             case 'n': 
@@ -1214,9 +1213,20 @@ namespace StaxLang {
                                 else block.AddDesc("surround with; concat to start and end");
                                 DoSurround();
                                 break;
-                            case 'q': // int square root
-                                block.AddDesc("floor square root");
-                                Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
+                            case 'q': 
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("floor square root");
+                                    Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("get all indices of regex match");
+                                    string pattern = A2S(Pop()), n = A2S(Pop());
+                                    var result = Regex.Matches(n, pattern)
+                                        .Cast<Match>()
+                                        .Select(m => new BigInteger(m.Index) as object)
+                                        .ToList();
+                                    Push(result);
+                                }
                                 break;
                             case 'Q': // float square root
                                 block.AddDesc("square root");
@@ -2297,11 +2307,12 @@ namespace StaxLang {
         private IEnumerable<ExecutionState> DoReduce(Block block, Block rest) {
             dynamic b = Pop(), a = Pop();
             if (IsInt(a) && IsBlock(b)) {
-                a = Range(1, a);
                 block.AddDesc("reduce range 1 to n using block");
+                a = Range(1, a);
             }
             else {
                 block.AddDesc("reduce using block");
+                a = new List<object>(a);
             }
             if (IsArray(a) && IsBlock(b)) {
                 if (a.Count < 2) {

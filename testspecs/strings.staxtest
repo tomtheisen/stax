@@ -371,3 +371,10 @@ hello (<[{/
 foo *** baz foo bar baz
 	stax
 |e
+	name:RegexMatchIndices
+	in
+That wo thecom I hannexambdateade offxPa
+	out
+19 35
+	stax
+"(.)\1" |q J
