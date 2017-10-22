@@ -247,6 +247,7 @@ chars	|Types        	|Name             	|Description
 `\|R`	|int int int  	|stride-range     	|Range [a .. b) with stride of c.
 `\|R`	|arr          	|run-length       	|Encode runs of elements into an array of [element, count] pairs.
 `\|T`	|arr          	|permutations     	|Get all orderings of elements in the array.  Duplicate elements are not considered.
+`\|T`	|arr int      	|permutations     	|Get all b-length orderings of elements in a.  Duplicate elements are not considered.
 `\|Z`	|arr          	|rectangularize   	|Rectangularize an array of arrays, using "" for missing elements.
 `:0` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
 `:1` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.

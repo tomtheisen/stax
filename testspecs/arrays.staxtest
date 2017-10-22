@@ -566,3 +566,21 @@ cbab
 cbba
 	stax
 |T m
+	name:NPermutations
+	in
+abbc
+	out
+ab
+ab
+ac
+ba
+bb
+bc
+ba
+bb
+bc
+ca
+cb
+cb
+	stax
+2 |T m

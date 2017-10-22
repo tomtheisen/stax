@@ -21,8 +21,7 @@ using System.Text.RegularExpressions;
  *     get indices of maxes
  *     get indices of mins
  *     sorted indices by value
- *     n-permutations
- *     n-combinations with replacement
+ *     n-combinations with replacement (array power?)
  *     trim element(s)
  *     median (? how to average ?)
  *     multiset intersection
@@ -1286,20 +1285,29 @@ namespace StaxLang {
         }
 
         private void DoPermutations(Block block) {
-            block.AddDesc("get all permutations");
-
+            int targetSize = int.MaxValue;
+            if (IsInt(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "permutations of length " + e);
+                else block.AddDesc("get permutations of specified size");
+                targetSize = (int)Pop();
+            }
+            else {
+                block.AddDesc("get all permutations");
+            }
             List<object> els = Pop();
+            targetSize = Math.Min(els.Count, targetSize);
             var result = new List<object>();
 
             // factoradic permutation decoder
-            int fact = 1;
-            for (int i = 1; i <= els.Count; i++) fact *= i;
+            int totalPerms = 1, stride = 1;
+            for (int i = 1; i <= els.Count; i++) totalPerms *= i;
+            for (int i = 1; i <= els.Count - targetSize; i++) stride *= i;
             var idxs = new int[els.Count];
-            for (int pi = 0; pi < fact; pi++) {
+            for (int pi = 0; pi < totalPerms; pi += stride) {
                 int n = pi;
                 for (int i = 1; i <= els.Count; n /= i++) idxs[els.Count - i] = n % i;
-                for (int i = 0; i < els.Count; i++) for (int j = i + 1; j < els.Count; j++) if (idxs[j] >= idxs[i]) idxs[j]++;
-                result.Add(idxs.Select(i => els[i]).ToList());
+                for (int i = 0; i < targetSize; i++) for (int j = i + 1; j < targetSize; j++) if (idxs[j] >= idxs[i]) idxs[j]++;
+                result.Add(idxs.Take(targetSize).Select(i => els[i]).ToList());
             }
 
             Push(result);
