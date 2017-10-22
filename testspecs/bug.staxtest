@@ -283,3 +283,10 @@ K+$
 0
 	stax
 |#
+	name:CrossmapIterator
+	in
+[1] [2]
+	out
+1 2
+	stax
+{dd_\K hhJ

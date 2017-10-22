@@ -710,14 +710,14 @@ namespace StaxLang {
                     case '_':
                         {
                             type = InstructionType.Value;
-                            if (CallStackFrames.Any()) {
-                                block.AddDesc("current iteration value");
-                                Push(_);
-                            }
-                            else if (_ is IteratorPair p) {
+                            if (_ is IteratorPair p) {
                                 block.AddDesc("push outer and inner iteration values");
                                 Push(p.Outer);
                                 Push(p.Inner);
+                            }
+                            else if (CallStackFrames.Any()) {
+                                block.AddDesc("current iteration value");
+                                Push(_);
                             }
                             else {
                                 block.AddDesc("entire standard input in one string");
