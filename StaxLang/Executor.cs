@@ -27,11 +27,9 @@ using System.Text.RegularExpressions;
  *     permutations, n-permutations
  *     n-combinations with replacement
  *     trim element(s)
- *     all factors c%{[%!fsd
  *     distinct prime factor count |fu%
  *     all factor count
  *     nth fibonacci element
- *     totient c{[|g1=f%sd
  *     median (? how to average ?)
  *     multiset intersection
  *     multiset xor

@@ -743,3 +743,28 @@ u
 2 0 1
 	stax
 |n J
+	name:Totient
+	in
+13
+	out
+12
+	in
+24
+	out
+8
+	stax
+:t
+	name:AllDivisors
+	in
+-24
+	out
+1
+2
+3
+4
+6
+8
+12
+24
+	stax
+:d m

@@ -74,6 +74,7 @@ namespace StaxLang {
                 ('B', "i", "2|E", "array of binary digit values"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
+                ('d', "i", "c|a{[%!fsd", "all divisors"),
                 ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
                 ('f', "a", "{+k", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),
@@ -92,6 +93,7 @@ namespace StaxLang {
                 ('R', "a", "r\"())([]][{}}{<>><\\//\\\"|t", "reflect; reverse string entire string and braces and slashes"),
                 ('S', "aa", "s-!", "is superset of"),
                 ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
+                ('t', "i", "c|fu{u1-N*F@", "Euler's totient"),
                 ('T', "a", "{!Cim", "get all truthy indices"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };
