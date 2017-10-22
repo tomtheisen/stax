@@ -17,7 +17,7 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     call into trailing }
  *     FeatureTests for generators
- *     replace first only
+ *     string replace first only
  *     while loops continue to next (how?)
  *     hypotenuse type operation
  *     get indices of maxes
@@ -26,7 +26,6 @@ using System.Text.RegularExpressions;
  *     permutations, n-permutations
  *     n-combinations with replacement
  *     trim element(s)
- *     nth fibonacci element
  *     median (? how to average ?)
  *     multiset intersection
  *     multiset xor
@@ -35,8 +34,6 @@ using System.Text.RegularExpressions;
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
- *     assign to array using predicate instead of index
- *     sign c{c|a/}{d0}?
  *     next lexicographic permutation
  *     ascii art grid line modes (?)
  *     grid align lists of lists of lists
@@ -971,6 +968,14 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in base 36");
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
+                                break;
+                            case '5':
+                                block.AddDesc("0-indexed fibonacci number"); 
+                                {
+                                    BigInteger n = Pop(), a = 1, b = 1;
+                                    for (int i = 0; i < n; i++) (a, b) = (b, a + b);
+                                    Push(a);
+                                }
                                 break;
                             case '6':
                                 block.AddDesc("0-indexed nth prime");

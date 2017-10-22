@@ -768,3 +768,14 @@ u
 24
 	stax
 :d m
+	name:NthFibbonacci
+	in
+0
+	out
+1
+	in
+5
+	out
+8
+	stax
+|5

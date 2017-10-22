@@ -79,6 +79,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|2`        	|int        	|2-power       	|2 ** a             	|Power of two.
 `\|3`        	|int        	|base-36       	|                   	|Convert to base 36.
 `\|3`        	|arr        	|base-36       	|                   	|Convert from base 36.
+`\|5`        	|num        	|nth-fib       	|                   	|Get nth fibonacci number; 0-indexed.
 `\|6`        	|num        	|nth-prime     	|                   	|Get nth prime; 0-indexed.
 `\|7`        	|num        	|cosine        	|cos(a)             	|Cosine in radians.
 `\|8`        	|num        	|sine          	|sin(a)             	|Sine in radians.
