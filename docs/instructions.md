@@ -271,6 +271,7 @@ chars	|Types        	|Name             	|Description
 `:M` 	|arr          	|mode             	|Mode.  In case of tie, the last element to appear wins.
 `:r` 	|arr arr      	|replace-all      	|Replace all substring occurrences.
 `:r` 	|int          	|centered-range   	|Make range [-n .. n] centered around 0.
+`:s` 	|arr          	|span             	|Get the span of an array. (maximum minus minimum)
 `:S` 	|arr arr      	|is-superset-of   	|Is a a (non-strict) superset of b?
 `:T` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.
 `:u` 	|arr          	|multi-single     	|Array contains exactly 1 distinct element?

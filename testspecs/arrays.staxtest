@@ -606,3 +606,10 @@ asdfasdfasdf asdf asdf asasdfasdf
 30
 	stax
 :A m
+	name:Span
+	in
+[8 4 5 7 9 4 5 6]
+	out
+5
+	stax
+:s

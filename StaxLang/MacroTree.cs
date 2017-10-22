@@ -94,6 +94,7 @@ namespace StaxLang {
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),
                 ('r', "i", "|aNcN^|r", "centered range [-n ... n]"),
                 ('R', "a", "r\"())([]][{}}{<>><\\//\\\"|t", "reflect; reverse string entire string and braces and slashes"),
+                ('s', "a", "c|Ms|m-", "span of array; max - min"),
                 ('S', "aa", "s-!", "is superset of"),
                 ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
                 ('t', "i", "c|fu{u1-N*F@", "Euler's totient"),
