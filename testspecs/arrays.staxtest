@@ -613,3 +613,17 @@ asdfasdfasdf asdf asdf asasdfasdf
 5
 	stax
 :s
+	name:CartesianSelfJoin
+	in
+ab
+	out
+aaa
+aab
+aba
+abb
+baa
+bab
+bba
+bbb
+	stax
+3 |^ m

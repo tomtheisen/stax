@@ -223,7 +223,8 @@ chars	|Types        	|Name             	|Description
 `\|@`	|arr int num  	|insert-at        	|Insert element to array at index.
 `\|#`	|arr arr      	|verbatim-count   	|Counts number of occurrences of b as an element of a, without any string flattening.
 `\|&`	|arr arr      	|arr-intersect    	|Keep all elements from a that are in b.
-`\|^`	|arr arr      	|arr-mismatch     	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
+`\|^`	|arr arr      	|arr-xor          	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
+`\|^`	|arr int      	|multi-self-join  	|Generate all arrays of size b using elements from a.
 `\|*`	|arr int      	|repeat-elements  	|Repeat each element n times.
 `\|*`	|arr arr      	|cross-product    	|Cartesian join of arrays, producing a flat array of pairs.
 `\|-`	|arr arr      	|multiset-subtract	|Remove elements in b individually from a, if they're present.

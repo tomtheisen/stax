@@ -19,7 +19,6 @@ using System.Text.RegularExpressions;
  *     while loops continue to next (how?)
  *     hypotenuse type operation
  *     sorted indices by value
- *     n-combinations with replacement (array power?)
  *     trim element(s)
  *     median (? how to average ?)
  *     multiset intersection
@@ -808,9 +807,25 @@ namespace StaxLang {
                                     block.AddDesc("symmetric array difference");
                                     RunMacro("s b-~ s-, +"); 
                                 }
-                                else {
-                                    block.AddDesc("bitwise xor");
-                                    Push(Pop() ^ Pop());
+                                else if (IsInt(Peek())) {
+                                    dynamic b = Pop();
+                                    if (IsArray(Peek())) {
+                                        block.AddDesc("tuples of specified size from array elements");
+                                        List<object> els = Pop();
+
+                                        var result = new List<object> { new List<object>() };
+                                        for (int i = 0; i < b; i++) {
+                                            // omg c# types get out of my way
+                                            result = result
+                                                .SelectMany(r => els.Select(e => ((List<object>)r).Concat(new[] { (object)e }).ToList() as object))
+                                                .ToList();
+                                        }
+                                        Push(result);
+                                    }
+                                    else if (IsInt(Peek())) {
+                                        block.AddDesc("bitwise xor");
+                                        Push(Pop() ^ b);
+                                    }
                                 }
                                 break;
                             case '*':
