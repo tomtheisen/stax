@@ -172,8 +172,8 @@ chars    	|Types      	|Name             	|Description
 `:]`     	|arr arr    	|starts-with      	|String ends with?
 `:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
 `:e`     	|arr        	|excerpts         	|Get all contiguous subarrays.
-`:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 `:R`     	|arr        	|brace-reflect    	|Reflect string, `(\<[{/` becomes `\\}]>)`
+`:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 
 ## Array
 chars	|Types        	|Name             	|Description
@@ -246,6 +246,7 @@ chars	|Types        	|Name             	|Description
 `\|r`	|int int      	|explicit-range   	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range     	|Range [a .. b) with stride of c.
 `\|R`	|arr          	|run-length       	|Encode runs of elements into an array of [element, count] pairs.
+`\|T`	|arr          	|permutations     	|Get all orderings of elements in the array.  Duplicate elements are not considered.
 `\|Z`	|arr          	|rectangularize   	|Rectangularize an array of arrays, using "" for missing elements.
 `:0` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
 `:1` 	|arr          	|truthy-indices   	|Get all indices of truthy elements.

@@ -21,7 +21,7 @@ using System.Text.RegularExpressions;
  *     get indices of maxes
  *     get indices of mins
  *     sorted indices by value
- *     permutations, n-permutations
+ *     n-permutations
  *     n-combinations with replacement
  *     trim element(s)
  *     median (? how to average ?)
@@ -1229,13 +1229,18 @@ namespace StaxLang {
                                 }
                                 break;
                             case 'Q': // float square root
-                                block.AddDesc("square root");
-                                Push(Math.Sqrt(Math.Abs((double)Pop())));
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("square root");
+                                    Push(Math.Sqrt(Math.Abs((double)Pop())));
+                                }
                                 break;
                             case 't': // translate
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "translate using adjacent pairs in map string: " + e);
                                 block.AddDesc("translate; replace using adjacent pairs in map string");
                                 DoTranslate();
+                                break;
+                            case 'T':
+                                DoPermutations(block);
                                 break;
                             case 'x': // decrement X, push
                                 block.AddDesc("decrement x and push");
@@ -1278,6 +1283,26 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoPermutations(Block block) {
+            block.AddDesc("get all permutations");
+
+            List<object> els = Pop();
+            var result = new List<object>();
+
+            // factoradic permutation decoder
+            int fact = 1;
+            for (int i = 1; i <= els.Count; i++) fact *= i;
+            var idxs = new int[els.Count];
+            for (int pi = 0; pi < fact; pi++) {
+                int n = pi;
+                for (int i = 1; i <= els.Count; n /= i++) idxs[els.Count - i] = n % i;
+                for (int i = 0; i < els.Count; i++) for (int j = i + 1; j < els.Count; j++) if (idxs[j] >= idxs[i]) idxs[j]++;
+                result.Add(idxs.Select(i => els[i]).ToList());
+            }
+
+            Push(result);
         }
 
         private void DoPowerset(Block block) {

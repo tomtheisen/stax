@@ -536,3 +536,33 @@ Va "abc" |#
 3
 	stax
 :c
+	name:AllPermutations
+	in
+abbc
+	out
+abbc
+abcb
+abbb
+abcb
+acbb
+acbb
+babb
+bacb
+bbab
+bbca
+bcab
+bcba
+babb
+babb
+bbab
+bbba
+bcab
+bcba
+cabb
+cabb
+cbab
+cbba
+cbab
+cbba
+	stax
+|T m
