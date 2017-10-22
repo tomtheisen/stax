@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     call into trailing }
  *     FeatureTests for generators
- *     string replace first only
  *     while loops continue to next (how?)
  *     hypotenuse type operation
  *     get indices of maxes
@@ -1059,9 +1058,17 @@ namespace StaxLang {
                                 Push(new BigInteger(InputStack.Count));
                                 break;
                             case 'e':
-                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "is " + e + " even?");
-                                else block.AddDesc("is even?");
-                                Push(Pop() % 2 ^ 1);
+                                if (IsInt(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "is " + e + " even?");
+                                    else block.AddDesc("is even?");
+                                    Push(Pop() % 2 ^ 1);
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("string replace - first instance only");
+                                    string to = A2S(Pop()), from = A2S(Pop()), original = A2S(Pop());
+                                    var parts = original.Split(new[] { from }, 2, StringSplitOptions.None);
+                                    Push(S2A(string.Join(to, parts)));
+                                }
                                 break;
                             case 'E':
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "generate array of digits in base " + e);
@@ -1178,7 +1185,7 @@ namespace StaxLang {
                                 Print("");
                                 break;
                             case 'r':
-                                block.AddDesc("explicit range");
+                                block.AddDesc("explicit range"); 
                                 {
                                     dynamic end = Pop(), start = Pop();
                                     if (IsArray(end)) end = new BigInteger(end.Count);

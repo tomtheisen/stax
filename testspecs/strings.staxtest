@@ -364,3 +364,10 @@ hello (<[{/
 \}]>) olleh
 	stax
 :R
+	name:ReplaceFirst
+	in
+"foo bar baz foo bar baz" "bar" "***"
+	out
+foo *** baz foo bar baz
+	stax
+|e

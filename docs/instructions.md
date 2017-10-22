@@ -158,6 +158,7 @@ chars    	|Types      	|Name             	|Description
 `T`      	|arr        	|trim-right       	|Trim whitespace from right of string.
 `\|<`    	|arr        	|left-align       	|left align lines of text, padding to longest line.
 `\|>`    	|arr        	|right-align      	|right align lines of text, padding to longest line.
+`\|e`    	|arr arr arr	|replace-first    	|String replace; first instance only.
 `\|C`    	|arr int    	|center           	|Center string in n characters.
 `\|C`    	|arr        	|center-block     	|Center lines of text, using longest line.
 `\|I`    	|arr arr    	|str-index-all    	|Find all indexes of the substring.
