@@ -74,6 +74,7 @@ namespace StaxLang {
                 ('B', "i", "2|E", "array of binary digit values"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
+                ('c', "a", "{[?k", "get first truthy element"),
                 ('d', "i", "c|a{[%!fsd", "all divisors"),
                 ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
                 ('f', "a", "{+k", "flatten array"),

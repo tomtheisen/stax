@@ -529,3 +529,10 @@ Va "abc" |#
 
 	stax
 |Z HH
+	name:Coalesce
+	in
+[0 0 3 4 0 0]
+	out
+3
+	stax
+:c

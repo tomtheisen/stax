@@ -20,15 +20,12 @@ using System.Text.RegularExpressions;
  *     replace first only
  *     while loops continue to next (how?)
  *     hypotenuse type operation
- *     get first truthy element (coalesce)
  *     get indices of maxes
  *     get indices of mins
  *     sorted indices by value
  *     permutations, n-permutations
  *     n-combinations with replacement
  *     trim element(s)
- *     distinct prime factor count |fu%
- *     all factor count
  *     nth fibonacci element
  *     median (? how to average ?)
  *     multiset intersection
