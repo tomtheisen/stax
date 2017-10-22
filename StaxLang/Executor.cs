@@ -18,8 +18,6 @@ using System.Text.RegularExpressions;
  *     FeatureTests for generators
  *     while loops continue to next (how?)
  *     hypotenuse type operation
- *     get indices of maxes
- *     get indices of mins
  *     sorted indices by value
  *     n-combinations with replacement (array power?)
  *     trim element(s)

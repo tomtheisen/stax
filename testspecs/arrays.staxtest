@@ -584,3 +584,25 @@ cb
 cb
 	stax
 2 |T m
+	name:ExtremaIndices
+	in
+asdfasdfasdf asdf asdf asasdfasdf
+	out
+12
+17
+22
+	stax
+:a m
+	in
+asdfasdfasdf asdf asdf asasdfasdf
+	out
+1
+5
+9
+14
+19
+24
+26
+30
+	stax
+:A m

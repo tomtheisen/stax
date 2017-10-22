@@ -259,6 +259,8 @@ chars	|Types        	|Name             	|Description
 `:)` 	|arr          	|right-rotations  	|All right rotations, starting from original.
 `:^` 	|arr          	|non-descending   	|Is array non-descending? (has no adjacent pair of descending elements)
 `:v` 	|arr          	|non-ascending    	|Is array non-ascending? (has no adjacent pair of ascending elements)
+`:a` 	|arr          	|minima-indices   	|Get indices of array minima.
+`:A` 	|arr          	|maxima-indices   	|Get indices of array maxima.
 `:c` 	|arr          	|coalesce         	|Get first truthy element of array.
 `:f` 	|arr          	|flatten          	|Flatten array of arrays one time.
 `:F` 	|arr          	|falsy-indices    	|Get all indices of falsy elements.
