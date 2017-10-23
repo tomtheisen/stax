@@ -108,6 +108,7 @@ namespace StaxLang {
                 ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
                 ('t', "i", "c|fu{u1-N*F@", "Euler's totient"),
                 ('T', "a", "{!Cim", "get all truthy indices"),
+                ('T', "i", "c^*h", "triangular number (n*(n+1)/2)"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };
 
