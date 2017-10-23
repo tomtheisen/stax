@@ -49,6 +49,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `@`          	|float      	|floor         	|floor(a)           	|Integer floor of float.
 `v`          	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`          	|num        	|inc           	|a + 1              	|Increment by 1.
+`B`          	|frac       	|properize     	|floor(a), a%1      	|Properize fraction.  Push integer floor, and proper remainder separately.
 `e`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
 `e`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
 `E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.
@@ -60,6 +61,8 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `H`          	|float      	|un-halve      	|a * 2              	|Double.
 `H`          	|frac       	|denom         	|denom(a)           	|Get the denominator.
 `j`          	|float int  	|float-round   	|round(a, b)        	|Round float to n decimal places.  Format as string.
+`j`          	|float      	|round         	|round(a)           	|Round to nearest integer.
+`j`          	|frac       	|round         	|round(a)           	|Round to nearest integer.
 `J`          	|num        	|square        	|a ** 2             	|Square number.
 `l`          	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
 `u`          	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.
@@ -90,6 +93,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|b`        	|arr int    	|convert-base  	|                   	|Convert from base, up to 36.
 `\|B`        	|int        	|convert-binary	|                   	|Convert to base 2.
 `\|B`        	|arr        	|convert-binary	|                   	|Convert from base 2.
+`\|C`        	|int int    	|choose        	|choose(a, b)       	|Binomial coefficient - calculate a choose b.
 `\|e`        	|int        	|is-even       	|(a + 1) % 2        	|Is even?
 `\|E`        	|int int    	|digits        	|                   	|Generate array of digit values in base.
 `\|F`        	|int        	|factorial     	|a!                 	|Factorial.

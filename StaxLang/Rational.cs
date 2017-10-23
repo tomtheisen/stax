@@ -33,6 +33,7 @@ namespace StaxLang {
         public static Rational operator +(Rational a, Rational b) => new Rational(a.Num * b.Den + b.Num * a.Den, a.Den * b.Den);
         public static Rational operator /(Rational a, Rational b)=> new Rational(a.Num * b.Den, a.Den * b.Num);
         public static Rational operator *(Rational a, Rational b)=> new Rational(a.Num * b.Num, a.Den * b.Den);
+        public static Rational operator %(Rational a, Rational b) => a - (a / b).Floor() * b;
         public static Rational operator -(Rational a) => a * -1;
         public static bool operator ==(Rational a, Rational b) => a.Equals(b);
         public static bool operator !=(Rational a, Rational b) => !a.Equals(b);
