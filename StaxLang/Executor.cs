@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
- *     hypotenuse type operation
  *     sorted indices by value
  *     trim element(s)
  *     median (? how to average ?)

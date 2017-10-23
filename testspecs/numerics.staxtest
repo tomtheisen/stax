@@ -779,3 +779,10 @@ u
 8
 	stax
 |5
+	name:SquareTwo
+	in
+2 3
+	out
+4 9
+	stax
+:J s p| P
