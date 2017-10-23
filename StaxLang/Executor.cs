@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 // available chars
-//  DG
+//  D
 /* To add:
  *     running "total" / reduce-collect
  *     string literal template instructions  (great honking idea!)
@@ -190,6 +190,10 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
+            int gotoTarget = 0;
+            ParseBlock(block, ref gotoTarget);
+            ++gotoTarget;
+
             var program = block.Contents;
             if (TotalStackSize > 0 && CallStackFrames.Count == 0 && !block.ImplicitEval) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
@@ -472,6 +476,12 @@ namespace StaxLang {
                                 yield return s;
                             }
                             if (shorthand) ip = program.Length;
+                        }
+                        break;
+                    case 'G': // goto
+                        block.AddDesc("goto trailing outer block; return here when done");
+                        foreach (var s in RunSteps(block.SubBlock(gotoTarget))) {
+                            if (!s.Cancel) yield return s;
                         }
                         break;
                     case 'h':
@@ -2960,24 +2970,27 @@ namespace StaxLang {
             return S2A(result);
         }
 
+        // this is pretty ugly with off-by-1
+        // TODO organized rewrite
         private Block ParseBlock(Block block, ref int ip) {
             string contents = block.Contents;
-            int depth = 0;
-            int start = ip + 1;
-            do {
+            int depth = 1;
+            if (ip < contents.Length && contents[ip] == '{') ++ip;
+            int start = ip;
+            while (ip < contents.Length) {
                 if (contents[ip] == '|' || contents[ip] == ':' || contents[ip] == '\'' || contents[ip] == 'V') {
-                    ip++; // 2-char tokens
+                    ip += 2; // 2-char tokens
                     continue;
                 }
 
                 if (contents[ip] == '.') {
-                    ip += 2; // 2-char literal
+                    ip += 3; // 2-char literal
                     continue;
                 }
 
                 if (contents[ip] == '\t') {
-                    ip = contents.IndexOf('\n', ip);
-                    if (ip == -1) {
+                    ip = contents.IndexOf('\n', ip) + 1;
+                    if (ip == 0) {
                         ip = contents.Length;
                         break;
                     }
@@ -2986,11 +2999,13 @@ namespace StaxLang {
 
                 if (contents[ip] == '"') {
                     ParseString(contents, ref ip, out bool implicitEnd);
+                    ip++;
                     continue;
                 }
 
                 if (contents[ip] == '`') {
                     ParseCompressedString(contents, ref ip, out bool implicitEnd);
+                    ip++;
                     continue;
                 }
 
@@ -2999,7 +3014,8 @@ namespace StaxLang {
 
                 // shortcut block terminators
                 if ("wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
-            } while (++ip < contents.Length);
+                ++ip;
+            }
             --ip;
             return block.SubBlock(start);
         }
