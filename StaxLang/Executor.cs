@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
  *     running "total" / reduce-collect
  *     string literal template instructions  (great honking idea!)
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
- *     call into trailing }
  *     FeatureTests for generators
  *     while loops continue to next (how?)
  *     hypotenuse type operation
@@ -43,6 +42,8 @@ namespace StaxLang {
         public TextWriter Output { get; private set; }
         public bool Annotate { get; set; }
         public IReadOnlyList<string> Annotation { get; private set; } = null;
+        private List<Block> GotoTargets = new List<Block>();
+        private int GotoCallDepth = 0;
 
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
             ['?'] = (S2A(VersionInfo), "version info"),
@@ -126,6 +127,12 @@ namespace StaxLang {
         }
 
         private void Initialize(Block programBlock, string[] input) {
+            int gotoTarget = 0;
+            while (gotoTarget < program.Length) {
+                ParseBlock(block, ref gotoTarget, false);
+                GotoTargets.Add(block.SubBlock(++gotoTarget));
+            }
+
             input = input ?? Array.Empty<string>();
 
             IndexOuter = Index = 0;
@@ -190,10 +197,6 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> RunSteps(Block block) {
-            int gotoTarget = 0;
-            ParseBlock(block, ref gotoTarget);
-            ++gotoTarget;
-
             var program = block.Contents;
             if (TotalStackSize > 0 && CallStackFrames.Count == 0 && !block.ImplicitEval) switch (program.FirstOrDefault()) {
                 case 'm': // line-map
@@ -480,9 +483,11 @@ namespace StaxLang {
                         break;
                     case 'G': // goto
                         block.AddDesc("goto trailing outer block; return here when done");
-                        foreach (var s in RunSteps(block.SubBlock(gotoTarget))) {
+                        ++GotoCallDepth;
+                        foreach (var s in RunSteps(GotoTargets[GotoCallDepth - 1])) {
                             if (!s.Cancel) yield return s;
                         }
+                        GotoCallDepth--;
                         break;
                     case 'h':
                         if (IsInt(Peek())) {
@@ -2972,7 +2977,7 @@ namespace StaxLang {
 
         // this is pretty ugly with off-by-1
         // TODO organized rewrite
-        private Block ParseBlock(Block block, ref int ip) {
+        private Block ParseBlock(Block block, ref int ip, bool stopAtImplicitTerminators = true) {
             string contents = block.Contents;
             int depth = 1;
             if (ip < contents.Length && contents[ip] == '{') ++ip;
@@ -3013,7 +3018,7 @@ namespace StaxLang {
                 if (contents[ip] == '}' && --depth == 0) return block.SubBlock(start, ip);
 
                 // shortcut block terminators
-                if ("wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
+                if (stopAtImplicitTerminators && "wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
                 ++ip;
             }
             --ip;

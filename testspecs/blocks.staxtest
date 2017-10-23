@@ -164,3 +164,11 @@ Hello, world!
 6
 	stax
 {40<}I
+	name:Goto
+	in
+	out
+gosub 1
+out
+gosub 2
+	stax
+G "out"P G } "gosub "p |XP

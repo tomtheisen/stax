@@ -294,6 +294,7 @@ chars	|Types        	|Name           	|Description
 `F`  	|arr          	|foreach-short  	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
 `F`  	|int          	|for-short      	|Perform `foreach-short` using the range [1 .. n].
 `g`  	|             	|generator      	|Generate values.  See `generators` for details.
+`G`  	|             	|goto           	|Jump to an unmatched trailing `}` at the end of the program.  Come back when finished.
 `i`  	|             	|index          	|Get the current 0-based iteration index of the inner loop.
 `\|i`	|             	|outer-index    	|Get the 0-based iteration index of the outer loop.
 `I`  	|arr block    	|index-of-block 	|Get the index of the first element that yields a truthy value from the block. Does not terminate a block.
