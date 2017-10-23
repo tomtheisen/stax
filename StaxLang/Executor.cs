@@ -128,9 +128,9 @@ namespace StaxLang {
 
         private void Initialize(Block programBlock, string[] input) {
             int gotoTarget = 0;
-            while (gotoTarget < program.Length) {
-                ParseBlock(block, ref gotoTarget, false);
-                GotoTargets.Add(block.SubBlock(++gotoTarget));
+            while (gotoTarget < programBlock.Contents.Length) {
+                ParseBlock(programBlock, ref gotoTarget, false);
+                GotoTargets.Add(programBlock.SubBlock(++gotoTarget));
             }
 
             input = input ?? Array.Empty<string>();
