@@ -287,10 +287,9 @@ namespace StaxLang {
                         type = InstructionType.Block;
                         Push(ParseBlock(block, ref ip));
                         break;
-                    case '}': 
-                        block.AddDesc("start over");
-                        ip = -1;
-                        break;
+                    case '}':
+                        block.AddDesc("end");
+                        yield break;
                     case '!': 
                         if (block.LastInstrType == InstructionType.Comparison) block.AmendDesc(e => "not " + e);
                         else block.AddDesc("not");

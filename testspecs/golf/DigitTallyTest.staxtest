@@ -12,20 +12,12 @@ dAr{$ys/%v$mP
 1042201211
 1242100130
 	stax
-XdAr{$xs/%v$mP}
-	stax
-Ar{$[/%v$mPd}
-	stax
-Ar{$[/%v$pF|Pd}
-	stax
-Ar{$[/%vpF|Pd}
-	stax
-Ar{$;s/%v$mP,}
-	stax
+WXdAr{$xs/%v$mP
+WAr{$[/%v$mPd
+WAr{$[/%v$pF|Pd
+WAr{$[/%vpF|Pd
+WAr{$;s/%v$mP,
 mAr{$[/%v$m
-	stax
-Ar{$;s#$mP,}
-	stax
-Vd{;s#$mP,}
-	stax
+WAr{$;s#$mP,
+WVd{;s#$mP,
 mVd{[#$m
