@@ -627,3 +627,17 @@ bba
 bbb
 	stax
 3 |^ m
+	name:MultisetIntersection
+	in
+[1 2 3 4 1 2 3 4] [2 3 3 4 4 4]
+	out
+2 3 4 3 4
+	stax
+|b J
+	name:MultisetUnion
+	in
+[1 2 3 4 1 2 3 4] [2 3 3 4 4 4]
+	out
+1 2 3 4 1 2 3 4 4
+	stax
+|L J

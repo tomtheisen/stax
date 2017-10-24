@@ -18,9 +18,7 @@ using System.Text.RegularExpressions;
  *     sorted indices by value
  *     trim element(s)
  *     median (? how to average ?)
- *     multiset intersection
  *     multiset xor
- *     multiset union
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
  *     hasupper VA |&
  *     haslower Va |&
@@ -1070,10 +1068,26 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 break;
-                            case 'b': 
-                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert to base " + e);
-                                else block.AddDesc("convert base");
-                                DoBaseConvert();
+                            case 'b':
+                                if (IsInt(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert to base " + e);
+                                    else block.AddDesc("convert base");
+                                    DoBaseConvert();
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("keep the elements of a, no more than than their occurrences in b");
+                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    foreach (var e in a) {
+                                        for (int i = 0; i < b.Count; i++) {
+                                            if (AreEqual(b[i], e)) {
+                                                result.Add(e);
+                                                b.RemoveAt(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case 'B': 
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in binary");
@@ -1166,11 +1180,26 @@ namespace StaxLang {
                                 else throw new StaxException("Bad type for lcm");
                                 break;
                             case 'L': 
-                                {
+                                if (IsNumber(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "log base " + e);
                                     else block.AddDesc("log with base");
                                     double b = (double)Pop(), a = (double)Pop();
                                     Push(Math.Log(a, b));
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("combine elements from a and b, with each occurring the max of its occurrences from a and b");
+                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    foreach (var e in a) {
+                                        result.Add(e);
+                                        for (int i = 0; i < b.Count; i++) {
+                                            if (AreEqual(b[i], e)) {
+                                                b.RemoveAt(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    result.AddRange(b);
+                                    Push(result);
                                 }
                                 break;
                             case 'm':
