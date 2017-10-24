@@ -133,7 +133,7 @@ namespace StaxLang {
         private void Initialize(Block programBlock, string[] input) {
             int gotoTarget = 0;
             while (gotoTarget < programBlock.Contents.Length) {
-                ParseBlock(programBlock, ref gotoTarget, false);
+                ParseBlock(programBlock, ref gotoTarget, true);
                 GotoTargets.Add(programBlock.SubBlock(++gotoTarget));
             }
 
@@ -265,8 +265,8 @@ namespace StaxLang {
                             Push(ParseString(program, true, ref ip, out bool implicitEnd));
                             type = InstructionType.Value;
                             if (implicitEnd) {
-                                Print(Peek(), newline: false);
                                 block.AddDesc("print unclosed literal");
+                                Print(Peek(), newline: false);
                             }
                             else block.AddDesc("literal");
                         }
@@ -296,7 +296,8 @@ namespace StaxLang {
                     case '{': 
                         block.AddDesc("code block");
                         type = InstructionType.Block;
-                        Push(ParseBlock(block, ref ip));
+                        ++ip;
+                        Push(ParseBlock(block, ref ip, false));
                         break;
                     case '}':
                         block.AddDesc("end");
@@ -3004,6 +3005,17 @@ namespace StaxLang {
             return S2A(decompressed);
         }
 
+        /// <summary>
+        /// parse a string literal
+        /// </summary>
+        /// <param name="program"></param>
+        /// <param name="doTemplates"></param>
+        /// <param name="ip">
+        /// input: index of first character in interior of literal
+        /// output: index of closing quote or last character of string
+        /// </param>
+        /// <param name="implicitEnd"></param>
+        /// <returns></returns>
         private List<object> ParseString(string program, bool doTemplates, ref int ip, out bool implicitEnd) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
@@ -3025,12 +3037,6 @@ namespace StaxLang {
                         case '"':
                             result += program[ip];
                             break;
-                        case '1':
-                            if (doTemplates) {
-                                if (IsArray(Peek())) result += A2S(Pop());
-                                else result += A2S(ToString(Pop()));
-                            }
-                            break;
                         default:
                             if (doTemplates) {
                                 RunMacro(program[ip] + "");
@@ -3048,42 +3054,44 @@ namespace StaxLang {
             return S2A(result);
         }
 
-        // this is pretty ugly with off-by-1
-        // TODO organized rewrite
-        private Block ParseBlock(Block block, ref int ip, bool stopAtImplicitTerminators = true) {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="ip">
+        /// input: index of first character in block interior
+        /// output: index of } for those blocks, otherwise index of last character in block interior
+        /// </param>
+        /// <param name="entireProgram"></param>
+        /// <returns></returns>
+        private Block ParseBlock(Block block, ref int ip, bool entireProgram) {
             string contents = block.Contents;
-            int depth = 1;
-            if (ip < contents.Length && contents[ip] == '{') ++ip;
-            int start = ip;
-            while (ip < contents.Length) {
+            int depth = 1, start = ip;
+
+            for(; ip < contents.Length; ip++) {
                 if (contents[ip] == '|' || contents[ip] == ':' || contents[ip] == '\'' || contents[ip] == 'V') {
-                    ip += 2; // 2-char tokens
+                    ip++; // 2-char tokens
                     continue;
                 }
 
                 if (contents[ip] == '.') {
-                    ip += 3; // 2-char literal
+                    ip += 2; // 2-char literal
                     continue;
                 }
 
                 if (contents[ip] == '\t') {
-                    ip = contents.IndexOf('\n', ip) + 1;
-                    if (ip == 0) {
-                        ip = contents.Length;
-                        break;
-                    }
+                    ip = contents.IndexOf('\n', ip);
+                    if (ip < 0) break;
                     continue;
                 }
 
                 if (contents[ip] == '"') {
                     ParseString(contents, false, ref ip, out bool implicitEnd);
-                    ip++;
                     continue;
                 }
 
                 if (contents[ip] == '`') {
                     ParseCompressedString(contents, ref ip, out bool implicitEnd);
-                    ip++;
                     continue;
                 }
 
@@ -3091,10 +3099,11 @@ namespace StaxLang {
                 if (contents[ip] == '}' && --depth == 0) return block.SubBlock(start, ip);
 
                 // shortcut block terminators
-                if (stopAtImplicitTerminators && "wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
-                ++ip;
+                if (depth > 1 || !entireProgram) {
+                    if ("wWmfFkKgo".Contains(contents[ip]) && --depth == 0) return block.SubBlock(start, ip--);
+                }
             }
-            --ip;
+            ip = contents.Length - 1;
             return block.SubBlock(start);
         }
 
