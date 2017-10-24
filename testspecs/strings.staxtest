@@ -378,3 +378,10 @@ That wo thecom I hannexambdateade offxPa
 19 35
 	stax
 "(.)\1" |q J
+	name:StringTemplates
+	in
+5 6 "bill"
+	out
+Hello, bill.  It's -6 of one, and 6 of the other.
+	stax
+"Hello, `1.  It's `N of one, and `^ of the other.

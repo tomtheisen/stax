@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     running "total" / reduce-collect
- *     string literal template instructions  (great honking idea!)
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
@@ -265,7 +264,7 @@ namespace StaxLang {
                         break;
                     case '"': 
                         {
-                            Push(ParseString(program, ref ip, out bool implicitEnd));
+                            Push(ParseString(program, true, ref ip, out bool implicitEnd));
                             type = InstructionType.Value;
                             if (implicitEnd) {
                                 Print(Peek());
@@ -2976,7 +2975,7 @@ namespace StaxLang {
             return S2A(decompressed);
         }
 
-        private List<object> ParseString(string program, ref int ip, out bool implicitEnd) {
+        private List<object> ParseString(string program, bool doTemplates, ref int ip, out bool implicitEnd) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
                 if (program[ip] == '`') {
@@ -2987,17 +2986,28 @@ namespace StaxLang {
                         case 't':
                             result += '\t';
                             break;
-                        case 'v':
-                            result += '\v';
-                            break;
                         case 'r':
                             result += '\r';
                             break;
                         case '0':
                             result += '\0';
                             break;
-                        default:
+                        case '`':
+                        case '"':
                             result += program[ip];
+                            break;
+                        case '1':
+                            if (doTemplates) {
+                                if (IsArray(Peek())) result += A2S(Pop());
+                                else result += A2S(ToString(Pop()));
+                            }
+                            break;
+                        default:
+                            if (doTemplates) {
+                                RunMacro(program[ip] + "");
+                                if (IsArray(Peek())) result += A2S(Pop());
+                                else result += A2S(ToString(Pop()));
+                            }
                             break;
                     }
                 }
@@ -3037,7 +3047,7 @@ namespace StaxLang {
                 }
 
                 if (contents[ip] == '"') {
-                    ParseString(contents, ref ip, out bool implicitEnd);
+                    ParseString(contents, false, ref ip, out bool implicitEnd);
                     ip++;
                     continue;
                 }
