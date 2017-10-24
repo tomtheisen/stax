@@ -265,7 +265,7 @@ namespace StaxLang {
                             Push(ParseString(program, true, ref ip, out bool implicitEnd));
                             type = InstructionType.Value;
                             if (implicitEnd) {
-                                Print(Peek());
+                                Print(Peek(), newline: false);
                                 block.AddDesc("print unclosed literal");
                             }
                             else block.AddDesc("literal");
@@ -491,8 +491,7 @@ namespace StaxLang {
                         break;
                     case 'G': // goto
                         block.AddDesc("goto trailing outer block; return here when done");
-                        ++GotoCallDepth;
-                        foreach (var s in RunSteps(GotoTargets[GotoCallDepth - 1])) {
+                        foreach (var s in RunSteps(GotoTargets[GotoCallDepth++])) {
                             if (!s.Cancel) yield return s;
                         }
                         GotoCallDepth--;
@@ -1097,6 +1096,7 @@ namespace StaxLang {
                             case 'c':
                                 block.AddDesc("contend; assert top of stack is truthy, don't pop");
                                 if (!IsTruthy(Peek())) {
+                                    Pop();
                                     yield return ExecutionState.CancelState;
                                     yield break;
                                 }
