@@ -22,6 +22,7 @@ namespace StaxLang.UI {
                 var runner = new Executor(output) { Annotate = annotate };
                 var timeout = TimeoutMenuItem.Checked ? TimeSpan.FromSeconds(10) : default(TimeSpan?);
                 int steps = runner.Run(program, input, timeout);
+                sw.Stop();
                 StepCountLabel.Text = $"{steps} steps.";
                 OutputTextbox.Text = output.ToString();
                 if (annotate) {

@@ -39,7 +39,7 @@ namespace StaxLang {
         public TextWriter Output { get; private set; }
         public bool Annotate { get; set; }
         public IReadOnlyList<string> Annotation { get; private set; } = null;
-        private List<Block> GotoTargets = new List<Block>();
+        private List<Block> GotoTargets;
         private int GotoCallDepth = 0;
 
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
@@ -132,10 +132,13 @@ namespace StaxLang {
 
         private void Initialize(Block programBlock, string[] input) {
             int gotoTarget = 0;
-            while (gotoTarget < programBlock.Contents.Length) {
+            GotoTargets = new List<Block> { programBlock };
+            do {
                 ParseBlock(programBlock, ref gotoTarget, true);
-                GotoTargets.Add(programBlock.SubBlock(++gotoTarget));
-            }
+                if (++gotoTarget < programBlock.Contents.Length) {
+                    GotoTargets.Add(programBlock.SubBlock(gotoTarget));
+                }
+            } while (gotoTarget < programBlock.Contents.Length);
 
             input = input ?? Array.Empty<string>();
 
@@ -266,7 +269,7 @@ namespace StaxLang {
                             type = InstructionType.Value;
                             if (implicitEnd) {
                                 block.AddDesc("print unclosed literal");
-                                Print(Peek(), newline: false);
+                                Print(Pop(), newline: false);
                             }
                             else block.AddDesc("literal");
                         }
@@ -491,11 +494,15 @@ namespace StaxLang {
                         }
                         break;
                     case 'G': // goto
-                        block.AddDesc("goto trailing outer block; return here when done");
-                        foreach (var s in RunSteps(GotoTargets[GotoCallDepth++])) {
-                            if (!s.Cancel) yield return s;
+                        { 
+                            block.AddDesc("goto trailing outer block; return here when done");
+                            var target = GotoTargets[Math.Min(++GotoCallDepth, GotoTargets.Count - 1)];
+                            foreach (var s in RunSteps(target)) {
+                                if (s.Cancel) break;
+                                else yield return s;
+                            }
+                            GotoCallDepth--;
                         }
-                        GotoCallDepth--;
                         break;
                     case 'h':
                         if (IsInt(Peek())) {
