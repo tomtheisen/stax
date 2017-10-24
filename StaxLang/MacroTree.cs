@@ -85,6 +85,15 @@ namespace StaxLang {
                 ('F', "a", "{Cim", "get all falsy indices"),
                 ('I', "aa", "{[Imsd", "get indexes of all"),
                 ('J', "a", "c%|Qe~;J(,/", "squarify"),
+                ('J', "ii", "JsJs", "square top 2 stack elements"),
+                ('J', "ir", "JsJs", "square top 2 stack elements"),
+                ('J', "if", "JsJs", "square top 2 stack elements"),
+                ('J', "ri", "JsJs", "square top 2 stack elements"),
+                ('J', "rr", "JsJs", "square top 2 stack elements"),
+                ('J', "rf", "JsJs", "square top 2 stack elements"),
+                ('J', "fi", "JsJs", "square top 2 stack elements"),
+                ('J', "fr", "JsJs", "square top 2 stack elements"),
+                ('J', "ff", "JsJs", "square top 2 stack elements"),
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror"),
@@ -99,6 +108,7 @@ namespace StaxLang {
                 ('t', "aa", "2|*|(|t", "map to next element of specified ring"),
                 ('t', "i", "c|fu{u1-N*F@", "Euler's totient"),
                 ('T', "a", "{!Cim", "get all truthy indices"),
+                ('T', "i", "c^*h", "triangular number (n*(n+1)/2)"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
             };
 

@@ -116,6 +116,18 @@
 3
 	stax
 11 4%
+	in
+11/4
+	out
+3/4
+	stax
+1%
+	in
+11.4
+	out
+1.4
+	stax
+2%
 	name:DivMod
 	in
 	out
@@ -779,3 +791,55 @@ u
 8
 	stax
 |5
+	name:SquareTwo
+	in
+2 3
+	out
+4 9
+	stax
+:J s p| P
+	name:Triangular
+	in
+10
+	out
+55
+	stax
+:T
+	name:ProperizeFraction
+	in
+11/4
+	out
+2 3/4
+	stax
+B \J
+	name:Round
+	in
+1.4 1.5 1.6 5/4 6/4 7/4
+	out
+1
+2
+2
+1
+2
+2
+	stax
+Lr mj
+	name:Choose
+	in
+10 8
+	out
+45
+	in
+10 9
+	out
+10
+	in
+10 10
+	out
+1
+	in
+10 11
+	out
+0
+	stax
+|C

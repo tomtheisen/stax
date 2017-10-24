@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
- *     hypotenuse type operation
  *     sorted indices by value
  *     trim element(s)
  *     median (? how to average ?)
@@ -418,6 +417,10 @@ namespace StaxLang {
                             block.AddDesc("uncons; remove first element from array and push both");
                             RunMacro("c1tsh"); 
                         }
+                        else if (IsFrac(Peek())) {
+                            block.AddDesc("properize fraction; push integer floor and remainder of fraction separately");
+                            RunMacro("c@s1%");
+                        }
                         else throw new StaxException("Bad type for B");
                         break;
                     case 'c': 
@@ -536,9 +539,15 @@ namespace StaxLang {
                             RunMacro("' /");
                         }
                         else if (IsInt(Peek())) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "string format rounded to " + e + " decimal places");
+                            else block.AddDesc("string format rounded to n decimal places");
                             BigInteger digits = Pop();
                             double num = Pop();
                             Push(S2A(Math.Round(num, (int)digits).ToString()));
+                        }
+                        else if (IsFrac(Peek()) || IsFloat(Peek())) {
+                            block.AddDesc("round to nearest integer");
+                            RunMacro("2u+@");
                         }
                         break;
                     case 'J':
@@ -1438,14 +1447,27 @@ namespace StaxLang {
         private void DoCenter(Block block) {
             dynamic top = Pop();
             if (IsInt(top)) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "center in " + e + " spaces");
-                else block.AddDesc("center string in n spaces");
-                int size = (int)top;
-                var str = Pop();
-                var result = new List<object>(Enumerable.Repeat(BigInteger.Zero as object, (size - str.Count) / 2));
-                result.AddRange(str);
-                result.AddRange(Enumerable.Repeat(BigInteger.Zero as object, size - result.Count));
-                Push(result);
+                if (IsArray(Peek())) {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "center in " + e + " spaces");
+                    else block.AddDesc("center string in n spaces");
+                    int size = (int)top;
+                    var str = Pop();
+                    var result = new List<object>(Enumerable.Repeat(BigInteger.Zero as object, (size - str.Count) / 2));
+                    result.AddRange(str);
+                    result.AddRange(Enumerable.Repeat(BigInteger.Zero as object, size - result.Count));
+                    Push(result);
+                }
+                else if (IsInt(Peek())) {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "choose " + e);
+                    else block.AddDesc("binomial coefficient");
+                    BigInteger r = top, n = Pop(), result = 1;
+                    if (n < 0 || r > n) result = 0;
+                    for (int i = 0; i < r; i++) {
+                        result *= n - i;
+                        result /= i + 1;
+                    }
+                    Push(result);
+                }
             }
             else if (IsArray(top)) {
                 block.AddDesc("center lines");
@@ -2718,7 +2740,11 @@ namespace StaxLang {
                     a = (double)a;
                     b = (double)b;
                 }
-                BigInteger result = a % b;
+                if (IsFrac(a) || IsFrac(b)) {
+                    a = (Rational)a;
+                    b = (Rational)b;
+                }
+                var result = a % b;
                 if (result < 0) result += b;
                 Push(result);
             }
@@ -2766,7 +2792,7 @@ namespace StaxLang {
                 string joiner = A2S(b);
                 foreach (var e in a) {
                     if (result != "") result += joiner;
-                    result += IsInt(e) ? e : A2S(e);
+                    result += IsArray(e) ? A2S(e): e;
                 }
                 Push(S2A(result));
                 yield break;
