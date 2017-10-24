@@ -115,6 +115,13 @@ namespace StaxLang {
                     if (sw.Elapsed > timeout) throw new StaxException("program is running too long");
                     ++step;
                 }
+                while (TotalStackSize > 0 && IsBlock(Peek())) {
+                    foreach (var s in RunSteps(Pop())) {
+                        if (s.Cancel) break;
+                        if (sw.Elapsed > timeout) throw new StaxException("program is running too long");
+                        ++step;
+                    }
+                }
             }
             catch (InvalidOperationException) { }
             if (!OutputWritten) {
