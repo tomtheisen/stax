@@ -39,22 +39,37 @@ Hel
 "Hello" 3(
 	name:PadRight
 	in
+Hello
 	out
 Hello   
 	stax
-"Hello" 8(
+8(
+	in
+"xxx" "yyyyy"
+	out
+xxxyy
+	stax
+(
 	name:TruncateLeft
 	in
+Hello
 	out
 llo
 	stax
-"Hello" 3)
+3)
 	name:PadLeft
 	in
+Hello
 	out
    Hello
 	stax
-"Hello" 8)
+8)
+	in
+"xxx" "yyyyy"
+	out
+yyxxx
+	stax
+)
 	name:FindIndex
 	in
 	out

@@ -553,8 +553,8 @@ namespace StaxLang {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "string format rounded to " + e + " decimal places");
                             else block.AddDesc("string format rounded to n decimal places");
                             BigInteger digits = Pop();
-                            double num = Pop();
-                            Push(S2A(Math.Round(num, (int)digits).ToString()));
+                            double num = (double)Pop();
+                            Push(S2A(num.ToString($"F{digits}")));
                         }
                         else if (IsFrac(Peek()) || IsFloat(Peek())) {
                             block.AddDesc("round to nearest integer");
@@ -2273,6 +2273,15 @@ namespace StaxLang {
                 if (a.Count > b) a.RemoveRange(0, a.Count - (int)b);
                 Push(a);
             }
+            else if (IsArray(a) && IsArray(b)) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "right-align string inside " + e);
+                else block.AddDesc("right-align string inside string");
+                var result = new List<object>();
+                for (int i = 0; i < b.Count; i++) {
+                    result.Add(a.Count - b.Count + i >= 0 ? a[a.Count - b.Count + i] : b[i]);
+                }
+                Push(result);
+            }
             else {
                 throw new StaxException("bad types for padleft");
             }
@@ -2292,6 +2301,15 @@ namespace StaxLang {
                 if (a.Count < b) a.AddRange(Enumerable.Repeat(BigInteger.Zero as object, (int)b - a.Count));
                 if (a.Count > b) a.RemoveRange((int)b, a.Count - (int)b);
                 Push(a);
+            }
+            else if (IsArray(a) && IsArray(b)) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "left-align string inside " + e);
+                else block.AddDesc("left-align string inside string");
+                var result = new List<object>();
+                for (int i = 0; i < b.Count; i++) {
+                    result.Add(i < a.Count ? a[i] : b[i]);
+                }
+                Push(result);
             }
             else {
                 throw new StaxException("bad types for padright");
@@ -2582,13 +2600,14 @@ namespace StaxLang {
 
                     try {
                         foreach (var s in RunSteps(map)) {
-                            if (s.Cancel) continue;
+                            if (s.Cancel) goto Cancel;
                             yield return s;
                         }
                     }
                     finally { ++Index; }
 
                     row.Add(Pop());
+                    Cancel:;
                 }
                 PopStackFrame();
                 ++Index;
@@ -2770,7 +2789,8 @@ namespace StaxLang {
         private void DoPercent(Block block) {
             var b = Pop();
             if (IsArray(b)) {
-                block.AddDesc("array length");
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "length of " + e);
+                else block.AddDesc("array length");
                 Push((BigInteger)b.Count);
                 return;
             }

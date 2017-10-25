@@ -445,6 +445,12 @@ ff
 123.46
 	stax
 2 j
+	in
+123.0
+	out
+123.00
+	stax
+2 j
 	name:BitwiseAnd
 	in
 	out

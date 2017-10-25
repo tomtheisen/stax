@@ -154,6 +154,8 @@ chars    	|Types      	|Name             	|Description
 `*`      	|arr arr    	|join             	|Join array of strings with delimiter.
 `$`      	|num        	|tostring         	|Convert number to string.
 `$`      	|arr        	|arr-tostring     	|Convert each element to string, and concat.
+`(`      	|arr arr    	|begin-with       	|Overwrite the end of b with a.
+`)`      	|arr arr    	|end-with         	|Overwrite the beginning of b with a.
 `v`      	|arr        	|lower            	|To lower case.
 `^`      	|arr        	|upper            	|To upper case.
 `I`      	|arr arr    	|substring-index  	|Get the index of the first occurrence of the substring.
