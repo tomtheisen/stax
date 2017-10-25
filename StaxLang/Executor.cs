@@ -52,21 +52,24 @@ namespace StaxLang {
             ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
             ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
             ['d'] = (S2A("0123456789"), "decimal digits"),
+            ['e'] = (Math.E, "natural log base"),
             ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
             ['h'] = (S2A("0123456789abcdef"), "lowercase hex digits"),
             ['k'] = (new BigInteger(1000), "one thousand"),
             ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
             ['L'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all alphanumerics"),
             ['M'] = (new BigInteger(1000000), "one million"),
+            ['n'] = (S2A("\n"), "newline"),  // also just A]
             ['p'] = (S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"), "all printable ascii characters"),
             ['P'] = (Math.PI, "pi"),
+            ['q'] = (Math.PI / 2, "pi/2"),
+            ['s'] = (S2A(" \t\r\n\v"), "all ascii whitespace"),
+            ['t'] = (Math.PI * 2, "tau (2pi)"),
             ['T'] = (10.0, "10.0"),
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),
             ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
             ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
-            ['s'] = (S2A(" \t\r\n\v"), "all ascii whitespace"),
-            ['n'] = (S2A("\n"), "newline"),  // also just A]
         };
 
         private BigInteger Index; // loop iteration
@@ -505,7 +508,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'h':
-                        if (IsInt(Peek())) {
+                        if (IsInt(Peek()) || IsFloat(Peek())) {
                             block.AddDesc("half");
                             RunMacro("2/"); 
                         }
@@ -519,7 +522,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'H':
-                        if (IsInt(Peek())) {
+                        if (IsInt(Peek()) || IsFloat(Peek())) {
                             block.AddDesc("un-half (double)");
                             Push(Pop() * 2);
                         }

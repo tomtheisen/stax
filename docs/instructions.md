@@ -357,11 +357,14 @@ chars	|Value
 `VC` 	|"BCDFGHJKLMNPQRSTVWXYZ"
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
+`Ve` 	|"natural log base"
 `Vk` 	|1000
 `Vl` 	|"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VM` 	|1000000
 `VP` 	|pi
+`Vq` 	|pi/2
+`Vt` 	|tau (2pi)
 `VT` 	|10.0
 `VV` 	|AEIOU
 `Vv` 	|aeiou
