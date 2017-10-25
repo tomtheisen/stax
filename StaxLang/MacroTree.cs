@@ -40,6 +40,9 @@ namespace StaxLang {
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
             var macros = new(char alias, string types, string code, string desc)[] {
+                ('#', "i", "1!*", "floatify"),
+                ('#', "f", "1!*", "floatify"),
+                ('#', "r", "", "floatify"),
                 ('0', "a", "{Cim", "get indices of falsy elements"),
                 ('1', "a", "{!Cim", "get indices of truthy elements"),
                 ('1', "i", "2|E1#", "popcount; number of 1s in binary representation"),
@@ -78,6 +81,7 @@ namespace StaxLang {
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('c', "a", "{[?k", "get first truthy element"),
                 ('d', "i", "c|a{[%!fsd", "all divisors"),
+                ('d', "a", "oc%vh~;t,Tc|+s%u*", "median"),
                 ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
                 ('f', "a", "{+k", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),

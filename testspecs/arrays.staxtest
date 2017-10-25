@@ -641,3 +641,17 @@ bbb
 1 2 3 4 1 2 3 4 4
 	stax
 |L J
+	name:MultisetXor
+	in
+[1 2 3 4 1 2 3 4] [2 3 3 4 4 4]
+	out
+1 1 2 4
+	stax
+|n J
+	name:Median
+	in
+[1 2 3 4 1 2 3 4]
+	out
+5/2
+	stax
+:d

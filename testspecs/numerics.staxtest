@@ -849,3 +849,10 @@ Lr mj
 0
 	stax
 |C
+	name:Floatify
+	in
+3/2
+	out
+1.5
+	stax
+:#

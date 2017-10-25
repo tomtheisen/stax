@@ -108,6 +108,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
+`:#`         	|num        	|floatify      	|float(a)           	|Convert to float.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
 `:+`         	|num        	|sign          	|sign(a)            	|Sign; 1 for positive, -1 for negative.
@@ -253,6 +254,7 @@ chars	|Types        	|Name              	|Description
 `\|L`	|arr arr      	|multiset-union    	|Combine elements from a and b, with each occurring the max of its occurrences from a and b.
 `\|m`	|arr          	|min               	|Minimum value in array.
 `\|M`	|arr          	|max               	|Maximum value in array.
+`\|n`	|arr arr      	|multiset-xor      	|Combine elements from a and b, removing common elements only as many times as they mutually occur.
 `\|p`	|arr          	|palindromize      	|a + reversed(a[:-1]).  Always has an odd length.
 `\|r`	|int int      	|explicit-range    	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range      	|Range [a .. b) with stride of c.
@@ -273,6 +275,7 @@ chars	|Types        	|Name              	|Description
 `:a` 	|arr          	|minima-indices    	|Get indices of array minima.
 `:A` 	|arr          	|maxima-indices    	|Get indices of array maxima.
 `:c` 	|arr          	|coalesce          	|Get first truthy element of array.
+`:d` 	|arr          	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:f` 	|arr          	|flatten           	|Flatten array of arrays one time.
 `:F` 	|arr          	|falsy-indices     	|Get all indices of falsy elements.
 `:I` 	|arr arr      	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
@@ -358,6 +361,8 @@ chars	|Value
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
 `Ve` 	|"natural log base"
+`Vi` 	|"negative infinity"
+`VI` 	|"positive infinity"
 `Vk` 	|1000
 `Vl` 	|"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

@@ -17,8 +17,6 @@ using System.Text.RegularExpressions;
  *     while loops continue to next (how?)
  *     sorted indices by value
  *     trim element(s)
- *     median (? how to average ?)
- *     multiset xor
  *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
  *     hasupper VA |&
  *     haslower Va |&
@@ -26,7 +24,6 @@ using System.Text.RegularExpressions;
  *     next lexicographic permutation
  *     ascii art grid line modes (?)
  *     grid align lists of lists of lists
- *     floatify
  *     
  *     debugger
  */
@@ -55,6 +52,8 @@ namespace StaxLang {
             ['e'] = (Math.E, "natural log base"),
             ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
             ['h'] = (S2A("0123456789abcdef"), "lowercase hex digits"),
+            ['i'] = (double.PositiveInfinity, "negative infinity"),
+            ['I'] = (double.PositiveInfinity, "positive infinity"),
             ['k'] = (new BigInteger(1000), "one thousand"),
             ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
             ['L'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all alphanumerics"),
@@ -1234,7 +1233,7 @@ namespace StaxLang {
                                 else throw new StaxException("Bad types for max");
                                 break;
                             case 'n': 
-                                {
+                                if (IsInt(Peek())) {
                                     block.AddDesc("exponenets of sequential primes in factorization");
                                     BigInteger target = BigInteger.Abs(Pop());
                                     
@@ -1248,6 +1247,23 @@ namespace StaxLang {
                                         }
                                         result.Add(exp);
                                     }
+                                    Push(result);
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("combine elements from a and b, removing common elements only as many times as they mutually occur");
+                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    foreach (var e in a) {
+                                        bool found = false;
+                                        for (int i = 0; i < b.Count; i++) {
+                                            if (AreEqual(b[i], e)) {
+                                                found = true;
+                                                b.RemoveAt(i);
+                                                break;
+                                            }
+                                        }
+                                        if (!found) result.Add(e);
+                                    }
+                                    result.AddRange(b);
                                     Push(result);
                                 }
                                 break;
