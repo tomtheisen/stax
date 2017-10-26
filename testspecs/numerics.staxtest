@@ -110,6 +110,10 @@
 4
 	stax
 14 3/
+	out
+∞
+	stax
+14 0/
 	name:Modulus
 	in
 	out
@@ -182,6 +186,14 @@
 81
 	stax
 3 4|*
+	out
+1/81
+	stax
+3 4N|*
+	out
+2.25
+	stax
+1!5 2|*
 	name:PowerOfTen
 	in
 	out

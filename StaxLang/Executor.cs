@@ -867,11 +867,12 @@ namespace StaxLang {
                                 break;
                             case '*':
                                 if (IsInt(Peek())) { 
-                                    dynamic b = Pop();
+                                    BigInteger b = Pop();
                                     if (IsInt(Peek())) { 
                                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "to the " + e + " power");
                                         else block.AddDesc("exponent");
-                                        Push(BigInteger.Pow(Pop(), (int)b));
+                                        if (b < 0) Push(new Rational(1, BigInteger.Pow(Pop(), (int)-b)));
+                                        else Push(BigInteger.Pow(Pop(), (int)b));
                                         break;
                                     }
                                     else if (IsFrac(Peek())) { 
@@ -891,6 +892,18 @@ namespace StaxLang {
                                         Push(result);
                                         break;
                                     }
+                                    else {
+                                        if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "to the " + e + " power");
+                                        else block.AddDesc("exponent");
+                                        Push(Math.Pow((double)Pop(), (double)b));
+                                        break;
+                                    }
+                                }
+                                else if (IsNumber(Peek())) {
+                                    double b = (double)Pop(), a = (double)Pop();
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "to the " + e + " power");
+                                    else block.AddDesc("exponent");
+                                    Push(Math.Pow(a, b));
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("cross product; array of pairs");
@@ -2756,7 +2769,7 @@ namespace StaxLang {
             }
             else if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minus " + e);
-                else block.AddDesc("substract");
+                else block.AddDesc("subtract");
                 if (IsFloat(a) || IsFloat(b)) {
                     a = (double)a;
                     b = (double)b;
@@ -2774,7 +2787,7 @@ namespace StaxLang {
             if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "floor division by " + e);
                 else block.AddDesc("floor division");
-                if (IsFloat(a) || IsFloat(b)) {
+                if (IsFloat(a) || IsFloat(b) || AreEqual(b, BigInteger.Zero)) {
                     a = (double)a;
                     b = (double)b;
                 }
