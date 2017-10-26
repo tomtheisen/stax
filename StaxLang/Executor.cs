@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
  *     while loops continue to next (how?)
  *     sorted indices by value
  *     trim element(s)
- *     split once bI~;^ {n;(aa %,+t 2l} {d],d}?
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&

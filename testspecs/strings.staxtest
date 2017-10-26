@@ -400,3 +400,18 @@ That wo thecom I hannexambdateade offxPa
 Hello, bill.  It's -6 of one, and 6 of the other.
 	stax
 "Hello, ` .  It's `N of one, and `^ of the other.
+	name:SplitOnce
+	in
+cd
+abcdefgh
+	out
+efgh
+ab
+	in
+xxx
+abcdefgh
+	out
+
+abcdefgh
+	stax
+:/ PP
