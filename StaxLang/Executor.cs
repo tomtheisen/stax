@@ -878,7 +878,11 @@ namespace StaxLang {
                                     else if (IsFrac(Peek())) { 
                                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "fraction to the " + e + " power");
                                         else block.AddDesc("exponent");
-                                        dynamic a = Pop();
+                                        Rational a = Pop();
+                                        if (b < 0) {
+                                            b = -b;
+                                            a = 1 / a;
+                                        }
                                         var result = new Rational(1, 1);
                                         for (int i = 0; i < b; i++) result *= a;
                                         Push(result);
@@ -904,6 +908,7 @@ namespace StaxLang {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "to the " + e + " power");
                                     else block.AddDesc("exponent");
                                     Push(Math.Pow(a, b));
+                                    break;
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("cross product; array of pairs");

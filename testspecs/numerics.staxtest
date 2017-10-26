@@ -182,18 +182,27 @@
 4N
 	name:Exponent
 	in
+3 4
 	out
 81
-	stax
-3 4|*
+	in
+3 -4
 	out
 1/81
-	stax
-3 4N|*
+	in
+1.5 2
+	out
+2.25
+	in
+2/3 -2
+	out
+9/4
+	in
+3/2 2/1
 	out
 2.25
 	stax
-1!5 2|*
+|*
 	name:PowerOfTen
 	in
 	out
