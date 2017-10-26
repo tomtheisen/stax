@@ -262,6 +262,8 @@ chars	|Types        	|Name              	|Description
 `\|R`	|arr          	|run-length        	|Encode runs of elements into an array of [element, count] pairs.
 `\|T`	|arr          	|permutations      	|Get all orderings of elements in the array.  Duplicate elements are not considered.
 `\|T`	|arr int      	|permutations      	|Get all b-length orderings of elements in a.  Duplicate elements are not considered.
+`\|w`	|arr arr      	|trim-left-els     	|Remove matching leading elements from array.
+`\|W`	|arr arr      	|trim-right-els    	|Remove matching trailing elements from array.
 `\|Z`	|arr          	|rectangularize    	|Rectangularize an array of arrays, using "" for missing elements.
 `:0` 	|arr          	|falsy-indices     	|Get all indices of falsy elements.
 `:1` 	|arr          	|truthy-indices    	|Get all indices of truthy elements.

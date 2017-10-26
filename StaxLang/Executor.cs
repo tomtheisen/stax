@@ -16,7 +16,6 @@ using System.Text.RegularExpressions;
  *     FeatureTests for generators
  *     while loops continue to next (how?)
  *     sorted indices by value
- *     trim element(s)
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
@@ -1298,6 +1297,27 @@ namespace StaxLang {
                                 block.AddDesc("print blank newline");
                                 Print("");
                                 break;
+                            case 'q':
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("floor square root");
+                                    Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("get all indices of regex match");
+                                    string pattern = A2S(Pop()), n = A2S(Pop());
+                                    var result = Regex.Matches(n, pattern)
+                                        .Cast<Match>()
+                                        .Select(m => new BigInteger(m.Index) as object)
+                                        .ToList();
+                                    Push(result);
+                                }
+                                break;
+                            case 'Q': // float square root
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("square root");
+                                    Push(Math.Sqrt(Math.Abs((double)Pop())));
+                                }
+                                break;
                             case 'r':
                                 block.AddDesc("explicit range"); 
                                 {
@@ -1328,27 +1348,6 @@ namespace StaxLang {
                                 else block.AddDesc("surround with; concat to start and end");
                                 DoSurround();
                                 break;
-                            case 'q': 
-                                if (IsNumber(Peek())) {
-                                    block.AddDesc("floor square root");
-                                    Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
-                                }
-                                else if (IsArray(Peek())) {
-                                    block.AddDesc("get all indices of regex match");
-                                    string pattern = A2S(Pop()), n = A2S(Pop());
-                                    var result = Regex.Matches(n, pattern)
-                                        .Cast<Match>()
-                                        .Select(m => new BigInteger(m.Index) as object)
-                                        .ToList();
-                                    Push(result);
-                                }
-                                break;
-                            case 'Q': // float square root
-                                if (IsNumber(Peek())) {
-                                    block.AddDesc("square root");
-                                    Push(Math.Sqrt(Math.Abs((double)Pop())));
-                                }
-                                break;
                             case 't': // translate
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "translate using adjacent pairs in map string: " + e);
                                 block.AddDesc("translate; replace using adjacent pairs in map string");
@@ -1356,6 +1355,16 @@ namespace StaxLang {
                                 break;
                             case 'T':
                                 DoPermutations(block);
+                                break;
+                            case 'w': // trim elements from start
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove all " + e + " from beginning of array");
+                                else block.AddDesc("remove all instances from beginning of array");
+                                DoTrimElementsStart(block);
+                                break;
+                            case 'W': // trim elements from end
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove all " + e + " from end of array");
+                                else block.AddDesc("remove all instances from end of array");
+                                DoTrimElementsEnd(block);
                                 break;
                             case 'x': // decrement X, push
                                 block.AddDesc("decrement x and push");
@@ -1398,6 +1407,44 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoTrimElementsStart(Block block) {
+            dynamic b = Pop();
+            List<object> a = Pop(), bl = null;
+            if (IsArray(b)) bl = b;
+
+            int i = 0;
+            for (; i < a.Count; i++) {
+                if (bl != null) {
+                    if (!bl.Contains(a[i], Comparer.Instance)) break;
+                }
+                else {
+                    if (!AreEqual(a[i], b)) break;
+                }
+            }
+
+            var result = new List<object>(a.Skip(i));
+            Push(result);
+        }
+
+        private void DoTrimElementsEnd(Block block) {
+            dynamic b = Pop();
+            List<object> a = Pop(), bl = null;
+            if (IsArray(b)) bl = b;
+
+            int i = a.Count - 1;
+            for (; i > 0; i--) {
+                if (bl != null) {
+                    if (!bl.Contains(a[i], Comparer.Instance)) break;
+                }
+                else {
+                    if (!AreEqual(a[i], b)) break;
+                }
+            }
+
+            var result = new List<object>(a.Take(i + 1));
+            Push(result);
         }
 
         private void DoPermutations(Block block) {

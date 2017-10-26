@@ -415,3 +415,19 @@ abcdefgh
 abcdefgh
 	stax
 :/ PP
+	name:TrimStart
+	in
+ab
+ababcabcdefef
+	out
+cabcdefef
+	stax
+|w
+	name:TrimEnd
+	in
+ef
+abefcabcdefef
+	out
+abefcabcd
+	stax
+|W
