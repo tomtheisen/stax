@@ -655,3 +655,10 @@ bbb
 5/2
 	stax
 :d
+	name:OrderedIndices
+	in
+occurring
+	out
+5 0 1 8 6 7 3 4 2
+	stax
+|o J

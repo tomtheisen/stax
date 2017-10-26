@@ -15,7 +15,6 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
- *     sorted indices by value
  *     hasupper VA |&
  *     haslower Va |&
  *     hasletter Vl |&
@@ -1283,6 +1282,9 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 break;
+                            case 'o':
+                                DoIndexWhenOrdered(block);
+                                break;
                             case 'p':
                                 if (IsInt(Peek())) {
                                     block.AddDesc("is prime?");
@@ -1407,6 +1409,15 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoIndexWhenOrdered(Block block) {
+            block.AddDesc("Get indices when ordered");
+            List<object> a = Pop();
+            var result = new object[a.Count];
+            int i = 0;
+            foreach (var t in Enumerable.Range(0, a.Count).OrderBy(j => a[j])) result[t] = i++;
+            Push(result.ToList());
         }
 
         private void DoTrimElementsStart(Block block) {

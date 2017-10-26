@@ -256,6 +256,7 @@ chars	|Types        	|Name              	|Description
 `\|m`	|arr          	|min               	|Minimum value in array.
 `\|M`	|arr          	|max               	|Maximum value in array.
 `\|n`	|arr arr      	|multiset-xor      	|Combine elements from a and b, removing common elements only as many times as they mutually occur.
+`\|o`	|arr          	|ordered-indices   	|Calculate destination index of each element if array were to be sorted.
 `\|p`	|arr          	|palindromize      	|a + reversed(a[:-1]).  Always has an odd length.
 `\|r`	|int int      	|explicit-range    	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
 `\|R`	|int int int  	|stride-range      	|Range [a .. b) with stride of c.
