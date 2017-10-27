@@ -282,6 +282,8 @@ chars	|Types        	|Name              	|Description
 `:d` 	|arr          	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:f` 	|arr          	|flatten           	|Flatten array of arrays one time.
 `:F` 	|arr          	|falsy-indices     	|Get all indices of falsy elements.
+`:g` 	|arr          	|run-lengths       	|Remove adjacent duplicate elements from array.
+`:G` 	|arr          	|run-elements      	|Get the lengths of runs of duplicate elements.
 `:I` 	|arr arr      	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
 `:J` 	|arr          	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m` 	|arr int      	|repeat-to         	|Repeat array until it is exactly length n.

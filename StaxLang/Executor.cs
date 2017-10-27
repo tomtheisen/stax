@@ -19,7 +19,6 @@ using System.Text.RegularExpressions;
  *     next lexicographic permutation
  *     ascii art grid line modes (?)
  *     grid align lists of lists of lists
- *     run lengths/values only
  *     
  *     debugger
  */

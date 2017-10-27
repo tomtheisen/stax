@@ -87,6 +87,8 @@ namespace StaxLang {
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),
                 ('F', "i", "|fu", "distinct prime factors"),
                 ('F', "a", "{Cim", "get all falsy indices"),
+                ('g', "a", "|R{hm", "remove adjacent duplicates"),
+                ('G', "a", "|R{Hm", "get the lengths of runs of duplicate elements"),
                 ('I', "aa", "{[Imsd", "get indexes of all"),
                 ('J', "a", "c%|Qe~;J(,/", "squarify"),
                 ('J', "ii", "JsJs", "square top 2 stack elements"),
