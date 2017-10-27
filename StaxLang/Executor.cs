@@ -2511,8 +2511,12 @@ namespace StaxLang {
                 PushStackFrame();
                 foreach (var e in Pop()) {
                     Push(_ = e);
-                    foreach (var s in RunSteps(rest)) yield return s;
+                    foreach (var s in RunSteps(rest)) {
+                        if (s.Cancel) goto Cancel;
+                        yield return s;
+                    }
                     if (IsTruthy(Pop())) Print(e);
+                    Cancel:
                     Index++;
                 }
                 PopStackFrame();
@@ -2529,9 +2533,13 @@ namespace StaxLang {
                 var result = new List<object>();
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps((Block)b)) yield return s;
-                    Index++;
+                    foreach (var s in RunSteps((Block)b)) {
+                        if (s.Cancel) goto Cancel;
+                        yield return s;
+                    }
                     if (IsTruthy(Pop())) result.Add(e);
+                    Cancel:
+                    Index++;
                 }
                 Push(result);
                 PopStackFrame();
