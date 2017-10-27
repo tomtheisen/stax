@@ -374,6 +374,7 @@ chars	|Value
 `Vl` 	|"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VM` 	|1000000
+`Vp` 	|all printable ascii characters
 `VP` 	|pi
 `Vq` 	|pi/2
 `Vt` 	|tau (2pi)
