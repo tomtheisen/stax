@@ -76,3 +76,10 @@
 2
 	stax
 F
+	name:ImplicitEvalXRegister
+	in
+1/2 2/3
+	out
+1/2
+	stax
+x

@@ -15,12 +15,11 @@ using System.Text.RegularExpressions;
  *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
- *     hasupper VA |&
- *     haslower Va |&
- *     hasletter Vl |&
+ *     n-partitions of int / array
  *     next lexicographic permutation
  *     ascii art grid line modes (?)
  *     grid align lists of lists of lists
+ *     run lengths/values only
  *     
  *     debugger
  */
@@ -148,7 +147,6 @@ namespace StaxLang {
 
             if (input.Length > 0) {
                 Y = S2A(input[0]);
-                if (BigInteger.TryParse(input[0], out var d)) X = d;
             }
 
             var transformedInput = input
@@ -172,6 +170,7 @@ namespace StaxLang {
                 else {
                     programBlock.AddAmbient("program input is implicitly parsed");
                     programBlock.ImplicitEval = true;
+                    X = MainStack.Last();
                     (MainStack, InputStack) = (InputStack, MainStack);
                 }
             }
@@ -2124,7 +2123,8 @@ namespace StaxLang {
 
             if (IsInt(number)) {
                 var result = new List<object>();
-                do {
+                if (@base == 1) result.AddRange(Enumerable.Repeat(BigInteger.Zero, number));
+                else do {
                     BigInteger digit = number % @base;
                     if (stringRepresentation) {
                         char d = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)digit];

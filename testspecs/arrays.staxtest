@@ -662,3 +662,10 @@ occurring
 5 0 1 8 6 7 3 4 2
 	stax
 |o J
+	name:Mean
+	in
+[2 3 4 5]
+	out
+7/2
+	stax
+:V

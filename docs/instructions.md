@@ -293,6 +293,7 @@ chars	|Types        	|Name              	|Description
 `:S` 	|arr arr      	|is-superset-of    	|Is a a (non-strict) superset of b?
 `:T` 	|arr          	|truthy-indices    	|Get all indices of truthy elements.
 `:u` 	|arr          	|multi-single      	|Array contains exactly 1 distinct element?
+`:V` 	|arr          	|mean              	|Mean of array. (rational or float)
 
 
 ## Blocks

@@ -59,7 +59,6 @@ namespace StaxLang {
                 ('+', "r", "c0>s0<-", "number sign"),
                 ('+', "i", "c0>s0<-", "number sign"),
                 ('^', "a", "co=", "array is non-descending"),
-                ('v', "a", "cor=", "array is non-ascending"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),
                 ('(', "a", "c%r{[|(msd", "all left rotations"),
@@ -115,6 +114,8 @@ namespace StaxLang {
                 ('T', "a", "{!Cim", "get all truthy indices"),
                 ('T', "i", "c^*h", "triangular number (n*(n+1)/2)"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
+                ('V', "a", "c%us|+*", "mean"),
+                ('v', "a", "cor=", "array is non-ascending"),
             };
 
             var trees = new Dictionary<char, TreeNode>();
