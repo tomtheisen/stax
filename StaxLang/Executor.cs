@@ -12,11 +12,9 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     running "total" / reduce-collect
- *     multidimensional array index assign / 2-dimensional ascii art grid assign mode
  *     FeatureTests for generators
  *     while loops continue to next (how?)
  *     n-partitions of int / array
- *     next lexicographic permutation
  *     ascii art grid line modes (?)
  *     grid align lists of lists of lists
  *     
@@ -2290,10 +2288,14 @@ namespace StaxLang {
         }
 
         private void DoAssignIndex(Block block) {
-            dynamic element = Pop(), indexes = Pop(), list = Pop();
+            dynamic element = Pop(), indexes = Pop(), list;
 
             if (IsInt(indexes)) {
                 indexes = new List<object> { indexes };
+                if (IsInt(Peek())) {
+                    indexes = new List<object> { indexes };
+                    while (IsInt(Peek())) indexes[0].Insert(0, Pop());
+                }
                 if (IsBlock(element)) block.AddDesc("modify array element at index");
                 else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "assign " + e + " at index to array");
                 else block.AddDesc("assign element at index to array");
@@ -2303,30 +2305,50 @@ namespace StaxLang {
                 else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "assign " + e + " to array at all indices");
                 else block.AddDesc("assign element to array at all indices");
             }
+            list = Pop();
+
+            void DoFinalAssign(List<object> flatArr, int index) {
+                if (index + 1 > flatArr.Count) {
+                    flatArr.AddRange(Enumerable.Repeat((object)BigInteger.Zero, index + 1 - flatArr.Count));
+                }
+
+                if (IsBlock(element)) {
+                    Push(flatArr[index]);
+                    bool cancelled = false;
+                    foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
+                    if (!cancelled) flatArr[index] = Pop();
+                }
+                else {
+                    flatArr[index] = element;
+                }
+            }
 
             if (IsArray(list)) {
                 var result = new List<object>(list);
-                foreach (int arg in indexes) {
-                    int index = arg;
-                    if (index < 0) {
-                        index += result.Count;
-                        if (index < 0) {
-                            result.InsertRange(0, Enumerable.Repeat((object)BigInteger.Zero, -index));
-                            index = 0;
+                foreach (dynamic arg in indexes) {
+                    if (IsArray(arg)) {
+                        List<object> idxPath = arg, target = result;
+                        int idx;
+                        for (int i = 0; i < idxPath.Count - 1; i++) {
+                            idx = (int)(BigInteger)idxPath[i];
+                            while (target.Count <= idx) target.Add(new List<object>());
+                            if (!IsArray(target[idx])) target[idx] = new List<object> { target[idx] };
+                            target = (List<object>)target[idx];
                         }
+                        idx = (int)(BigInteger)idxPath[idxPath.Count - 1];
+                        DoFinalAssign(target, idx);
                     }
-                    else if (index + 1 > result.Count) {
-                        result.AddRange(Enumerable.Repeat((object)BigInteger.Zero, index + 1 - result.Count));
-                    }
+                    else if (IsInt(arg)) {
+                        int index = (int)arg;
+                        if (index < 0) {
+                            index += result.Count;
+                            if (index < 0) {
+                                result.InsertRange(0, Enumerable.Repeat((object)BigInteger.Zero, -index));
+                                index = 0;
+                            }
+                        }
 
-                    if (IsBlock(element)) {
-                        Push(result[index]);
-                        bool cancelled = false;
-                        foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
-                        if (!cancelled) result[index] = Pop();
-                    }
-                    else {
-                        result[index] = element;
+                        DoFinalAssign(result, index);
                     }
                 }
                 Push(result);

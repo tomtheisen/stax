@@ -693,3 +693,24 @@ acbcd
 acbdc
 	stax
 {|NQ} 4*
+	name:MultiDimensionalAssignIndex
+	in
+abc
+def
+hij
+	out
+abc
+def X
+hij
+	stax
+L 1 4 'X & m
+	in
+abc
+def
+hij
+	out
+Xbc
+dXf
+hiX
+	stax
+L 3rc\ 'X & m

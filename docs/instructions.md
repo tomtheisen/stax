@@ -186,117 +186,118 @@ chars    	|Types      	|Name             	|Description
 `:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 
 ## Array
-chars	|Types        	|Name              	|Description
----  	|---          	|---               	|---
-`#`  	|arr num      	|count-instances   	|Count instances of b in a.
-`#`  	|num arr      	|count-instances   	|Count instances of b in a.
-`+`  	|arr arr      	|concat            	|Concatenate arrays.
-`+`  	|num arr      	|prepend           	|Prepend element to array.
-`+`  	|arr num      	|append            	|Append element to array.
-`-`  	|arr arr      	|array-diff        	|Remove all elements in b from a.
-`-`  	|arr num      	|array-remove      	|Remove all instances of b from a.
-`/`  	|arr int      	|array-group       	|Split array into groups of specified size.  The last group will be smaller if it's not a multiple.
-`%`  	|arr          	|length            	|Array length
-`\`  	|num num      	|pair              	|Make a 2 length array.
-`\`  	|arr num      	|array-pair        	|Make array of pairs, all having identical second element.
-`\`  	|num arr      	|array-pair        	|Make array of pairs, all having identical first element.
-`\`  	|arr arr      	|zip-repeat        	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
-`@`  	|arr int      	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
-`@`  	|arr arr      	|elements-at       	|Get elements at all indices.
-`&`  	|arr int any  	|assign-index      	|Assign element at index.
-`&`  	|arr arr any  	|assign-indices    	|Assign element at all indices.
-`&`  	|arr int block	|mutate-element    	|Mutate element at index using block.
-`&`  	|arr arr block	|mutate-element    	|Mutate element at indices using block.
-`(`  	|arr int      	|pad-right         	|Truncate or pad on right with 0s as necessary for target length.  Negative numbers remove that number of elements.
-`)`  	|arr int      	|pad-left          	|Truncate or pad on left with 0s as necessary for target length.  Negative numbers remove that number of elements.
-`]`  	|any          	|singleton         	|Make a 1 element array.
-`B`  	|arr int      	|batch             	|Get all (overlapping) sub-arrays of specified length.
-`B`  	|arr          	|uncons-left       	|Remove first element from array.  Push the tail of the array, then the removed element.
-`h`  	|arr          	|first             	|Get first element.
-`H`  	|arr          	|last              	|Get last element.
-`I`  	|arr num      	|index-of          	|Get the index of the first occurrence.
-`I`  	|num arr      	|index-of          	|Get the index of the first occurrence.
-`N`  	|arr          	|uncons-right      	|Remove last element from array.  Push the beginning of the array, then the removed element.
-`r`  	|int          	|0-range           	|Make range [0 .. n-1].
-`r`  	|arr          	|reverse           	|Reverse array.
-`R`  	|int          	|1-range           	|Make range [1 .. n].
-`t`  	|arr int      	|remove-left       	|Trim n elements from left of array.
-`T`  	|arr int      	|remove-right      	|Trim n elements from right of array.
-`S`  	|arr          	|powerset          	|Get all combinations of elements in array.  If the array was ordered, all combinations will be in lexicographic order.
-`S`  	|arr int      	|combinations      	|Get all combinations of specified size from array.  If the array was ordered, all combinations will be in lexicographic order.
-`u`  	|arr          	|unique            	|Keep only unique elements in array, maintaining first order of appearance.
-`z`  	|             	|                  	|Push empty array/string.
-`\|0`	|arr          	|falsy-index       	|Get index of first falsy element.
-`\|1`	|arr          	|truthy-index      	|Get index of first truthy element.
-`\|+`	|arr          	|sum               	|Sum of array.
-`\|@`	|arr int      	|remove-at         	|Remove element from array at index.
-`\|@`	|arr int num  	|insert-at         	|Insert element to array at index.
-`\|#`	|arr arr      	|verbatim-count    	|Counts number of occurrences of b as an element of a, without any string flattening.
-`\|&`	|arr arr      	|arr-intersect     	|Keep all elements from a that are in b.
-`\|^`	|arr arr      	|arr-xor           	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
-`\|^`	|arr int      	|multi-self-join   	|Generate all arrays of size b using elements from a.
-`\|*`	|arr int      	|repeat-elements   	|Repeat each element n times.
-`\|*`	|arr arr      	|cross-product     	|Cartesian join of arrays, producing a flat array of pairs.
-`\|-`	|arr arr      	|multiset-subtract 	|Remove elements in b individually from a, if they're present.
-`\|-`	|arr num      	|remove-first      	|Remove first instance of b from a.
-`\|\`	|arr arr      	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
-`\|)`	|arr          	|rotate-right      	|Move the last element of an array to the front.
-`\|)`	|arr int      	|rotate-right-n    	|Shift array n places to the right, rotating the end to the front.
-`\|(`	|arr          	|rotate-left       	|Move the first element of an array to the end.
-`\|(`	|arr int      	|rotate-left-n     	|Shift array n places to the right, rotating the front to the end.
-`\|[`	|arr          	|prefixes          	|All prefixes of array.
-`\|]`	|arr          	|suffixes          	|All suffixes of array.
-`\|a`	|arr          	|any               	|Any elements of array are truthy?
-`\|A`	|arr          	|all               	|All elements of array are truthy?
-`\|b`	|arr arr      	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.
-`\|g`	|arr          	|gcd               	|Greatest common denominator of array.
-`\|I`	|arr num      	|find-all          	|Find all indexes of occurrences of the value.
-`\|l`	|arr          	|lcm               	|Least common multiple of array.
-`\|L`	|arr arr      	|multiset-union    	|Combine elements from a and b, with each occurring the max of its occurrences from a and b.
-`\|m`	|arr          	|min               	|Minimum value in array.
-`\|M`	|arr          	|max               	|Maximum value in array.
-`\|n`	|arr arr      	|multiset-xor      	|Combine elements from a and b, removing common elements only as many times as they mutually occur.
-`\|N`	|arr          	|next-perm         	|Get the next permuation of elements in the array, ordered lexicographically.
-`\|o`	|arr          	|ordered-indices   	|Calculate destination index of each element if array were to be sorted.
-`\|p`	|arr          	|palindromize      	|a + reversed(a[:-1]).  Always has an odd length.
-`\|r`	|int int      	|explicit-range    	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
-`\|R`	|int int int  	|stride-range      	|Range [a .. b) with stride of c.
-`\|R`	|arr          	|run-length        	|Encode runs of elements into an array of [element, count] pairs.
-`\|T`	|arr          	|permutations      	|Get all orderings of elements in the array.  Duplicate elements are not considered.
-`\|T`	|arr int      	|permutations      	|Get all b-length orderings of elements in a.  Duplicate elements are not considered.
-`\|w`	|arr arr      	|trim-left-els     	|Remove matching leading elements from array.
-`\|W`	|arr arr      	|trim-right-els    	|Remove matching trailing elements from array.
-`\|Z`	|arr          	|rectangularize    	|Rectangularize an array of arrays, using "" for missing elements.
-`:0` 	|arr          	|falsy-indices     	|Get all indices of falsy elements.
-`:1` 	|arr          	|truthy-indices    	|Get all indices of truthy elements.
-`::` 	|arr int      	|every-nth         	|Every nth element in array, starting from the first.
-`:*` 	|arr          	|product           	|Product of numbers in array.
-`:-` 	|arr          	|deltas            	|Pairwise difference of array.
-`:/` 	|arr int      	|split-at          	|Split array at index; push both parts.
-`:(` 	|arr          	|left-rotations    	|All left rotations, starting from original.
-`:)` 	|arr          	|right-rotations   	|All right rotations, starting from original.
-`:^` 	|arr          	|non-descending    	|Is array non-descending? (has no adjacent pair of descending elements)
-`:v` 	|arr          	|non-ascending     	|Is array non-ascending? (has no adjacent pair of ascending elements)
-`:a` 	|arr          	|minima-indices    	|Get indices of array minima.
-`:A` 	|arr          	|maxima-indices    	|Get indices of array maxima.
-`:c` 	|arr          	|coalesce          	|Get first truthy element of array.
-`:d` 	|arr          	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
-`:f` 	|arr          	|flatten           	|Flatten array of arrays one time.
-`:F` 	|arr          	|falsy-indices     	|Get all indices of falsy elements.
-`:g` 	|arr          	|run-lengths       	|Remove adjacent duplicate elements from array.
-`:G` 	|arr          	|run-elements      	|Get the lengths of runs of duplicate elements.
-`:I` 	|arr arr      	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
-`:J` 	|arr          	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
-`:m` 	|arr int      	|repeat-to         	|Repeat array until it is exactly length n.
-`:m` 	|arr          	|mirror            	|Append reversed copy to array.
-`:M` 	|arr          	|mode              	|Mode.  In case of tie, the last element to appear wins.
-`:r` 	|arr arr      	|replace-all       	|Replace all substring occurrences.
-`:r` 	|int          	|centered-range    	|Make range [-n .. n] centered around 0.
-`:s` 	|arr          	|span              	|Get the span of an array. (maximum minus minimum)
-`:S` 	|arr arr      	|is-superset-of    	|Is a a (non-strict) superset of b?
-`:T` 	|arr          	|truthy-indices    	|Get all indices of truthy elements.
-`:u` 	|arr          	|multi-single      	|Array contains exactly 1 distinct element?
-`:V` 	|arr          	|mean              	|Mean of array. (rational or float)
+chars	|Types              	|Name              	|Description
+---  	|---                	|---               	|---
+`#`  	|arr num            	|count-instances   	|Count instances of b in a.
+`#`  	|num arr            	|count-instances   	|Count instances of b in a.
+`+`  	|arr arr            	|concat            	|Concatenate arrays.
+`+`  	|num arr            	|prepend           	|Prepend element to array.
+`+`  	|arr num            	|append            	|Append element to array.
+`-`  	|arr arr            	|array-diff        	|Remove all elements in b from a.
+`-`  	|arr num            	|array-remove      	|Remove all instances of b from a.
+`/`  	|arr int            	|array-group       	|Split array into groups of specified size.  The last group will be smaller if it's not a multiple.
+`%`  	|arr                	|length            	|Array length
+`\`  	|num num            	|pair              	|Make a 2 length array.
+`\`  	|arr num            	|array-pair        	|Make array of pairs, all having identical second element.
+`\`  	|num arr            	|array-pair        	|Make array of pairs, all having identical first element.
+`\`  	|arr arr            	|zip-repeat        	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
+`@`  	|arr int            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
+`@`  	|arr arr            	|elements-at       	|Get elements at all indices.
+`&`  	|arr int any        	|assign-index      	|Assign element at index.  Negatives index backwards.  OOB extends the array.
+`&`  	|arr int ... int any	|assign-index      	|Assign element in multidimensional array of arrays located at specified coordinates.  Negative coordinates are not allowed.  OOB extends the array(s);
+`&`  	|arr arr any        	|assign-indices    	|Assign element at all indices.  If indices array is an array of arrays, then treat them as a path to navigate a multidimensional array of arrays.
+`&`  	|arr int block      	|mutate-element    	|Mutate element at index using block.
+`&`  	|arr arr block      	|mutate-element    	|Mutate element at indices using block. If indices array is an array of arrays, then treat them as a path to navigate a multidimensional array of arrays.
+`(`  	|arr int            	|pad-right         	|Truncate or pad on right with 0s as necessary for target length.  Negative numbers remove that number of elements.
+`)`  	|arr int            	|pad-left          	|Truncate or pad on left with 0s as necessary for target length.  Negative numbers remove that number of elements.
+`]`  	|any                	|singleton         	|Make a 1 element array.
+`B`  	|arr int            	|batch             	|Get all (overlapping) sub-arrays of specified length.
+`B`  	|arr                	|uncons-left       	|Remove first element from array.  Push the tail of the array, then the removed element.
+`h`  	|arr                	|first             	|Get first element.
+`H`  	|arr                	|last              	|Get last element.
+`I`  	|arr num            	|index-of          	|Get the index of the first occurrence.
+`I`  	|num arr            	|index-of          	|Get the index of the first occurrence.
+`N`  	|arr                	|uncons-right      	|Remove last element from array.  Push the beginning of the array, then the removed element.
+`r`  	|int                	|0-range           	|Make range [0 .. n-1].
+`r`  	|arr                	|reverse           	|Reverse array.
+`R`  	|int                	|1-range           	|Make range [1 .. n].
+`t`  	|arr int            	|remove-left       	|Trim n elements from left of array.
+`T`  	|arr int            	|remove-right      	|Trim n elements from right of array.
+`S`  	|arr                	|powerset          	|Get all combinations of elements in array.  If the array was ordered, all combinations will be in lexicographic order.
+`S`  	|arr int            	|combinations      	|Get all combinations of specified size from array.  If the array was ordered, all combinations will be in lexicographic order.
+`u`  	|arr                	|unique            	|Keep only unique elements in array, maintaining first order of appearance.
+`z`  	|                   	|                  	|Push empty array/string.
+`\|0`	|arr                	|falsy-index       	|Get index of first falsy element.
+`\|1`	|arr                	|truthy-index      	|Get index of first truthy element.
+`\|+`	|arr                	|sum               	|Sum of array.
+`\|@`	|arr int            	|remove-at         	|Remove element from array at index.
+`\|@`	|arr int num        	|insert-at         	|Insert element to array at index.
+`\|#`	|arr arr            	|verbatim-count    	|Counts number of occurrences of b as an element of a, without any string flattening.
+`\|&`	|arr arr            	|arr-intersect     	|Keep all elements from a that are in b.
+`\|^`	|arr arr            	|arr-xor           	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
+`\|^`	|arr int            	|multi-self-join   	|Generate all arrays of size b using elements from a.
+`\|*`	|arr int            	|repeat-elements   	|Repeat each element n times.
+`\|*`	|arr arr            	|cross-product     	|Cartesian join of arrays, producing a flat array of pairs.
+`\|-`	|arr arr            	|multiset-subtract 	|Remove elements in b individually from a, if they're present.
+`\|-`	|arr num            	|remove-first      	|Remove first instance of b from a.
+`\|\`	|arr arr            	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
+`\|)`	|arr                	|rotate-right      	|Move the last element of an array to the front.
+`\|)`	|arr int            	|rotate-right-n    	|Shift array n places to the right, rotating the end to the front.
+`\|(`	|arr                	|rotate-left       	|Move the first element of an array to the end.
+`\|(`	|arr int            	|rotate-left-n     	|Shift array n places to the right, rotating the front to the end.
+`\|[`	|arr                	|prefixes          	|All prefixes of array.
+`\|]`	|arr                	|suffixes          	|All suffixes of array.
+`\|a`	|arr                	|any               	|Any elements of array are truthy?
+`\|A`	|arr                	|all               	|All elements of array are truthy?
+`\|b`	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.
+`\|g`	|arr                	|gcd               	|Greatest common denominator of array.
+`\|I`	|arr num            	|find-all          	|Find all indexes of occurrences of the value.
+`\|l`	|arr                	|lcm               	|Least common multiple of array.
+`\|L`	|arr arr            	|multiset-union    	|Combine elements from a and b, with each occurring the max of its occurrences from a and b.
+`\|m`	|arr                	|min               	|Minimum value in array.
+`\|M`	|arr                	|max               	|Maximum value in array.
+`\|n`	|arr arr            	|multiset-xor      	|Combine elements from a and b, removing common elements only as many times as they mutually occur.
+`\|N`	|arr                	|next-perm         	|Get the next permuation of elements in the array, ordered lexicographically.
+`\|o`	|arr                	|ordered-indices   	|Calculate destination index of each element if array were to be sorted.
+`\|p`	|arr                	|palindromize      	|a + reversed(a[:-1]).  Always has an odd length.
+`\|r`	|int int            	|explicit-range    	|Range [a .. b). If a is an array, use the opposite of its length instead.  If b is an array, use its length instead.
+`\|R`	|int int int        	|stride-range      	|Range [a .. b) with stride of c.
+`\|R`	|arr                	|run-length        	|Encode runs of elements into an array of [element, count] pairs.
+`\|T`	|arr                	|permutations      	|Get all orderings of elements in the array.  Duplicate elements are not considered.
+`\|T`	|arr int            	|permutations      	|Get all b-length orderings of elements in a.  Duplicate elements are not considered.
+`\|w`	|arr arr            	|trim-left-els     	|Remove matching leading elements from array.
+`\|W`	|arr arr            	|trim-right-els    	|Remove matching trailing elements from array.
+`\|Z`	|arr                	|rectangularize    	|Rectangularize an array of arrays, using "" for missing elements.
+`:0` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
+`:1` 	|arr                	|truthy-indices    	|Get all indices of truthy elements.
+`::` 	|arr int            	|every-nth         	|Every nth element in array, starting from the first.
+`:*` 	|arr                	|product           	|Product of numbers in array.
+`:-` 	|arr                	|deltas            	|Pairwise difference of array.
+`:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
+`:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
+`:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.
+`:^` 	|arr                	|non-descending    	|Is array non-descending? (has no adjacent pair of descending elements)
+`:v` 	|arr                	|non-ascending     	|Is array non-ascending? (has no adjacent pair of ascending elements)
+`:a` 	|arr                	|minima-indices    	|Get indices of array minima.
+`:A` 	|arr                	|maxima-indices    	|Get indices of array maxima.
+`:c` 	|arr                	|coalesce          	|Get first truthy element of array.
+`:d` 	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
+`:f` 	|arr                	|flatten           	|Flatten array of arrays one time.
+`:F` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
+`:g` 	|arr                	|run-lengths       	|Remove adjacent duplicate elements from array.
+`:G` 	|arr                	|run-elements      	|Get the lengths of runs of duplicate elements.
+`:I` 	|arr arr            	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
+`:J` 	|arr                	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
+`:m` 	|arr int            	|repeat-to         	|Repeat array until it is exactly length n.
+`:m` 	|arr                	|mirror            	|Append reversed copy to array.
+`:M` 	|arr                	|mode              	|Mode.  In case of tie, the last element to appear wins.
+`:r` 	|arr arr            	|replace-all       	|Replace all substring occurrences.
+`:r` 	|int                	|centered-range    	|Make range [-n .. n] centered around 0.
+`:s` 	|arr                	|span              	|Get the span of an array. (maximum minus minimum)
+`:S` 	|arr arr            	|is-superset-of    	|Is a a (non-strict) superset of b?
+`:T` 	|arr                	|truthy-indices    	|Get all indices of truthy elements.
+`:u` 	|arr                	|multi-single      	|Array contains exactly 1 distinct element?
+`:V` 	|arr                	|mean              	|Mean of array. (rational or float)
 
 
 ## Blocks
