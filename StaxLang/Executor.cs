@@ -1280,6 +1280,11 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 break;
+                            case 'N':
+                                if (IsArray(Peek())) {
+                                    DoNextPerm(block);
+                                }
+                                break;
                             case 'o':
                                 DoIndexWhenOrdered(block);
                                 break;
@@ -1407,6 +1412,30 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoNextPerm(Block block) {
+            block.AddDesc("get next permutation of elements in lexicographic ordering");
+            List<object> els = Pop(), result = new List<object>();
+            els = new List<object>(els); // we need to mutate it, so copy
+
+            int i = els.Count - 2;
+            for (; i >= 0 && Comparer.Instance.Compare(els[i], els[i + 1]) >= 0; i--) ;
+            if (i < 0) {
+                result.AddRange(els);
+                result.Reverse();
+                Push(result);
+                return;
+            }
+
+            result.AddRange(els.Take(i));
+            els.RemoveRange(0, i);
+            for (i = els.Count - 1; Comparer.Instance.Compare(els[i], els[0]) <= 0; i--) ;
+            result.Add(els[i]);
+            els.RemoveAt(i);
+            els.Sort();
+            result.AddRange(els);
+            Push(result);
         }
 
         private void DoIndexWhenOrdered(Block block) {

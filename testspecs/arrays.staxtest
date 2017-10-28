@@ -683,3 +683,13 @@ occurring
 7 4 9 7
 	stax
 :g J
+	name:NextPerm
+	in
+abccd
+	out
+abcdc
+abdcc
+acbcd
+acbdc
+	stax
+{|NQ} 4*
