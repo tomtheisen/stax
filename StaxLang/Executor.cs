@@ -11,12 +11,29 @@ using System.Text.RegularExpressions;
 // available chars
 //  D
 /* To add:
- *     running "total" / reduce-collect
  *     FeatureTests for generators
- *     while loops continue to next (how?)
  *     n-partitions of int / array
- *     ascii art grid line modes (?)
- *     grid align lists of lists of lists
+ *     grid align lists of lists of lists 
+ *     zip-fill w/ optional fill element
+ *     reverse order of pushed values for reduce block
+ *     ascii art grid modes (D)
+ *          execute a block like { ... D
+ *          or in shorthand mode to print the result
+ *          keeps the actual grid on the input stack to avoid clogging up main stack data
+ *          it's a different set of instructions for plotting to canvas grid
+ *          moving outside the canvas expands the canvas
+ *          instructions:
+ *              1     foreach mode prefix
+ *              10    int literals
+ *              8+1   move to adjacent
+ *              8+1   move to border
+ *              3     move to center
+ *              3     set x and or y
+ *              8+1   peek print
+ *              8+1   peek print return to start
+ *              8+1   pop print 
+ *              8+1   pop print return to start
+ *              
  *     
  *     debugger
  */
@@ -35,6 +52,7 @@ namespace StaxLang {
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
             ['?'] = (S2A(VersionInfo), "version info"),
             ['0'] = (new Rational(0, 1), "0/1"),
+            ['2'] = (0.5, "0.5"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),
@@ -43,13 +61,14 @@ namespace StaxLang {
             ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
             ['d'] = (S2A("0123456789"), "decimal digits"),
             ['e'] = (Math.E, "natural log base"),
-            ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
             ['h'] = (S2A("0123456789abcdef"), "lowercase hex digits"),
+            ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
             ['i'] = (double.PositiveInfinity, "negative infinity"),
             ['I'] = (double.PositiveInfinity, "positive infinity"),
             ['k'] = (new BigInteger(1000), "one thousand"),
             ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
             ['L'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all alphanumerics"),
+            ['m'] = (new BigInteger(0x7fffffff), "0x7fffffff"),
             ['M'] = (new BigInteger(1000000), "one million"),
             ['n'] = (S2A("\n"), "newline"),  // also just A]
             ['p'] = (S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"), "all printable ascii characters"),

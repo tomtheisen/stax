@@ -370,20 +370,22 @@ chars	|Value
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
 `Ve` 	|"natural log base"
+`Vh` 	|0.5
 `Vi` 	|"negative infinity"
 `VI` 	|"positive infinity"
 `Vk` 	|1000
 `Vl` 	|"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+`Vm` 	|0x7ffffffff
 `VM` 	|1000000
+`Vn` 	|newline (newline is also `A]`)
 `Vp` 	|all printable ascii characters
 `VP` 	|pi
 `Vq` 	|pi/2
+`Vs` 	|all ascii whitespace
 `Vt` 	|tau (2pi)
 `VT` 	|10.0
 `VV` 	|AEIOU
 `Vv` 	|aeiou
 `VW` 	|"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Vw` 	|"0123456789abcdefghijklmnopqrstuvwxyz"
-`Vs` 	|all ascii whitespace
-`Vn` 	|newline (newline is also `A]`)
