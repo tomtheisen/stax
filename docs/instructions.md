@@ -230,6 +230,8 @@ chars	|Types              	|Name              	|Description
 `\|0`	|arr                	|falsy-index       	|Get index of first falsy element.
 `\|1`	|arr                	|truthy-index      	|Get index of first truthy element.
 `\|+`	|arr                	|sum               	|Sum of array.
+`\|!`	|int int            	|int-partitions    	|Get all the distinct b-length arrays of positive integers that sum to a.
+`\|!`	|arr int            	|arr-partitions    	|Get all the ways of splitting array a into b pieces.
 `\|@`	|arr int            	|remove-at         	|Remove element from array at index.
 `\|@`	|arr int num        	|insert-at         	|Insert element to array at index.
 `\|#`	|arr arr            	|verbatim-count    	|Counts number of occurrences of b as an element of a, without any string flattening.
@@ -362,6 +364,7 @@ chars	|Value
 ---  	|---
 `V?` 	|Version info
 `V0` 	|rational 0/1
+`V2` 	|0.5
 `VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"
 `Vb` 	|"()[]{}<>"
@@ -370,7 +373,8 @@ chars	|Value
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
 `Ve` 	|"natural log base"
-`Vh` 	|0.5
+`Vh` 	|"0123456789abcdef"
+`VH` 	|"0123456789ABCDEF"
 `Vi` 	|"negative infinity"
 `VI` 	|"positive infinity"
 `Vk` 	|1000

@@ -714,3 +714,24 @@ dXf
 hiX
 	stax
 L 3rc\ 'X & m
+	name:Partitions
+	in
+5 3
+	out
+1 1 3
+1 2 2
+1 3 1
+2 1 2
+2 2 1
+3 1 1
+	in
+"abcde" 3
+	out
+a b cde
+a bc de
+a bcd e
+ab c de
+ab cd e
+abc d e
+	stax
+|! mJ

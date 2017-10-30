@@ -12,13 +12,12 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     FeatureTests for generators
- *     n-partitions of int / array
  *     grid align lists of lists of lists 
  *     zip-fill w/ optional fill element
  *     reverse order of pushed values for reduce block
  *     ascii art grid modes (D)
- *          execute a block like { ... D
- *          or in shorthand mode to print the result
+ *          execute a series of trailing special instructions
+ *          last position is globally remembered
  *          keeps the actual grid on the input stack to avoid clogging up main stack data
  *          it's a different set of instructions for plotting to canvas grid
  *          moving outside the canvas expands the canvas
@@ -819,6 +818,9 @@ namespace StaxLang {
                             case '-':
                                 DoMultisetSubtract(block);
                                 break;
+                            case '!':
+                                DoPartition(block);
+                                break;
                             case '@':
                                 DoRemoveOrInsert(block);
                                 break;
@@ -1429,6 +1431,50 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoPartition(Block block) {
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get partitions of size " + e);
+            else block.AddDesc("get n-size partitions");
+
+            int n = (int)Pop(), total;
+            var arg = Pop();
+            if (IsArray(arg)) total = arg.Count;
+            else total = (int)arg;
+            var list = arg as List<object>;
+
+            var result = new List<object>();
+            if (n > total) {
+                Push(result);
+                return;
+            }
+
+            var partition = Enumerable.Repeat(1, n - 1).ToList();
+            partition.Add(total - n + 1);
+
+            while (true) {
+                if (list == null) {
+                    result.Add(partition.Select(e => new BigInteger(e) as object).ToList());
+                }
+                else {
+                    int added = 0;
+                    var listpartition = new List<object>();
+                    foreach (var psize in partition) {
+                        listpartition.Add(list.Skip(added).Take(psize).ToList());
+                        added += psize;
+                    }
+                    result.Add(listpartition);
+                }
+
+                int i;
+                for (i = n - 1; i >= 0 && partition[i] == 1; i--) ;
+                if (i <= 0) break;
+
+                ++partition[i - 1];
+                (partition[i], partition[n - 1]) = (partition[n - 1], --partition[i]);
+            }
+
+            Push(result);
         }
 
         private void DoNextPerm(Block block) {
