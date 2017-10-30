@@ -182,7 +182,7 @@ chars    	|Types      	|Name             	|Description
 `:]`     	|arr arr    	|starts-with      	|String ends with?
 `:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
 `:e`     	|arr        	|excerpts         	|Get all contiguous subarrays.
-`:R`     	|arr        	|brace-reflect    	|Reflect string, `(\<[{/` becomes `\\}]>)`
+`:R`     	|arr        	|brace-reflect    	|Reflect string, `(<[{/` becomes `\}]>)`
 `:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 
 ## Array
