@@ -431,3 +431,17 @@ abefcabcdefef
 abefcabcd
 	stax
 |W
+	name:AsciiMirror
+	in
+a(/b
+	out
+a(/bb\)a
+	stax
+:W
+	name:AsciiPalindormize
+	in
+a(/b
+	out
+a(/b\)a
+	stax
+:w

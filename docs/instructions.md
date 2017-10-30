@@ -142,48 +142,51 @@ chars	|Name        	|Description
 ## String
 Strings are really just arrays of integers, but some operations are oriented towards strings anyway.  In these contexts, 0 is usually converted to 32, so that 0 can be used as a space in addition to its normal codepoint.
 
-chars    	|Types      	|Name             	|Description
----      	|---        	|---              	|---
-`#`      	|arr arr    	|count-substrings 	|Count occurrences of substring b in a.
-`"…"`    	|           	|string-literal   	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `0tnr` do the same as C when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
-`` `…` ``	|           	|compressed-string	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
-`'a`     	|           	|char-literal     	|Create a single character string literal.
-`.ab`    	|           	|two-char-literal 	|Create a two character string literal.
-`/`      	|arr arr    	|split            	|Split on substrings.
-`*`      	|arr int    	|repeat           	|Repeat string n times.  If n is negative, reverse array.
-`*`      	|int arr    	|repeat           	|Repeat string n times.  If n is negative, reverse array.
-`*`      	|arr arr    	|join             	|Join array of strings with delimiter.
-`$`      	|num        	|tostring         	|Convert number to string.
-`$`      	|arr        	|arr-tostring     	|Convert each element to string, and concat.
-`(`      	|arr arr    	|begin-with       	|Overwrite the end of b with a.
-`)`      	|arr arr    	|end-with         	|Overwrite the beginning of b with a.
-`v`      	|arr        	|lower            	|To lower case.
-`^`      	|arr        	|upper            	|To upper case.
-`I`      	|arr arr    	|substring-index  	|Get the index of the first occurrence of the substring.
-`j`      	|arr        	|space-split      	|String split by space.
-`J`      	|arr        	|space-join       	|Join strings by space.
-`R`      	|arr arr arr	|regex-replace    	|Regex replace using ECMA regex.
-`t`      	|arr        	|trim-left        	|Trim whitespace from left of string.
-`T`      	|arr        	|trim-right       	|Trim whitespace from right of string.
-`\|<`    	|arr        	|left-align       	|left align lines of text, padding to longest line.
-`\|>`    	|arr        	|right-align      	|right align lines of text, padding to longest line.
-`\|e`    	|arr arr arr	|replace-first    	|String replace; first instance only.
-`\|C`    	|arr int    	|center           	|Center string in n characters.
-`\|C`    	|arr        	|center-block     	|Center lines of text, using longest line.
-`\|I`    	|arr arr    	|str-index-all    	|Find all indexes of the substring.
-`\|J`    	|arr        	|join-newline     	|Join strings with newline.
-`\|q`    	|arr arr    	|regex-indices    	|Get all indices of regex matches.
-`\|s`    	|arr arr    	|regex-split      	|Split by ECMA regex. Captured groups will be included in result.
-`\|S`    	|arr arr    	|surround         	|Prepend and append string/array.
-`\|t`    	|arr arr    	|translate        	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.
-`\|z`    	|arr int    	|zero-fill        	|Fill on the left with "0" to specified length.
-`:/`     	|arr arr    	|split-once       	|Split on the first occurrence of a substring.  Push both parts separately.
-`:[`     	|arr arr    	|starts-with      	|String starts with?
-`:]`     	|arr arr    	|starts-with      	|String ends with?
-`:3`     	|arr        	|rot-13           	|Rot13 encode/decode; dual-purpose.
-`:e`     	|arr        	|excerpts         	|Get all contiguous subarrays.
-`:R`     	|arr        	|brace-reflect    	|Reflect string, `(<[{/` becomes `\}]>)`
-`:t`     	|arr arr    	|ring-tranlate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
+chars    	|Types      	|Name              	|Description
+---      	|---        	|---               	|---
+`#`      	|arr arr    	|count-substrings  	|Count occurrences of substring b in a.
+`"…"`    	|           	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `0tnr` do the same as C when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
+`` `…` ``	|           	|compressed-string 	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
+`'a`     	|           	|char-literal      	|Create a single character string literal.
+`.ab`    	|           	|two-char-literal  	|Create a two character string literal.
+`/`      	|arr arr    	|split             	|Split on substrings.
+`*`      	|arr int    	|repeat            	|Repeat string n times.  If n is negative, reverse array.
+`*`      	|int arr    	|repeat            	|Repeat string n times.  If n is negative, reverse array.
+`*`      	|arr arr    	|join              	|Join array of strings with delimiter.
+`$`      	|num        	|tostring          	|Convert number to string.
+`$`      	|arr        	|arr-tostring      	|Convert each element to string, and concat.
+`(`      	|arr arr    	|begin-with        	|Overwrite the end of b with a.
+`)`      	|arr arr    	|end-with          	|Overwrite the beginning of b with a.
+`v`      	|arr        	|lower             	|To lower case.
+`^`      	|arr        	|upper             	|To upper case.
+`I`      	|arr arr    	|substring-index   	|Get the index of the first occurrence of the substring.
+`j`      	|arr        	|space-split       	|String split by space.
+`J`      	|arr        	|space-join        	|Join strings by space.
+`R`      	|arr arr arr	|regex-replace     	|Regex replace using ECMA regex.
+`t`      	|arr        	|trim-left         	|Trim whitespace from left of string.
+`T`      	|arr        	|trim-right        	|Trim whitespace from right of string.
+`\|<`    	|arr        	|left-align        	|left align lines of text, padding to longest line.
+`\|>`    	|arr        	|right-align       	|right align lines of text, padding to longest line.
+`\|e`    	|arr arr arr	|replace-first     	|String replace; first instance only.
+`\|C`    	|arr int    	|center            	|Center string in n characters.
+`\|C`    	|arr        	|center-block      	|Center lines of text, using longest line.
+`\|I`    	|arr arr    	|str-index-all     	|Find all indexes of the substring.
+`\|J`    	|arr        	|join-newline      	|Join strings with newline.
+`\|q`    	|arr arr    	|regex-indices     	|Get all indices of regex matches.
+`\|s`    	|arr arr    	|regex-split       	|Split by ECMA regex. Captured groups will be included in result.
+`\|S`    	|arr arr    	|surround          	|Prepend and append string/array.
+`\|t`    	|arr arr    	|translate         	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.
+`\|z`    	|arr int    	|zero-fill         	|Fill on the left with "0" to specified length.
+`:/`     	|arr arr    	|split-once        	|Split on the first occurrence of a substring.  Push both parts separately.
+`:[`     	|arr arr    	|starts-with       	|String starts with?
+`:]`     	|arr arr    	|starts-with       	|String ends with?
+`:3`     	|arr        	|rot-13            	|Rot13 encode/decode; dual-purpose.
+`:e`     	|arr        	|excerpts          	|Get all contiguous subarrays.
+`:R`     	|arr        	|brace-reflect     	|Reflect string, `(<[{/` becomes `\}]>)`
+`:t`     	|arr arr    	|ring-tranlate     	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
+`:w`     	|arr        	|brace-palindromize	|Concatenate all but the last character reversed.  Braces and slashes are individually reversed also.
+`:W`     	|arr        	|brace-mirror      	|Concatenate the string reversed.  Braces and slashes are individually reversed also.
+
 
 ## Array
 chars	|Types              	|Name              	|Description
@@ -365,6 +368,7 @@ chars	|Value
 `V?` 	|Version info
 `V0` 	|rational 0/1
 `V2` 	|0.5
+`V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
 `VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"
 `Vb` 	|"()[]{}<>"
@@ -372,7 +376,9 @@ chars	|Value
 `VC` 	|"BCDFGHJKLMNPQRSTVWXYZ"
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
+`VD` 	|sqrt(2)
 `Ve` 	|"natural log base"
+`VE` 	|sqrt(3)
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"
 `Vi` 	|"negative infinity"
@@ -387,6 +393,7 @@ chars	|Value
 `VP` 	|pi
 `Vq` 	|pi/2
 `Vs` 	|all ascii whitespace
+`VS` 	|4/3 pi
 `Vt` 	|tau (2pi)
 `VT` 	|10.0
 `VV` 	|AEIOU

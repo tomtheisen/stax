@@ -12,9 +12,9 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     FeatureTests for generators
+ *     embed [1|2]d array
  *     grid align lists of lists of lists 
  *     zip-fill w/ optional fill element
- *     reverse order of pushed values for reduce block
  *     ascii art grid modes (D)
  *          execute a series of trailing special instructions
  *          last position is globally remembered
@@ -52,17 +52,20 @@ namespace StaxLang {
             ['?'] = (S2A(VersionInfo), "version info"),
             ['0'] = (new Rational(0, 1), "0/1"),
             ['2'] = (0.5, "0.5"),
-            ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
+            ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
+            ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),
             ['B'] = (new BigInteger(256), "256"),
-            ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
             ['c'] = (S2A("bcdfghjklmnpqrstvwxyz"), "lowercase consonants"),
+            ['C'] = (S2A("BCDFGHJKLMNPQRSTVWXYZ"), "uppercase consonants"),
             ['d'] = (S2A("0123456789"), "decimal digits"),
+            ['D'] = (Math.Sqrt(2), "sqrt(2)"),
             ['e'] = (Math.E, "natural log base"),
+            ['E'] = (Math.Sqrt(3), "sqrt(3)"),
             ['h'] = (S2A("0123456789abcdef"), "lowercase hex digits"),
             ['H'] = (S2A("0123456789ABCDEF"), "uppercase hex digits"),
-            ['i'] = (double.PositiveInfinity, "negative infinity"),
+            ['i'] = (double.NegativeInfinity, "negative infinity"),
             ['I'] = (double.PositiveInfinity, "positive infinity"),
             ['k'] = (new BigInteger(1000), "one thousand"),
             ['l'] = (S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all letters"),
@@ -74,12 +77,13 @@ namespace StaxLang {
             ['P'] = (Math.PI, "pi"),
             ['q'] = (Math.PI / 2, "pi/2"),
             ['s'] = (S2A(" \t\r\n\v"), "all ascii whitespace"),
+            ['S'] = (Math.PI * 4 / 3, "4/3 pi"),
             ['t'] = (Math.PI * 2, "tau (2pi)"),
             ['T'] = (10.0, "10.0"),
-            ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),
-            ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
+            ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
+            ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
         };
 
         private BigInteger Index; // loop iteration

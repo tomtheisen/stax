@@ -116,8 +116,10 @@ namespace StaxLang {
                 ('T', "a", "{!Cim", "get all truthy indices"),
                 ('T', "i", "c^*h", "triangular number (n*(n+1)/2)"),
                 ('u', "a", "u%1=", "contains exactly 1 unique element?"),
-                ('V', "a", "c%us|+*", "mean"),
                 ('v', "a", "cor=", "array is non-ascending"),
+                ('V', "a", "c%us|+*", "mean"),
+                ('w', "a", "c1T:R+", "ascii-art palindromize; reflect braces and slashes"),
+                ('W', "a", "c:R+", "ascii-art mirror; reflect braces and slashes"),
             };
 
             var trees = new Dictionary<char, TreeNode>();
