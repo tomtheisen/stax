@@ -8,8 +8,6 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-// available chars
-//  D
 /* To add:
  *     FeatureTests for generators
  *     grid align lists of lists of lists
