@@ -12,26 +12,7 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     FeatureTests for generators
- *     grid align lists of lists of lists 
- *     zip-fill w/ optional fill element
- *     ascii art grid modes (D)
- *          execute a series of trailing special instructions
- *          last position is globally remembered
- *          keeps the actual grid on the input stack to avoid clogging up main stack data
- *          it's a different set of instructions for plotting to canvas grid
- *          moving outside the canvas expands the canvas
- *          instructions:
- *              1     foreach mode prefix
- *              10    int literals
- *              8+1   move to adjacent
- *              8+1   move to border
- *              3     move to center
- *              3     set x and or y
- *              8+1   peek print
- *              8+1   peek print return to start
- *              8+1   pop print 
- *              8+1   pop print return to start
- *              
+ *     grid align lists of lists of lists
  *     
  *     debugger
  */
@@ -463,6 +444,15 @@ namespace StaxLang {
                     case 'd': 
                         block.AddDesc("pop and discard");
                         Pop();
+                        break;
+                    case 'D':
+                        if (IsArray(Peek())) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " with the first element removed");
+                            else block.AddDesc("remove first element");
+                            var result = new List<object>(Pop());
+                            result.RemoveAt(0);
+                            Push(result);
+                        }
                         break;
                     case 'e': 
                         if (IsArray(Peek())) {
@@ -990,8 +980,23 @@ namespace StaxLang {
                                 RunMacro("ss~;*{;/c;%!w,d");
                                 break;
                             case '\\':
-                                block.AddDesc("zip; truncate to shorter");
-                                RunMacro("b%s% |m~ ;(s,(s \\");
+                                if (IsArray(Peek())) {
+                                    block.AddDesc("zip; truncate to shorter");
+                                    RunMacro("b%s% |m~ ;(s,(s \\");
+                                }
+                                else {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "zip arrays using " + e + " for fill");
+                                    else block.AddDesc("zip arrays using fill element");
+                                    var fill = Pop();
+                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    for (int i = 0; i < Math.Max(a.Count, b.Count); i++) {
+                                        result.Add(new List<object> {
+                                            a.ElementAtOrDefault(i) ?? fill,
+                                            b.ElementAtOrDefault(i) ?? fill,
+                                        });
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case ')': 
                                 DoRotate(block, RotateDirection.Right);

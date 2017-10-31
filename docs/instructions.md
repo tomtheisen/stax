@@ -217,6 +217,7 @@ chars	|Types              	|Name              	|Description
 `]`  	|any                	|singleton         	|Make a 1 element array.
 `B`  	|arr int            	|batch             	|Get all (overlapping) sub-arrays of specified length.
 `B`  	|arr                	|uncons-left       	|Remove first element from array.  Push the tail of the array, then the removed element.
+`D`  	|arr                	|drop-first        	|Remove first element from array.
 `h`  	|arr                	|first             	|Get first element.
 `H`  	|arr                	|last              	|Get last element.
 `I`  	|arr num            	|index-of          	|Get the index of the first occurrence.
@@ -248,6 +249,7 @@ chars	|Types              	|Name              	|Description
 `\|-`	|arr arr            	|multiset-subtract 	|Remove elements in b individually from a, if they're present.
 `\|-`	|arr num            	|remove-first      	|Remove first instance of b from a.
 `\|\`	|arr arr            	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
+`\|\`	|arr arr num        	|zip-fill          	|Zip arrays producing pairs.  The shorter array is extended using the fill element.
 `\|)`	|arr                	|rotate-right      	|Move the last element of an array to the front.
 `\|)`	|arr int            	|rotate-right-n    	|Shift array n places to the right, rotating the end to the front.
 `\|(`	|arr                	|rotate-left       	|Move the first element of an array to the end.

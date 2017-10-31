@@ -754,3 +754,22 @@ hello, world!
 foobaro, world!
 	stax
 15N "foobar" |%
+	name:ZipFill
+	in
+"abc" "123456"
+	out
+a1
+b2
+c3
+ 4
+ 5
+ 6
+	stax
+0 |\ m
+	name:DropFirst
+	in
+[9 3 5 7]
+	out
+3 5 7
+	stax
+D J
