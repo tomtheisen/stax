@@ -773,3 +773,18 @@ c3
 3 5 7
 	stax
 D J
+	name:ColumnAlign
+	out
+1 1  1  1  
+2 4  8  16 
+3 9  27 81 
+4 16 64 256
+	stax
+4c{|*K:<mJ
+	out
+1  1  1   1
+2  4  8  16
+3  9 27  81
+4 16 64 256
+	stax
+4c{|*K:>mJ

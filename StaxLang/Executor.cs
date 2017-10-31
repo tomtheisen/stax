@@ -10,8 +10,6 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *     FeatureTests for generators
- *     grid align lists of lists of lists
- *     
  *     debugger
  */
 

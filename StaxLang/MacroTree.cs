@@ -58,6 +58,8 @@ namespace StaxLang {
                 ('+', "f", "c0>s0<-", "number sign"),
                 ('+', "r", "c0>s0<-", "number sign"),
                 ('+', "i", "c0>s0<-", "number sign"),
+                ('<', "a", "M{|<mM", "left-align columns"),
+                ('>', "a", "M{|>mM", "right-align columns"),
                 ('^', "a", "co=", "array is non-descending"),
                 ('[', "aa", "~;%(,=", "starts with"),
                 (']', "aa", "~;%),=", "starts with"),

@@ -280,6 +280,8 @@ chars	|Types              	|Name              	|Description
 `:0` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
 `:1` 	|arr                	|truthy-indices    	|Get all indices of truthy elements.
 `::` 	|arr int            	|every-nth         	|Every nth element in array, starting from the first.
+`:<` 	|arr                	|col-align-left    	|Left-align columns by right-padding with spaces.
+`:>` 	|arr                	|col-align-right   	|Right-align columns by left-padding with spaces.
 `:*` 	|arr                	|product           	|Product of numbers in array.
 `:-` 	|arr                	|deltas            	|Pairwise difference of array.
 `:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
