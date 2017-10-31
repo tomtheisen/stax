@@ -445,3 +445,10 @@ a(/b
 a(/b\)a
 	stax
 :w
+	name:Spaces
+	in
+asdf
+	out
+     asdf
+	stax
+5: pP
