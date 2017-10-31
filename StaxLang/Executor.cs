@@ -29,6 +29,7 @@ namespace StaxLang {
             ['0'] = (new Rational(0, 1), "0/1"),
             ['2'] = (0.5, "0.5"),
             ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
+            ['/'] = (Math.PI / 3, "pi / 3"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),
