@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 //  D
 /* To add:
  *     FeatureTests for generators
- *     embed [1|2]d array
  *     grid align lists of lists of lists 
  *     zip-fill w/ optional fill element
  *     ascii art grid modes (D)
@@ -812,8 +811,34 @@ namespace StaxLang {
                                 DoDump();
                                 break;
                             case '%':
-                                block.AddDesc("divmod; push a/b and a%b");
-                                RunMacro("ssb%~/,");
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("divmod; push a/b and a%b");
+                                    RunMacro("ssb%~/,");
+                                }
+                                else if (IsArray(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "embed " + e + " in array at position");
+                                    block.AddDesc("embed sub-array at position");
+                                    dynamic c = Pop(), b = Pop(), a = Pop();
+                                    int loc;
+
+                                    List<object> result = new List<object>(a), payload;
+                                    if (IsArray(c)) (payload, loc) = (c, (int)b);
+                                    else (payload, loc) = (b, (int)c);
+
+                                    if (loc < 0) {
+                                        loc += result.Count;
+                                        if (loc < 0) {
+                                            result.InsertRange(0, Enumerable.Repeat(BigInteger.Zero as object, -loc));
+                                            loc = 0;
+                                        }
+                                    }
+
+                                    for (int i = 0; i < payload.Count; i++) {
+                                        while (loc + i >= result.Count) result.Add(BigInteger.Zero);
+                                        result[loc + i] = payload[i];
+                                    }
+                                    Push(result);
+                                }
                                 break;
                             case '+': 
                                 block.AddDesc("sum of array");
@@ -855,7 +880,29 @@ namespace StaxLang {
                                 break;
                             case '|': 
                                 block.AddDesc("bitwise or");
-                                Push(Pop() | Pop());
+                                if (IsInt(Peek())) {
+                                    Push(Pop() | Pop());
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("embed grid at co-ordinates");
+                                    List<object> payload = Pop();
+                                    int col = (int)Pop(), row = (int)Pop();
+                                    var result = new List<object>(Pop());
+
+                                    for (int r = 0; r < payload.Count; r++) {
+                                        List<object> payline = IsArray(payload[r]) ? (List<object>)payload[r] : new List<object> { payload[r] };
+                                        while (result.Count <= row + r) result.Add(new List<object>());
+                                        if (!IsArray(result[row + r])) result[row + r] = new List<object> { result[row + r] };
+                                        var resultline = (List<object>)result[row + r];
+
+                                        for (int c = 0; c < payline.Count; c++) {
+                                            while (resultline.Count <= col + c) resultline.Add(BigInteger.Zero);
+                                            resultline[col + c] = payline[c];
+                                        }
+                                    }
+
+                                    Push(result);
+                                }
                                 break;
                             case '^':
                                 if (IsArray(Peek())) {

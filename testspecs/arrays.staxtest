@@ -735,3 +735,22 @@ ab cd e
 abc d e
 	stax
 |! mJ
+	name:Embed
+	in
+hello, world!
+	out
+helfoobarrld!
+	stax
+3 "foobar" |%
+	in
+hello, world!
+	out
+hello, world!  foobar
+	stax
+15 "foobar" |%
+	in
+hello, world!
+	out
+foobaro, world!
+	stax
+15N "foobar" |%
