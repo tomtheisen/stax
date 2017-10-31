@@ -177,7 +177,6 @@ chars    	|Types      	|Name              	|Description
 `\|S`    	|arr arr    	|surround          	|Prepend and append string/array.
 `\|t`    	|arr arr    	|translate         	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.
 `\|z`    	|arr int    	|zero-fill         	|Fill on the left with "0" to specified length.
-`: `     	|int        	|spaces            	|Produce a string consisting of the specified number of spaces.
 `:/`     	|arr arr    	|split-once        	|Split on the first occurrence of a substring.  Push both parts separately.
 `:[`     	|arr arr    	|starts-with       	|String starts with?
 `:]`     	|arr arr    	|starts-with       	|String ends with?

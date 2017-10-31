@@ -40,7 +40,6 @@ namespace StaxLang {
         static MacroTree() {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
             var macros = new(char alias, string types, string code, string desc)[] {
-                (' ', "i", "' *", "string of n spaces"),
                 ('#', "i", "1!*", "floatify"),
                 ('#', "f", "1!*", "floatify"),
                 ('#', "r", "", "floatify"),
