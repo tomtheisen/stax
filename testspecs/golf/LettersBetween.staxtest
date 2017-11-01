@@ -1,0 +1,11 @@
+	#https://codegolf.stackexchange.com/questions/63307/letters-between-two-letters
+	in
+nature
+	out
+4
+	in
+antidisestablishmentarianism
+	out
+15
+	stax
+%rc|*F:s|cy_@E-=+

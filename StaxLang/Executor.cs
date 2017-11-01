@@ -9,6 +9,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      truthy/falsy count
+ *      prefix/suffix sums
+ *      multiadic macro arg reorderings
+ *      multi-mode
+ * 
  *     FeatureTests for generators
  *     debugger
  */
