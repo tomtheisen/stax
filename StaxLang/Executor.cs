@@ -9,9 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      multiadic macro arg reorderings
- *      minby/maxby
- * 
  *     FeatureTests for generators
  *     debugger
  */
@@ -240,7 +237,8 @@ namespace StaxLang {
                     case '~': block.AddDesc("push to input stack");
                         InputStack.Push(Pop());
                         break;
-                    case '#': {
+                    case '#': 
+                        {
                             // make sure number is on top
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(a)) (a, b) = (b, a);
@@ -259,7 +257,8 @@ namespace StaxLang {
                             RunMacro("]|&%");
                         }
                         break;
-                    case '"': {
+                    case '"': 
+                        {
                             Push(ParseString(program, true, ref ip, out bool implicitEnd));
                             type = InstructionType.Value;
                             if (implicitEnd) {
@@ -269,7 +268,8 @@ namespace StaxLang {
                             else block.AddDesc("literal");
                         }
                         break;
-                    case '`': {
+                    case '`': 
+                        {
                             Push(ParseCompressedString(program, ref ip, out bool implitEnd));
                             type = InstructionType.Value;
                             if (implitEnd) {
@@ -404,7 +404,8 @@ namespace StaxLang {
                         type = InstructionType.Value;
                         Push(new BigInteger(10));
                         break;
-                    case 'b': {
+                    case 'b': 
+                        {
                             block.AddDesc("copy top two values on stack");
                             dynamic b = Pop(), a = Peek();
                             Push(b); Push(a); Push(b);
@@ -470,9 +471,15 @@ namespace StaxLang {
                             else block.AddDesc("ceiling");
                             Push(((Rational)Pop()).Ceil());
                         }
+                        else if (IsBlock(Peek())) {
+                            foreach (var s in DoExtremaBy(-1, block)) yield return s;
+                        }
                         break;
                     case 'E': // explode (de-listify)
-                        DoExplode(block);
+                        if (IsBlock(Peek())) {
+                            foreach (var s in DoExtremaBy(1, block)) yield return s;
+                        }
+                        else DoExplode(block);
                         break;
                     case 'f': // block filter
                         { 
@@ -1493,6 +1500,42 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private IEnumerable<ExecutionState> DoExtremaBy(int direction, Block block) {
+            block.AddDesc($"get elements that yield { (direction < 0 ? "minima" : "maxima") } when block is applied");
+
+            Block project = Pop();
+            List<object> arr = Pop(), result = new List<object>();
+            object extreme = null;
+
+            if (arr.Count == 0) {
+                Push(arr);
+                yield break;
+            }
+
+            PushStackFrame();
+            foreach (var e in arr) {
+                Push(_ = e);
+
+                foreach (var s in RunSteps(project)) {
+                    if (s.Cancel) goto Cancel;
+                    yield return s;
+                }
+
+                var projected = Pop();
+                if (extreme == null || Comparer.Instance.Compare(projected, extreme) * direction > 0) {
+                    extreme = projected;
+                    result.Clear();
+                }
+                if (AreEqual(projected, extreme)) result.Add(e);
+
+                Cancel:
+                ++Index;
+            }
+            PopStackFrame();
+
+            Push(result);
         }
 
         private void DoMultiMode(Block block) {

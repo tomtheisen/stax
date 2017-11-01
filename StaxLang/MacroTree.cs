@@ -54,6 +54,7 @@ namespace StaxLang {
                 (':', "ai", "/{hm", "get every nth element"),
                 ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
                 ('/', "ai", "n%%b(aat", "split array at index; push both"),
+                ('/', "ia", "sn%%b(aat", "split array at index; push both"),
                 ('/', "aa", "b[Is%^%~n,(~%t;%t,s", "split on first substring occurrence, and push both sides"),
                 ('*', "a", "{*k", "array product"),
                 ('+', "f", "c0>s0<-", "number sign"),

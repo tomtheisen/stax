@@ -287,6 +287,7 @@ chars	|Types              	|Name              	|Description
 `:-` 	|arr                	|deltas            	|Pairwise difference of array.
 `:+` 	|arr                	|prefix-sums       	|Get the sums of all prefixes.
 `:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
+`:/` 	|int arr            	|split-at          	|Split array at index; push both parts.
 `:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.
@@ -324,6 +325,8 @@ chars	|Types        	|Name           	|Description
 `*`  	|block int    	|do-times       	|Perform block n times.
 `C`  	|any          	|cancel         	|If value is truthy, cancel current block execution.
 `C`  	|block        	|collect        	|Reduce using block, but collect each value in result array.  Does not terminate a block.
+`e`  	|block        	|min-by         	|Get the values which yield the minimum value when applying the block to the array. Does not terminate a block.
+`E`  	|block        	|max-by         	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.
 `f`  	|arr block    	|filter         	|Terminate a block and filter array using it as a predicate.
 `f`  	|arr          	|filter-short   	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
 `f`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.

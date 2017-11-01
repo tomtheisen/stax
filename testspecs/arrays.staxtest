@@ -443,6 +443,8 @@ cdefg
 ab
 	stax
 2 :/ PP
+	stax
+2s :/ PP
 	name:Powerset
 	in
 ABC
@@ -816,3 +818,17 @@ D J
 1 3
 	stax
 |= J
+	name:MinBy
+	in
+public static void main
+	out
+void main
+	stax
+j {%}e J
+	name:MaxBy
+	in
+public static void main
+	out
+public static
+	stax
+j {%}E J
