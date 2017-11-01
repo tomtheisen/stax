@@ -1,0 +1,20 @@
+	#https://codegolf.stackexchange.com/questions/146644/triangles-of-hexagons
+	in
+3
+	out
+\  |  /
+ \/ \/ 
+  \_/  
+	in
+8
+	out
+\/ \ / \ / \ / \/
+ \  |   |   |  / 
+  \/ \ / \ / \/  
+   \  |   |  /   
+    \/ \ / \/    
+     \  |  /     
+      \/ \/      
+       \_/       
+	stax
+" |/\"0\$4/,:m0'_&{i^:m'\s+mr|>m:w
