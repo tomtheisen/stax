@@ -788,3 +788,31 @@ D J
 4 16 64 256
 	stax
 4c{|*K:>mJ
+	name:Collect
+	in
+[4 3 2 1]
+	out
+4 12 24 24
+	stax
+{*}C J
+	name:PrefixSums
+	in
+[4 3 2 1]
+	out
+4 7 9 10
+	stax
+:+ J
+	name:TruthyCount
+	in
+[4 3 0 2 1]
+	out
+4
+	stax
+:@
+	name:MultiMode
+	in
+[1 1 2 3 3 4]
+	out
+1 3
+	stax
+|= J

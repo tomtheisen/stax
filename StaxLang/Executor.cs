@@ -9,10 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      truthy/falsy count
- *      prefix/suffix sums
  *      multiadic macro arg reorderings
- *      multi-mode
+ *      minby/maxby
  * 
  *     FeatureTests for generators
  *     debugger
@@ -242,8 +240,7 @@ namespace StaxLang {
                     case '~': block.AddDesc("push to input stack");
                         InputStack.Push(Pop());
                         break;
-                    case '#': 
-                        {
+                    case '#': {
                             // make sure number is on top
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(a)) (a, b) = (b, a);
@@ -262,8 +259,7 @@ namespace StaxLang {
                             RunMacro("]|&%");
                         }
                         break;
-                    case '"': 
-                        {
+                    case '"': {
                             Push(ParseString(program, true, ref ip, out bool implicitEnd));
                             type = InstructionType.Value;
                             if (implicitEnd) {
@@ -273,8 +269,7 @@ namespace StaxLang {
                             else block.AddDesc("literal");
                         }
                         break;
-                    case '`': 
-                        {
+                    case '`': {
                             Push(ParseCompressedString(program, ref ip, out bool implitEnd));
                             type = InstructionType.Value;
                             if (implitEnd) {
@@ -284,7 +279,7 @@ namespace StaxLang {
                             else block.AddDesc($"compressed [{A2S(Peek())}]");
                         }
                         break;
-                    case '\'': 
+                    case '\'':
                         block.AddDesc("single character string literal");
                         type = InstructionType.Value;
                         Push(S2A(program.Substring(++ip, 1)));
@@ -295,7 +290,7 @@ namespace StaxLang {
                         Push(S2A(program.Substring(ip + 1, 2)));
                         ip += 2;
                         break;
-                    case '{': 
+                    case '{':
                         block.AddDesc("code block");
                         type = InstructionType.Block;
                         ++ip;
@@ -304,7 +299,7 @@ namespace StaxLang {
                     case '}':
                         block.AddDesc("end");
                         yield break;
-                    case '!': 
+                    case '!':
                         if (block.LastInstrType == InstructionType.Comparison) block.AmendDesc(e => "not " + e);
                         else block.AddDesc("not");
                         Push(IsTruthy(Pop()) ? BigInteger.Zero : BigInteger.One);
@@ -333,7 +328,7 @@ namespace StaxLang {
                     case '&': // assign index
                         DoAssignIndex(block);
                         break;
-                    case '$': 
+                    case '$':
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert " + e + " to string");
                         else block.AddDesc("convert to string");
                         Push(ToString(Pop()));
@@ -356,12 +351,12 @@ namespace StaxLang {
                         if (IsNumber(Peek())) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " - 1");
                             else block.AddDesc("decrement");
-                            Push(Pop() - 1); 
+                            Push(Pop() - 1);
                         }
                         else if (IsArray(Peek())) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in lower case");
                             else block.AddDesc("to lower case");
-                            Push(S2A(A2S(Pop()).ToLower())); 
+                            Push(S2A(A2S(Pop()).ToLower()));
                         }
                         else throw new StaxException("Bad type for v");
                         break;
@@ -369,12 +364,12 @@ namespace StaxLang {
                         if (IsNumber(Peek())) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " + 1");
                             else block.AddDesc("increment");
-                            Push(Pop() + 1); 
+                            Push(Pop() + 1);
                         }
                         else if (IsArray(Peek())) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in upper case");
                             else block.AddDesc("to upper case");
-                            Push(S2A(A2S(Pop()).ToUpper())); 
+                            Push(S2A(A2S(Pop()).ToUpper()));
                         }
                         else throw new StaxException("Bad type for ^");
                         break;
@@ -388,7 +383,7 @@ namespace StaxLang {
                         block.AddDesc("duplicate element under top of stack");
                         RunMacro("ss~c,");
                         break;
-                    case ']': 
+                    case ']':
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "singleton array of " + e);
                         else block.AddDesc("make singleton array");
                         Push(new List<object> { Pop() });
@@ -404,13 +399,12 @@ namespace StaxLang {
                             Push(b); Push(c); Push(a);
                         }
                         break;
-                    case 'A': 
+                    case 'A':
                         block.AddDesc("10");
                         type = InstructionType.Value;
                         Push(new BigInteger(10));
                         break;
-                    case 'b': 
-                        {
+                    case 'b': {
                             block.AddDesc("copy top two values on stack");
                             dynamic b = Pop(), a = Peek();
                             Push(b); Push(a); Push(b);
@@ -422,7 +416,7 @@ namespace StaxLang {
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("uncons; remove first element from array and push both");
-                            RunMacro("c1tsh"); 
+                            RunMacro("c1tsh");
                         }
                         else if (IsFrac(Peek())) {
                             block.AddDesc("properize fraction; push integer floor and remainder of fraction separately");
@@ -430,17 +424,22 @@ namespace StaxLang {
                         }
                         else throw new StaxException("Bad type for B");
                         break;
-                    case 'c': 
+                    case 'c':
                         block.AddDesc("copy of top element in stack");
                         type = InstructionType.Value;
                         Push(Peek());
                         break;
                     case 'C':
-                        if (CallStackFrames.Any()) block.AddDesc("cancel iteration if true");
-                        else block.AddDesc("terminate if true");
-                        if (IsTruthy(Pop())) {
-                            yield return ExecutionState.CancelState;
-                            yield break;
+                        if (IsBlock(Peek())) {
+                            foreach (var s in DoCollect(block)) yield return s;
+                        }
+                        else {
+                            if (CallStackFrames.Any()) block.AddDesc("cancel iteration if true");
+                            else block.AddDesc("terminate if true");
+                            if (IsTruthy(Pop())) {
+                                yield return ExecutionState.CancelState;
+                                yield break;
+                            }
                         }
                         break;
                     case 'd': 
@@ -1006,6 +1005,11 @@ namespace StaxLang {
                             case '(': 
                                 DoRotate(block, RotateDirection.Left);
                                 break;
+                            case '=':
+                                if (IsArray(Peek())) {
+                                    DoMultiMode(block);
+                                }
+                                break;
                             case '[': 
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "all prefixes of " + e);
                                 else block.AddDesc("generate all prefixes");
@@ -1489,6 +1493,43 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private void DoMultiMode(Block block) {
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get all modes of " + e);
+            else block.AddDesc("get all tied modes of array");
+
+            List<object> arr = Pop(), result = new List<object>();
+            if (arr.Count > 0) {
+                var multi = Multiset(arr);
+                int max = multi.Values.Max();
+                result.AddRange(multi.Where(kvp => kvp.Value == max).Select(kvp => kvp.Key));
+                result.Sort();
+            }
+            Push(result);
+        }
+
+        private IEnumerable<ExecutionState> DoCollect(Block block) {
+            block.AddDesc("reduce and collect values");
+            Block reduce = Pop();
+            List<object> arr = Pop();
+
+            if (arr.Count < 2) {
+                Push(arr);
+                yield break;
+            }
+            List<object> result = new List<object> { arr[0] };
+
+            PushStackFrame();
+            Push(arr[0]);
+            foreach (var e in arr.Skip(1)) {
+                Push(_ = e);
+                foreach (var s in RunSteps(reduce)) yield return s;
+                result.Add(Peek());
+                Index++;
+            }
+            PopStackFrame();
+            Push(result);
         }
 
         private void DoPartition(Block block) {

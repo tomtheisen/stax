@@ -234,6 +234,7 @@ chars	|Types              	|Name              	|Description
 `z`  	|                   	|                  	|Push empty array/string.
 `\|0`	|arr                	|falsy-index       	|Get index of first falsy element.
 `\|1`	|arr                	|truthy-index      	|Get index of first truthy element.
+`\|=`	|arr                	|multi-mode        	|Get all tied modes of array.
 `\|+`	|arr                	|sum               	|Sum of array.
 `\|!`	|int int            	|int-partitions    	|Get all the distinct b-length arrays of positive integers that sum to a.
 `\|!`	|arr int            	|arr-partitions    	|Get all the ways of splitting array a into b pieces.
@@ -284,7 +285,9 @@ chars	|Types              	|Name              	|Description
 `:>` 	|arr                	|col-align-right   	|Right-align columns by left-padding with spaces.
 `:*` 	|arr                	|product           	|Product of numbers in array.
 `:-` 	|arr                	|deltas            	|Pairwise difference of array.
+`:+` 	|arr                	|prefix-sums       	|Get the sums of all prefixes.
 `:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
+`:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.
 `:^` 	|arr                	|non-descending    	|Is array non-descending? (has no adjacent pair of descending elements)
@@ -320,6 +323,7 @@ chars	|Types        	|Name           	|Description
 `*`  	|int block    	|do-times       	|Perform block n times.
 `*`  	|block int    	|do-times       	|Perform block n times.
 `C`  	|any          	|cancel         	|If value is truthy, cancel current block execution.
+`C`  	|block        	|collect        	|Reduce using block, but collect each value in result array.  Does not terminate a block.
 `f`  	|arr block    	|filter         	|Terminate a block and filter array using it as a predicate.
 `f`  	|arr          	|filter-short   	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
 `f`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
