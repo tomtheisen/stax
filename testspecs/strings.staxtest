@@ -400,6 +400,12 @@ That wo thecom I hannexambdateade offxPa
 Hello, bill.  It's -6 of one, and 6 of the other.
 	stax
 "Hello, ` .  It's `N of one, and `^ of the other.
+	in
+bill
+	out
+Hello bill. Vowels are aeiou.
+	stax
+"Hello ` . Vowels are `Vv.
 	name:SplitOnce
 	in
 cd

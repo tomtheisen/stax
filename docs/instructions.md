@@ -145,7 +145,7 @@ Strings are really just arrays of integers, but some operations are oriented tow
 chars    	|Types          	|Name              	|Description
 ---      	|---            	|---               	|---
 `#`      	|arr arr        	|count-substrings  	|Count occurrences of substring b in a.
-`"…"`    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `0tnr` do the same as C when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
+`"…"`    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `01234` yield `\\0 \\n \\t \\r \\v` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
 `` `…` ``	|               	|compressed-string 	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
 `'a`     	|               	|char-literal      	|Create a single character string literal.
 `.ab`    	|               	|two-char-literal  	|Create a two character string literal.
@@ -325,11 +325,11 @@ chars	|Types        	|Name           	|Description
 `*`  	|block int    	|do-times       	|Perform block n times.
 `C`  	|any          	|cancel         	|If value is truthy, cancel current block execution.
 `C`  	|block        	|collect        	|Reduce using block, but collect each value in result array.  Does not terminate a block.
+`D`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
 `e`  	|block        	|min-by         	|Get the values which yield the minimum value when applying the block to the array. Does not terminate a block.
 `E`  	|block        	|max-by         	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.
 `f`  	|arr block    	|filter         	|Terminate a block and filter array using it as a predicate.
 `f`  	|arr          	|filter-short   	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
-`f`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
 `F`  	|arr block    	|foreach        	|Terminate a block.  Push each element of the array, and execute the block for each.
 `F`  	|arr          	|foreach-short  	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
 `F`  	|int          	|for-short      	|Perform `foreach-short` using the range [1 .. n].

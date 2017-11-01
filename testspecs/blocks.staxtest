@@ -172,3 +172,13 @@ out
 gosub 2
 	stax
 G "out"P G } "gosub "p |XP
+	name:ShorthandFilter
+	in
+[4 6 0 1 0 3]
+	out
+4
+6
+1
+3
+	stax
+f

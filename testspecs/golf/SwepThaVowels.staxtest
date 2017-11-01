@@ -1,0 +1,35 @@
+	#https://codegolf.stackexchange.com/questions/126201/swep-tha-vowels
+	in
+great day sir
+	out
+grayt dea sir
+	in
+ppcg is the best
+	out
+ppcg is the best
+	in
+this is a test case
+	out
+this is e tast case
+	in
+loooooooooooooong word
+	out
+long woooooooooooooord
+	in
+great night
+	out
+grit neaght
+	in
+anything goes
+	out
+oenything gas
+	in
+qwrtpsdfghjklzxcvbnm aaaaaaaa hi there
+	out
+qwrtpsdfghjklzxcvbnm aaaaaaaa he thire
+	in
+this is a long test case in case you could not tell
+	out
+this is o lang tast cese an cise ou cyould net toll
+	stax
+j2/{J"(\w* \w*?)""([`Vvy]+)"|S'$3R$r\RmJ

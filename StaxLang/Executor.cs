@@ -455,6 +455,18 @@ namespace StaxLang {
                             result.RemoveAt(0);
                             Push(result);
                         }
+                        if (IsInt(Peek())) { // n times do
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " times do");
+                            else block.AddDesc("n times do");
+                            var n = Pop();
+                            PushStackFrame();
+                            for (Index = BigInteger.Zero; Index < n; Index++) {
+                                _ = Index + 1;
+                                foreach (var s in RunSteps(block.SubBlock(ip + 1))) yield return s;
+                            }
+                            PopStackFrame();
+                            yield break;
+                        }
                         break;
                     case 'e': 
                         if (IsArray(Peek())) {
@@ -2752,19 +2764,7 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoFilter(Block block, Block rest) {
-            if (IsInt(Peek())) { // n times do
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " times do");
-                else block.AddDesc("n times do");
-                var n = Pop();
-                PushStackFrame();
-                for (Index = BigInteger.Zero; Index < n; Index++) {
-                    _ = Index + 1;
-                    foreach (var s in RunSteps(rest)) yield return s;
-                }
-                PopStackFrame();
-                yield break;
-            }
-            else if (IsArray(Peek())) { // filter shorthand
+            if (IsArray(Peek())) { // filter shorthand
                 block.AddDesc("treat rest of program as filter and print the result");
                 PushStackFrame();
                 foreach (var e in Pop()) {
@@ -3407,28 +3407,33 @@ namespace StaxLang {
             while (ip < program.Length - 1 && program[++ip] != '"') {
                 if (program[ip] == '`') {
                     switch (program[++ip]) {
-                        case 'n':
-                            result += '\n';
-                            break;
-                        case 't':
-                            result += '\t';
-                            break;
-                        case 'r':
-                            result += '\r';
-                            break;
                         case '0':
                             result += '\0';
+                            break;
+                        case '1':
+                            result += '\n';
+                            break;
+                        case '2':
+                            result += '\t';
+                            break;
+                        case '3':
+                            result += '\r';
+                            break;
+                        case '4':
+                            result += '\v';
                             break;
                         case '`':
                         case '"':
                             result += program[ip];
                             break;
                         default:
+                            int instLen = ":|V".Contains(program[ip]) ? 2 : 1;
                             if (doTemplates) {
-                                RunMacro(program[ip] + "");
+                                RunMacro(program.Substring(ip, instLen));
                                 if (IsArray(Peek())) result += A2S(Pop());
                                 else result += A2S(ToString(Pop()));
                             }
+                            ip += instLen - 1;
                             break;
                     }
                 }
