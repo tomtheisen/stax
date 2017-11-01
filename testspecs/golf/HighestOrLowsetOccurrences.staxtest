@@ -1,0 +1,47 @@
+	#https://codegolf.stackexchange.com/questions/146724/highest-or-lowest-occurrences
+	in
+1, "Just_A_Test!"
+	out
+ ust    est 
+	in
+-1, "Just_A_Test!"
+	out
+            
+	in
+1, "Aa1!Bb2@Cc3#Dd4$"
+	out
+Aa1!Bb2@Cc3#Dd4$
+	in
+-1, "Aa1!Bb2@Cc3#Dd4$"
+	out
+Aa1!Bb2@Cc3#Dd4$
+	in
+1, "H@$h!n9_!$_fun?"
+	out
+ @$ !  _!$_   ?
+	in
+-1, "H@$h!n9_!$_fun?"
+	out
+H     9        
+	in
+1, "A"
+	out
+A
+	in
+-1, "A"
+	out
+ 
+	in
+1, "H.ngm.n"
+	out
+  ngm n
+	in
+-1, "H.ngm.n"
+	out
+       
+	in
+-1, "H.ngm4n"
+	out
+H.   4 
+	stax
+{VLVlVA++#^_](4)mM{:@;*}EM{|+m
