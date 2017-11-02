@@ -1,0 +1,32 @@
+	#http://golf.shinh.org/p.rb?Function+call+expression
+	in
+f(f)
+	out
+(f f)
+	in
+f(f(f))
+	out
+(f (f f))
+	in
+f(f(f(f)))
+	out
+(f (f (f f)))
+	in
+f(f(f(f(f))))
+	out
+(f (f (f (f f))))
+	in
+f(f)(f)
+	out
+((f f) f)
+	in
+f(f)(f)(f)
+	out
+(((f f) f) f)
+	in
+f(f)(f)(f)(f)
+	out
+((((f f) f) f) f)
+	stax
+mF4%|cv_{,')+'(,+0+s+}?~
+mF4%|cv_{')+~'(s+0+,+}?

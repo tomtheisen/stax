@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      generator equilibrium scalar
  *     FeatureTests for generators
  *     debugger
  */

@@ -469,3 +469,17 @@ Unfortunately, it's the answer toXXnother question.
                                  XX
 	stax
 L 2 33 'XA*2/ || m
+	name:TitleCase
+	in
+foO BaR 123
+	out
+Foo Bar 123
+	stax
+:.
+	name:ToggleCase
+	in
+foO BaR 123
+	out
+FOo bAr 123
+	stax
+:~
