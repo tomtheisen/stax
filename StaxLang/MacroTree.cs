@@ -109,6 +109,7 @@ namespace StaxLang {
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror (reverse and concatenate with self)"),
                 ('M', "a", "|R{HoHh", "mode - last to appear wins tie"),
+                ('o', "aa", @"Vi|\{|Mm", "overlay; keep the maximum respective elements from two arrays"),
                 ('p', "i", "v{|p}gsv", "last prime <n"),
                 ('P', "i", "{|p}gs", "next prime >=n"),
                 ('r', "aaa", "aa/s*", "replace all substring occurrences"),

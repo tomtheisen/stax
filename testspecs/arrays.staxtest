@@ -832,3 +832,10 @@ public static void main
 public static
 	stax
 j {%}E J
+	name:Overlay
+	in
+[1 2 3 -1] [4 0]
+	out
+4 2 3 -1
+	stax
+:o J

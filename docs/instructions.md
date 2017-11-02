@@ -145,7 +145,7 @@ Strings are really just arrays of integers, but some operations are oriented tow
 chars    	|Types          	|Name              	|Description
 ---      	|---            	|---               	|---
 `#`      	|arr arr        	|count-substrings  	|Count occurrences of substring b in a.
-`"…"`    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `01234` yield `\\0 \\n \\t \\r \\v` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
+`"…"`    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `01234` yield `\0 \n \t \r \v` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
 `` `…` ``	|               	|compressed-string 	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
 `'a`     	|               	|char-literal      	|Create a single character string literal.
 `.ab`    	|               	|two-char-literal  	|Create a two character string literal.
@@ -306,6 +306,7 @@ chars	|Types              	|Name              	|Description
 `:m` 	|arr int            	|repeat-to         	|Repeat array until it is exactly length n.
 `:m` 	|arr                	|mirror            	|Append reversed copy to array.
 `:M` 	|arr                	|mode              	|Mode.  In case of tie, the last element to appear wins.
+`:o` 	|arr arr            	|overlay           	|Keep the maximum element respective element from two arrays.
 `:r` 	|arr arr            	|replace-all       	|Replace all substring occurrences.
 `:r` 	|int                	|centered-range    	|Make range [-n .. n] centered around 0.
 `:s` 	|arr                	|span              	|Get the span of an array. (maximum minus minimum)

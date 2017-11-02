@@ -1,0 +1,25 @@
+	#http://golf.shinh.org/p.rb?Borderizing+Texts
+	in
+test test test
+	out
+ ____________________
+| | |  | | |  | | |  |
+| test | test | test |
+|__|_|_|__|_|_|__|_|_|
+	in
+Jackdaws love my big sphinx of quartz.
+	out
+ ____________________________________________________
+| | | | |  | | |  | |  | | | | | | |  | |  | | | | | |
+| Jackdaws | love | my | big | sphinx | of | quartz. |
+|__|_|_|_|_|__|_|_|__|_|__|__|__|_|_|_|__|_|__|_|_|__|
+	in
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+	out
+ _________________________________________________________________________________________________________________________________________________________
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |  | | | | |  | |  | | | |  | |  | | | |  | | | | | | | | | |
+| Lorem | ipsum | dolor | sit | amet, | consectetur | adipisici | elit, | sed | eiusmod | tempor | incidunt | ut | labore | et | dolore | magna | aliqua. |
+|__|_|__|__|_|__|__|_|__|__|__|__|_|__|__|_|_|_|_|__|__|_|_|_|__|__|_|__|__|__|__|_|_|__|__|_|_|_|__|_|_|_|_|__|_|__|_|_|_|__|_|__|_|_|_|__|_|__|__|_|_|__|
+	stax
+| jX{%3++Fv'_*Px{.| q_%:mp| FGx{.| pp| FGx{.|_qr_%:mp'_pFG}'|P
+╥ΔcÆ╟O²○←ü╕ø≡Δr!ñ┘)=←^Θöè≥4pz└X┼!å;⌡²┴5|^▌─╓nAH{╦S≡
