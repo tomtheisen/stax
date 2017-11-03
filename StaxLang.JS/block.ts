@@ -3,30 +3,40 @@ import * as _ from 'lodash';
 export class Block {
     contents: string;
     tokens: (string | Block)[];
-    gotoTargets?: number[];
-
-    constructor(contents: string, tokens: (string | Block)[], gotoTargets?: number[]) {
+    get length(): number { return this.contents.length; }
+    
+    constructor(contents: string, tokens: (string | Block)[]) {
         this.contents = contents;
         this.tokens = tokens;
+    }
+}
+
+export class Program extends Block {
+    gotoTargets: number[];
+    
+    constructor(contents: string, tokens: (string | Block)[], gotoTargets: number[]) {
+        super(contents, tokens);
         this.gotoTargets = gotoTargets;
     }
 }
 
-export function parseBlock(program: string): Block {
-    return parseBlockCore(program, true);
+export function parseProgram(program: string): Program {
+    return parseCore(program, true);
 }
 
-function parseBlockCore(program: string, whole: boolean): Block {
+function parseCore(program: string, wholeProgram: true): Program;
+function parseCore(program: string, wholeProgram: false): Block;
+function parseCore(program: string, wholeProgram: boolean): Block {
     let gotoTargets = [0];
     let tokens: (string | Block)[] = [];
     let pos = 0;
-    if (!whole) {
+    if (!wholeProgram) {
         console.assert(program[0] === "{");
         pos = 1;
     }
 
     while (pos < program.length) {
-        if (!whole && "wWmfFkKgo".indexOf(program[pos]) >= 0) {
+        if (!wholeProgram && "wWmfFkKgo".indexOf(program[pos]) >= 0) {
             return new Block(program.substr(0, pos), tokens);
         }
 
@@ -58,13 +68,13 @@ function parseBlockCore(program: string, whole: boolean): Block {
                 break;
 
             case '{':
-                let b = parseBlockCore(program.substr(pos), false);
+                let b = parseCore(program.substr(pos), false);
                 pos += b.contents.length;
                 tokens.push(b);
                 break;
 
             case '}':
-                if (whole) {
+                if (wholeProgram) {
                     tokens.push("}");
                     gotoTargets.push(++pos);
                 }
@@ -79,7 +89,8 @@ function parseBlockCore(program: string, whole: boolean): Block {
         }
     }
 
-    return new Block(program, tokens, gotoTargets);
+    if (wholeProgram) return new Program(program, tokens, gotoTargets);
+    return new Block(program, tokens);
 }
 
 function parseNum(program: string, pos: number): string {
