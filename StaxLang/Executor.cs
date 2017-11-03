@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      generator equilibrium scalar
  *     FeatureTests for generators
  *     debugger
  */
@@ -1929,9 +1928,9 @@ namespace StaxLang {
             bool stopOnDupe = lowerSpec == 'u' || lowerSpec == 'l',
                 stopOnFilter = lowerSpec == 'f',
                 stopOnCancel = lowerSpec == 'c',
-                stopOnFixPoint = lowerSpec == 'i',
+                stopOnFixPoint = lowerSpec == 'i' || lowerSpec == 'p',
                 stopOnTargetVal = lowerSpec == 't',
-                scalarMode = lowerSpec == 's' || lowerSpec == 'e',
+                scalarMode = lowerSpec == 's' || lowerSpec == 'e' || lowerSpec == 'p',
                 keepOnlyLoop = lowerSpec == 'l',
                 postPop = char.IsUpper(spec);
             Block genblock = shorthand ? rest : Pop();
@@ -1972,7 +1971,7 @@ namespace StaxLang {
                     : "";
 
             block.AddDesc(
-                (scalarMode ? "generate values, keeping only the last,  " : "generate and collect values ")
+                (scalarMode ? "generate values, keeping only the last, " : "generate and collect values ")
                 + (filter != null ? "matching filter " : "")
                 + (shorthand ? "from rest of program " : "")
                 + (stopOnDupe ? "until a duplicate is found, " : "")

@@ -17,6 +17,7 @@ Duplicate	|`u`     	|`U`     	|Stops when finding any duplicate value
 Filter   	|`f`     	|`F`     	|Stops when any value fails the filter; a filter is required for this mode
 Cancel   	|`c`     	|`C`     	|Stops on explicit cancellation only
 Invariant	|`i`     	|`I`     	|Stops when finding two equal values subsequently
+Fixpoint 	|`p`     	|`P`     	|Stops when finding two equal values subsequently; produces that single value, not an array
 Target   	|`t`     	|`T`     	|Stops when finding the target value, which is popped before the generator begins
 First    	|`s`     	|`S`     	|Stops after the first value;  produces a single value, not array
 Index    	|`e`     	|`E`     	|Stops after finding the nth value;  produces a single value, not array - n is popped before the generator begins
