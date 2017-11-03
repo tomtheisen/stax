@@ -327,6 +327,8 @@ chars	|Types        	|Name           	|Description
 `}`  	|             	|               	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
 `*`  	|int block    	|do-times       	|Perform block n times.
 `*`  	|block int    	|do-times       	|Perform block n times.
+`/`  	|arr block    	|group-by       	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
+`(`  	|arr block    	|partition-when 	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value.
 `C`  	|any          	|cancel         	|If value is truthy, cancel current block execution.
 `C`  	|block        	|collect        	|Reduce using block, but collect each value in result array.  Does not terminate a block.
 `D`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.

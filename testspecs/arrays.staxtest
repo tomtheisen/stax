@@ -846,3 +846,24 @@ j {%}E J
 4 2 3 -1
 	stax
 :o J
+	name:GroupBy
+	in
+	out
+1 4 9 16
+25 36
+49
+64
+81
+100
+	stax
+AR{Jm {20/}/ mJ
+	name:PartitionWhen
+	in
+Hello, world!
+	out
+H
+ell
+o, w
+orld!
+	stax
+{Vvs#}(m

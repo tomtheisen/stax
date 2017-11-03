@@ -314,7 +314,7 @@ namespace StaxLang {
                         foreach (var s in DoStar(block)) yield return s;
                         break;
                     case '/':
-                        DoSlash(block);
+                        foreach (var s in DoSlash(block)) yield return s;
                         break;
                     case '\\':
                         DoZipRepeat(block);
@@ -374,7 +374,7 @@ namespace StaxLang {
                         else throw new StaxException("Bad type for ^");
                         break;
                     case '(':
-                        DoPadRight(block);
+                        foreach (var s in DoPadRight(block)) yield return s;
                         break;
                     case ')':
                         DoPadLeft(block);
@@ -2665,7 +2665,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoPadRight(Block block) {
+        private IEnumerable<ExecutionState> DoPadRight(Block block) {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b) && IsInt(a)) (a, b) = (b, a);
@@ -2687,6 +2687,32 @@ namespace StaxLang {
                 for (int i = 0; i < b.Count; i++) {
                     result.Add(i < a.Count ? a[i] : b[i]);
                 }
+                Push(result);
+            }
+            else if (IsArray(a) && IsBlock(b)) {
+                List<object> result = new List<object>(), current = null;
+
+                PushStackFrame();
+                foreach (var e in a) {
+                    Push(_ = e);
+
+                    foreach (var s in RunSteps((Block)b)) {
+                        if (s.Cancel) goto Cancel;
+                        yield return s;
+                    }
+
+                    if (IsTruthy(Pop()) || current == null) {
+                        if (current != null) result.Add(current);
+                        current = new List<object>();
+                    }
+                    current.Add(e);
+
+                    Cancel:
+                    ++Index;
+                }
+                PopStackFrame();
+
+                if (current != null) result.Add(current);
                 Push(result);
             }
             else {
@@ -3123,7 +3149,7 @@ namespace StaxLang {
             }
         }
 
-        private void DoSlash(Block block) {
+        private IEnumerable<ExecutionState> DoSlash(Block block) {
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -3154,6 +3180,33 @@ namespace StaxLang {
                 else block.AddDesc("string split");
                 string[] strings = A2S(a).Split(new string[] { A2S(b) }, 0);
                 Push(strings.Select(s => S2A(s) as object).ToList());
+            }
+            else if (IsArray(a) && IsBlock(b)) {
+                block.AddDesc("partition into groups of adjacent elements that produce equal values after executing block");
+                List<object> result = new List<object>(), currentPart = null;
+                dynamic last = null;
+                
+                PushStackFrame();
+                foreach (var e in a) {
+                    Push(_ = e);
+                    foreach (var s in RunSteps((Block)b)) {
+                        if (s.Cancel) goto Cancel;
+                        yield return s;
+                    }
+                    var current = Pop();
+                    if (!AreEqual(current, last)) {
+                        if (currentPart != null) result.Add(currentPart);
+                        currentPart = new List<object>();
+                    }
+                    currentPart.Add(e);
+                    last = current;
+
+                    Cancel:
+                    ++Index;
+                }
+                if (currentPart.Count > 0) result.Add(currentPart);
+                PopStackFrame();
+                Push(result);
             }
             else {
                 throw new StaxException("Bad types for /");
