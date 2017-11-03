@@ -483,3 +483,14 @@ foO BaR 123
 FOo bAr 123
 	stax
 :~
+	name:RegexIsMatch
+	in
+abcd9
+	out
+0
+	in
+abcd
+	out
+1
+	stax
+"[a-z]+" |Q

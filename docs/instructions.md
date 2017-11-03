@@ -174,6 +174,7 @@ chars    	|Types          	|Name              	|Description
 `\|I`    	|arr arr        	|str-index-all     	|Find all indexes of the substring.
 `\|J`    	|arr            	|join-newline      	|Join strings with newline.
 `\|q`    	|arr arr        	|regex-indices     	|Get all indices of regex matches.
+`\|Q`    	|arr arr        	|regex-is-match    	|Regex matches entire string?
 `\|s`    	|arr arr        	|regex-split       	|Split by ECMA regex. Captured groups will be included in result.
 `\|S`    	|arr arr        	|surround          	|Prepend and append string/array.
 `\|t`    	|arr arr        	|translate         	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.

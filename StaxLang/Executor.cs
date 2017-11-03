@@ -1418,10 +1418,17 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 break;
-                            case 'Q': // float square root
+                            case 'Q': 
                                 if (IsNumber(Peek())) {
                                     block.AddDesc("square root");
                                     Push(Math.Sqrt(Math.Abs((double)Pop())));
+                                }
+                                else if (IsArray(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "regex in " + e + " matches all of string");
+                                    else block.AddDesc("regex matches all of string");
+                                    List<object> b = Pop(), a = Pop();
+                                    bool match = Regex.IsMatch(A2S(a), "^(" + A2S(b) + ")$");
+                                    Push(match ? BigInteger.One : BigInteger.Zero);
                                 }
                                 break;
                             case 'r':
