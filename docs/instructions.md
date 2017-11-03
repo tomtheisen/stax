@@ -240,6 +240,7 @@ chars	|Types              	|Name              	|Description
 `\|+`	|arr                	|sum               	|Sum of array.
 `\|!`	|int int            	|int-partitions    	|Get all the distinct b-length arrays of positive integers that sum to a.
 `\|!`	|arr int            	|arr-partitions    	|Get all the ways of splitting array a into b pieces.
+`\|!`	|arr                	|multi-anti-mode   	|Get all tied rarest elements of array.
 `\|@`	|arr int            	|remove-at         	|Remove element from array at index.
 `\|@`	|arr int num        	|insert-at         	|Insert element to array at index.
 `\|#`	|arr arr            	|verbatim-count    	|Counts number of occurrences of b as an element of a, without any string flattening.

@@ -310,3 +310,10 @@ H
 0
 	stax
 f C 1
+	name:EmptySum
+	in
+[]
+	out
+0
+	stax
+|+

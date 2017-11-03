@@ -853,13 +853,14 @@ namespace StaxLang {
                                 break;
                             case '+': 
                                 block.AddDesc("sum of array");
-                                RunMacro("0s{+F");
+                                RunMacro("Z{+F");
                                 break;
                             case '-':
                                 DoMultisetSubtract(block);
                                 break;
                             case '!':
-                                DoPartition(block);
+                                if (IsInt(Peek())) DoPartition(block);
+                                else if (IsArray(Peek())) DoMultiAntiMode(block);
                                 break;
                             case '@':
                                 DoRemoveOrInsert(block);
@@ -1560,6 +1561,20 @@ namespace StaxLang {
                 var multi = Multiset(arr);
                 int max = multi.Values.Max();
                 result.AddRange(multi.Where(kvp => kvp.Value == max).Select(kvp => kvp.Key));
+                result.Sort();
+            }
+            Push(result);
+        }
+
+        private void DoMultiAntiMode(Block block) {
+            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get all anti-modes of " + e);
+            else block.AddDesc("get all tied anti-modes of array");
+
+            List<object> arr = Pop(), result = new List<object>();
+            if (arr.Count > 0) {
+                var multi = Multiset(arr);
+                int min = multi.Values.Min();
+                result.AddRange(multi.Where(kvp => kvp.Value == min).Select(kvp => kvp.Key));
                 result.Sort();
             }
             Push(result);
