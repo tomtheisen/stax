@@ -4,11 +4,12 @@ import { Runtime, ExecutionState } from './stax';
 var stdin = process.openStdin();
 
 var rt = new Runtime(o => console.log(o));
-for (let s of rt.runProgram("123 234 +P")){
+for (let s of rt.runProgram('"hello`1world"3*')){
   //lol
 }
 
 process.exit();
+
 /*
 stdin.addListener("data", function(d) {
     // note:  d is an object, and when converted to a string it will

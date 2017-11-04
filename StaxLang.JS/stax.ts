@@ -59,7 +59,7 @@ function broadenNums(...nums: StaxNumber[]): StaxNumber[] {
         return _.map(nums, floatify);
     }
     if (_.some(nums, n => n instanceof Rational)) {
-        return _.map(nums, n => n instanceof Rational ? n : new Rational(n, minusOne));
+        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as bigInt.BigInteger, minusOne));
     }
     return nums;
 }
@@ -108,10 +108,13 @@ export class Runtime {
     }
 
     public *runProgram(program: string) {
-        for (let s of this.runSteps(parseProgram(program))) yield s;
+        for (let s of this.runSteps(program)) yield s;
+
+        if (this.outBuffer) this.print("");
+        if (!this.producedOutput) this.print(this.pop());
     }
 
-    private *runSteps(block: Block) {
+    private *runSteps(block: Block | string) {
         if (typeof block === "string") block = parseProgram(block);
 
         let ip = 0;
@@ -125,14 +128,22 @@ export class Runtime {
             else {
                 if (!!token[0].match(/\d+!/)) this.push(parseFloat(token.replace("!", ".")));
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
+                else if (token[0] == '"') this.evaluateStringToken(token);
                 switch (token) {
                     case ' ':
                         break;
-
                     case '+':
                         this.doPlus();
                         break;
-
+                    case '-':
+                        this.doMinus();
+                        break;
+                    case '*':
+                        this.doStar();
+                        break;
+                    case '/':
+                        this.doSlash();
+                        break;
                     case 'P':
                         this.print(this.pop());
                         break;
@@ -149,11 +160,100 @@ export class Runtime {
             let result: StaxNumber;
             [a, b] = broadenNums(a, b);
             if (isFloat(a) && isFloat(b)) result = a + b;
-            else if (a instanceof Rational && b instanceof Rational) throw "todo";
+            else if (a instanceof Rational && b instanceof Rational) result = a.add(b);
             else if (isInt(a) && isInt(b)) result = a.add(b);
             else throw "weird types or something; can't add?"
-
             this.push(result);
         }
+    }
+
+    private doMinus() {
+        let b = this.pop(), a = this.pop();
+        if (isNumber(a) && isNumber(b)) {
+            let result: StaxNumber;
+            [a, b] = broadenNums(a, b);
+            if (isFloat(a) && isFloat(b)) result = a - b;
+            else if (a instanceof Rational && b instanceof Rational) result = a.subtract(b);
+            else if (isInt(a) && isInt(b)) result = a.subtract(b);
+            else throw "weird types or something; can't subtract?"
+            this.push(result);
+        }
+    }
+
+    private doStar() {
+        let b = this.pop(), a = this.pop();
+        if (isNumber(a) && isNumber(b)) {
+            let result: StaxNumber;
+            [a, b] = broadenNums(a, b);
+            if (isFloat(a) && isFloat(b)) result = a * b;
+            else if (a instanceof Rational && b instanceof Rational) result = a.multiply(b);
+            else if (isInt(a) && isInt(b)) result = a.multiply(b);
+            else throw "weird types or something; can't multiply?"
+            this.push(result);
+        }
+        else if (isInt(a) && isArray(b)) {
+            let result: StaxArray = [];
+            let count = a.valueOf();
+            for (var i = 0; i < count; i++) result = result.concat(b);
+            this.push(result);
+        }
+        else if (isArray(a) && isInt(b)) {
+            let result: StaxArray = [];
+            let count = b.valueOf();
+            for (var i = 0; i < count; i++) result = result.concat(a);
+            this.push(result);
+        }
+    }
+
+    private doSlash() {
+        let b = this.pop(), a = this.pop();
+        if (isNumber(a) && isNumber(b)) {
+            let result: StaxNumber;
+            [a, b] = broadenNums(a, b);
+            if (isFloat(a) && isFloat(b)) result = a / b;
+            else if (a instanceof Rational && b instanceof Rational) result = a.divide(b);
+            else if (isInt(a) && isInt(b)) {
+                if (b.isNegative()) {
+                    a = a.negate();
+                    b = b.negate();
+                }
+                if (a.isNegative()) a = a.subtract(b).add(one);
+                result = a.divide(b);
+            }
+            else throw "weird types or something; can't divide?"
+            this.push(result);
+        }
+    }
+
+    private evaluateStringToken(token: string) {
+        let unescaped = "";
+        let terminated = false;
+        for (var i = 1; i < token.length; i++) {
+            if (token[i] == "`") {
+                switch(token[++i]) {
+                    case "`":
+                    case '"': unescaped += token[i]; break;
+                    case '0': unescaped += "\0"; break;
+                    case '1': unescaped += "\n"; break;
+                    case '2': unescaped += "\t"; break;
+                    case '3': unescaped += "\r"; break;
+                    case '4': unescaped += "\v"; break;
+                    default:
+                        for (let s of this.runSteps(token[i]));
+                        let popped = this.pop();
+                        if (isArray(popped)) unescaped += A2S(popped);
+                        else unescaped += popped.toString();
+                }
+            }
+            else if (token[i] == '"') {
+                terminated = true;
+                break;
+            }
+            else {
+                unescaped += token[i];
+            }
+        }
+        if (terminated) this.push(S2A(unescaped));
+        else this.print(unescaped, false);
     }
 }
