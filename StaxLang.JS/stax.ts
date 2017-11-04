@@ -96,6 +96,10 @@ export class Runtime {
         return this.mainStack.pop() || this.inputStack.pop() || fail("popped empty stacks");
     }
 
+    private totalSize() {
+        return this.mainStack.length + this.inputStack.length;
+    }
+
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
 
@@ -138,6 +142,17 @@ export class Runtime {
                 switch (token) {
                     case ' ':
                         break;
+                    case '~':
+                        this.inputStack.push(this.pop());
+                        break;
+                    case ';':
+                        this.inputStack.length || fail("stack empty");
+                        this.push(_.last(this.inputStack)!);
+                        break;
+                    case ',':
+                        this.inputStack.length || fail("stack empty");
+                        this.push(this.inputStack.pop()!);
+                        break;
                     case '!':
                         this.push(isTruthy(this.pop()) ? zero : one);
                         break;
@@ -153,11 +168,20 @@ export class Runtime {
                     case '/':
                         this.doSlash();
                         break;
+                    case '[':
+                        {
+                            let b = this.pop(), a = this.peek();
+                            this.push(a, b);
+                        }
+                        break;
                     case 'a':
                         {
                             let c = this.pop(), b = this.pop(), a = this.pop();
                             this.push(b, c, a);
                         }
+                        break;
+                    case 'A':
+                        this.push(bigInt[10])
                         break;
                     case 'b':
                         {
@@ -168,8 +192,27 @@ export class Runtime {
                     case 'c':
                         this.push(this.peek());
                         break;
+                    case 'C':
+                        if (isTruthy(this.pop())) {
+                            yield new ExecutionState(ip, true);
+                            return;
+                        }
+                        break;
                     case 'd':
                         this.pop();
+                        break;
+                    case 'L':
+                        this.mainStack = [..._.reverse(this.mainStack), ..._.reverse(this.inputStack)];
+                        this.inputStack = [];
+                        break;
+                    case 'n':
+                        this.push(this.pop(), this.peek());
+                        break;
+                    case 'p':
+                        this.print(this.pop(), false);
+                        break;
+                    case 'P':
+                        this.print(this.pop());
                         break;
                     case 'q':
                         this.print(this.peek(), false);
@@ -177,11 +220,14 @@ export class Runtime {
                     case 'Q':
                         this.print(this.peek(), false);
                         break;
-                    case 'p':
-                        this.print(this.pop(), false);
+                    case 's':
+                        this.push(this.pop(), this.pop());
                         break;
-                    case 'P':
-                        this.print(this.pop());
+                    case 'U':
+                        this.push(bigInt[-1]);
+                        break;
+                    case 'z':
+                        this.push([]);
                         break;
                 }
             }
@@ -213,6 +259,7 @@ export class Runtime {
     }
 
     private doMinus() {
+        if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -226,6 +273,7 @@ export class Runtime {
     }
 
     private doStar() {
+        if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -251,6 +299,7 @@ export class Runtime {
     }
 
     private doSlash() {
+        if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
