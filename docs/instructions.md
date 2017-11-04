@@ -174,6 +174,7 @@ chars    	|Types          	|Name              	|Description
 `\|I`    	|arr arr        	|str-index-all     	|Find all indexes of the substring.
 `\|J`    	|arr            	|join-newline      	|Join strings with newline.
 `\|q`    	|arr arr        	|regex-indices     	|Get all indices of regex matches.
+`\|Q`    	|arr arr        	|regex-is-match    	|Regex matches entire string?
 `\|s`    	|arr arr        	|regex-split       	|Split by ECMA regex. Captured groups will be included in result.
 `\|S`    	|arr arr        	|surround          	|Prepend and append string/array.
 `\|t`    	|arr arr        	|translate         	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.
@@ -327,6 +328,8 @@ chars	|Types        	|Name           	|Description
 `}`  	|             	|               	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
 `*`  	|int block    	|do-times       	|Perform block n times.
 `*`  	|block int    	|do-times       	|Perform block n times.
+`/`  	|arr block    	|group-by       	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
+`(`  	|arr block    	|partition-when 	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value.
 `C`  	|any          	|cancel         	|If value is truthy, cancel current block execution.
 `C`  	|block        	|collect        	|Reduce using block, but collect each value in result array.  Does not terminate a block.
 `D`  	|int          	|do-times       	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
