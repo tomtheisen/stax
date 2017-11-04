@@ -84,8 +84,8 @@ export class Runtime {
         this.lineOut = output;
     }
 
-    private push(val: StaxValue) {
-        this.mainStack.push(val);
+    private push(...vals: StaxValue[]) {
+        vals.forEach(this.mainStack.push);
     }
 
     private peek(): StaxValue {
@@ -152,6 +152,24 @@ export class Runtime {
                         break;
                     case '/':
                         this.doSlash();
+                        break;
+                    case 'a':
+                        {
+                            let c = this.pop(), b = this.pop(), a = this.pop();
+                            this.push(b, c, a);
+                        }
+                        break;
+                    case 'b':
+                        {
+                            let b = this.pop(), a = this.peek();
+                            this.push(b, a, b);
+                        }
+                        break;
+                    case 'c':
+                        this.push(this.peek());
+                        break;
+                    case 'd':
+                        this.pop();
                         break;
                     case 'q':
                         this.print(this.peek(), false);
