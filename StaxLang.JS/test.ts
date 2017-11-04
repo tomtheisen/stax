@@ -1,12 +1,21 @@
 import { Block, parseProgram } from './block';
 import { Runtime, ExecutionState } from './stax';
+import * as _ from 'lodash';
+import { readFile } from 'fs';
 
 var stdin = process.openStdin();
 
+for (let arg of process.argv) {
+  console.log(arg);
+}
+
 var rt = new Runtime(o => console.log(o));
-for (let s of rt.runProgram('"foo"P 32!q!PP')){
+for (let s of rt.runProgram('"foo"P 32!q!P')){
   //lol
 }
+
+let filename = process.argv[2];
+readFile(filename, (err, data) => {});
 
 process.exit();
 

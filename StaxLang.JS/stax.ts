@@ -85,7 +85,7 @@ export class Runtime {
     }
 
     private push(...vals: StaxValue[]) {
-        vals.forEach(this.mainStack.push);
+        vals.forEach(e => this.mainStack.push(e));
     }
 
     private peek(): StaxValue {
