@@ -46,8 +46,14 @@ function parseCore(program: string, wholeProgram: boolean): Block {
             case 'V':
             case '|':
             case ':':
+            case "'":
                 tokens.push(program.substr(pos, 2));
                 pos += 2;
+                break;
+
+            case '.':
+                tokens.push(program.substr(pos, 3));
+                pos += 3;
                 break;
 
             case '0': case '1': case '2': case '3': case '4': 

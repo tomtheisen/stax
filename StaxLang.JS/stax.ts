@@ -16,7 +16,7 @@ export class ExecutionState {
 }
 
 function fail(msg: string): never {
-    throw msg;
+    throw new Error(msg);
 }
 
 function isFloat(n: any): n is number {
@@ -46,6 +46,11 @@ function A2S(a: StaxArray): string {
         else throw `can't convert ${e} to string`;
     }
     return result;
+}
+
+function isTruthy(a: StaxValue): boolean {
+    if (isNumber(a)) return floatify(a) !== 0;
+    return isArray(a) && a.length > 0;
 }
 
 function floatify(num: StaxNumber): number {
@@ -128,9 +133,13 @@ export class Runtime {
             else {
                 if (!!token[0].match(/\d+!/)) this.push(parseFloat(token.replace("!", ".")));
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
-                else if (token[0] == '"') this.evaluateStringToken(token);
+                else if (token[0] === '"') this.evaluateStringToken(token);
+                else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 switch (token) {
                     case ' ':
+                        break;
+                    case '!':
+                        this.push(isTruthy(this.pop()) ? zero : one);
                         break;
                     case '+':
                         this.doPlus();
@@ -143,6 +152,15 @@ export class Runtime {
                         break;
                     case '/':
                         this.doSlash();
+                        break;
+                    case 'q':
+                        this.print(this.peek(), false);
+                        break;
+                    case 'Q':
+                        this.print(this.peek(), false);
+                        break;
+                    case 'p':
+                        this.print(this.pop(), false);
                         break;
                     case 'P':
                         this.print(this.pop());
@@ -164,6 +182,15 @@ export class Runtime {
             else if (isInt(a) && isInt(b)) result = a.add(b);
             else throw "weird types or something; can't add?"
             this.push(result);
+        }
+        else if (isArray(a) && isArray(b)) {
+            this.push([...a, ...b]);
+        }
+        else if (isArray(a)) {
+            this.push([...a, b]);
+        }
+        else if (isArray(b)) {
+            this.push([a, ...b]);
         }
     }
 

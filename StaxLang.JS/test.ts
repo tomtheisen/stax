@@ -4,7 +4,7 @@ import { Runtime, ExecutionState } from './stax';
 var stdin = process.openStdin();
 
 var rt = new Runtime(o => console.log(o));
-for (let s of rt.runProgram('"hello`1world"3*')){
+for (let s of rt.runProgram('"foo"P 32!q!PP')){
   //lol
 }
 
