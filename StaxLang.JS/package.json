@@ -10,6 +10,7 @@
   "license": "WTFPL",
   "dependencies": {
     "@types/node": "^8.0.47",
+    "big-integer": "^1.6.25",
     "lodash": "^4.17.4"
   },
   "repository": {

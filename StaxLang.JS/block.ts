@@ -3,11 +3,13 @@ import * as _ from 'lodash';
 export class Block {
     contents: string;
     tokens: (string | Block)[];
+    explicitlyTerminated = false;
     get length(): number { return this.contents.length; }
     
-    constructor(contents: string, tokens: (string | Block)[]) {
+    constructor(contents: string, tokens: (string | Block)[], explicitlyTerminated = false) {
         this.contents = contents;
         this.tokens = tokens;
+        this.explicitlyTerminated = explicitlyTerminated;
     }
 }
 
@@ -37,7 +39,7 @@ function parseCore(program: string, wholeProgram: boolean): Block {
 
     while (pos < program.length) {
         if (!wholeProgram && "wWmfFkKgo".indexOf(program[pos]) >= 0) {
-            return new Block(program.substr(0, pos), tokens);
+            return new Block(program.substr(0, pos), tokens, false);
         }
 
         switch (program[pos]) {
@@ -79,7 +81,7 @@ function parseCore(program: string, wholeProgram: boolean): Block {
                     gotoTargets.push(++pos);
                 }
                 else {
-                    return new Block(program.substr(0, ++pos), tokens);
+                    return new Block(program.substr(0, ++pos), tokens, true);
                 }
                 break;
 
