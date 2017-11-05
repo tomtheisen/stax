@@ -49,6 +49,7 @@ namespace StaxLang {
                 ('2', "i", "2|L@", "floor log base 2"),
                 ('2', "f", "2|L@", "floor log base 2"),
                 ('2', "r", "2|L@", "floor log base 2"),
+                ('2', "a", "c|*", "self cross-product"),
                 ('3', "a", @"Vac13|)\:fc^+|t", "rot13"),
                 ('~', "a", @"VaVA\{+kcr+|t", "toggle case"),
                 ('@', "a", "{f%", "count truthy elements"),
