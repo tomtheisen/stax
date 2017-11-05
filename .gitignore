@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 
 StaxLang.JS/*.js
+StaxLang.JS/temp.staxtest

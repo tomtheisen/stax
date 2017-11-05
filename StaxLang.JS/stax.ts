@@ -194,7 +194,7 @@ export class Runtime {
                 this.inputStack = _.reverse(stdin).map(S2A);
             }
             else {
-                this.x = _.last(this.mainStack)!;
+                this.x = this.mainStack[0];
                 [this.mainStack, this.inputStack] = [this.inputStack, this.mainStack];
             }
         }
@@ -322,6 +322,12 @@ export class Runtime {
                         break;
                     case 'z':
                         this.push([]);
+                        break;
+                    case '| ':
+                        this.print(' ', false);
+                        break;
+                    case '|P':
+                        this.print('');
                         break;
                     default:
                         throw new Error(`unknown token ${token}`);

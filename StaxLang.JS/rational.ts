@@ -15,7 +15,7 @@ export class Rational {
     constructor(num: bigInt.BigInteger, den: bigInt.BigInteger) {
         this.numerator = num;
         this.denominator = den;
-        this.reduce;
+        this.reduce();
     }
 
     invert() {
