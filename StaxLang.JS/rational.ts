@@ -8,6 +8,10 @@ export class Rational {
         return this.numerator.valueOf() / this.denominator.valueOf();
     }
 
+    public toString(): string {
+        return `${this.numerator}/${this.denominator}`;
+    }
+
     constructor(num: bigInt.BigInteger, den: bigInt.BigInteger) {
         this.numerator = num;
         this.denominator = den;

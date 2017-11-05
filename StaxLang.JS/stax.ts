@@ -80,6 +80,9 @@ export class Runtime {
     private inputStack: StaxArray = [];
     private producedOutput = false;
 
+    private x: StaxValue = bigInt.zero;
+    private y: StaxValue;
+
     constructor(output: (line: string) => void) {
         this.lineOut = output;
     }
@@ -106,6 +109,7 @@ export class Runtime {
         if (isInt(val) || typeof val === "number") val = val.toString();
         if (val instanceof Block) val = `Block: ${val.contents}`;
         if (isArray(val)) val = A2S(val);
+        if (val instanceof Rational) val = val.toString();
 
         if (newline) {
             this.lineOut(this.outBuffer + val);
@@ -116,7 +120,85 @@ export class Runtime {
         }
     }
 
-    public *runProgram(program: string) {
+    private doEval(): boolean {
+        let a = this.pop();
+        if (!isArray(a)) throw new Error("tried to eval a non-array");
+        let arg = A2S(a);
+        let activeArrays: StaxArray[] = [];
+
+        const newValue = (val: StaxValue) => {
+            if (activeArrays.length) _.last(activeArrays)!.push(val);
+            else this.push(val);
+        };
+
+        for (let i = 0; i < arg.length; i++) {
+            switch (arg[i]) {
+                case '[':
+                    activeArrays.push([]);
+                    break;
+                case ']':
+                    if (!activeArrays.length) return false;
+                    newValue(activeArrays.pop()!);
+                    break;
+                case '"':
+                    let finishPos = arg.indexOf('"', i + 1);
+                    newValue(S2A(arg.substring(i + 1, finishPos - i - 1)));
+                    i = finishPos;
+                    break;
+                case '-':
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    let substring = arg.substr(i);
+                    let match = substring.match(/-?\d+\.\d+/);
+                    if (match) {
+                        newValue(parseFloat(match[0]));
+                        i += match[0].length - 1;
+                        break;
+                    }
+
+                    match = substring.match(/^(-?\d+)\/(-?\d+)/);
+                    if (match) {
+                        newValue(new Rational(bigInt(match[1]), bigInt(match[2])));
+                        i += match[0].length - 1;
+                        break;
+                    }
+
+                    match = substring.match(/^-?\d+/);
+                    if (match) {
+                        newValue(bigInt(match[0]));
+                        i += match[0].length - 1;
+                        break;
+                    }
+                    return false;
+
+                case ' ': case '\t': case '\r': case '\n': case ',':
+                    break;
+
+                default: return false;
+            }
+        }
+        return true;
+    }
+
+    public *runProgram(program: string, stdin: string[]) {
+        while (stdin[0] === "") stdin.shift();
+        this.inputStack = _.reverse(stdin).map(S2A);
+        this.y = _.last(this.inputStack) || [];
+
+        if (stdin.length === 1) {
+            if (!this.doEval()) {
+                this.mainStack = [];
+                this.inputStack = _.reverse(stdin).map(S2A);
+            }
+            else if (this.totalSize() === 0) {
+                this.inputStack = _.reverse(stdin).map(S2A);
+            }
+            else {
+                this.x = _.last(this.mainStack)!;
+                [this.mainStack, this.inputStack] = [this.inputStack, this.mainStack];
+            }
+        }
+
         for (let s of this.runSteps(program)) yield s;
 
         if (this.outBuffer) this.print("");
@@ -139,7 +221,7 @@ export class Runtime {
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
                 else if (token[0] === '"') this.evaluateStringToken(token);
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
-                switch (token) {
+                else switch (token) {
                     case ' ':
                         break;
                     case '~':
@@ -226,9 +308,23 @@ export class Runtime {
                     case 'U':
                         this.push(bigInt[-1]);
                         break;
+                    case 'x':
+                        this.push(this.x);
+                        break;
+                    case 'X':
+                        this.x = this.peek();
+                        break;
+                    case 'y':
+                        this.push(this.y);
+                        break;
+                    case 'Y':
+                        this.y = this.peek();
+                        break;
                     case 'z':
                         this.push([]);
                         break;
+                    default:
+                        throw new Error(`unknown token ${token}`);
                 }
             }
 
