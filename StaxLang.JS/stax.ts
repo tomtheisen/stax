@@ -2,6 +2,7 @@ import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
+type BigInteger = bigInt.BigInteger;
 
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -22,7 +23,7 @@ function fail(msg: string): never {
 function isFloat(n: any): n is number {
     return typeof n === "number";
 }
-function isInt(n: any): n is bigInt.BigInteger {
+function isInt(n: any): n is BigInteger {
     return bigInt.isInstance(n);
 }
 function isArray(n: StaxValue | string): n is StaxArray {
@@ -30,6 +31,10 @@ function isArray(n: StaxValue | string): n is StaxArray {
 }
 function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
+}
+
+function range(start: number | BigInteger, end: number | BigInteger): StaxArray {
+    return _.range(start.valueOf(), end.valueOf()).map(bigInt);
 }
 
 function S2A(s: string): StaxArray {
@@ -64,12 +69,12 @@ function broadenNums(...nums: StaxNumber[]): StaxNumber[] {
         return _.map(nums, floatify);
     }
     if (_.some(nums, n => n instanceof Rational)) {
-        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as bigInt.BigInteger, minusOne));
+        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as BigInteger, minusOne));
     }
     return nums;
 }
 
-type StaxNumber = number | bigInt.BigInteger | Rational;
+type StaxNumber = number | BigInteger | Rational;
 type StaxValue = StaxNumber | Block | StaxArray;
 interface StaxArray extends Array<StaxValue> { }
 
@@ -80,7 +85,11 @@ export class Runtime {
     private inputStack: StaxArray = [];
     private producedOutput = false;
 
-    private x: StaxValue = bigInt.zero;
+    private callStackFrames: {_: StaxValue, indexOuter: BigInteger}[] = [];
+    private _: StaxValue;
+    private index = zero;
+    private indexOuter = zero;
+    private x: StaxValue = zero;
     private y: StaxValue;
 
     constructor(output: (line: string) => void) {
@@ -102,6 +111,18 @@ export class Runtime {
     private totalSize() {
         return this.mainStack.length + this.inputStack.length;
     }
+
+    private pushStackFrame() {
+        this.callStackFrames.push({_: this._, indexOuter: this.indexOuter});
+        [this.indexOuter, this.index] = [this.index, zero];
+    }
+    private popStackFrame() {
+        this.index = this.indexOuter;
+        let popped = this.callStackFrames.pop();
+        if (!popped) throw new Error("tried to pop a stack frame; wasn't one");
+        this._ = popped._;
+        this.indexOuter = popped.indexOuter;
+    }    
 
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
@@ -184,6 +205,7 @@ export class Runtime {
         while (stdin[0] === "") stdin.shift();
         this.inputStack = _.reverse(stdin).map(S2A);
         this.y = _.last(this.inputStack) || [];
+        this._ = S2A(stdin.join("\n"));
 
         if (stdin.length === 1) {
             if (!this.doEval()) {
@@ -209,6 +231,8 @@ export class Runtime {
         if (typeof block === "string") block = parseProgram(block);
 
         let ip = 0;
+        const getRest = () => (block as Block).contents.substr(ip);
+
         for (let token of block.tokens) {
             yield new ExecutionState(ip);
 
@@ -219,7 +243,7 @@ export class Runtime {
             else {
                 if (!!token[0].match(/\d+!/)) this.push(parseFloat(token.replace("!", ".")));
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
-                else if (token[0] === '"') this.evaluateStringToken(token);
+                else if (token[0] === '"') this.doEvaluateStringToken(token);
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 else switch (token) {
                     case ' ':
@@ -283,12 +307,18 @@ export class Runtime {
                     case 'd':
                         this.pop();
                         break;
+                    case 'F':
+                        for (let s of this.doFor(getRest())) ;
+                        break;
                     case 'L':
                         this.mainStack = [..._.reverse(this.mainStack), ..._.reverse(this.inputStack)];
                         this.inputStack = [];
                         break;
                     case 'n':
                         this.push(this.pop(), this.peek());
+                        break;
+                    case 'O':
+                        this.runMacro("1s");
                         break;
                     case 'p':
                         this.print(this.pop(), false);
@@ -323,8 +353,14 @@ export class Runtime {
                     case 'z':
                         this.push([]);
                         break;
+                    case 'Z':
+                        this.runMacro('0s');
+                        break;
                     case '| ':
                         this.print(' ', false);
+                        break;
+                    case '|+':
+                        this.runMacro('Z{+F');
                         break;
                     case '|P':
                         this.print('');
@@ -336,6 +372,10 @@ export class Runtime {
 
             ip += token.length;
         }
+    }
+
+    private runMacro(macro: string) {
+        for (let s of this.runSteps(macro)) ;
     }
 
     private doPlus() {
@@ -421,7 +461,41 @@ export class Runtime {
         }
     }
 
-    private evaluateStringToken(token: string) {
+    private *doFor(rest: string) {
+        if (this.peek() instanceof Block) {
+            let block = this.pop() as Block, data = this.pop();
+            if (isInt(data)) data = range(1, data.add(one));
+            if (!isArray(data)) throw Error("block-for operates on ints and arrays, not this garbage. get out of here.");
+            
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(block)) {
+                    if (s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+        }
+        else if (isArray(this.peek())) {
+            let data = this.pop() as StaxArray;
+
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(rest)) {
+                    if (s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+        }
+        else throw new Error("bad types in for")
+    }
+
+    private doEvaluateStringToken(token: string) {
         let unescaped = "";
         let terminated = false;
         for (var i = 1; i < token.length; i++) {
