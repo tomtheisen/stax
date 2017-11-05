@@ -284,6 +284,7 @@ chars	|Types              	|Name              	|Description
 `\|Z`	|arr                	|rectangularize    	|Rectangularize an array of arrays, using "" for missing elements.
 `:0` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
 `:1` 	|arr                	|truthy-indices    	|Get all indices of truthy elements.
+`:2` 	|arr                	|self-cross-product	|Pairs of elements, with replacement.
 `::` 	|arr int            	|every-nth         	|Every nth element in array, starting from the first.
 `:<` 	|arr                	|col-align-left    	|Left-align columns by right-padding with spaces.
 `:>` 	|arr                	|col-align-right   	|Right-align columns by left-padding with spaces.
