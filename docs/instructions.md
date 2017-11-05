@@ -112,6 +112,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
 `:+`         	|num        	|sign          	|sign(a)            	|Sign; 1 for positive, -1 for negative.
+`:_`         	|num num    	|float-div     	|1.0 * a / b        	|Float division.
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
 `:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
 `:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
