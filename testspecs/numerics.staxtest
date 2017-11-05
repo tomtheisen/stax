@@ -877,3 +877,10 @@ Lr mj
 1.5
 	stax
 :#
+	name:FloatDiv
+	in
+6 5
+	out
+1.2
+	stax
+:_
