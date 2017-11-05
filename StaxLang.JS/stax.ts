@@ -64,7 +64,7 @@ function floatify(num: StaxNumber): number {
     return num;
 }
 
-function broadenNums(...nums: StaxNumber[]): StaxNumber[] {
+function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     if (_.some(nums, isFloat)) {
         return _.map(nums, floatify);
     }
@@ -231,9 +231,10 @@ export class Runtime {
         if (typeof block === "string") block = parseProgram(block);
 
         let ip = 0;
-        const getRest = () => (block as Block).contents.substr(ip);
 
         for (let token of block.tokens) {
+            const getRest = () => (block as Block).contents.substr(ip + token.length);
+
             yield new ExecutionState(ip);
 
             if (token instanceof Block) {
@@ -382,7 +383,7 @@ export class Runtime {
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
-            [a, b] = broadenNums(a, b);
+            [a, b] = widenNumbers(a, b);
             if (isFloat(a) && isFloat(b)) result = a + b;
             else if (a instanceof Rational && b instanceof Rational) result = a.add(b);
             else if (isInt(a) && isInt(b)) result = a.add(b);
@@ -405,7 +406,7 @@ export class Runtime {
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
-            [a, b] = broadenNums(a, b);
+            [a, b] = widenNumbers(a, b);
             if (isFloat(a) && isFloat(b)) result = a - b;
             else if (a instanceof Rational && b instanceof Rational) result = a.subtract(b);
             else if (isInt(a) && isInt(b)) result = a.subtract(b);
@@ -419,7 +420,7 @@ export class Runtime {
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
-            [a, b] = broadenNums(a, b);
+            [a, b] = widenNumbers(a, b);
             if (isFloat(a) && isFloat(b)) result = a * b;
             else if (a instanceof Rational && b instanceof Rational) result = a.multiply(b);
             else if (isInt(a) && isInt(b)) result = a.multiply(b);
@@ -445,7 +446,7 @@ export class Runtime {
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
-            [a, b] = broadenNums(a, b);
+            [a, b] = widenNumbers(a, b);
             if (isFloat(a) && isFloat(b)) result = a / b;
             else if (a instanceof Rational && b instanceof Rational) result = a.divide(b);
             else if (isInt(a) && isInt(b)) {
