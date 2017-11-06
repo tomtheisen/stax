@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      get diagonal
  *     FeatureTests for generators
  *     debugger
  */
