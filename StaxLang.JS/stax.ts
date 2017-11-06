@@ -1,3 +1,4 @@
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -20,48 +21,8 @@ function fail(msg: string): never {
     throw new Error(msg);
 }
 
-function isFloat(n: any): n is number {
-    return typeof n === "number";
-}
-function isInt(n: any): n is BigInteger {
-    return bigInt.isInstance(n);
-}
-function isArray(n: StaxValue | string): n is StaxArray {
-    return Array.isArray(n);
-}
-function isNumber(n: StaxValue): n is StaxNumber {
-    return isInt(n) || isFloat(n) || n instanceof Rational;
-}
-
 function range(start: number | BigInteger, end: number | BigInteger): StaxArray {
     return _.range(start.valueOf(), end.valueOf()).map(bigInt);
-}
-
-function S2A(s: string): StaxArray {
-    let result: StaxArray = [];
-    for (let i = 0; i < s.length; i++) result.push(bigInt(s.charCodeAt(i)));
-    return result;
-}
-
-function A2S(a: StaxArray): string {
-    let result = "";
-    for (let e of a) {
-        if (isInt(e)) result += String.fromCodePoint(e.valueOf());
-        else if (isArray(e)) result += A2S(e);
-        else throw `can't convert ${e} to string`;
-    }
-    return result;
-}
-
-function isTruthy(a: StaxValue): boolean {
-    if (isNumber(a)) return floatify(a) !== 0;
-    return isArray(a) && a.length > 0;
-}
-
-function floatify(num: StaxNumber): number {
-    if (isInt(num)) return num.valueOf();
-    if (num instanceof Rational) return num.valueOf();
-    return num;
 }
 
 function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
@@ -73,10 +34,6 @@ function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     }
     return nums;
 }
-
-type StaxNumber = number | BigInteger | Rational;
-type StaxValue = StaxNumber | Block | StaxArray;
-interface StaxArray extends Array<StaxValue> { }
 
 export class Runtime {
     private lineOut: (line: string) => void;
@@ -133,7 +90,7 @@ export class Runtime {
         if (val instanceof Rational) val = val.toString();
 
         if (newline) {
-            this.lineOut(this.outBuffer + val);
+            (this.outBuffer + val).split("\n").forEach(l => this.lineOut(l));
             this.outBuffer = "";
         }
         else {
@@ -246,6 +203,7 @@ export class Runtime {
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
                 else if (token[0] === '"') this.doEvaluateStringToken(token);
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
+                else if (token[0] === 'V') this.push(constants[token[1]]);
                 else switch (token) {
                     case ' ':
                         break;
