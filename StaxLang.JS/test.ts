@@ -96,7 +96,7 @@ lines.forEach((fin, i) => {
       _.last(currentCase!.io)!.expected.push(fin);
       break;
       case TestFileState.Code:
-        currentCase!.programs.push({line: i, code: fin});
+        currentCase!.programs.push({line: i + 1, code: fin});
         break;
     }
   }

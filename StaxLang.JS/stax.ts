@@ -275,27 +275,24 @@ export class Runtime {
                     case '/':
                         this.doSlash();
                         break;
-                    case '[':
-                        {
-                            let b = this.pop(), a = this.peek();
-                            this.push(a, b);
-                        }
+                    case '[': {
+                        let b = this.pop(), a = this.peek();
+                        this.push(a, b);
                         break;
-                    case 'a':
-                        {
-                            let c = this.pop(), b = this.pop(), a = this.pop();
-                            this.push(b, c, a);
-                        }
+                    }
+                    case 'a': {
+                        let c = this.pop(), b = this.pop(), a = this.pop();
+                        this.push(b, c, a);
                         break;
+                    }
                     case 'A':
                         this.push(bigInt[10])
                         break;
-                    case 'b':
-                        {
-                            let b = this.pop(), a = this.peek();
-                            this.push(b, a, b);
-                        }
+                    case 'b': {
+                        let b = this.pop(), a = this.peek();
+                        this.push(b, a, b);
                         break;
+                    }
                     case 'c':
                         this.push(this.peek());
                         break;
@@ -311,8 +308,21 @@ export class Runtime {
                     case 'F':
                         for (let s of this.doFor(getRest())) ;
                         break;
+                    case 'l': {
+                        let a = this.pop();
+                        if (a instanceof Rational) {
+                            this.push([a.numerator, a.denominator]);
+                        }
+                        else if (isInt(a)) {
+                            let result: StaxArray = [];
+                            _.times(a.valueOf(), () => result.unshift(this.pop()));
+                            this.push(result);
+                        }
+                        else throw new Error("bad types for l");
+                        break;
+                    }
                     case 'L':
-                        this.mainStack = [..._.reverse(this.mainStack), ..._.reverse(this.inputStack)];
+                        this.mainStack = [[..._.reverse(this.mainStack), ..._.reverse(this.inputStack)]];
                         this.inputStack = [];
                         break;
                     case 'n':
@@ -362,6 +372,12 @@ export class Runtime {
                         break;
                     case '|+':
                         this.runMacro('Z{+F');
+                        break;
+                    case '|d':
+                        this.push(bigInt(this.mainStack.length));
+                        break;
+                    case '|D':
+                        this.push(bigInt(this.inputStack.length));
                         break;
                     case '|P':
                         this.print('');
@@ -438,6 +454,9 @@ export class Runtime {
             let count = b.valueOf();
             for (var i = 0; i < count; i++) result = result.concat(a);
             this.push(result);
+        }
+        else if (isArray(a) && isArray(b)) {
+            this.push(S2A(a.map(e => isArray(e) ? A2S(e) : e.toString()).join(A2S(b))));
         }
     }
 
