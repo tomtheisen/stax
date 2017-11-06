@@ -880,5 +880,13 @@ orld!
 3 1
 3 2
 3 3
+	name:Diagonal
 	stax
 :2 mJ
+	name:Diagonal
+	in
+["foo" "h" "bar"]
+	out
+f r
+	stax
+|2

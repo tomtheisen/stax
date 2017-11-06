@@ -238,6 +238,7 @@ chars	|Types              	|Name              	|Description
 `z`  	|                   	|                  	|Push empty array/string.
 `\|0`	|arr                	|falsy-index       	|Get index of first falsy element.
 `\|1`	|arr                	|truthy-index      	|Get index of first truthy element.
+`\|2`	|arr                	|diagonal          	|Get the diagonal of a matrix.  Missing elements are filled with 0.
 `\|=`	|arr                	|multi-mode        	|Get all tied modes of array.
 `\|+`	|arr                	|sum               	|Sum of array.
 `\|!`	|int int            	|int-partitions    	|Get all the distinct b-length arrays of positive integers that sum to a.

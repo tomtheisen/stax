@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      get diagonal
  *     FeatureTests for generators
  *     debugger
  */
@@ -1121,10 +1120,28 @@ namespace StaxLang {
                                     RunMacro("2%U1?");
                                 }
                                 break;
-                            case '2': 
-                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "2 to the " + e);
-                                else block.AddDesc("power of 2");
-                                RunMacro("2s|*");
+                            case '2':
+                                if (IsArray(Peek())) {
+                                    block.AddDesc("diagonal of matrix");
+                                    var result = new List<object>();
+                                    int i = 0;
+                                    foreach (var e in Pop()) {
+                                        if (IsArray(e)) {
+                                            if (e.Count > i) result.Add(e[i]);
+                                            else result.Add(BigInteger.Zero);
+                                        }
+                                        else {
+                                            result.Add(i == 0 ? e : BigInteger.Zero);
+                                        }
+                                        ++i;
+                                    }
+                                    Push(result);
+                                }
+                                else if (IsNumber(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "2 to the " + e);
+                                    else block.AddDesc("power of 2");
+                                    RunMacro("2s|*");
+                                }
                                 break;
                             case '3': 
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " in base 36");
