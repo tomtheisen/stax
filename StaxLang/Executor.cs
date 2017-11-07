@@ -543,6 +543,25 @@ namespace StaxLang {
                             block.AddDesc("first element");
                             Push(Pop()[0]); 
                         }
+                        else if (IsBlock(Peek())) {
+                            Block pred = Pop();
+                            List<object> result = new List<object>(), arr = Pop();
+                            block.AddDesc("keep matching elements from beginning of array");
+                            bool cancelled = false;
+                            PushStackFrame();
+                            foreach (var e in arr) {
+                                Push(_ = e);
+                                foreach (var s in RunSteps(pred)) {
+                                    if (cancelled = s.Cancel) break;
+                                    yield return s;
+                                }
+                                if (cancelled || !IsTruthy(Pop())) break;
+                                result.Add(e);
+                                ++Index;
+                            }
+                            PopStackFrame();
+                            Push(result);
+                        }
                         break;
                     case 'H':
                         if (IsInt(Peek()) || IsFloat(Peek())) {
@@ -556,6 +575,26 @@ namespace StaxLang {
                         else if (IsArray(Peek())) {
                             block.AddDesc("last element");
                             Push(Peek()[Pop().Count - 1]);
+                        }
+                        else if (IsBlock(Peek())) {
+                            Block pred = Pop();
+                            List<object> result = new List<object>(), arr = Pop();
+                            arr.Reverse();
+                            block.AddDesc("keep matching elements from end of array");
+                            bool cancelled = false;
+                            PushStackFrame();
+                            foreach (var e in arr) {
+                                Push(_ = e);
+                                foreach (var s in RunSteps(pred)) {
+                                    if (cancelled = s.Cancel) break;
+                                    yield return s;
+                                }
+                                if (cancelled || !IsTruthy(Pop())) break;
+                                result.Insert(0, e);
+                                ++Index;
+                            }
+                            PopStackFrame();
+                            Push(result);
                         }
                         break;
                     case 'i':
@@ -723,6 +762,25 @@ namespace StaxLang {
                             else block.AddDesc("trim (remove) n elements from the left");
                             RunMacro("ss~ c%,-0|M)");
                         }
+                        else if (IsBlock(Peek())) {
+                            Block pred = Pop();
+                            List<object> result = new List<object>(Pop());
+                            block.AddDesc("remove matching elements from beginning of array");
+                            bool cancelled = false;
+                            PushStackFrame();
+                            while (result.Count > 0) {
+                                Push(_ = result[0]);
+                                foreach (var s in RunSteps(pred)) {
+                                    if (cancelled = s.Cancel) break;
+                                    yield return s;
+                                }
+                                if (cancelled || !IsTruthy(Pop())) break;
+                                result.RemoveAt(0);
+                                ++Index;
+                            }
+                            PopStackFrame();
+                            Push(result);
+                        }
                         else throw new StaxException("Bad types for trimleft");
                         break;
                     case 'T':
@@ -734,6 +792,25 @@ namespace StaxLang {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "trim (remove) " + e + " from the right");
                             else block.AddDesc("trim (remove) n elements from the right");
                             RunMacro("ss~ c%,-0|M(");
+                        }
+                        else if (IsBlock(Peek())) {
+                            Block pred = Pop();
+                            List<object> result = new List<object>(Pop());
+                            block.AddDesc("remove matching elements from end of array");
+                            bool cancelled = false;
+                            PushStackFrame();
+                            while (result.Count > 0) {
+                                Push(_ = result.Last());
+                                foreach (var s in RunSteps(pred)) {
+                                    if (cancelled = s.Cancel) break;
+                                    yield return s;
+                                }
+                                if (cancelled || !IsTruthy(Pop())) break;
+                                result.RemoveAt(result.Count - 1);
+                                ++Index;
+                            }
+                            PopStackFrame();
+                            Push(result);
                         }
                         else throw new StaxException("Bad types for trimright");
                         break;
@@ -1083,6 +1160,11 @@ namespace StaxLang {
                                     }
                                     Push(result);
                                 }
+                                break;
+                            case ';':
+                                block.AddDesc("parity of iteration");
+                                type = InstructionType.Value;
+                                RunMacro("i2%");
                                 break;
                             case '0':
                                 if (IsArray(Peek())) {

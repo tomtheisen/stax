@@ -182,3 +182,39 @@ G "out"P G } "gosub "p |XP
 3
 	stax
 f
+	name:IterationParity
+	in
+	out
+0
+1
+0
+	stax
+3m2|;
+	name:TrimBlockStart
+	in
+[1 2 3 4 3 2 1]
+	out
+3 4 3 2 1
+	stax
+{3<}tJ
+	name:TrimBlockEnd
+	in
+[1 2 3 4 3 2 1]
+	out
+1 2 3 4 3
+	stax
+{3<}TJ
+	name:TakeWhile
+	in
+[1 2 3 4 3 2 1]
+	out
+1 2
+	stax
+{3<}hJ
+	name:TakeWhileEnd
+	in
+[1 2 3 4 3 2 1]
+	out
+2 1
+	stax
+{3<}HJ
