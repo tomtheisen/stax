@@ -266,6 +266,17 @@ export class Runtime {
                     case 'F':
                         for (let s of this.doFor(getRest())) ;
                         break;
+                    case 'j':
+                        if (isArray(this.peek())) this.runMacro("' /");
+                        else if (isInt(this.peek())) {
+                            let digits = this.pop() as BigInteger, num = this.pop();
+                            num = isNumber(num) && floatify(num) || fail("can't round a non-number");
+                            this.push(S2A(num.toFixed(digits.valueOf())));
+                        }
+                        else if (isNumber(this.peek())) {
+                            this.runMacro("2u+@");
+                        }
+                        break;
                     case 'l': {
                         let a = this.pop();
                         if (a instanceof Rational) {
@@ -282,6 +293,9 @@ export class Runtime {
                     case 'L':
                         this.mainStack = [[..._.reverse(this.mainStack), ..._.reverse(this.inputStack)]];
                         this.inputStack = [];
+                        break;
+                    case 'm':
+                        for (let s of this.doMap(getRest())) ;
                         break;
                     case 'n':
                         this.push(this.pop(), this.peek());
@@ -470,7 +484,44 @@ export class Runtime {
             }
             this.popStackFrame();
         }
-        else throw new Error("bad types in for")
+        else throw new Error("bad types in for");
+    }
+
+    private *doMap(rest: string) {
+        if (this.peek() instanceof Block) {
+            let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
+            if (isInt(data)) data = range(1, data.add(one));
+            if (!isArray(data)) throw Error("block-map operates on ints and arrays, not this garbage. get out of here.");
+            
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(block)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+                if (!cancelled) result.push(this.pop());
+            }
+            this.popStackFrame();
+            this.push(result);
+        }
+        else if (isArray(this.peek())) {
+            let data = this.pop() as StaxArray, cancelled = false;
+
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(rest)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+                if (!cancelled) this.print(this.pop());
+            }
+            this.popStackFrame();
+        }
+        else throw new Error("bad types in map")
     }
 
     private doEvaluateStringToken(token: string) {

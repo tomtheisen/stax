@@ -9,6 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      indices of differences
+ *      indices of equalities
  *     FeatureTests for generators
  *     debugger
  */

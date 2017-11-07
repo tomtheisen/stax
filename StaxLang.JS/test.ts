@@ -37,7 +37,9 @@ function runCases(cases: TestCase[]) {
                     continue;
                 }
                 
-                if (_.isEqual(output, io.expected)) {
+                let expectedFlat = io.expected.join("\n").replace(/[\r\n]+$/, "");
+                let outputFlat = output.join("\n").replace(/[\r\n]+$/, "");
+                if (expectedFlat === outputFlat) {
                     ++passed;
                 } else {
                     console.error("Expected:");
