@@ -58,6 +58,8 @@ namespace StaxLang {
                 ('/', "ai", "n%%b(aat", "split array at index; push both"),
                 ('/', "ia", "sn%%b(aat", "split array at index; push both"),
                 ('/', "aa", "b[Is%^%~n,(~%t;%t,s", "split on first substring occurrence, and push both sides"),
+                ('\\', "aa", @"|\{E=Cim", "get indices of differences between arrays"),
+                ('=', "aa", @"|\{E=!Cim", "get indices of equal elements between arrays"),
                 ('_', "ii", "1!*/", "float divide"),
                 ('_', "if", "1!*/", "float divide"),
                 ('_', "fi", "1!*/", "float divide"),

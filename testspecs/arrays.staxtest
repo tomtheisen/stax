@@ -880,7 +880,6 @@ orld!
 3 1
 3 2
 3 3
-	name:Diagonal
 	stax
 :2 mJ
 	name:Diagonal
@@ -890,3 +889,17 @@ orld!
 f r
 	stax
 |2
+	name:DifferenceIndices
+	in
+"hello" "hilkoz"
+	out
+1 3
+	stax
+:\J
+	name:EqualElementIndices
+	in
+"hello" "hilkoz"
+	out
+0 2 4
+	stax
+:=J
