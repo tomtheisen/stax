@@ -44,7 +44,11 @@ export class Rational {
         return new Rational (
             this.numerator.multiply(other.denominator),
             this.denominator.multiply(other.numerator));
-        }
+    }
+
+    equals(other: Rational) {
+        return this.numerator === other.numerator && this.denominator === other.denominator;
+    }
 
     private reduce() {
         if (this.denominator.isZero()) throw "rational divide by zero";

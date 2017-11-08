@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -22,17 +22,7 @@ function fail(msg: string): never {
 }
 
 function range(start: number | BigInteger, end: number | BigInteger): StaxArray {
-    return _.range(start.valueOf(), end.valueOf()).map(bigInt);
-}
-
-function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
-    if (_.some(nums, isFloat)) {
-        return _.map(nums, floatify);
-    }
-    if (_.some(nums, n => n instanceof Rational)) {
-        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as BigInteger, minusOne));
-    }
-    return nums;
+    return _.range(start.valueOf(), end.valueOf()).map(n => bigInt(n));
 }
 
 export class Runtime {
@@ -184,7 +174,7 @@ export class Runtime {
         if (!this.producedOutput) this.print(this.pop());
     }
 
-    private *runSteps(block: Block | string) {
+    private *runSteps(block: Block | string): IterableIterator<ExecutionState> {
         if (typeof block === "string") block = parseProgram(block);
 
         let ip = 0;
@@ -228,11 +218,28 @@ export class Runtime {
                         this.doMinus();
                         break;
                     case '*':
-                        this.doStar();
+                        for (let s of this.doStar()) yield s;
                         break;
                     case '/':
                         this.doSlash();
                         break;
+                    case '=':
+                        this.push(areEqual(this.pop(), this.pop()) ? one : zero);
+                        break;
+                    case '?': {
+                        let b = this.pop(), a = this.pop();
+                        let result = isTruthy(this.pop()) ? a : b;
+                        if (result instanceof Block) {
+                            for (let s of this.runSteps(result)) {
+                                if (s.cancel) break;
+                                yield s;
+                            }
+                        }
+                        else {
+                            this.push(result);
+                        }
+                        break;
+                    }
                     case '[': {
                         let b = this.pop(), a = this.peek();
                         this.push(a, b);
@@ -263,9 +270,12 @@ export class Runtime {
                     case 'd':
                         this.pop();
                         break;
-                    case 'F':
+                    case 'F':{
+                        let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doFor(getRest())) ;
+                        if (shorthand) return;
                         break;
+                    }
                     case 'j':
                         if (isArray(this.peek())) this.runMacro("' /");
                         else if (isInt(this.peek())) {
@@ -315,11 +325,48 @@ export class Runtime {
                     case 'Q':
                         this.print(this.peek(), false);
                         break;
+                    case 'r':
+                        if (isInt(this.peek())) {
+                            this.push(range(0, this.pop() as BigInteger));
+                        }
+                        break;
+                    case 'R':
+                        if (isInt(this.peek())) {
+                            this.push(range(1, (this.pop() as BigInteger).add(1)));
+                        }
+                        break;
                     case 's':
                         this.push(this.pop(), this.pop());
                         break;
                     case 'U':
                         this.push(bigInt[-1]);
+                        break;
+                    case 'v':
+                        if (isNumber(this.peek())) this.runMacro("1-");
+                        else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toLowerCase()));
+                        else throw new Error("unknown type for ^");
+                        break;
+                    case '^':
+                        if (isNumber(this.peek())) this.runMacro("1+");
+                        else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toUpperCase()));
+                        else throw new Error("unknown type for ^");
+                        break;
+                    case 'w': {
+                        let shorthand = !(this.peek() instanceof Block);
+                        for (let s of this.doWhile(getRest())) {
+                            if (s.cancel) return;
+                            yield s;
+                        }
+                        if (shorthand) return;
+                        break;
+                    }
+                    case 'W':
+                        let shorthand = !(this.peek() instanceof Block);
+                        for (let s of this.doUnconditionalWhile(getRest())) {
+                            if (s.cancel) return;
+                            yield s;
+                        }
+                        if (shorthand) return;
                         break;
                     case 'x':
                         this.push(this.x);
@@ -403,7 +450,7 @@ export class Runtime {
         }
     }
 
-    private doStar() {
+    private *doStar() {
         if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
@@ -430,6 +477,24 @@ export class Runtime {
         else if (isArray(a) && isArray(b)) {
             this.push(S2A(a.map(e => isArray(e) ? A2S(e) : e.toString()).join(A2S(b))));
         }
+        else if (a instanceof Block && isInt(b)) {
+            let block = a, times = b.valueOf();
+            for (let i = 0; i < times; i++) {
+                for (let s of this.runSteps(block)) {
+                    if (s.cancel) break; 
+                    yield s;
+                }
+            }
+        }
+        else if (isInt(a) && b instanceof Block) {
+            let block = b, times = a.valueOf();
+            for (let i = 0; i < times; i++) {
+                for (let s of this.runSteps(block)) {
+                    if (s.cancel) break; 
+                    yield s;
+                }
+            }
+        }
     }
 
     private doSlash() {
@@ -454,6 +519,10 @@ export class Runtime {
     }
 
     private *doFor(rest: string) {
+        if (isInt(this.peek())) {
+            this.push(range(1, (this.pop() as BigInteger).add(one)));
+        }
+
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop();
             if (isInt(data)) data = range(1, data.add(one));
@@ -485,6 +554,34 @@ export class Runtime {
             this.popStackFrame();
         }
         else throw new Error("bad types in for");
+    }
+
+    private *doUnconditionalWhile(rest: string) {
+        let cancelled = false;
+        let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
+    
+        this.pushStackFrame();
+        do {
+            for (let s of this.runSteps(body)) {
+                if (cancelled = s.cancel) break;
+                yield s;
+            }
+        } while (!cancelled);
+        this.popStackFrame();
+    }
+
+    private *doWhile(rest: string) {
+        let cancelled = false;
+        let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
+    
+        this.pushStackFrame();
+        do {
+            for (let s of this.runSteps(body)) {
+                if (cancelled = s.cancel) break;
+                yield s;
+            }
+        } while (!cancelled && isTruthy(this.pop()));
+        this.popStackFrame();
     }
 
     private *doMap(rest: string) {

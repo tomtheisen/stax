@@ -1,4 +1,5 @@
 import * as bigInt from 'big-integer';
+import * as _ from 'lodash';
 import { Rational } from './rational';
 import { Block } from './block';
 type BigInteger = bigInt.BigInteger;
@@ -46,6 +47,29 @@ export function isArray(n: StaxValue | string): n is StaxArray {
 }
 export function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
+}
+
+export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
+    if (_.some(nums, isFloat)) {
+        return _.map(nums, floatify);
+    }
+    if (_.some(nums, n => n instanceof Rational)) {
+        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as BigInteger, bigInt.one));
+    }
+    return nums;
+}
+
+export function areEqual(a: StaxValue, b: StaxValue) {
+    if (isArray(a) && isArray(b)) return _.isEqual(a, b);
+    if (isArray(a)) a = a[0];
+    if (isArray(b)) b = b[0];
+    if (isNumber(a) && isNumber(b)) {
+        [a, b] = widenNumbers(a, b);
+        if (typeof a === "number") return a === b;
+        if (isInt(a)) return a.equals(b as BigInteger);
+        if (a instanceof Rational) return a.equals(b as Rational);
+    }
+    return false;
 }
 
 const versionInfo = "Stax 0.0.0 (typescript) - Tom Theisen - https://github.com/ttheisen/stax "
