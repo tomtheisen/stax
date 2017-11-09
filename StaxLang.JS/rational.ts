@@ -46,6 +46,16 @@ export class Rational {
             this.denominator.multiply(other.numerator));
     }
 
+    floor() {
+        if (this.numerator.isNegative()) return this.numerator.subtract(this.denominator).add(bigInt.one).divide(this.denominator);
+        return this.numerator.divide(this.denominator);
+    }
+
+    mod(other: Rational) {
+        let intPart = this.divide(other).floor();
+        return this.subtract(other.multiply(new Rational(intPart, bigInt.one)));
+    }
+
     equals(other: Rational) {
         return this.numerator === other.numerator && this.denominator === other.denominator;
     }

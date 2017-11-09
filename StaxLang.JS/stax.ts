@@ -223,6 +223,9 @@ export class Runtime {
                     case '/':
                         this.doSlash();
                         break;
+                    case '%':
+                        this.doPercent();
+                        break;
                     case '=':
                         this.push(areEqual(this.pop(), this.pop()) ? one : zero);
                         break;
@@ -245,6 +248,9 @@ export class Runtime {
                         this.push(a, b);
                         break;
                     }
+                    case ']':
+                        this.push([this.pop()]);
+                        break;
                     case 'a': {
                         let c = this.pop(), b = this.pop(), a = this.pop();
                         this.push(b, c, a);
@@ -270,12 +276,21 @@ export class Runtime {
                     case 'd':
                         this.pop();
                         break;
+                    case 'f': {
+                        let shorthand = !(this.peek() instanceof Block);
+                        for (let s of this.doFilter(getRest())) yield s;
+                        if (shorthand) return;
+                        break;
+                    }
                     case 'F':{
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doFor(getRest())) ;
                         if (shorthand) return;
                         break;
                     }
+                    case 'i':
+                        this.push(this.index);
+                        break;
                     case 'j':
                         if (isArray(this.peek())) this.runMacro("' /");
                         else if (isInt(this.peek())) {
@@ -287,6 +302,12 @@ export class Runtime {
                             this.runMacro("2u+@");
                         }
                         break;
+                    case 'k': {
+                        let shorthand = !(this.peek() instanceof Block);
+                        for (let s of this.doReduce()) ;
+                        if (shorthand) return;
+                        break;
+                    }
                     case 'l': {
                         let a = this.pop();
                         if (a instanceof Rational) {
@@ -304,9 +325,11 @@ export class Runtime {
                         this.mainStack = [[..._.reverse(this.mainStack), ..._.reverse(this.inputStack)]];
                         this.inputStack = [];
                         break;
-                    case 'm':
+                    case 'm': {
+                        let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doMap(getRest())) ;
                         break;
+                    }
                     case 'n':
                         this.push(this.pop(), this.peek());
                         break;
@@ -397,6 +420,9 @@ export class Runtime {
                         break;
                     case '|D':
                         this.push(bigInt(this.inputStack.length));
+                        break;
+                    case '|i':
+                        this.push(this.indexOuter);
                         break;
                     case '|P':
                         this.print('');
@@ -518,6 +544,25 @@ export class Runtime {
         }
     }
 
+    private doPercent() {
+        let b = this.pop();
+        if (isArray(b)) {
+            this.push(bigInt(b.length));
+            return;
+        }
+        let a = this.pop();
+        if (isNumber(a) && isNumber(b)) {
+            [a, b] = widenNumbers(a, b);
+            let result: StaxNumber;
+            if (typeof a === "number" && typeof b === "number") result = a % b;
+            else if (isInt(a) && isInt(b)) result = a.mod(b);
+            else if (a instanceof Rational && b instanceof Rational) result = a.mod(b);
+            else throw new Error("bad types for %");
+            this.push(result);
+        }
+        else throw new Error("bad types for %");
+    }
+
     private *doFor(rest: string) {
         if (isInt(this.peek())) {
             this.push(range(1, (this.pop() as BigInteger).add(one)));
@@ -584,6 +629,75 @@ export class Runtime {
         this.popStackFrame();
     }
 
+    private *doReduce() {
+        let b = this.pop(), a = this.pop();
+        if (isInt(a) && b instanceof Block) a = range(one, a);
+        else if (isArray(a)) a = [...a];
+
+        if (isArray(a) && b instanceof Block) {
+            if (a.length === 0) throw new Error("tried to reduce empty array");
+            if (a.length === 1) {
+                this.push(a[0]);
+                return;
+            }
+
+            this.pushStackFrame();
+            this.push(a.shift()!);
+            for (let e of a) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(b)) {
+                    if (s.cancel) {
+                        this.popStackFrame();
+                        return;
+                    }
+                    yield s;
+                }
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+        }
+        else {
+            throw new Error("bad types for reduce");
+        }
+    }
+
+    private *doFilter(rest: string) {
+        if (this.peek() instanceof Block) {
+            let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
+            if (isInt(data)) data = range(1, data.add(one));
+            if (!isArray(data)) throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
+            
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(block)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+                if (!cancelled && isTruthy(this.pop())) result.push(e);
+            }
+            this.popStackFrame();
+            this.push(result);
+        }
+        else if (isArray(this.peek())) {
+            let data = this.pop() as StaxArray, cancelled = false;
+
+            this.pushStackFrame();
+            for (let e of data) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(rest)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                this.index = this.index.add(one);
+                if (!cancelled && isTruthy(this.pop())) this.print(e);
+            }
+            this.popStackFrame();
+        }
+        else throw new Error("bad types in filter");
+    }
+
     private *doMap(rest: string) {
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
@@ -618,7 +732,7 @@ export class Runtime {
             }
             this.popStackFrame();
         }
-        else throw new Error("bad types in map")
+        else throw new Error("bad types in map");
     }
 
     private doEvaluateStringToken(token: string) {
