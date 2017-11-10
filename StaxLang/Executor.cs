@@ -9,8 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      first and last for performance
- *      cascade bits
+ *      first and last for performance (same as {...fh or {...FH, just maybe MUCH faster)
  *     FeatureTests for generators
  *     debugger
  */

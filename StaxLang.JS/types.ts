@@ -72,6 +72,19 @@ export function areEqual(a: StaxValue, b: StaxValue) {
     return false;
 }
 
+export function stringFormat(arg: StaxValue): StaxArray {
+    if (isNumber(arg)) return S2A(arg.toString());
+    if (isArray(arg)) {
+        let result = "";
+        for (let e of arg) {
+            if (isArray(e)) result += A2S(e);
+            else result += e.toString();
+        }
+        return S2A(result);
+    }
+    throw new Error("bad type for stringFormat");
+}
+
 const versionInfo = "Stax 0.0.0 (typescript) - Tom Theisen - https://github.com/ttheisen/stax "
 
 export const constants: {[key: string]: StaxValue} = {

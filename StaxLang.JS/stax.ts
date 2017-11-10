@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -208,6 +208,9 @@ export class Runtime {
                         this.inputStack.length || fail("stack empty");
                         this.push(this.inputStack.pop()!);
                         break;
+                    case '_':
+                        this.push(this._);
+                        break;
                     case '!':
                         this.push(isTruthy(this.pop()) ? zero : one);
                         break;
@@ -243,6 +246,9 @@ export class Runtime {
                         }
                         break;
                     }
+                    case '$':
+                        this.push(stringFormat(this.pop()));
+                        break;
                     case '[': {
                         let b = this.pop(), a = this.peek();
                         this.push(a, b);
