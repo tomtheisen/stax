@@ -520,10 +520,15 @@ BC
 :T J
 	name:VerbatimCount
 	in
+bcd
 	out
 1
+	in
+a
+	out
+0
 	stax
-Va "abc" |#
+Va 3B , |#
 	name:EmptyRectangularize
 	in
 [[1 2] [3]]

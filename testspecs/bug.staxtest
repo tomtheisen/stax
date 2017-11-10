@@ -334,4 +334,11 @@ f C 1
 	out
 17
 	stax
-:B|B
+:B:b
+	name:StringSetSubtract
+	in
+["a" "b"]
+	out
+b
+	stax
+'a-

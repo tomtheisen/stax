@@ -884,3 +884,31 @@ Lr mj
 1.2
 	stax
 :_
+	name:BinaryDecode
+	in
+[1 1 0 1]
+	out
+13
+	stax
+:b
+	name:HighBit
+	in
+13
+	out
+8
+	stax
+:G
+	name:LowBit
+	in
+13
+	out
+1
+	stax
+:g
+	name:SetInteriorBits
+	in
+12
+	out
+15
+	stax
+:~

@@ -10,10 +10,7 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *      first and last for performance
- *      number/array inequality
  *      cascade bits
- *      highest set-bit
- *      lowest set-bit
  *     FeatureTests for generators
  *     debugger
  */
@@ -2513,12 +2510,17 @@ namespace StaxLang {
                 Push(result);
             }
             else if (IsArray(number)) {
-                string s = A2S(number).ToLower();
                 BigInteger result = 0;
-                foreach (var c in s) {
-                    int digit = "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
-                    if (digit < 0) digit = c + 0;
-                    result = result * @base + digit;
+                if (stringRepresentation) {
+                    string s = A2S(number).ToLower();
+                    foreach (var c in s) {
+                        int digit = "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
+                        if (digit < 0) digit = c + 0;
+                        result = result * @base + digit;
+                    }
+                }
+                else {
+                    foreach (var d in number) result = result * @base + d;
                 }
                 Push(result);
             }
@@ -3698,10 +3700,18 @@ namespace StaxLang {
 
                 if (IsNumber(a)) {
                     if (IsNumber(b)) return CompareScalars(a, b);
+                    if (IsArray(b)) {
+                        if (b.Count == 0) return 1;
+                        return Compare(a, b[0]);
+                    }
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsNumber(b)) {
                     if (IsNumber(b)) return CompareScalars(a, b);
+                    if (IsArray(a)) {
+                        if (a.Count == 0) return -1;
+                        return Compare(a[0], b);
+                    }
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsArray(a) && IsArray(b)) {

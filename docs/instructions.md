@@ -96,6 +96,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|C`        	|int int    	|choose        	|choose(a, b)       	|Binomial coefficient - calculate a choose b.
 `\|e`        	|int        	|is-even       	|(a + 1) % 2        	|Is even?
 `\|E`        	|int int    	|digits        	|                   	|Generate array of digit values in base.
+`\|E`        	|arr int    	|un-digit      	|                   	|Produce the number represented by the array of digits in the given base.
 `\|F`        	|int        	|factorial     	|a!                 	|Factorial.
 `\|g`        	|int int    	|gcd           	|                   	|Greatest common denominator.
 `\|H`        	|int        	|base-16       	|                   	|Convert to base 16.
@@ -108,6 +109,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|p`        	|int        	|is-prime      	|                   	|Is prime?
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
+`:~`         	|int        	|set-interior  	|                   	|Set all interior bits in number.  The result will always be one less than a power of 2.
 `:#`         	|num        	|floatify      	|float(a)           	|Convert to float.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
@@ -116,13 +118,16 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:1`         	|int        	|popcount      	|                   	|Count of set bits.
 `:2`         	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
 `:A`         	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
+`:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
+`:b`         	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits.
 `:B`         	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
 `:B`         	|int        	|binary-digits 	|                   	|Generate array of binary values.
-`:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:d`         	|int        	|divisors      	|                   	|Get all divisors of n.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
 `:F`         	|int        	|dist-factors  	|                   	|Distinct prime factors.
+`:g`         	|int        	|low-bit       	|                   	|Unset all but the low set bit.
+`:G`         	|int        	|high-bit      	|                   	|Unset all but the high set bit.
 `:J`         	|num num    	|square-two    	|a\*\*2, b\*\*2     	|Square top two elements; useful for hypotenuse and things.
 `:m`         	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b.
 `:p`         	|int        	|last-prime    	|                   	|Last prime < n.
@@ -136,7 +141,7 @@ chars	|Name        	|Description
 `!`  	|not         	|Logical not.  Produces 0 or 1.  Numeric 0 and empty lists are considered falsy.  All other values are truthy.
 `<`  	|less        	|Is less than.  Arrays use string-style lexicographic ordering.
 `>`  	|greater     	|Is greater than.  Arrays use string-style lexicographic ordering.
-`=`  	|equal       	|Equals.  Numberic types are coerced as necessary.
+`=`  	|equal       	|Equals.  Numberic types are coerced as necessary.  Arrays are equal to scalars if their first element is equal.
 `?`  	|if-then-else	|If the first value, then yield the second, else the third.  If the result is a block, execute it.
 
 
