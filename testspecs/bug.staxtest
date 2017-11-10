@@ -317,3 +317,21 @@ f C 1
 0
 	stax
 |+
+	name:BadPermutation
+	in
+	out
+1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 1 2
+3 2 1
+	stax
+3R|TmJ
+	name:BaseConvertAutoSpace
+	in
+17
+	out
+17
+	stax
+:B|B

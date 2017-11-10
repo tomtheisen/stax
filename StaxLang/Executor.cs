@@ -9,6 +9,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      first and last for performance
+ *      number/array inequality
+ *      cascade bits
+ *      highest set-bit
+ *      lowest set-bit
  *     FeatureTests for generators
  *     debugger
  */
@@ -1846,8 +1851,10 @@ namespace StaxLang {
             for (int pi = 0; pi < totalPerms; pi += stride) {
                 int n = pi;
                 for (int i = 1; i <= els.Count; n /= i++) idxs[els.Count - i] = n % i;
-                for (int i = 0; i < targetSize; i++) for (int j = i + 1; j < targetSize; j++) if (idxs[j] >= idxs[i]) idxs[j]++;
-                result.Add(idxs.Take(targetSize).Select(i => els[i]).ToList());
+                var dupe = new List<object>(els);
+                result.Add(idxs.Take(targetSize).Select(i => {
+                    try { return dupe[i]; } finally { dupe.RemoveAt(i); }
+                }).ToList());
             }
 
             Push(result);
@@ -3690,12 +3697,10 @@ namespace StaxLang {
                 if (b == null) return -1;
 
                 if (IsNumber(a)) {
-                    while (IsArray(b) && b.Count > 0) b = ((IList<object>)b)[0];
                     if (IsNumber(b)) return CompareScalars(a, b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsNumber(b)) {
-                    while (IsArray(a) && a.Count > 0) a = ((IList<object>)a)[0];
                     if (IsNumber(b)) return CompareScalars(a, b);
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
