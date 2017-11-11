@@ -72,6 +72,30 @@ export function areEqual(a: StaxValue, b: StaxValue) {
     return false;
 }
 
+export function compare(a: StaxValue, b: StaxValue): number {
+    if (isNumber(a)) {
+        if (isNumber(b)) return floatify(a) - floatify(b);
+        if (isArray(b)) {
+            if (b.length === 0) return 1;
+            return compare(a, b[0]);
+        }
+    }
+    else if (isNumber(b)) {
+        if (isArray(a)) {
+            if (a.length === 0) return -1;
+            return compare(a[0], b);
+        }
+    }
+    else if (isArray(a) && isArray(b)) {
+        for (let i = 0; i < a.length && i < b.length; i++) {
+            let ec = compare(a[i], b[i]);
+            if (ec) return ec;
+        }
+        return compare(a.length, b.length);
+    }
+    return a.toString() > b.toString() ? 1 : -1;
+}
+
 export function stringFormat(arg: StaxValue): StaxArray {
     if (isNumber(arg)) return S2A(arg.toString());
     if (isArray(arg)) {

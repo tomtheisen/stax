@@ -2349,7 +2349,6 @@ namespace StaxLang {
 
             if (IsArray(replace)) {
                 Push(S2A(Regex.Replace(ts, ss, A2S(replace))));
-                yield break;
             }
             else if (IsBlock(replace)) {
                 PushStackFrame();
@@ -3706,7 +3705,6 @@ namespace StaxLang {
                     return a.GetType().Name.CompareTo(b.GetType().Name);
                 }
                 if (IsNumber(b)) {
-                    if (IsNumber(b)) return CompareScalars(a, b);
                     if (IsArray(a)) {
                         if (a.Count == 0) return -1;
                         return Compare(a[0], b);

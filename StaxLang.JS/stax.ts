@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, stringFormat } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -282,6 +282,20 @@ export class Runtime {
                     case 'd':
                         this.pop();
                         break;
+                    case 'e':
+                        if (isArray(this.peek())) {
+                            if (!this.doEval()) throw new Error("eval failed");
+                        }
+                        else if (typeof this.peek() === "number") {
+                            this.push(bigInt(Math.ceil(this.pop() as number)));
+                        }
+                        else if (this.peek() instanceof Rational) {
+                            this.push((this.pop() as Rational).ceiling())
+                        }
+                        else if (this.peek() instanceof Block) {
+                            for (let s of this.doExtremaBy(-1)) yield s;
+                        }
+                        break;
                     case 'f': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doFilter(getRest())) yield s;
@@ -339,6 +353,9 @@ export class Runtime {
                     case 'n':
                         this.push(this.pop(), this.peek());
                         break;
+                    case 'o':
+                        for (let s of this.doOrder()) yield s;
+                        break;
                     case 'O':
                         this.runMacro("1s");
                         break;
@@ -360,9 +377,8 @@ export class Runtime {
                         }
                         break;
                     case 'R':
-                        if (isInt(this.peek())) {
-                            this.push(range(1, (this.pop() as BigInteger).add(1)));
-                        }
+                        if (isInt(this.peek())) this.push(range(1, (this.pop() as BigInteger).add(1)));
+                        else this.doRegexReplace();
                         break;
                     case 's':
                         this.push(this.pop(), this.pop());
@@ -567,6 +583,93 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for %");
+    }
+
+    private *doOrder() {
+        let top = this.pop();
+        if (isArray(top)) {
+            this.push(_.sortBy((n: StaxValue) => n));
+            return;
+        }
+        if (top instanceof Block) {
+            let arr = this.pop();
+            if (!isArray(arr)) throw new Error("expected array for order");
+            let combined: {val: StaxValue, key: StaxValue}[] = [];
+
+            this.pushStackFrame();
+            for (let e of arr) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(top)) yield s;
+                combined.push({val: e, key: this.pop()});
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+
+            let result: StaxArray = _.sortBy(combined, t => t.key).map(t => t.val);
+            this.push(result);
+        }
+        else throw new Error("bad types for order");
+    }
+
+    private *doExtremaBy(direction: number) {
+        let project = this.pop(), arr = this.pop(), result: StaxArray = [], extreme: StaxValue | null = null;
+        if (!(project instanceof Block) || !isArray(arr)) throw new Error("bad types for extrema");
+
+        if (arr.length === 0) {
+            this.push(arr);
+            return;
+        }
+
+        this.pushStackFrame();
+        for (let e of arr) {
+            this.push(this._ = e);
+
+            let cancelled = false
+            for (let s of this.runSteps(project)) {
+                if (cancelled = s.cancel) break;
+                yield s;
+            }
+
+            if (!cancelled) {
+                let projected = this.pop();
+                if (extreme == null || compare(projected, extreme) * direction > 0) {
+                    extreme = projected;
+                    result.splice(0);
+                }
+                if (areEqual(projected, extreme)) result.push(e);
+            }
+
+            this.index = this.index.add(one);
+        }
+        this.popStackFrame();
+
+        this.push(result);
+    }
+
+    private doRegexReplace() {
+        let replace = this.pop(), search = this.pop(), text = this.pop();
+        if (!isArray(text) || !isArray(search)) throw new Error("bad types for replace");
+        let ts = A2S(text), ss = RegExp(A2S(search), "g");
+        
+        if (isArray(replace)) {
+            let pattern
+            this.push(S2A(ts.replace(ss, A2S(replace))));
+        }
+        else if (replace instanceof Block) {
+            let replaceBlock = replace;
+            this.pushStackFrame();
+            let result = ts.replace(ss, m => {
+                this.push(this._ = S2A(m));
+                for (let s of this.runSteps(replaceBlock)) ; // todo: yield the execution states
+                this.index = this.index.add(one);
+                let out = this.pop();
+                if (!isArray(out)) throw new Error("regex replace block didn't yield string");
+                return A2S(out);
+            });
+            this.popStackFrame();
+            this.push(S2A(result));
+        }
+        else throw new Error("bad types for replace");
     }
 
     private *doFor(rest: string) {

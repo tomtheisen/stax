@@ -46,9 +46,17 @@ export class Rational {
             this.denominator.multiply(other.numerator));
     }
 
+    negate() {
+        return new Rational(this.numerator.negate(), this.denominator);
+    }
+
     floor() {
         if (this.numerator.isNegative()) return this.numerator.subtract(this.denominator).add(bigInt.one).divide(this.denominator);
         return this.numerator.divide(this.denominator);
+    }
+
+    ceiling() {
+        return this.negate().floor().negate();
     }
 
     mod(other: Rational) {
