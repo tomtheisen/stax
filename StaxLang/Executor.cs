@@ -2963,8 +2963,10 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoReduce(Block block, Block rest) {
-            dynamic b = Pop(), a = Pop();
-            if (IsInt(a) && IsBlock(b)) {
+            bool shorthand = !IsBlock(this.Peek());
+            Block combine = shorthand ? rest : this.Pop();
+            dynamic a = Pop();
+            if (IsInt(a)) {
                 block.AddDesc("reduce range 1 to n using block");
                 a = Range(1, a);
             }
@@ -2972,7 +2974,7 @@ namespace StaxLang {
                 block.AddDesc("reduce using block");
                 a = new List<object>(a);
             }
-            if (IsArray(a) && IsBlock(b)) {
+            if (IsArray(a)) {
                 if (a.Count < 2) {
                     Push(a[0]);
                     yield break;
@@ -2983,7 +2985,7 @@ namespace StaxLang {
                 a.RemoveAt(0);
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps((Block)b)) {
+                    foreach (var s in RunSteps(combine)) {
                         if (s.Cancel) {
                             PopStackFrame();
                             yield break;
@@ -2993,6 +2995,7 @@ namespace StaxLang {
                     Index++;
                 }
                 PopStackFrame();
+                if (shorthand) Print(this.Pop(), false);
             }
             else {
                 throw new StaxException("Bad types for reduce");

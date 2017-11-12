@@ -218,3 +218,10 @@ f
 2 1
 	stax
 {3<}HJ
+	name:ReduceShorthand
+	in
+abcd
+	out
+a-b-c-d
+	stax
+k'-s++
