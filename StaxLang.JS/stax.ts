@@ -3,6 +3,7 @@ import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
+import IteratorPair from './iteratorpair';
 type BigInteger = bigInt.BigInteger;
 
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
@@ -32,8 +33,8 @@ export class Runtime {
     private inputStack: StaxArray = [];
     private producedOutput = false;
 
-    private callStackFrames: {_: StaxValue, indexOuter: BigInteger}[] = [];
-    private _: StaxValue;
+    private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: BigInteger}[] = [];
+    private _: StaxValue | IteratorPair;
     private index = zero;
     private indexOuter = zero;
     private x: StaxValue = zero;
@@ -209,7 +210,8 @@ export class Runtime {
                         this.push(this.inputStack.pop()!);
                         break;
                     case '_':
-                        this.push(this._);
+                        if (this._ instanceof IteratorPair) this.push(this._.item1, this._.item2);
+                        else this.push(this._);
                         break;
                     case '!':
                         this.push(isTruthy(this.pop()) ? zero : one);
@@ -321,10 +323,26 @@ export class Runtime {
                         else if (isNumber(this.peek())) {
                             this.runMacro("2u+@");
                         }
+                        else throw new Error("unknown type for j");
+                        break;
+                    case 'J':
+                        if (isArray(this.peek())) {
+                            this.runMacro("' *");
+                        }
+                        else if (isNumber(this.peek())) {
+                            this.runMacro("c*");
+                        }
+                        else throw new Error("unknown type for J");
                         break;
                     case 'k': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doReduce()) ;
+                        if (shorthand) return;
+                        break;
+                    }
+                    case 'K': {
+                        let shorthand = !(this.peek() instanceof Block);
+                        for (let s of this.doCrossMap(getRest())) yield s;
                         if (shorthand) return;
                         break;
                     }
@@ -437,6 +455,15 @@ export class Runtime {
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
+                    case '|e':
+                        if (isInt(this.peek())) {
+                            this.push((this.pop() as BigInteger).isEven() ? one : zero);
+                        }
+                        else if (isArray(this.peek())) {
+                            let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
+                            this.push(S2A(original.split(from, 2).join(to)));
+                        }
+                        break;
                     case '|d':
                         this.push(bigInt(this.mainStack.length));
                         break;
@@ -445,6 +472,9 @@ export class Runtime {
                         break;
                     case '|i':
                         this.push(this.indexOuter);
+                        break;
+                    case '|I':
+                        for (let s of this.doFindIndexAll()) yield s;
                         break;
                     case '|P':
                         this.print('');
@@ -646,6 +676,38 @@ export class Runtime {
         this.push(result);
     }
 
+    private *doFindIndexAll() {
+        let target = this.pop(), arr = this.pop();
+        if (!isArray(arr)) throw new Error("bad types for find index all");
+
+        if (isArray(target)) {
+            let text = A2S(arr), search = A2S(target), result = [], lastFound = -1;
+            while ((lastFound = text.indexOf(search, lastFound + 1)) >= 0) {
+                result.push(bigInt(lastFound));
+            }
+            this.push(result);
+        }
+        else if (target instanceof Block) {
+            this.pushStackFrame();
+            let result = [];
+            for (let i = 0; i < arr.length; i++) {
+                this.push(this._ = arr[i]);
+                this.index = bigInt(i);
+                for (let s of this.runSteps(target)) yield s;
+                if (isTruthy(this.pop())) result.push(this.index);
+            }
+            this.popStackFrame();
+            this.push(result);
+        }
+        else {
+            let result = [];
+            for (let i = 0; i < arr.length; i++) {
+                if (areEqual(arr[i], target)) result.push(bigInt(i));
+            }
+            this.push(result);
+        }
+    }
+
     private doRegexReplace() {
         let replace = this.pop(), search = this.pop(), text = this.pop();
         if (!isArray(text) || !isArray(search)) throw new Error("bad types for replace");
@@ -768,6 +830,44 @@ export class Runtime {
         else {
             throw new Error("bad types for reduce");
         }
+    }
+
+    private *doCrossMap(rest: string) {
+        let top = this.pop(), 
+            shorthand = !(top instanceof Block), 
+            map: Block | string = shorthand ? rest : top as Block;
+        
+        let inner = shorthand ? top : this.pop(), outer =  this.pop();
+        if (isInt(inner)) inner = range(one, inner);
+        if (isInt(outer)) outer = range(one, outer);
+        if (!isArray(outer) || !isArray(inner)) throw new Error("need arrays or integers for crossmap");
+
+        let result: StaxArray = [];
+        this.pushStackFrame();
+        for (let e of outer) {
+            let row = [];
+            this.pushStackFrame();
+            for (let f of inner) {
+                this.push(e);
+                this.push(f);
+                this._ = new IteratorPair(e, f);
+
+                let cancelled = false;
+                for (let s of this.runSteps(map)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                if (!cancelled) row.push(this.pop());
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+            this.index = this.index.add(one);
+            if (shorthand) this.print(row);
+            else result.push(row);
+        }
+        this.popStackFrame();
+
+        if (!shorthand) this.push(result);
     }
 
     private *doFilter(rest: string) {

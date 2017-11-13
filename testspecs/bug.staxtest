@@ -342,3 +342,10 @@ f C 1
 b
 	stax
 'a-
+	name:IndexInFindAllIndexMatch
+	in
+[9 8 2 3 7]
+	out
+2 3
+	stax
+{i=}J
