@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      first and last for performance (same as {...fh or {...FH, just maybe MUCH faster)
  *     FeatureTests for generators
  *     debugger
  */
@@ -622,9 +621,12 @@ namespace StaxLang {
                             double num = (double)Pop();
                             Push(S2A(num.ToString($"F{digits}")));
                         }
-                        else if (IsFrac(Peek()) || IsFloat(Peek())) {
+                        else if (IsNumber(Peek())) {
                             block.AddDesc("round to nearest integer");
                             RunMacro("2u+@");
+                        }
+                        else if (IsBlock(Peek())) {
+                            foreach (var s in DoFindFirst(block)) yield return s;
                         }
                         break;
                     case 'J':
@@ -635,6 +637,9 @@ namespace StaxLang {
                         else if (IsNumber(Peek())) {
                             block.AddDesc("square");
                             Push(Peek() * Pop());
+                        }
+                        else if (IsBlock(Peek())) {
+                            foreach (var s in DoFindFirst(block, true)) yield return s;
                         }
                         break;
                     case 'k': // reduce
@@ -1621,6 +1626,31 @@ namespace StaxLang {
                 ++ip;
             }
             yield return new ExecutionState();
+        }
+
+        private IEnumerable<ExecutionState> DoFindFirst(Block block, bool reverse = false) {
+            block.AddDesc("find first element matching predicate");
+
+            Block pred = this.Pop();
+            List<object> arr = this.Pop();
+            if (reverse) arr.Reverse();
+
+            PushStackFrame();
+            foreach (var e in arr) {
+                Push(_ = e);
+                foreach (var s in RunSteps(pred)) {
+                    if (s.Cancel) goto Cancel;
+                    yield return s;
+                }
+                if (IsTruthy(Pop())) {
+                    Push(e);
+                    break;
+                }
+
+                Cancel:
+                Index++;
+            }
+            PopStackFrame();
         }
 
         private IEnumerable<ExecutionState> DoExtremaBy(int direction, Block block) {

@@ -358,6 +358,8 @@ chars	|Types        	|Name              	|Description
 `\|;`	|             	|iteration-parity  	|Get the parity of the current iteration index. (0 or 1)
 `\|i`	|             	|outer-index       	|Get the 0-based iteration index of the outer loop.
 `I`  	|arr block    	|index-of-block    	|Get the index of the first element that yields a truthy value from the block. Does not terminate a block.
+`j`  	|arr block    	|first-match       	|Get the first match from the array - the first value for which the block produces a truthy value.  Does not terminate a block.
+`J`  	|arr block    	|last-match        	|Get the last match from the array - the last value for which the block produces a truthy value.  Does not terminate a block.
 `k`  	|arr block    	|reduce            	|Terminate a block and reduce (fold) using the block.
 `k`  	|int block    	|reduce-range      	|Terminate a block and reduce (fold) [1 .. n] using the block.
 `k`  	|int          	|reduce-short      	|If there is no open block, use the rest of the program as the block to reduce the array.  Implicitly print the result.

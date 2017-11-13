@@ -225,3 +225,17 @@ abcd
 a-b-c-d
 	stax
 k'-s++
+	name:FirstMatch
+	in
+["foo" "bar" "baz"]
+	out
+bar
+	stax
+{'a#}j
+	name:LastMatch
+	in
+["fee" "fie" "fo" "fum"]
+	out
+fie
+	stax
+{'e#}J
