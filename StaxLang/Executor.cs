@@ -2836,6 +2836,7 @@ namespace StaxLang {
                 Push(result);
             }
             else if (IsArray(a) && IsBlock(b)) {
+                block.AddDesc("partition where the block produces a truthy value");
                 List<object> result = new List<object>(), current = null;
 
                 PushStackFrame();

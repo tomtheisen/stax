@@ -251,6 +251,12 @@ export class Runtime {
                     case '$':
                         this.push(stringFormat(this.pop()));
                         break;
+                    case '(':
+                        for (let s of this.doPadRight()) yield s;
+                        break;
+                    case ')':
+                        this.doPadLeft();
+                        break;
                     case '[': {
                         let b = this.pop(), a = this.peek();
                         this.push(a, b);
@@ -365,9 +371,12 @@ export class Runtime {
                         break;
                     case 'm': {
                         let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doMap(getRest())) ;
+                        for (let s of this.doMap(getRest())) yield s;
                         break;
                     }
+                    case 'M':
+                        for (let s of this.doTransposeOrMaybe()) yield s;
+                        break;
                     case 'n':
                         this.push(this.pop(), this.peek());
                         break;
@@ -613,6 +622,107 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for %");
+    }
+
+    private doPadLeft() {
+        let b = this.pop(), a = this.pop();
+
+        if (isArray(b) && isInt(a)) [a, b] = [b, a];
+        if (isInt(a)) a = stringFormat(a);
+
+        if (isArray(a) && isInt(b)) {
+            a = _.clone(a);
+            let bval = b.valueOf();
+            if (bval < 0) b = b.add(a.length);
+            if (a.length < bval) a.unshift(..._.fill(Array(bval - a.length), zero));
+            if (a.length > bval) a.splice(0, a.length, bval);
+            this.push(a);
+        }
+        else if (isArray(a) && isArray(b)) {
+            let result = [];
+            for (let i = 0; i < b.length; i++) {
+                result.push(a.length - b.length + i >= 0 ? a[a.length - b.length + i] : b[i]);
+            }
+            this.push(result);
+        }
+        else throw new Error("bad types for padleft");
+    }
+
+    private *doPadRight() {
+        let b = this.pop(), a = this.pop();
+        
+        if (isArray(b) && isInt(a)) [a, b] = [b, a];
+        if (isInt(a)) a = stringFormat(a);
+
+        if (isArray(a) && isInt(b)) {
+            a = _.clone(a);
+            let bval = b.valueOf();
+            if (bval < 0) b = b.add(a.length);
+            if (a.length < bval) a.push(..._.fill(Array(bval - a.length), zero));
+            if (a.length > bval) a.splice(bval);
+            this.push(a);
+        }
+        else if (isArray(a) && isArray(b)) {
+            let result = [];
+            for (let i = 0; i < b.length; i++) {
+                result.push(i < a.length ? a[i] : b[i]);
+            }
+            this.push(result);
+        }
+        else if (isArray(a) && b instanceof Block) {
+            let result = [], current: StaxArray | null = null;
+
+            this.pushStackFrame();
+            for (let e of a) {
+                let cancelled = false;
+                this.push(this._ = e);
+
+                for (let s of this.runSteps(b)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                if (!cancelled) {
+                    if (isTruthy(this.pop()) || current == null) {
+                        if (current) result.push(current);
+                        current = [];
+                    }
+                    current.push(e);
+                }
+
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+
+            if (current) result.push(current);
+            this.push(result);
+        }
+        else throw new Error("bad types for padright")
+    }
+
+    private *doTransposeOrMaybe() {
+        let top = this.pop();
+        if (top instanceof Block) {
+            if (isTruthy(this.pop())) {
+                for (let s of this.runSteps(top)) {
+                    if (s.cancel) return;
+                    yield s;
+                }
+            }
+            return;
+        }
+
+        if (!isArray(top)) throw new Error("bad types for transpose/maybe");
+
+        if (top.length > 0 && !isArray(top[0])) top = [top];
+        let result: StaxArray = [];
+        let maxlen = _.max(top.map(e => (e as StaxArray).length))!;
+
+        for (let line of top) {
+            line = line as StaxArray;
+            line.push(..._.fill(Array(maxlen - line.length), zero));
+        }
+
+        this.push(result);
     }
 
     private *doOrder() {
@@ -908,8 +1018,9 @@ export class Runtime {
     }
 
     private *doMap(rest: string) {
-        if (this.peek() instanceof Block) {
-            let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
+        let top = this.pop();
+        if (top instanceof Block) {
+            let block = top, data = this.pop(), result: StaxArray = [], cancelled = false;
             if (isInt(data)) data = range(1, data.add(one));
             if (!isArray(data)) throw Error("block-map operates on ints and arrays, not this garbage. get out of here.");
             
@@ -926,8 +1037,8 @@ export class Runtime {
             this.popStackFrame();
             this.push(result);
         }
-        else if (isArray(this.peek())) {
-            let data = this.pop() as StaxArray, cancelled = false;
+        else if (isArray(top) || isInt(top)) {
+            let data = isArray(top) ? top : range(one, top.add(one)), cancelled = false;
 
             this.pushStackFrame();
             for (let e of data) {
