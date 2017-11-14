@@ -348,4 +348,18 @@ b
 	out
 2 3
 	stax
-{i=}J
+{i=}|IJ
+	in
+6
+	out
+2
+4
+6
+	stax
+f|e
+	name:PrefixSumsStackDebris
+	in
+	out
+foo
+	stax
+"foo" 3R:+d

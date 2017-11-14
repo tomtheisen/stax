@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      coprime
  *     FeatureTests for generators
  *     debugger
  */
@@ -30,6 +31,7 @@ namespace StaxLang {
             ['2'] = (0.5, "0.5"),
             ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
             ['/'] = (Math.PI / 3, "pi / 3"),
+            ['%'] = (new List<object>{ BigInteger.Zero, BigInteger.Zero }, "[0 0]"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),
@@ -1737,6 +1739,7 @@ namespace StaxLang {
                 Index++;
             }
             PopStackFrame();
+            Pop();
             Push(result);
         }
 
@@ -2949,42 +2952,39 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoFilter(Block block, Block rest) {
-            if (IsArray(Peek())) { // filter shorthand
-                block.AddDesc("treat rest of program as filter and print the result");
-                PushStackFrame();
-                foreach (var e in Pop()) {
-                    Push(_ = e);
-                    foreach (var s in RunSteps(rest)) {
-                        if (s.Cancel) goto Cancel;
-                        yield return s;
-                    }
-                    if (IsTruthy(Pop())) Print(e);
-                    Cancel:
-                    Index++;
-                }
-                PopStackFrame();
-                yield break;
+            dynamic top = Pop(), a;
+            bool shorthand = !(top is Block);
+            Block pred;
+            if (shorthand) {
+                pred = rest;
+                a = top;
+            }
+            else {
+                pred = top;
+                a = Pop();
             }
 
-            dynamic b = Pop(), a = Pop();
+            if (IsInt(a)) a = Range(1, a);
 
-            if (IsInt(a) && IsBlock(b)) a = Range(1, a);
-
-            if (IsArray(a) && IsBlock(b)) {
+            if (IsArray(a)) {
+                if (shorthand) block.AddDesc("treat rest of program as filter and print the result");
                 block.AddDesc("filter array by block");
                 PushStackFrame();
                 var result = new List<object>();
                 foreach (var e in a) {
                     Push(_ = e);
-                    foreach (var s in RunSteps((Block)b)) {
+                    foreach (var s in RunSteps(pred)) {
                         if (s.Cancel) goto Cancel;
                         yield return s;
                     }
-                    if (IsTruthy(Pop())) result.Add(e);
+                    if (IsTruthy(Pop())) {
+                        if (shorthand) Print(e);
+                        else result.Add(e);
+                    }
                     Cancel:
                     Index++;
                 }
-                Push(result);
+                if (!shorthand) Push(result);
                 PopStackFrame();
             }
             else {

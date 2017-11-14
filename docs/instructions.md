@@ -409,6 +409,7 @@ chars	|Value
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
 `V/` 	|pi/3
+`V%` 	|[0, 0]
 `VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"
 `Vb` 	|"()[]{}<>"
