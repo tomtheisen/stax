@@ -363,3 +363,9 @@ f|e
 foo
 	stax
 "foo" 3R:+d
+	name:EmptyElementStringJoin
+	in
+	out
+x
+	stax
+z]2*'x*

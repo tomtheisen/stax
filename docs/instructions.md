@@ -110,6 +110,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|q`        	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 `\|Q`        	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
 `:~`         	|int        	|set-interior  	|                   	|Set all interior bits in number.  The result will always be one less than a power of 2.
+`:!`         	|int int    	|coprime       	|iscoprime(a, b)    	|Are a and b coprime?
 `:#`         	|num        	|floatify      	|float(a)           	|Convert to float.
 `:-`         	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:/`         	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.

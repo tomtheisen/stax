@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      coprime
  *     FeatureTests for generators
  *     debugger
  */
@@ -3425,11 +3424,12 @@ namespace StaxLang {
             if (IsArray(a) && IsArray(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "join with " + e);
                 else block.AddDesc("string join");
-                string result = "";
-                string joiner = A2S(b);
+                string result = "", joiner = A2S(b);
+                bool subsequent = false;
                 foreach (var e in a) {
-                    if (result != "") result += joiner;
+                    if (subsequent) result += joiner;
                     result += IsArray(e) ? A2S(e): e;
+                    subsequent = true;
                 }
                 Push(S2A(result));
                 yield break;
