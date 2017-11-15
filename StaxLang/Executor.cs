@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      fraction single bytes: double, half, fractional part
  *     FeatureTests for generators
  *     debugger
  */
