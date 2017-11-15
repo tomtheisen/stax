@@ -414,7 +414,7 @@ export class Runtime {
                         break;
                     case 'k': {
                         let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doReduce()) ;
+                        for (let s of this.doReduce(getRest())) ;
                         if (shorthand) return;
                         break;
                     }
@@ -1100,23 +1100,28 @@ export class Runtime {
         this.popStackFrame();
     }
 
-    private *doReduce() {
-        let b = this.pop(), a = this.pop();
-        if (isInt(a) && b instanceof Block) a = range(one, a);
-        else if (isArray(a)) a = [...a];
+    private *doReduce(rest: string) {
+        let top = this.pop(), shorthand = !(top instanceof Block);
+        let block: Block | string, arr: StaxValue;
 
-        if (isArray(a) && b instanceof Block) {
-            if (a.length === 0) throw new Error("tried to reduce empty array");
-            if (a.length === 1) {
-                this.push(a[0]);
+        if (top instanceof Block) [block, arr] = [top, this.pop()];
+        else [block, arr] = [rest, top];
+
+        if (isInt(arr)) arr = range(one, arr);
+        else if (isArray(arr)) arr = _.clone(arr);
+
+        if (isArray(arr)) {
+            if (arr.length === 0) throw new Error("tried to reduce empty array");
+            if (arr.length === 1) {
+                this.push(arr[0]);
                 return;
             }
 
             this.pushStackFrame();
-            this.push(a.shift()!);
-            for (let e of a) {
+            this.push(arr.shift()!);
+            for (let e of arr) {
                 this.push(this._ = e);
-                for (let s of this.runSteps(b)) {
+                for (let s of this.runSteps(block)) {
                     if (s.cancel) {
                         this.popStackFrame();
                         return;
@@ -1126,6 +1131,8 @@ export class Runtime {
                 this.index = this.index.add(one);
             }
             this.popStackFrame();
+
+            if (shorthand) this.print(this.pop());
         }
         else {
             throw new Error("bad types for reduce");
