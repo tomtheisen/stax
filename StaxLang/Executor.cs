@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      fraction single bytes: double, half, fractional part
  *     FeatureTests for generators
  *     debugger
  */
@@ -457,7 +456,7 @@ namespace StaxLang {
                             result.RemoveAt(0);
                             Push(result);
                         }
-                        if (IsInt(Peek())) { // n times do
+                        else if (IsInt(Peek())) { // n times do
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => e + " times do");
                             else block.AddDesc("n times do");
                             var n = Pop();
@@ -468,6 +467,11 @@ namespace StaxLang {
                             }
                             PopStackFrame();
                             yield break;
+                        }
+                        else if (IsNumber(Peek())) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "fractional part of " + e);
+                            block.AddDesc("get fractional part");
+                            this.RunMacro("1%");
                         }
                         break;
                     case 'e': 
@@ -533,13 +537,9 @@ namespace StaxLang {
                         }
                         break;
                     case 'h':
-                        if (IsInt(Peek()) || IsFloat(Peek())) {
+                        if (IsNumber(Peek())) {
                             block.AddDesc("half");
                             RunMacro("2/"); 
-                        }
-                        else if (IsFrac(Peek())) {
-                            block.AddDesc("numerator");
-                            Push(Pop().Num);
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("first element");
@@ -566,13 +566,9 @@ namespace StaxLang {
                         }
                         break;
                     case 'H':
-                        if (IsInt(Peek()) || IsFloat(Peek())) {
+                        if (IsNumber(Peek())) {
                             block.AddDesc("un-half (double)");
-                            Push(Pop() * 2);
-                        }
-                        else if (IsFrac(Peek())) {
-                            block.AddDesc("denominator");
-                            Push(Pop().Den); 
+                            this.RunMacro("2*");
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("last element");
@@ -735,6 +731,10 @@ namespace StaxLang {
                             result.Reverse();
                             Push(result);
                         }
+                        else if (IsFrac(Peek())) {
+                            block.AddDesc("numerator");
+                            Push(Pop().Num);
+                        }
                         else throw new StaxException("Bad type for r");
                         break;
                     case 'R':
@@ -742,6 +742,10 @@ namespace StaxLang {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "1 ... " + e);
                             block.AddDesc("1 ... n");
                             Push(Range(1, Pop()));
+                        }
+                        else if (IsFrac(Peek())) {
+                            block.AddDesc("denominator");
+                            Push(Pop().Den);
                         }
                         else {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "regex replace with " + e);

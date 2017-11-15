@@ -50,21 +50,21 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `v`          	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`          	|num        	|inc           	|a + 1              	|Increment by 1.
 `B`          	|frac       	|properize     	|floor(a), a%1      	|Properize fraction.  Push integer floor, and proper remainder separately.
+`D`          	|num        	|frac-part     	|a%1                	|Get fractional non-integer part of rational or float.
 `e`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
 `e`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
 `E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.
 `E`          	|frac       	|num-den       	|                   	|Push numerator and denominator separately.
 `h`          	|int        	|halve         	|a / 2              	|Floor divide by 2.
-`h`          	|float      	|halve         	|a / 2              	|Divide by 2.
-`h`          	|frac       	|numerator     	|numerator(a)       	|Get the numerator.
-`H`          	|int        	|un-halve      	|a * 2              	|Double.
-`H`          	|float      	|un-halve      	|a * 2              	|Double.
-`H`          	|frac       	|denom         	|denom(a)           	|Get the denominator.
+`h`          	|num        	|halve         	|a / 2              	|Divide by 2.
+`H`          	|num        	|un-halve      	|a * 2              	|Double.
 `j`          	|float int  	|float-round   	|round(a, b)        	|Round float to n decimal places.  Format as string.
 `j`          	|float      	|round         	|round(a)           	|Round to nearest integer.
 `j`          	|frac       	|round         	|round(a)           	|Round to nearest integer.
 `J`          	|num        	|square        	|a ** 2             	|Square number.
 `l`          	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
+`r`          	|frac       	|numerator     	|numerator(a)       	|Get the numerator.
+`R`          	|frac       	|denom         	|denom(a)           	|Get the denominator.
 `u`          	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.
 `u`          	|frac       	|invert-frac   	|1 / a              	|Turn fraction upside down; invert.
 `u`          	|float      	|invert-float  	|1 / a              	|Floating point inversion.
