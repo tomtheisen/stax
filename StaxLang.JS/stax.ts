@@ -234,6 +234,16 @@ export class Runtime {
                     case '=':
                         this.push(areEqual(this.pop(), this.pop()) ? one : zero);
                         break;
+                    case '<': {
+                        let b = this.pop(), a = this.pop();
+                        this.push(compare(a, b) < 0 ? one : zero);
+                        break;
+                    }
+                    case '>': {
+                        let b = this.pop(), a = this.pop();
+                        this.push(compare(a, b) > 0 ? one : zero);
+                        break;
+                    }
                     case '?': {
                         let b = this.pop(), a = this.pop();
                         let result = isTruthy(this.pop()) ? a : b;
@@ -319,6 +329,9 @@ export class Runtime {
                     case 'i':
                         this.push(this.index);
                         break;
+                    case 'I':
+                        for (let s of this.doIndexOf()) yield s;
+                        break;
                     case 'j':
                         if (isArray(this.peek())) this.runMacro("' /");
                         else if (isInt(this.peek())) {
@@ -372,6 +385,7 @@ export class Runtime {
                     case 'm': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doMap(getRest())) yield s;
+                        if (shorthand) return;
                         break;
                     }
                     case 'M':
@@ -461,8 +475,24 @@ export class Runtime {
                     case '| ':
                         this.print(' ', false);
                         break;
+                    case '|;':
+                        this.push(this.index.isEven() ? zero : one);
+                        break;
                     case '|+':
                         this.runMacro('Z{+F');
+                        break;
+                    case '|c':
+                        if (!isTruthy(this.peek())) {
+                            this.pop();
+                            yield new ExecutionState(ip, true);
+                            return;
+                        }
+                        break;
+                    case '|d':
+                        this.push(bigInt(this.mainStack.length));
+                        break;
+                    case '|D':
+                        this.push(bigInt(this.inputStack.length));
                         break;
                     case '|e':
                         if (isInt(this.peek())) {
@@ -472,12 +502,6 @@ export class Runtime {
                             let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
                             this.push(S2A(original.split(from, 2).join(to)));
                         }
-                        break;
-                    case '|d':
-                        this.push(bigInt(this.mainStack.length));
-                        break;
-                    case '|D':
-                        this.push(bigInt(this.inputStack.length));
                         break;
                     case '|i':
                         this.push(this.indexOuter);
@@ -697,6 +721,53 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for padright")
+    }
+
+    private *doIndexOf() {
+        let target = this.pop(), arr = this.pop();
+        if (!isArray(arr)) [arr, target] = [target, arr];
+        if (!isArray(arr)) throw new Error("bad types for index-of");
+
+        for (let i = 0; i < arr.length; i++) {
+            let el = arr[i];
+            if (isArray(target)) {
+                if (i + target.length > arr.length) {
+                    this.push(minusOne);
+                    return;
+                }
+                let match = true;
+                for (let j = 0; j < target.length; j++) {
+                    if (!areEqual(arr[i + j], target[j])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    this.push(bigInt(i));
+                    return;
+                }
+            }
+            else if (target instanceof Block) {
+                this.pushStackFrame();
+                this.push(this._ = el);
+                this.index = bigInt(i);
+                let cancelled = false;
+                for (let s of this.runSteps(target)) {
+                    yield s;
+                    if (cancelled = s.cancel) break;
+                }
+                if (!cancelled && isTruthy(this.pop())) {
+                    this.push(bigInt(i));
+                    this.popStackFrame();
+                    return;
+                }
+                this.popStackFrame();
+            }
+            else if (areEqual(target, el)) {
+                this.push(bigInt(i));
+                return;
+            }
+        }
     }
 
     private *doTransposeOrMaybe() {

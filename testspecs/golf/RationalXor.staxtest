@@ -1,0 +1,51 @@
+	#https://codegolf.stackexchange.com/questions/147993/bitwise-xor-of-rational-numbers
+	in
+0/1 0/1
+	out
+0/1
+	in
+1/2 1/2
+	out
+0/1
+	in
+1/2 1/4
+	out
+3/4
+	in
+1/3 2/3
+	out
+1/1
+	in
+1/2 3/4
+	out
+1/4
+	in
+5/8 1/3
+	out
+23/24
+	in
+1/3 1/5
+	out
+2/5
+	in
+15/16 3/19
+	out
+257/304
+	in
+15/16 257/304
+	out
+3/19
+	in
+3/7 11/40
+	out
+89/520
+	in
+5/32 17/24
+	out
+59/96
+	in
+16/29 16/39
+	out
+621001733121535520/696556744961512799
+	stax
+L{{HDmYgucy]I:/c%|2vus{Gm:b*srFG+h}{jm:s

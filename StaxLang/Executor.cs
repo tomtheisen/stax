@@ -2598,20 +2598,20 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoFindIndex() {
-            dynamic element = Pop(), list = Pop();
+            dynamic target = Pop(), list = Pop();
 
-            if (!IsArray(list)) (list, element) = (element, list);
+            if (!IsArray(list)) (list, target) = (target, list);
 
             if (IsArray(list)) {
                 for (int i = 0; i < list.Count; i++) {
-                    if (IsArray(element)) {
-                        if (i + element.Count > list.Count) {
+                    if (IsArray(target)) {
+                        if (i + target.Count > list.Count) {
                             Push(BigInteger.MinusOne);
                             yield break;
                         }
                         bool match = true;
-                        for (int j = 0; j < element.Count; j++) {
-                            if (!AreEqual(list[i + j], element[j])) {
+                        for (int j = 0; j < target.Count; j++) {
+                            if (!AreEqual(list[i + j], target[j])) {
                                 match = false;
                                 break;
                             }
@@ -2621,11 +2621,11 @@ namespace StaxLang {
                             yield break;
                         }
                     }
-                    else if (IsBlock(element)) {
+                    else if (IsBlock(target)) {
                         PushStackFrame();
                         Push(_ = list[i]);
                         Index = i;
-                        foreach (var s in RunSteps((Block)element)) {
+                        foreach (var s in RunSteps((Block)target)) {
                             yield return s;
                             if (s.Cancel) goto Cancel;
                         }
@@ -2637,7 +2637,7 @@ namespace StaxLang {
                         Cancel:
                         PopStackFrame();
                     }
-                    else if (AreEqual(element, list[i])) {
+                    else if (AreEqual(target, list[i])) {
                         Push((BigInteger)i);
                         yield break;
                     }
