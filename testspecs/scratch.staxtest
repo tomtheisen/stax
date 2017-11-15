@@ -1,0 +1,14 @@
+	name:Eval
+	in
+["foo" "bar" "baz"]
+	out
+baz
+	stax
+H
+	name:FirstMatch
+	in
+["foo" "bar" "baz"]
+	out
+bar
+	stax
+{'a#}j

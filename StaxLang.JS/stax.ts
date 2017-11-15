@@ -113,7 +113,7 @@ export class Runtime {
                     break;
                 case '"':
                     let finishPos = arg.indexOf('"', i + 1);
-                    newValue(S2A(arg.substring(i + 1, finishPos - i - 1)));
+                    newValue(S2A(arg.substring(i + 1, finishPos)));
                     i = finishPos;
                     break;
                 case '-':
@@ -213,6 +213,15 @@ export class Runtime {
                         this.inputStack.length || fail("stack empty");
                         this.push(this.inputStack.pop()!);
                         break;
+                    case '#': {
+                        let b = this.pop(), a = this.pop();
+                        if (isNumber(a)) [a, b] = [b, a];
+                        this.push(a, b);
+                        
+                        if (isArray(this.peek())) this.runMacro("/%v");
+                        else if (isNumber(this.peek())) this.runMacro("]|&%");
+                        break;
+                    }
                     case '_':
                         if (this._ instanceof IteratorPair) this.push(this._.item1, this._.item2);
                         else this.push(this._);
@@ -230,7 +239,7 @@ export class Runtime {
                         for (let s of this.doStar()) yield s;
                         break;
                     case '/':
-                        this.doSlash();
+                        for (let s of this.doSlash()) yield s;
                         break;
                     case '%':
                         this.doPercent();
@@ -401,6 +410,9 @@ export class Runtime {
                         else if (isNumber(this.peek())) {
                             this.runMacro("2u+@");
                         }
+                        else if (this.peek() instanceof Block) {
+                            for (let s of this.doFindFirst()) yield s;
+                        }
                         else throw new Error("unknown type for j");
                         break;
                     case 'J':
@@ -409,6 +421,9 @@ export class Runtime {
                         }
                         else if (isNumber(this.peek())) {
                             this.runMacro("c*");
+                        }
+                        else if (this.peek() instanceof Block) {
+                            for (let s of this.doFindFirst(true)) yield s;
                         }
                         else throw new Error("unknown type for J");
                         break;
@@ -727,7 +742,7 @@ export class Runtime {
         }
     }
 
-    private doSlash() {
+    private *doSlash() {
         if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
@@ -746,6 +761,42 @@ export class Runtime {
             else throw "weird types or something; can't divide?"
             this.push(result);
         }
+        else if (isArray(a) && isInt(b)) {
+            let result = [];
+            for (let i = 0; i < a.length; i += b.valueOf()) {
+                result.push(_.slice(a, i, i + b.valueOf()));
+            }
+            this.push(result);
+        }
+        else if (isArray(a) && isArray(b)) {
+            let strings = A2S(a).split(A2S(b));
+            this.push(strings.map(s => S2A(s)));
+        }
+        else if (isArray(a) && b instanceof Block) {
+            let result: StaxArray = [], currentPart: StaxArray | null = null, last = null, cancelled = false;
+
+            this.pushStackFrame();
+            for (let e of a) {
+                this.push(this._ = e);
+                for (let s of this.runSteps(b)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                if (!cancelled) {
+                    let current = this.pop();
+                    if (last == null || !areEqual(current, last)) {
+                        if (currentPart != null) result.push(currentPart);
+                        currentPart = [];
+                    }
+                    currentPart!.push(e);
+                    last = current;
+                }
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+            this.push(result);
+        }
+        else throw new Error("bad types for /");
     }
 
     private doPercent() {
@@ -887,6 +938,31 @@ export class Runtime {
                 return;
             }
         }
+    }
+
+    private *doFindFirst(reverse = false) {
+        let pred = this.pop(), arr = this.pop(), cancelled = false;
+        if (!(pred instanceof Block) || !isArray(arr)) throw new Error("bad types for find-first");
+
+        if (reverse) {
+            arr = _.clone(arr);
+            arr.reverse();
+        }
+
+        this.pushStackFrame();
+        for (let e of arr) {
+            this.push(this._ = e);
+            for (let s of this.runSteps(pred)) {
+                if (cancelled = s.cancel) break;
+                yield s;
+            }
+            if (!cancelled && isTruthy(this.pop())) {
+                this.push(e);
+                break;
+            }
+            this.index = this.index.add(one);
+        }
+        this.popStackFrame();
     }
 
     private *doTransposeOrMaybe() {
