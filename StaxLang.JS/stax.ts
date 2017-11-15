@@ -437,6 +437,60 @@ export class Runtime {
                     case 's':
                         this.push(this.pop(), this.pop());
                         break;
+                    case 't':
+                        if (isArray(this.peek())) {
+                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
+                        }
+                        else if (isInt(this.peek())) {
+                            this.runMacro("ss~ c%,-0|M)");
+                        }
+                        else if (this.peek() instanceof Block) {
+                            let pred = this.pop() as Block, result = this.pop(), cancelled = false;
+                            if (!isArray(result)) throw new Error("bad types for trim");
+                            result = _.clone(result);
+
+                            this.pushStackFrame();
+                            while (result.length) {
+                                this.push(this._ = result[0]);
+                                for (let s of this.runSteps(pred)) {
+                                    if (cancelled = s.cancel) break;
+                                    yield s;
+                                }
+                                if (cancelled || !isTruthy(this.pop())) break;
+                                result.shift();
+                                this.index = this.index.add(one);
+                            }
+                            this.popStackFrame();
+                            this.push(result);
+                        }
+                        break;
+                    case 'T':
+                        if (isArray(this.peek())) {
+                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
+                        }
+                        else if (isInt(this.peek())) {
+                            this.runMacro("ss~ c%,-0|M(");
+                        }
+                        else if (this.peek() instanceof Block) {
+                            let pred = this.pop() as Block, result = this.pop(), cancelled = false;
+                            if (!isArray(result)) throw new Error("bad types for trim");
+                            result = _.clone(result);
+
+                            this.pushStackFrame();
+                            while (result.length) {
+                                this.push(this._ = _.last(result)!);
+                                for (let s of this.runSteps(pred)) {
+                                    if (cancelled = s.cancel) break;
+                                    yield s;
+                                }
+                                if (cancelled || !isTruthy(this.pop())) break;
+                                result.pop();
+                                this.index = this.index.add(one);
+                            }
+                            this.popStackFrame();
+                            this.push(result);
+                        }
+                        break;
                     case 'U':
                         this.push(bigInt[-1]);
                         break;
