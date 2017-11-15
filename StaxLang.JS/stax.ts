@@ -339,6 +339,52 @@ export class Runtime {
                         --this.gotoCallDepth;
                         break;
                     }
+                    case 'h':
+                        if (isNumber(this.peek())) this.runMacro("2/");
+                        else if (isArray(this.peek())) this.push((this.pop() as StaxArray)[0]);
+                        else if (this.peek() instanceof Block) {
+                            let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
+                            if (!isArray(arr)) throw new Error("bad types for take-while");
+                            
+                            this.pushStackFrame();
+                            for (let e of arr) {
+                                this.push(this._ = e);
+                                for (let s of this.runSteps(pred)) {
+                                    if (cancelled = s.cancel) break;
+                                    yield s;
+                                }
+                                if (cancelled || !isTruthy(this.pop())) break;
+                                result.push(e);
+                                this.index = this.index.add(one);
+                            }
+                            this.popStackFrame();
+                            this.push(result);
+                        }
+                        break;
+                    case 'H':
+                        if (isNumber(this.peek())) this.runMacro("2*");
+                        else if (isArray(this.peek())) this.push(_.last(this.pop() as StaxArray) || fail("empty array has no last element"));
+                        else if (this.peek() instanceof Block) {
+                            let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
+                            if (!isArray(arr)) throw new Error("bad types for take-while");
+                            arr = _.clone(arr); 
+                            arr.reverse();
+                            
+                            this.pushStackFrame();
+                            for (let e of arr) {
+                                this.push(this._ = e);
+                                for (let s of this.runSteps(pred)) {
+                                    if (cancelled = s.cancel) break;
+                                    yield s;
+                                }
+                                if (cancelled || !isTruthy(this.pop())) break;
+                                result.unshift(e);
+                                this.index = this.index.add(one);
+                            }
+                            this.popStackFrame();
+                            this.push(result);
+                        }
+                        break;
                     case 'i':
                         this.push(this.index);
                         break;
