@@ -6,7 +6,8 @@ export class Block {
     explicitlyTerminated = false;
     get length(): number { return this.contents.length; }
     
-    constructor(contents: string, tokens: (string | Block)[], explicitlyTerminated = false) {
+    constructor(contents: string | null, tokens: (string | Block)[], explicitlyTerminated = false) {
+        if (contents == null) contents = tokens.map(t => t instanceof Block ? t.contents : t).join("");
         this.contents = contents;
         this.tokens = tokens;
         this.explicitlyTerminated = explicitlyTerminated;
@@ -14,11 +15,15 @@ export class Block {
 }
 
 export class Program extends Block {
-    gotoTargets: number[];
+    private gotoTargets: Block[];
     
-    constructor(contents: string, tokens: (string | Block)[], gotoTargets: number[]) {
+    constructor(contents: string, tokens: (string | Block)[], gotoTargets: Block[]) {
         super(contents, tokens);
         this.gotoTargets = gotoTargets;
+    }
+
+    getGotoTarget(callDepth: number): Block {
+        return this.gotoTargets[callDepth] || _.last(this.gotoTargets) || this;
     }
 }
 
@@ -29,17 +34,21 @@ export function parseProgram(program: string): Program {
 function parseCore(program: string, wholeProgram: true): Program;
 function parseCore(program: string, wholeProgram: false): Block;
 function parseCore(program: string, wholeProgram: boolean): Block {
-    let gotoTargets = [0];
-    let tokens: (string | Block)[] = [];
+    let blockTokens: (string | Block)[] = [];
+    let gotoTargets: (string | Block)[][] = [];
+
+    function pushToken(token: string | Block) {
+        (_.last(gotoTargets) || blockTokens).push(token);
+    }
+
     let pos = 0;
     if (!wholeProgram) {
-        console.assert(program[0] === "{");
         pos = 1;
     }
 
     while (pos < program.length) {
         if (!wholeProgram && "wWmfFkKgo".indexOf(program[pos]) >= 0) {
-            return new Block(program.substr(0, pos), tokens, false);
+            return new Block(program.substr(0, pos), blockTokens, false);
         }
 
         switch (program[pos]) {
@@ -47,12 +56,12 @@ function parseCore(program: string, wholeProgram: boolean): Block {
             case '|':
             case ':':
             case "'":
-                tokens.push(program.substr(pos, 2));
+                pushToken(program.substr(pos, 2));
                 pos += 2;
                 break;
 
             case '.':
-                tokens.push(program.substr(pos, 3));
+                pushToken(program.substr(pos, 3));
                 pos += 3;
                 break;
 
@@ -60,45 +69,49 @@ function parseCore(program: string, wholeProgram: boolean): Block {
             case '5': case '6': case '7': case '8': case '9': 
                 let n = parseNum(program, pos);
                 pos += n.length;
-                tokens.push(n);
+                pushToken(n);
                 break;
 
             case '"':
                 let s = parseString(program, pos);
                 pos += s.length;
-                tokens.push(s);
+                pushToken(s);
                 break;
 
             case '`':
                 let c = parseCompressedString(program, pos);
                 pos += c.length;
-                tokens.push(c);
+                pushToken(c);
                 break;
 
             case '{':
                 let b = parseCore(program.substr(pos), false);
                 pos += b.contents.length;
-                tokens.push(b);
+                pushToken(b);
                 break;
 
             case '}':
                 if (wholeProgram) {
-                    tokens.push("}");
-                    gotoTargets.push(++pos);
+                    ++pos;
+                    pushToken("}");
+                    gotoTargets.push([]);
                 }
                 else {
-                    return new Block(program.substr(0, ++pos), tokens, true);
+                    return new Block(program.substr(0, ++pos), blockTokens, true);
                 }
                 break;
 
             default:
-                tokens.push(program[pos++]);
+                pushToken(program[pos++]);
                 break;
         }
     }
 
-    if (wholeProgram) return new Program(program, tokens, gotoTargets);
-    return new Block(program, tokens);
+    if (wholeProgram) {
+        let targets = gotoTargets.map(ts => new Block(null, ts));
+        return new Program(program, blockTokens, targets);
+    }
+    return new Block(program, blockTokens);
 }
 
 function parseNum(program: string, pos: number): string {

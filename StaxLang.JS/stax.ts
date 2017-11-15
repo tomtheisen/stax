@@ -29,10 +29,12 @@ function range(start: number | BigInteger, end: number | BigInteger): StaxArray 
 export class Runtime {
     private lineOut: (line: string) => void;
     private outBuffer = ""; // unterminated line output
+    private program: Program;
     private mainStack: StaxArray = [];
     private inputStack: StaxArray = [];
     private producedOutput = false;
 
+    private gotoCallDepth = 0;
     private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: BigInteger}[] = [];
     private _: StaxValue | IteratorPair;
     private index = zero;
@@ -176,7 +178,7 @@ export class Runtime {
     }
 
     private *runSteps(block: Block | string): IterableIterator<ExecutionState> {
-        if (typeof block === "string") block = parseProgram(block);
+        if (typeof block === "string") block = this.program = parseProgram(block);
 
         let ip = 0;
 
@@ -198,6 +200,8 @@ export class Runtime {
                 else switch (token) {
                     case ' ':
                         break;
+                    case '}':
+                        return;
                     case '~':
                         this.inputStack.push(this.pop());
                         break;
@@ -324,6 +328,15 @@ export class Runtime {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doFor(getRest())) ;
                         if (shorthand) return;
+                        break;
+                    }
+                    case 'G': {
+                        let target = this.program.getGotoTarget(++this.gotoCallDepth);
+                        for (let s of this.runSteps(target)) {
+                            if (s.cancel) break;
+                            yield s;
+                        }
+                        --this.gotoCallDepth;
                         break;
                     }
                     case 'i':
@@ -511,6 +524,12 @@ export class Runtime {
                         break;
                     case '|P':
                         this.print('');
+                        break;
+                    case '|x':
+                        this.push(this.x = (isInt(this.x) ? this.x : zero).subtract(one));
+                        break;
+                    case '|X':
+                        this.push(this.x = (isInt(this.x) ? this.x : zero).add(one));
                         break;
                     default:
                         throw new Error(`unknown token ${token}`);
