@@ -408,6 +408,7 @@ char	|Name        	|Description
 
 chars	|Value
 ---  	|---
+`\|?`	|source of current program for quines or something
 `V?` 	|Version info
 `V0` 	|rational 0/1
 `V2` 	|0.5

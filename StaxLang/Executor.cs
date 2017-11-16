@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *     M for int
- *     get source code as string
  *     FeatureTests for generators
  *     debugger
  */
@@ -72,6 +71,7 @@ namespace StaxLang {
         private dynamic X; // register - default to numeric value of first input
         private dynamic Y; // register - default to first input
         private dynamic _; // implicit iterator
+        private string ProgramSource = null;
 
         private Stack<dynamic> MainStack;
         private Stack<dynamic> InputStack;
@@ -98,6 +98,7 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps the program ran</returns>
         public int Run(string program, string[] input, TimeSpan? timeout = null) {
+            ProgramSource = program;
             if (StaxPacker.IsPacked(program)) program = StaxPacker.Unpack(program);
             var block = new Block(program);
             block.UnAnnotate();
@@ -904,13 +905,18 @@ namespace StaxLang {
                         break;
                     case '|': // extended operations
                         switch (program[++ip]) {
-                            case ' ':
-                                block.AddDesc("print single space; no newline");
-                                Print(" ", false);
-                                break;
                             case '`':
                                 block.AddDesc("show debug state");
                                 DoDump();
+                                break;
+                            case '?':
+                                type = InstructionType.Value;
+                                block.AddDesc("source of this program");
+                                Push(S2A(ProgramSource));
+                                break;
+                            case ' ':
+                                block.AddDesc("print single space; no newline");
+                                Print(" ", false);
                                 break;
                             case '%':
                                 if (IsNumber(Peek())) {
