@@ -178,6 +178,7 @@ chars    	|Types          	|Name              	|Description
 `\|e`    	|arr arr arr    	|replace-first     	|String replace; first instance only.
 `\|C`    	|arr int        	|center            	|Center string in n characters.
 `\|C`    	|arr            	|center-block      	|Center lines of text, using longest line.
+`\|F`    	|arr arr        	|regex-find-all    	|Get all regex pattern matches.
 `\|I`    	|arr arr        	|str-index-all     	|Find all indexes of the substring.
 `\|J`    	|arr            	|join-newline      	|Join strings with newline.
 `\|q`    	|arr arr        	|regex-indices     	|Get all indices of regex matches.
@@ -438,7 +439,8 @@ chars	|Value
 `VS` 	|4/3 pi
 `Vt` 	|tau (2pi)
 `VT` 	|10.0
-`VV` 	|AEIOU
-`Vv` 	|aeiou
+`Vu` 	|pow(2, 32)
+`VV` 	|"AEIOU"
+`Vv` 	|"aeiou"
 `VW` 	|"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Vw` 	|"0123456789abcdefghijklmnopqrstuvwxyz"

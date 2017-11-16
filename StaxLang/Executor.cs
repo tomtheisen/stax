@@ -9,11 +9,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *     multi indices for @ lookup
  *     order-by block string
- *     constant 2^32
  *     M for int
  *     pair-wise partition-when
- *     regex find all matches
  *     get source code as string
  *     FeatureTests for generators
  *     debugger
@@ -64,6 +63,7 @@ namespace StaxLang {
             ['S'] = (Math.PI * 4 / 3, "4/3 pi"),
             ['t'] = (Math.PI * 2, "tau (2pi)"),
             ['T'] = (10.0, "10.0"),
+            ['u'] = (BigInteger.Pow(2, 32), "2 ** 32"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
@@ -1391,6 +1391,16 @@ namespace StaxLang {
                                     var result = BigInteger.One;
                                     var n = Pop();
                                     for (int i = 1; i <= n; i++) result *= i;
+                                    Push(result);
+                                }
+                                else if (IsArray(Peek())) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "find all matches of regex " + e);
+                                    else block.AddDesc("find all matches for regex");
+                                    string pattern = A2S(Pop());
+                                    var result = Regex.Matches(A2S(Pop()) as string, pattern)
+                                        .Cast<Match>()
+                                        .Select(m => S2A(m.Value) as object)
+                                        .ToList();
                                     Push(result);
                                 }
                                 break;

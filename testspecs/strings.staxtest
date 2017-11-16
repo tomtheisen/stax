@@ -494,3 +494,9 @@ abcd
 1
 	stax
 "[a-z]+" |Q
+	in
+fizz buzzz
+	out
+zz zzz
+	stax
+.z+ |F J
