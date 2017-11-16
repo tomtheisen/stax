@@ -15,10 +15,11 @@ as"df
 "as`"df"
 	name:CharacterInterleave
 	in
+abcd
 	out
 a-b-c-d
 	stax
-"abcd"M '- *
+M '- *
 	name:Upper
 	in
 	out

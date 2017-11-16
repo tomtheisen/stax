@@ -82,7 +82,7 @@ lines.forEach((fin, i) => {
     else if (fin === "\tout") {
         if (mode === TestFileState.Code) evaluateSet();
         ensureCurrentCase();
-        if (mode === TestFileState.Out) currentCase!.io.push({in: [], expected: []});
+        if (mode === TestFileState.Out || mode === TestFileState.Code) currentCase!.io.push({in: [], expected: []});
         mode = TestFileState.Out;
     }
     else if (fin === "\tstax") {

@@ -500,7 +500,7 @@ export class Runtime {
                         break;
                     case 't':
                         if (isArray(this.peek())) {
-                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
+                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
                         }
                         else if (isInt(this.peek())) {
                             this.runMacro("ss~ c%,-0|M)");
@@ -527,7 +527,7 @@ export class Runtime {
                         break;
                     case 'T':
                         if (isArray(this.peek())) {
-                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
+                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
                         }
                         else if (isInt(this.peek())) {
                             this.runMacro("ss~ c%,-0|M(");
@@ -829,7 +829,7 @@ export class Runtime {
             let bval = b.valueOf();
             if (bval < 0) b = b.add(a.length);
             if (a.length < bval) a.unshift(..._.fill(Array(bval - a.length), zero));
-            if (a.length > bval) a.splice(0, a.length, bval);
+            if (a.length > bval) a.splice(0, a.length - bval);
             this.push(a);
         }
         else if (isArray(a) && isArray(b)) {
@@ -986,6 +986,12 @@ export class Runtime {
         for (let line of top) {
             line = line as StaxArray;
             line.push(..._.fill(Array(maxlen - line.length), zero));
+        }
+
+        for (let i = 0; i < maxlen; i++) {
+            let column: StaxArray = [];
+            for (let row of top) column.push((row as StaxArray)[i]);
+            result.push(column);
         }
 
         this.push(result);
