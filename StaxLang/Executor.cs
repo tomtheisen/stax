@@ -9,9 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *     multi indices for @ lookup
  *     M for int
- *     pair-wise partition-when
  *     get source code as string
  *     FeatureTests for generators
  *     debugger
@@ -383,7 +381,7 @@ namespace StaxLang {
                         foreach (var s in DoPadRight(block)) yield return s;
                         break;
                     case ')':
-                        DoPadLeft(block);
+                        foreach (var s in DoPadLeft(block)) yield return s;
                         break;
                     case '[':
                         block.AddDesc("duplicate element under top of stack");
@@ -2784,25 +2782,30 @@ namespace StaxLang {
 
             // read at index
             if (IsInt(list) && IsArray(top)) (list, top) = (top, list);
-            if (IsArray(list)) {
-                if (IsArray(top)) {
-                    block.AddDesc("get elements at all indices");
-                    var result = new List<object>();
-                    foreach (var idx in top) result.Add(ReadAt(list, (int)idx));
-                    Push(result);
-                    return;
-                }
-                else if (IsInt(top)) {
-                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get element at index " + e);
-                    else block.AddDesc("get element at index");
-                    Push(ReadAt(list, (int)top));
-                    return;
-                }
+            if (IsArray(list) && IsArray(top)) {
+                block.AddDesc("get elements at all indices");
+                var result = new List<object>();
+                foreach (var idx in top) result.Add(ReadAt(list, (int)idx));
+                Push(result);
+                return;
+            }
+            else if (IsInt(top)) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "get element at index " + e);
+                else block.AddDesc("get element at index");
+                var indices = new List<int> { (int)top };
+
+                Push(list);
+                while (TotalStackSize > 0 && IsInt(Peek())) indices.Insert(0, (int)Pop());
+                list = Pop();
+
+                foreach (int idx in indices) list = ReadAt(list, idx);
+                Push(list);
+                return;
             }
             throw new StaxException("Bad type for at");
         }
 
-        private void DoPadLeft(Block block) {
+        private IEnumerable<ExecutionState> DoPadLeft(Block block) {
             dynamic b = Pop(), a = Pop();
 
             if (IsArray(b) && IsInt(a)) (a, b) = (b, a);
@@ -2824,6 +2827,36 @@ namespace StaxLang {
                 for (int i = 0; i < b.Count; i++) {
                     result.Add(a.Count - b.Count + i >= 0 ? a[a.Count - b.Count + i] : b[i]);
                 }
+                Push(result);
+            }
+            else if (IsArray(a) && IsBlock(b)) {
+                block.AddDesc("partition where the block produces a truthy for the pair of values surrounding the boundary");
+                List<object> result = new List<object>(), current = new List<object>();
+                if (a.Count > 0) current.Add(a[0]);
+
+                PushStackFrame();
+                for (int i = 1; i < a.Count; i++) {
+                    _ = new IteratorPair(a[i - 1], a[i]);
+                    Push(a[i - 1]);
+                    Push(a[i]);
+
+                    foreach (var s in RunSteps((Block)b)) {
+                        if (s.Cancel) goto Cancel;
+                        yield return s;
+                    }
+
+                    if (IsTruthy(Pop())) {
+                        result.Add(current);
+                        current = new List<object>();
+                    }
+                    current.Add(a[i]);
+
+                    Cancel:
+                    ++Index;
+                }
+                PopStackFrame();
+
+                if (current != null) result.Add(current);
                 Push(result);
             }
             else {

@@ -217,6 +217,7 @@ chars	|Types              	|Name              	|Description
 `\`  	|num arr            	|array-pair        	|Make array of pairs, all having identical first element.
 `\`  	|arr arr            	|zip-repeat        	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
 `@`  	|arr int            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
+`@`  	|arr int int ...    	|element-at        	|Get element in multi-dimensional array using all integer indices.
 `@`  	|arr arr            	|elements-at       	|Get elements at all indices.
 `&`  	|arr int any        	|assign-index      	|Assign element at index.  Negatives index backwards.  OOB extends the array.
 `&`  	|arr int ... int any	|assign-index      	|Assign element in multidimensional array of arrays located at specified coordinates.  Negative coordinates are not allowed.  OOB extends the array(s);
@@ -334,53 +335,54 @@ chars	|Types              	|Name              	|Description
 
 ## Blocks
 
-chars	|Types        	|Name              	|Description
----  	|---          	|---               	|---
-`{`  	|             	|                  	|Begin a block.  Blocks can be ended by any block terminator, not just }.
-`}`  	|             	|                  	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
-`*`  	|int block    	|do-times          	|Perform block n times.
-`*`  	|block int    	|do-times          	|Perform block n times.
-`/`  	|arr block    	|group-by          	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
-`(`  	|arr block    	|partition-when    	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value.
-`C`  	|any          	|cancel            	|If value is truthy, cancel current block execution.
-`C`  	|block        	|collect           	|Reduce using block, but collect each value in result array.  Does not terminate a block.
-`D`  	|int          	|do-times          	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
-`e`  	|block        	|min-by            	|Get the values which yield the minimum value when applying the block to the array. Does not terminate a block.
-`E`  	|block        	|max-by            	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.
-`f`  	|arr block    	|filter            	|Terminate a block and filter array using it as a predicate.
-`f`  	|arr          	|filter-short      	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
-`F`  	|arr block    	|foreach           	|Terminate a block.  Push each element of the array, and execute the block for each.
-`F`  	|arr          	|foreach-short     	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
-`F`  	|int          	|for-short         	|Perform `foreach-short` using the range [1 .. n].
-`g`  	|             	|generator         	|Generate values.  See `generators` for details.
-`G`  	|             	|goto              	|Jump to an unmatched trailing `}` at the end of the program.  If there are are none, jump to the beginning of the current program.  Come back when finished.
-`h`  	|arr block    	|take-while        	|Keep run of matching elements, if any at the beginning of the array.  Does not terminate a block.
-`H`  	|arr block    	|take-while-end    	|Keep run of matching elements, if any at the end of the array.  Does not terminate a block.
-`i`  	|             	|index             	|Get the current 0-based iteration index of the inner loop.
-`\|;`	|             	|iteration-parity  	|Get the parity of the current iteration index. (0 or 1)
-`\|i`	|             	|outer-index       	|Get the 0-based iteration index of the outer loop.
-`I`  	|arr block    	|index-of-block    	|Get the index of the first element that yields a truthy value from the block. Does not terminate a block.
-`j`  	|arr block    	|first-match       	|Get the first match from the array - the first value for which the block produces a truthy value.  Does not terminate a block.
-`J`  	|arr block    	|last-match        	|Get the last match from the array - the last value for which the block produces a truthy value.  Does not terminate a block.
-`k`  	|arr block    	|reduce            	|Terminate a block and reduce (fold) using the block.
-`k`  	|int block    	|reduce-range      	|Terminate a block and reduce (fold) [1 .. n] using the block.
-`k`  	|int          	|reduce-short      	|If there is no open block, use the rest of the program as the block to reduce the array.  Implicitly print the result.
-`k`  	|arr          	|reduce-short-range	|If there is no open block, use the rest of the program as the block to reduce [1 .. n].  Implicitly print the result.
-`K`  	|arr arr block	|cross-map         	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be a single flat array.
-`m`  	|arr block    	|map               	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
-`m`  	|arr          	|map-short         	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
-`m`  	|int          	|map-range-short   	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
-`M`  	|any block    	|maybe             	|Execute block if value is truthy.  Does not terminate a block.
-`o`  	|arr block    	|order             	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
-`t`  	|arr block    	|trim-start-block  	|Remove elements from the start of the array that are matched the block predicate.  Does not terminate a block.
-`T`  	|arr block    	|trim-end-block    	|Remove elements from the end of the array that are matched the block predicate.  Does not terminate a block.
-`w`  	|block        	|do-while          	|Terminate a block and iterate until it produces a falsy value.
-`w`  	|             	|do-while-short    	|If there is no open block, use the rest of the program as the block.
-`W`  	|block        	|while             	|Terminate a block and iterate forever.  Cancelling will terminate, as with all blocks.
-`W`  	|             	|while-short       	|If there is no open block, use the rest of the program as the block.
-`_`  	|             	|current           	|Get the current iteration value.  If there are no blocks executing, this will be all of standard input, as one string.
-`\|c`	|             	|contend           	|Assert top of stack is truthy.  Cancel if not.  Do not pop.
-`\|I`	|arr block    	|filter-index      	|Get all indexes in the array that produce a truthy value from the block.
+chars	|Types        	|Name               	|Description
+---  	|---          	|---                	|---
+`{`  	|             	|                   	|Begin a block.  Blocks can be ended by any block terminator, not just }.
+`}`  	|             	|                   	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
+`*`  	|int block    	|do-times           	|Perform block n times.
+`*`  	|block int    	|do-times           	|Perform block n times.
+`/`  	|arr block    	|group-by           	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
+`(`  	|arr block    	|partition-when     	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the element following the boundary.
+`(`  	|arr block    	|partition-when-pair	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the pair of elements around the boundary.
+`C`  	|any          	|cancel             	|If value is truthy, cancel current block execution.
+`C`  	|block        	|collect            	|Reduce using block, but collect each value in result array.  Does not terminate a block.
+`D`  	|int          	|do-times           	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
+`e`  	|block        	|min-by             	|Get the values which yield the minimum value when applying the block to the array. Does not terminate a block.
+`E`  	|block        	|max-by             	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.
+`f`  	|arr block    	|filter             	|Terminate a block and filter array using it as a predicate.
+`f`  	|arr          	|filter-short       	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
+`F`  	|arr block    	|foreach            	|Terminate a block.  Push each element of the array, and execute the block for each.
+`F`  	|arr          	|foreach-short      	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
+`F`  	|int          	|for-short          	|Perform `foreach-short` using the range [1 .. n].
+`g`  	|             	|generator          	|Generate values.  See `generators` for details.
+`G`  	|             	|goto               	|Jump to an unmatched trailing `}` at the end of the program.  If there are are none, jump to the beginning of the current program.  Come back when finished.
+`h`  	|arr block    	|take-while         	|Keep run of matching elements, if any at the beginning of the array.  Does not terminate a block.
+`H`  	|arr block    	|take-while-end     	|Keep run of matching elements, if any at the end of the array.  Does not terminate a block.
+`i`  	|             	|index              	|Get the current 0-based iteration index of the inner loop.
+`\|;`	|             	|iteration-parity   	|Get the parity of the current iteration index. (0 or 1)
+`\|i`	|             	|outer-index        	|Get the 0-based iteration index of the outer loop.
+`I`  	|arr block    	|index-of-block     	|Get the index of the first element that yields a truthy value from the block. Does not terminate a block.
+`j`  	|arr block    	|first-match        	|Get the first match from the array - the first value for which the block produces a truthy value.  Does not terminate a block.
+`J`  	|arr block    	|last-match         	|Get the last match from the array - the last value for which the block produces a truthy value.  Does not terminate a block.
+`k`  	|arr block    	|reduce             	|Terminate a block and reduce (fold) using the block.
+`k`  	|int block    	|reduce-range       	|Terminate a block and reduce (fold) [1 .. n] using the block.
+`k`  	|int          	|reduce-short       	|If there is no open block, use the rest of the program as the block to reduce the array.  Implicitly print the result.
+`k`  	|arr          	|reduce-short-range 	|If there is no open block, use the rest of the program as the block to reduce [1 .. n].  Implicitly print the result.
+`K`  	|arr arr block	|cross-map          	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be a single flat array.
+`m`  	|arr block    	|map                	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
+`m`  	|arr          	|map-short          	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
+`m`  	|int          	|map-range-short    	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
+`M`  	|any block    	|maybe              	|Execute block if value is truthy.  Does not terminate a block.
+`o`  	|arr block    	|order              	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
+`t`  	|arr block    	|trim-start-block   	|Remove elements from the start of the array that are matched the block predicate.  Does not terminate a block.
+`T`  	|arr block    	|trim-end-block     	|Remove elements from the end of the array that are matched the block predicate.  Does not terminate a block.
+`w`  	|block        	|do-while           	|Terminate a block and iterate until it produces a falsy value.
+`w`  	|             	|do-while-short     	|If there is no open block, use the rest of the program as the block.
+`W`  	|block        	|while              	|Terminate a block and iterate forever.  Cancelling will terminate, as with all blocks.
+`W`  	|             	|while-short        	|If there is no open block, use the rest of the program as the block.
+`_`  	|             	|current            	|Get the current iteration value.  If there are no blocks executing, this will be all of standard input, as one string.
+`\|c`	|             	|contend            	|Assert top of stack is truthy.  Cancel if not.  Do not pop.
+`\|I`	|arr block    	|filter-index       	|Get all indexes in the array that produce a truthy value from the block.
 
 ## Registers
 chars	|Description
