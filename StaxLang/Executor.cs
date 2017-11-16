@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *     multi indices for @ lookup
- *     order-by block string
  *     M for int
  *     pair-wise partition-when
  *     get source code as string
@@ -2520,7 +2519,7 @@ namespace StaxLang {
             else if (IsBlock(arg)) {
                 block.AddDesc("sort array using projection");
                 var list = Pop();
-                var combined = new List<(object val, IComparable key)>();
+                var combined = new List<(object val, dynamic key)>();
 
                 PushStackFrame();
                 foreach (var e in list) {
@@ -2532,7 +2531,7 @@ namespace StaxLang {
                 }
                 PopStackFrame();
 
-                Push(combined.OrderBy(e => e.key).Select(e => e.val).ToList());
+                Push(combined.OrderBy<(object val, dynamic key), dynamic>(e => e.key, Comparer.Instance).Select(e => e.val).ToList());
             }
             else {
                 throw new StaxException("Bad types for order");

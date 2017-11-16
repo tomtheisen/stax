@@ -369,3 +369,14 @@ foo
 x
 	stax
 z]2*'x*
+	name:OrderByArrayProjection
+	in
+foo
+bar
+BAZ
+	out
+bar
+BAZ
+foo
+	stax
+L {^o m
