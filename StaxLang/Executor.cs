@@ -9,6 +9,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *     order-by block string
+ *     constant 2^32
+ *     M for int
+ *     pair-wise partition-when
+ *     regex find all matches
+ *     get source code as string
  *     FeatureTests for generators
  *     debugger
  */
