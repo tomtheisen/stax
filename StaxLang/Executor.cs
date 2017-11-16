@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *     M for int
+ *     bracketize (wrap in parens or braces
  *     FeatureTests for generators
  *     debugger
  */
