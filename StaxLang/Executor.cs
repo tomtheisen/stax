@@ -9,10 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *     equalize inner array lengths with fill element
- *     array split into n equalish chunks
- *     format as grid
- *     M for int
  *     bracketize (wrap in parens or braces
  *     FeatureTests for generators
  *     debugger
@@ -3156,29 +3152,43 @@ namespace StaxLang {
                         yield return s;
                     }
                 }
-                yield break;
             }
+            else if (IsInt(Peek())) {
+                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "split array into " + e + " equlalish-sized chunks");
+                block.AddDesc("split array into number or equalish-sized chunks");
+                int chunks = (int)Pop(), consumed = 0;
+                List<object> arr = Pop(), result = new List<object>();
 
-            block.AddDesc("transpose 2-d array; treats scalars as singletons and fills missing elements with 0");
-            List<object> list = Pop();
-            var result = new List<object>();
+                for (; chunks > 0; chunks--) {
+                    int toTake = (int)Math.Ceiling((arr.Count - consumed) / (chunks * 1.0));
+                    result.Add(arr.Skip(consumed).Take(toTake).ToList());
+                    consumed += toTake;
+                }
 
-            if (list.Count > 0 && !IsArray(list[0])) list = new List<object> { list };
-
-            int maxLen = 0;
-            foreach (List<object> row in list) maxLen = Math.Max(maxLen, row.Count);
-
-            foreach (List<object> line in list) {
-                line.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - line.Count));
+                Push(result);
             }
+            else {
+                block.AddDesc("transpose 2-d array; treats scalars as singletons and fills missing elements with 0");
+                List<object> list = Pop();
+                var result = new List<object>();
 
-            for (int i = 0; i < maxLen; i++) {
-                var column = new List<object>();
-                foreach (dynamic row in list) column.Add(row[i]);
-                result.Add(column);
+                if (list.Count > 0 && !IsArray(list[0])) list = new List<object> { list };
+
+                int maxLen = 0;
+                foreach (List<object> row in list) maxLen = Math.Max(maxLen, row.Count);
+
+                foreach (List<object> line in list) {
+                    line.AddRange(Enumerable.Repeat(BigInteger.Zero as object, maxLen - line.Count));
+                }
+
+                for (int i = 0; i < maxLen; i++) {
+                    var column = new List<object>();
+                    foreach (dynamic row in list) column.Add(row[i]);
+                    result.Add(column);
+                }
+
+                Push(result);
             }
-
-            Push(result);
         }
 
         private IEnumerable<ExecutionState> DoCrossMap(Block block, Block rest) {

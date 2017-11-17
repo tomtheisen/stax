@@ -234,6 +234,7 @@ chars	|Types              	|Name              	|Description
 `H`  	|arr                	|last              	|Get last element.
 `I`  	|arr num            	|index-of          	|Get the index of the first occurrence.
 `I`  	|num arr            	|index-of          	|Get the index of the first occurrence.
+`M`  	|arr int            	|chunkify          	|Partition a into b chunks of almost equal size.  The largest chunks come first. They're one larger than the smaller ones.
 `N`  	|arr                	|uncons-right      	|Remove last element from array.  Push the beginning of the array, then the removed element.
 `r`  	|int                	|0-range           	|Make range [0 .. n-1].
 `r`  	|arr                	|reverse           	|Reverse array.
@@ -303,8 +304,9 @@ chars	|Types              	|Name              	|Description
 `:+` 	|arr                	|prefix-sums       	|Get the sums of all prefixes.
 `:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
 `:/` 	|int arr            	|split-at          	|Split array at index; push both parts.
-`:\`	|arr arr            	|diff-indices      	|Get indices of unequal elements between arrays.
+`:\` 	|arr arr            	|diff-indices      	|Get indices of unequal elements between arrays.
 `:=` 	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
+`:|` 	|arr                	|column-align      	|Right pad each column to equal length.
 `:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.

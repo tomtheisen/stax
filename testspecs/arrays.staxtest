@@ -914,3 +914,21 @@ f r
 0 2 4
 	stax
 :=J
+	name:Chunkify
+	in
+foobarz
+	out
+fo ob a r z
+	stax
+5 M J
+	name:ColumnAlign
+	in
+There is no historic reason whatsoever.
+This kind of deviance has been around since year dot.
+Folk do this when they are feeling very, very naughty.
+	out
+There is   no   historic reason whatsoever.                            
+This  kind of   deviance has    been        around  since year dot.    
+Folk  do   this when     they   are         feeling very, very naughty.
+	stax
+L{jm :| mJ
