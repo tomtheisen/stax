@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
+import Multiset from './multiset';
 type BigInteger = bigInt.BigInteger;
 
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
@@ -552,6 +553,15 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case 'u': {
+                            let arg = this.pop();
+                            if (isArray(arg)) this.push(new Multiset(arg).keys());
+                            else if (isInt(arg)) this.push(new Rational(one, arg));
+                            else if (arg instanceof Rational) this.push(arg.invert());
+                            else if (typeof arg === "number") this.push(1 / arg);
+                            else fail("bad type for u");
+                            break;
+                        }
                     case 'U':
                         this.push(bigInt[-1]);
                         break;
@@ -637,8 +647,29 @@ export class Runtime {
                     case '|I':
                         for (let s of this.doFindIndexAll()) yield s;
                         break;
+                    case '|m': {
+                        let top = this.pop();
+                        if (isNumber(top)) {
+                            let next = this.pop();
+                            this.push(compare(next, top) < 0 ? next : top);
+                        }
+                        else if (isArray(top)) this.runMacro("{|mk");
+                        break;
+                    }
+                    case '|M': {
+                        let top = this.pop();
+                        if (isNumber(top)) {
+                            let next = this.pop();
+                            this.push(compare(next, top) > 0 ? next : top);
+                        }
+                        else if (isArray(top)) this.runMacro("{|Mk");
+                        break;
+                    }
                     case '|P':
                         this.print('');
+                        break;
+                    case '|t':
+                        this.doTranslate();
                         break;
                     case '|x':
                         this.push(this.x = (isInt(this.x) ? this.x : zero).subtract(one));
@@ -891,6 +922,24 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for padright")
+    }
+
+    private doTranslate() {
+        let translation = this.pop(), input = this.pop();
+        if (isInt(input)) input = [input];
+
+        if (isArray(input) && isArray(translation)) {
+            let result = [];
+            let map: {[key: string]: StaxValue} = {};
+
+            for (let i = 0; i < translation.length; i += 2) map[translation[i].toString()] = translation[i + 1];
+            for (let e of input) {
+                let mapped = map[e.toString()];
+                result.push(mapped == null ? e : mapped);
+            }
+            this.push(result);
+        }
+        else fail("bad types for translate");
     }
 
     private *doIndexOf() {
