@@ -192,6 +192,8 @@ chars    	|Types          	|Name              	|Description
 `:/`     	|arr arr        	|split-once        	|Split on the first occurrence of a substring.  Push both parts separately.
 `:[`     	|arr arr        	|starts-with       	|String starts with?
 `:]`     	|arr arr        	|starts-with       	|String ends with?
+`:{`     	|any            	|parenthesize      	|Embed value in parentheses as string.
+`:}`     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
 `:e`     	|arr            	|excerpts          	|Get all contiguous subarrays.
 `:R`     	|arr            	|brace-reflect     	|Reflect string, `(<[{/` becomes `\}]>)`
@@ -412,6 +414,15 @@ chars	|Value
 ---  	|---
 `\|?`	|source of current program for quines or something
 `V?` 	|Version info
+`!`  	|"[a-z]"
+`@`  	|"[A-Z]"
+`#`  	|"[a-zA-Z]"
+`$`  	|"[a-z]+"
+`%`  	|"[A-Z]+"
+`^`  	|"[a-zA-Z]+"
+`&`  	|"[a-z]*"
+`*`  	|"[A-Z]*"
+`(`  	|"[a-zA-Z]*"
 `V0` 	|rational 0/1
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))

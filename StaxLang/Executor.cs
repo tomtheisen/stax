@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *     bracketize (wrap in parens or braces
  *     FeatureTests for generators
  *     debugger
  */
@@ -32,6 +31,15 @@ namespace StaxLang {
             ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
             ['/'] = (Math.PI / 3, "pi / 3"),
             ['%'] = (new List<object>{ BigInteger.Zero, BigInteger.Zero }, "[0 0]"),
+            ['!'] = (S2A("[a-z]"), "[a-z]"),
+            ['@'] = (S2A("[A-Z]"), "[A-Z]"),
+            ['#'] = (S2A("[a-zA-Z]"), "[a-zA-Z]"),
+            ['$'] = (S2A("[a-z]+"), "[a-z]+"),
+            ['%'] = (S2A("[A-Z]+"), "[A-Z]+"),
+            ['^'] = (S2A("[a-zA-Z]+"), "[a-zA-Z]+"),
+            ['&'] = (S2A("[a-z]*"), "[a-z]*"),
+            ['*'] = (S2A("[A-Z]*"), "[A-Z]*"),
+            ['('] = (S2A("[a-zA-Z]*"), "[a-zA-Z]*"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),
