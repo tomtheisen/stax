@@ -1,0 +1,14 @@
+	#https://codegolf.stackexchange.com/questions/148302/print-three-columns-vertically-separated-by-spaces
+	in
+cat caterpillar pie frog elephant pizza
+	out
+cat         elephant pie  
+caterpillar frog     pizza
+	in
+a b c d e f g
+	out
+a d f
+b e g
+c    
+	stax
+jo3M|ZM:|mJ
