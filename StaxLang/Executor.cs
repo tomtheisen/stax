@@ -9,6 +9,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *     equalize inner array lengths with fill element
+ *     array split into n equalish chunks
+ *     format as grid
  *     M for int
  *     bracketize (wrap in parens or braces
  *     FeatureTests for generators
@@ -3156,7 +3159,7 @@ namespace StaxLang {
                 yield break;
             }
 
-            block.AddDesc("transpose 2-d array; treats scalars as singletons and truncates to shortest");
+            block.AddDesc("transpose 2-d array; treats scalars as singletons and fills missing elements with 0");
             List<object> list = Pop();
             var result = new List<object>();
 
