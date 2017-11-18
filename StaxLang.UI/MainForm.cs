@@ -19,7 +19,7 @@ namespace StaxLang.UI {
             var sw = Stopwatch.StartNew();
             try {
                 bool annotate = AnnotateMenuItem.Checked;
-                var runner = new Executor(output) { Annotate = annotate };
+                var runner = new Executor(Array.Empty<string>(), output) { Annotate = annotate };
                 var timeout = TimeoutMenuItem.Checked ? TimeSpan.FromSeconds(10) : default(TimeSpan?);
                 int steps = runner.Run(program, input, timeout);
                 sw.Stop();

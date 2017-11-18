@@ -932,3 +932,10 @@ This  kind of   deviance has    been        around  since year dot.
 Folk  do   this when     they   are         feeling very, very naughty.
 	stax
 L{jm :| mJ
+	name:RoundRobinFlatten
+	in
+[[1 2 3 4] [5] [6 7]]
+	out
+1 5 6 2 7 3 4
+	stax
+|G J

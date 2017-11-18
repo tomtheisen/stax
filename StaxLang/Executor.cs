@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
+ *      Josephus ordering
  *     FeatureTests for generators
  *     debugger
  */
@@ -1422,6 +1423,18 @@ namespace StaxLang {
                                 block.AddDesc("greatest common denominator");
                                 DoGCD();
                                 break;
+                            case 'G': {
+                                    block.AddDesc("round robin flatten");
+                                    List<object> arr = Pop(), result = new List<object>();
+                                    int maxlen = arr.Cast<List<object>>().Max(l => l.Count);
+                                    for (int i = 0; i < maxlen; i++) {
+                                        foreach (List<object> line in arr) {
+                                            if (line.Count > i) result.Add(line[i]);
+                                        }
+                                    }
+                                    Push(result);
+                                    break;
+                                }
                             case 'H':
                                 block.AddDesc("hexadecimal convert");
                                 RunMacro("16|b");

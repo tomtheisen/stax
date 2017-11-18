@@ -279,6 +279,7 @@ chars	|Types              	|Name              	|Description
 `\|A`	|arr                	|all               	|All elements of array are truthy?
 `\|b`	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.
 `\|g`	|arr                	|gcd               	|Greatest common denominator of array.
+`\|G`	|arr                	|round-flatten     	|Flatten array of arrays using round-robin distribution.  Cycle between inner arrays until all elements are reached.
 `\|I`	|arr num            	|find-all          	|Find all indexes of occurrences of the value.
 `\|l`	|arr                	|lcm               	|Least common multiple of array.
 `\|L`	|arr arr            	|multiset-union    	|Combine elements from a and b, with each occurring the max of its occurrences from a and b.
