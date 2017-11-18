@@ -23,13 +23,13 @@ namespace StaxLang.CLI {
                 string program = args[1];
                 string[] input = null;
                 if (args.Length >= 3) input = File.ReadAllLines(args[2]);
-                new Executor().Run(program, input);
+                new Executor(args.Skip(3).ToArray()).Run(program, input);
             }
             else {
                 byte[] program = File.ReadAllBytes(args[0]);
                 string[] input = null;
                 if (args.Length >= 2) input = File.ReadAllLines(args[1]);
-                new Executor().Run(program, input);
+                new Executor(args.Skip(2).ToArray()).Run(program, input);
             }
         }
 
@@ -127,7 +127,7 @@ namespace StaxLang.CLI {
 
         private static void ExecuteCase(string fileSpecifier, string name, string stax, List<string> input, List<string> expected, bool @throw) {
             var writer = new StringWriter();
-            var executor = new Executor(writer);
+            var executor = new Executor(Array.Empty<string>(), writer);
 
             try {
                 executor.Run(stax, input.ToArray(), TimeSpan.FromSeconds(2));

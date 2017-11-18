@@ -19,10 +19,12 @@ namespace StaxLang {
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
+
         public bool Annotate { get; set; }
         public IReadOnlyList<string> Annotation { get; private set; } = null;
         private List<Block> GotoTargets;
         private int GotoCallDepth = 0;
+        private string[] Arguments;
 
         private static IReadOnlyDictionary<char, (object Value, string Name)> Constants = new Dictionary<char, (object, string)> {
             ['?'] = (S2A(VersionInfo), "version info"),
@@ -84,8 +86,9 @@ namespace StaxLang {
         private Stack<dynamic> MainStack;
         private Stack<dynamic> InputStack;
 
-        public Executor(TextWriter output = null) {
+        public Executor(string[] args, TextWriter output = null) {
             Output = output ?? Console.Out;
+            Arguments = args ?? Array.Empty<string>();
         }
 
         /// <summary>
@@ -1607,6 +1610,10 @@ namespace StaxLang {
                                 break;
                             case 'T':
                                 DoPermutations(block);
+                                break;
+                            case 'V':
+                                type = InstructionType.Value;
+                                Push(Arguments.Select(S2A).Cast<object>().ToList());
                                 break;
                             case 'w': // trim elements from start
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "remove all " + e + " from beginning of array");

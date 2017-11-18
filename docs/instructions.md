@@ -1,6 +1,6 @@
 ﻿# Instructions
 
-## Output
+## Input / Output
 chars   	|Description
 ---     	|---
 `p`     	|Pop and print with no newline.
@@ -10,6 +10,7 @@ chars   	|Description
 `\|_`   	|(space, not underscore) Print a single space character.
 ``\|` ``	|Dump debug state.  Shows registers, iteration info, and both stacks.
 `\|P`   	|Print newline.
+`\|V`   	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
 ## Stack
 chars	|Example           	|Name         	|Description
