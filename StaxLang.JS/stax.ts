@@ -5,8 +5,8 @@ import * as bigInt from 'big-integer';
 import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
+import { primeFactors } from './primehelper';
 type BigInteger = bigInt.BigInteger;
-
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
 export class ExecutionState {
@@ -57,6 +57,16 @@ export class Runtime {
 
     private pop(): StaxValue {
         return this.mainStack.pop() || this.inputStack.pop() || fail("popped empty stacks");
+    }
+
+    private popArray(): StaxArray {
+        let p = this.pop();
+        return isArray(p) ? p : fail("expected array");
+    }
+
+    private popInt(): BigInteger {
+        let p = this.pop();
+        return isInt(p) ? p : fail("expected int");
     }
 
     private totalSize() {
@@ -302,6 +312,12 @@ export class Runtime {
                         this.push(b, a, b);
                         break;
                     }
+                    case 'B':
+                        if (isInt(this.peek())) this.doOverlappingBatch();
+                        else if (isArray(this.pop())) this.runMacro("c1tsh"); // uncons
+                        else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
+                        else throw new Error("bad type for B");
+                        break;
                     case 'c':
                         this.push(this.peek());
                         break;
@@ -616,6 +632,12 @@ export class Runtime {
                     case '|;':
                         this.push(this.index.isEven() ? zero : one);
                         break;
+                    case '|(':
+                        this.doRotate(-1);
+                        break;
+                    case '|)':
+                        this.doRotate(1);
+                        break;
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
@@ -641,6 +663,22 @@ export class Runtime {
                             this.push(S2A(original.split(from, 2).join(to)));
                         }
                         break;
+                    case '|f': {
+                        let t = this.pop();
+                        if (isInt(t)) this.push(primeFactors(t));
+                        else if (isArray(t)) {
+                            let text = A2S(this.popArray()), pattern = A2S(t), regex = RegExp(pattern, 'g');
+                            let result = [], match: string[] | null;
+                            do {
+                                match = regex.exec(text);
+                                if (match) {
+                                    result.push(S2A(match[0]));
+                                }
+                            } while (match);
+                            this.push(result);
+                        }
+                        break;
+                    }
                     case '|i':
                         this.push(this.indexOuter);
                         break;
@@ -668,6 +706,11 @@ export class Runtime {
                     case '|P':
                         this.print('');
                         break;
+                    case '|s': {
+                        let search = A2S(this.popArray()), text = A2S(this.popArray());
+                        this.push(text.split(new RegExp(search)).map(S2A));
+                        break;
+                    }
                     case '|t':
                         this.doTranslate();
                         break;
@@ -940,6 +983,36 @@ export class Runtime {
             this.push(result);
         }
         else fail("bad types for translate");
+    }
+
+    private doOverlappingBatch() {
+        let b = this.pop(), a = this.pop(), result = [];
+        if (!isInt(b) || !isArray(a)) throw new Error("bad types for overlapping-batch");
+
+        let bv = b.valueOf(), end = a.length - bv + 1;
+        for (let i = 0; i < end; i++) result.push(_.slice(a, i, i + bv));
+        this.push(result);
+    }
+
+    private doRotate(direction: number) {
+        let distance = this.pop(), arr: StaxArray;
+
+        if (isArray(distance)) {
+            arr = distance;
+            distance = one;
+        }
+        else {
+            let popped = this.pop();
+            arr = isArray(popped) ? popped : fail("bad types for rotate");
+        }
+
+        if (!isInt(distance)) throw new Error("bad rotation distance");
+
+        distance = distance.mod(arr.length);
+        if (distance.isNegative()) distance = distance.add(arr.length);
+        let cutpoint = direction < 0 ? distance.valueOf() : (arr.length - distance.valueOf());
+        let result = _.slice(arr, cutpoint).concat(_.slice(arr, 0, cutpoint));
+        this.push(result);
     }
 
     private *doIndexOf() {
