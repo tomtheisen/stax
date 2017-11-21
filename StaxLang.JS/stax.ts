@@ -6,6 +6,7 @@ import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors } from './primehelper';
+import { compress, decompress } from './huffmancompression';
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -206,6 +207,11 @@ export class Runtime {
                 if (!!token[0].match(/\d+!/)) this.push(parseFloat(token.replace("!", ".")));
                 else if (!!token[0].match(/\d/)) this.push(bigInt(token));
                 else if (token[0] === '"') this.doEvaluateStringToken(token);
+                else if (token[0] === '`') {
+                    let compressed = token.replace(/^`|`$/g, '');
+                    this.push(S2A(decompress(compressed)));
+                    if (token[token.length - 1] === '`') this.print(this.peek());
+                }
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 else if (token[0] === 'V') this.push(constants[token[1]]);
                 else switch (token) {
@@ -504,9 +510,8 @@ export class Runtime {
                         this.print(this.peek(), false);
                         break;
                     case 'r':
-                        if (isInt(this.peek())) {
-                            this.push(range(0, this.pop() as BigInteger));
-                        }
+                        if (isInt(this.peek())) this.push(range(0, this.popInt()));
+                        else if (isArray(this.peek())) this.push(_.reverse(this.popArray()));
                         break;
                     case 'R':
                         if (isInt(this.peek())) this.push(range(1, (this.pop() as BigInteger).add(1)));
@@ -638,6 +643,12 @@ export class Runtime {
                     case '|)':
                         this.doRotate(1);
                         break;
+                    case '|[':
+                        this.runMacro("~;%R{;(m,d"); // all prefixes
+                        break;
+                    case '|]':
+                        this.runMacro("~;%R{;)mr,d"); // all suffixes
+                        break;
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
@@ -719,6 +730,9 @@ export class Runtime {
                         break;
                     case '|X':
                         this.push(this.x = (isInt(this.x) ? this.x : zero).add(one));
+                        break;
+                    case '|z':
+                        this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
                         break;
                     default:
                         throw new Error(`unknown token ${token}`);
