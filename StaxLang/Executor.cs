@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *      Josephus ordering
+ *     trim element on both ends
  *     FeatureTests for generators
  *     debugger
  */
@@ -1896,7 +1896,7 @@ namespace StaxLang {
             if (IsArray(b)) bl = b;
 
             int i = a.Count - 1;
-            for (; i > 0; i--) {
+            for (; i >= 0; i--) {
                 if (bl != null) {
                     if (!bl.Contains(a[i], Comparer.Instance)) break;
                 }
