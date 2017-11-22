@@ -523,3 +523,16 @@ foo
 [foo]
 	stax
 :}
+	name:TrimBoth
+	in
+xxasdfgx
+	out
+asdfg
+	stax
+'x :D
+	in
+xxasdfgx
+	out
+asdfg
+	stax
+'xh :D

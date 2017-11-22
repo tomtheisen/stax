@@ -108,6 +108,8 @@ namespace StaxLang {
                 ('c', "a", "{[?k", "get first truthy element"),
                 ('d', "i", "c|a{[%!fsd", "all divisors"),
                 ('d', "a", "oc%vh~;t,Tc|+s%u*", "median"),
+                ('D', "ai", "~;|w,|W", "trim element from both ends of string"),
+                ('D', "aa", "~;|w,|W", "trim all characters from both ends of string"),
                 ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
                 ('f', "a", "{+k", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),

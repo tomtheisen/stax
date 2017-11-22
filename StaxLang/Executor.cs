@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 /* To add:
- *     trim element on both ends
  *     FeatureTests for generators
  *     debugger
  */
