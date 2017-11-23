@@ -717,6 +717,15 @@ export class Runtime {
                     case '|P':
                         this.print('');
                         break;
+                    case '|r': {
+                        // explicit range
+                        let end = this.pop(), start = this.pop();
+                        if (isArray(end)) end = bigInt(end.length);
+                        if (isArray(start)) start = bigInt(start.length);
+                        if (isInt(start) && isInt(end)) this.push(range(start, end.minus(start)));
+                        else fail("bad types for |r");
+                        break;
+                    }
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
                         this.push(text.split(new RegExp(search)).map(S2A));
