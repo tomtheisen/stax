@@ -7,6 +7,7 @@ import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors } from './primehelper';
 import { compress, decompress } from './huffmancompression';
+import { macroTrees, getTypeChar } from './macrotree';
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -214,6 +215,7 @@ export class Runtime {
                 }
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 else if (token[0] === 'V') this.push(constants[token[1]]);
+                else if (token[0] === ':') this.doMacroAlias(token[1]);
                 else switch (token) {
                     case ' ':
                         break;
@@ -1534,6 +1536,22 @@ export class Runtime {
             this.popStackFrame();
         }
         else throw new Error("bad types in map");
+    }
+
+    private doMacroAlias(alias: string) {
+        let typeTree = macroTrees[alias];
+        let resPopped: StaxArray = [];
+        // follow type tree as far as necessary
+        while (typeTree.hasChildren) {
+            resPopped.push(this.pop());
+            let type = getTypeChar(_.last(resPopped)!);
+            typeTree = typeTree.children![type];
+        }
+        // return inspected values to stack
+        this.push(...resPopped.reverse());
+
+        // disable line modes
+        this.runMacro(' ' + typeTree.code);
     }
 
     private doEvaluateStringToken(token: string) {
