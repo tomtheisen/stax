@@ -261,6 +261,9 @@ export class Runtime {
                     case '%':
                         this.doPercent();
                         break;
+                    case '&':
+                        this.doAssignIndex();
+                        break;
                     case '=':
                         this.push(areEqual(this.pop(), this.pop()) ? one : zero);
                         break;
@@ -722,7 +725,7 @@ export class Runtime {
                         let end = this.pop(), start = this.pop();
                         if (isArray(end)) end = bigInt(end.length);
                         if (isArray(start)) start = bigInt(start.length);
-                        if (isInt(start) && isInt(end)) this.push(range(start, end.minus(start)));
+                        if (isInt(start) && isInt(end)) this.push(range(start, end));
                         else fail("bad types for |r");
                         break;
                     }
@@ -913,6 +916,60 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for %");
+    }
+
+    private doAssignIndex() {
+        let element = this.pop(), indexes = this.pop();
+
+        if (isInt(indexes)) {
+            indexes = [indexes];
+            while (isInt(this.peek())) indexes.unshift(this.popInt());
+        }
+        if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
+        
+        function doFinalAssign(flatArr: StaxArray, index: number) {
+            if (index >= flatArr.length) {
+                flatArr.push(...Array(index + 1 - flatArr.length).fill(zero));
+            }
+
+            if (element instanceof Block) {
+                this.push(flatArr[index]);
+                let cancelled = false;
+                for (let s of this.runSteps(element)) cancelled = s.cancel;
+                if (!cancelled) flatArr[index] = this.pop();
+            }
+            else {
+                flatArr[index] = element;
+            }
+        }
+
+        let list = this.popArray(), result: StaxArray = [...list];
+        for (let arg of indexes) {
+            if (isArray(arg)) {
+                let idxPath = arg, target = result, idx: number;
+                for (let i = 0; i < idxPath.length - 1; i++) {
+                    idx = idxPath[i].valueOf() as number;
+                    while (target.length <= idx) target.push([]);
+                    if (!isArray(target[idx])) target[idx] = [ target[idx] ];
+                    target = target[idx] as StaxArray;
+                }
+                idx = _.last(idxPath)!.valueOf() as number;
+                doFinalAssign(target, idx);
+            }
+            else if (isInt(arg)) {
+                let index = arg.valueOf();
+                if (index < 0) {
+                    index += result.length;
+                    if (index < 0) {
+                        result.unshift(...Array(-index).fill(zero));
+                        index = 0;
+                    }
+                }
+
+                doFinalAssign(result, index);
+            }
+        }
+        this.push(result);
     }
 
     private doPadLeft() {
