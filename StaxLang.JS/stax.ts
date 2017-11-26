@@ -664,6 +664,9 @@ export class Runtime {
                             return;
                         }
                         break;
+                    case '|C':
+                        this.doCenter();
+                        break;
                     case '|d':
                         this.push(bigInt(this.mainStack.length));
                         break;
@@ -1047,6 +1050,40 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for padright")
+    }
+
+    private doCenter() {
+        let top = this.pop();
+        if (isInt(top)) {
+            let data = this.pop();
+            if (isArray(data)) {
+                let result = Array((top.valueOf() - data.length) >> 1).fill(zero);
+                result.push(...data);
+                result.push(...Array(top.valueOf() - result.length).fill(zero));
+                this.push(result);
+            }
+            else if (isInt(data)) {
+                // binomial coefficient
+                let r = top, n = data, result = one;
+                if (n.isNegative() || r.gt(n)) result = zero;
+                for (let i = one; i.leq(r); i = i.add(one)) {
+                    result = result.multiply(n.subtract(i)).divide(i);
+                }
+                this.push(result);
+            }
+        }
+        else if (isArray(top)) {
+            let maxLen = 0, result = [];
+            for (let line of top) maxLen = isArray(line) ? Math.max(maxLen, line.length) : fail('tried to center a non-array');
+            for (let line of top) {
+                if (!isArray(line)) throw new Error('tried to center a non-array');
+                let newLine = [...line];
+                newLine.unshift(...Array((maxLen - newLine.length) >> 1).fill(zero));
+                newLine.push(...Array(maxLen - newLine.length).fill(zero));
+                result.push(newLine);
+            }
+            this.push(result);
+        }
     }
 
     private doTranslate() {
@@ -1542,7 +1579,7 @@ export class Runtime {
         let typeTree = macroTrees[alias];
         let resPopped: StaxArray = [];
         // follow type tree as far as necessary
-        while (typeTree.hasChildren) {
+        while (typeTree.hasChildren()) {
             resPopped.push(this.pop());
             let type = getTypeChar(_.last(resPopped)!);
             typeTree = typeTree.children![type];
