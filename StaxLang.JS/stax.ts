@@ -260,6 +260,9 @@ export class Runtime {
                     case '/':
                         for (let s of this.doSlash()) yield s;
                         break;
+                    case '\\':
+                        this.doZipRepeat();
+                        break;
                     case '%':
                         this.doPercent();
                         break;
@@ -789,7 +792,15 @@ export class Runtime {
     private doMinus() {
         if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
-        if (isNumber(a) && isNumber(b)) {
+        if (isArray(a) && isArray(b)) {
+            let bArr = b;
+            let result = a.filter(a_ => !_.some(bArr, b_ => areEqual(a_, b_)));
+            this.push(result);
+        }
+        else if (isArray(a)) {
+            this.push(a.filter(a_ => !areEqual(a_, b)));
+        }
+        else if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
             [a, b] = widenNumbers(a, b);
             if (isFloat(a) && isFloat(b)) result = a - b;
@@ -798,6 +809,7 @@ export class Runtime {
             else throw "weird types or something; can't subtract?"
             this.push(result);
         }
+        else throw new Error('bad types for -');
     }
 
     private *doStar() {
@@ -902,6 +914,27 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for /");
+    }
+
+    private doZipRepeat() {
+        let b = this.pop(), a = this.pop();
+
+        if (!isArray(a) && !isArray(b)) {
+            this.push([a, b]);
+            return;
+        }
+        
+        if (!isArray(a) && isArray(b)) a = b.length ? [a] : [];
+        else if (isArray(a) && !isArray(b)) b = a.length ? [b] : [];
+
+        a = a as StaxArray;
+        b = b as StaxArray;
+
+        let result: StaxArray = [], size = Math.max(a.length, b.length);
+        for (let i = 0 ; i < size; i++) {
+            result.push([ a[i % a.length], b[i % b.length] ]);
+        }
+        this.push(result);
     }
 
     private doPercent() {
