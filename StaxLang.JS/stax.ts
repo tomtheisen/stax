@@ -657,6 +657,38 @@ export class Runtime {
                     case '|]':
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
                         break;
+                    case '|<':
+                        if (isInt(this.peek())) this.runMacro('|2*');
+                        else if (isArray(this.peek())) {
+                            let arr = [...this.popArray()], maxlen = 0, result = [];
+                            for (let i = 0; i < arr.length; i++) {
+                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                            }
+                            for (let i = 0; i < arr.length; i++) {
+                                let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                                line.unshift(...arr[i] as StaxArray);
+                                result.push(line);
+                            }
+                            this.push(result);
+                        }
+                        break;
+                    case '|>':
+                        if (isInt(this.peek())) this.runMacro('|2/');
+                        else if (isArray(this.peek())) {
+                            let arr = [...this.popArray()], maxlen = 0, result = [];
+                            for (let i = 0; i < arr.length; i++) {
+                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                            }
+                            for (let i = 0; i < arr.length; i++) {
+                                let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                                line.push(...arr[i] as StaxArray);
+                                result.push(line);
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
