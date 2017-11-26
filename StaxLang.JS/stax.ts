@@ -660,6 +660,42 @@ export class Runtime {
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
+                    case '|*': {
+                        let b = this.pop(), a = this.pop();
+                        if (isInt(b)) {
+                            if (isInt(a)) {
+                                if (b.isNegative()) this.push(new Rational(one, a.pow(b.negate())));
+                                else this.push(a.pow(b));
+                            }
+                            else if (a instanceof Rational) {
+                                if (b.isNegative()) {
+                                    b = b.negate();
+                                    a = a.invert();
+                                }
+                                let result = new Rational(one, one);
+                                for (let i = 0; i < b.valueOf(); i++) result = result.multiply(a);
+                                this.push(result);
+                            }
+                            else if (isArray(a)) {
+                                let result = [];
+                                for (let e of a) result.push(...Array(b.valueOf()).fill(e));
+                                this.push(result);
+                            }
+                            else {
+                                this.push(Math.pow(a.valueOf() as number, b.valueOf()));
+                            }
+                        }
+                        else if (isNumber(b)) {
+                            this.push(Math.pow(a.valueOf() as number, b.valueOf()));
+                        }
+                        else if (isArray(b)) {
+                            if (!isArray(a)) throw new Error('tried to cross-product non-array');
+                            let result = [];
+                            for (let a_ of a) for (let b_ of b) result.push([a, b]);
+                            this.push(result);
+                        }
+                        break;
+                    }
                     case '|c':
                         if (!isTruthy(this.peek())) {
                             this.pop();
