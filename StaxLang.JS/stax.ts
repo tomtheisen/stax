@@ -750,7 +750,7 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
-                            this.push(S2A(original.split(from, 2).join(to)));
+                            this.push(S2A(original.replace(from, to)));
                         }
                         break;
                     case '|f': {
@@ -796,6 +796,34 @@ export class Runtime {
                     case '|P':
                         this.print('');
                         break;
+                    case '|q': {
+                        let b = this.pop();
+                        if (isNumber(b)) {
+                            this.push(bigInt(Math.floor(Math.sqrt(b.valueOf()))));
+                        }
+                        else if (isArray(b)) {
+                            let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
+                            let match: RegExpExecArray | null;
+                            let result: StaxArray = [];
+                            while (match = pattern.exec(text)) {
+                                result.push(bigInt(match.index));
+                            }
+                            this.push(result);
+                        }
+                        break;
+                    }
+                    case '|Q': {
+                        let b = this.pop();
+                        if (isNumber(b)) {
+                            this.push(Math.sqrt(b.valueOf()));
+                        }
+                        else if (isArray(b)) {
+                            let a = this.popArray();
+                            let match = RegExp(`^(${ A2S(b) })$`).exec(A2S(a));
+                            this.push(match ? one : zero);
+                        }
+                        break;
+                    }
                     case '|r': {
                         // explicit range
                         let end = this.pop(), start = this.pop();
