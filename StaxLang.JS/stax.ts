@@ -499,6 +499,10 @@ export class Runtime {
                     case 'n':
                         this.push(this.pop(), this.peek());
                         break;
+                    case 'N':
+                        if (isNumber(this.peek())) this.runMacro("U*");
+                        else if (isArray(this.peek())) this.runMacro("c1TsH");
+                        break;
                     case 'o':
                         for (let s of this.doOrder()) yield s;
                         break;
@@ -1044,7 +1048,10 @@ export class Runtime {
             [a, b] = widenNumbers(a, b);
             let result: StaxNumber;
             if (typeof a === "number" && typeof b === "number") result = a % b;
-            else if (isInt(a) && isInt(b)) result = a.mod(b);
+            else if (isInt(a) && isInt(b)) {
+                result = a.mod(b);
+                if (result.isNegative()) result = result.add(b);
+            }
             else if (a instanceof Rational && b instanceof Rational) result = a.mod(b);
             else throw new Error("bad types for %");
             this.push(result);
@@ -1734,7 +1741,9 @@ export class Runtime {
                     case '3': unescaped += "\r"; break;
                     case '4': unescaped += "\v"; break;
                     default:
-                        for (let s of this.runSteps(token[i]));
+                        let instruction = token[i];
+                        if (instruction === ":" || instruction === "|" || instruction === "V") instruction += token[++i];
+                        this.runMacro(instruction);;
                         let popped = this.pop();
                         if (isArray(popped)) unescaped += A2S(popped);
                         else unescaped += popped.toString();
