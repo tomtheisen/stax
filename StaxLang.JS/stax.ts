@@ -845,6 +845,12 @@ export class Runtime {
                     case '|t':
                         this.doTranslate();
                         break;
+                    case '|w':
+                        this.doTrimElementsFromStart();
+                        break;
+                    case '|W':
+                        this.doTrimElementsFromEnd();
+                        break;
                     case '|x':
                         this.push(this.x = (isInt(this.x) ? this.x : zero).subtract(one));
                         break;
@@ -1246,6 +1252,38 @@ export class Runtime {
 
         let bv = b.valueOf(), end = a.length - bv + 1;
         for (let i = 0; i < end; i++) result.push(_.slice(a, i, i + bv));
+        this.push(result);
+    }
+
+    private doTrimElementsFromStart() {
+        let b = this.pop(), a = this.popArray(), i = 0;
+
+        for (; i < a.length; i++) {
+            if (isArray(b)) {
+                if (!_.some(b, e => areEqual(e, a[i]))) break;
+            } 
+            else {
+                if (!areEqual(a[i], b)) break;
+            }
+        }
+
+        let result = a.slice(i);
+        this.push(result);
+    }
+
+    private doTrimElementsFromEnd() {
+        let b = this.pop(), a = this.popArray(), i = a.length - 1;
+        
+        for (; i >= 0; i--) {
+            if (isArray(b)) {
+                if (!_.some(b, e => areEqual(e, a[i]))) break;
+            }
+            else {
+                if (!areEqual(a[i], b)) break;
+            }
+        }
+
+        let result = a.slice(0, i + 1);
         this.push(result);
     }
 

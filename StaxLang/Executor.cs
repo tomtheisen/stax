@@ -43,6 +43,8 @@ namespace StaxLang {
             ['&'] = (S2A("[a-z]*"), "[a-z]*"),
             ['*'] = (S2A("[A-Z]*"), "[A-Z]*"),
             ['('] = (S2A("[a-zA-Z]*"), "[a-zA-Z]*"),
+            [':'] = (S2A("http://"), "http://"),
+            [';'] = (S2A("https://"), "https://"),
             ['a'] = (S2A("abcdefghijklmnopqrstuvwxyz"), "lowercase alphabet"),
             ['A'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "uppercase alphabet"),
             ['b'] = (S2A("()[]{}<>"), "matched brackets"),

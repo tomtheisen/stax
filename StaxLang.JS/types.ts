@@ -113,6 +113,17 @@ const versionInfo = "Stax 0.0.0 (typescript) - Tom Theisen - https://github.com/
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
+	'!': S2A("[a-z]"),
+	'@': S2A("[A-Z]"),
+	'#': S2A("[a-zA-Z]"),
+	'$': S2A("[a-z]+"),
+	'%': S2A("[A-Z]+"),
+	'^': S2A("[a-zA-Z]+"),
+	'&': S2A("[a-z]*"),
+	'*': S2A("[A-Z]*"),
+	'(': S2A("[a-zA-Z]*"),
+	':': S2A("http://"),
+    ';': S2A("https://"),
     '0': new Rational(bigInt.zero, bigInt.one),
     '2': 0.5,
     '3': Math.pow(2, 1.0 / 12),

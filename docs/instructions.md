@@ -427,6 +427,8 @@ chars	|Value
 `&`  	|"[a-z]*"
 `*`  	|"[A-Z]*"
 `(`  	|"[a-zA-Z]*"
+`:`  	|"http://"
+`;`  	|"https://"
 `V0` 	|rational 0/1
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
