@@ -661,6 +661,18 @@ export class Runtime {
                     case '|]':
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
                         break;
+                    case '||':
+                        if (isArray(this.peek())) {
+                            this.push(this.popInt().or(this.popInt()));
+                        }
+                        else if (isArray(this.peek())) {
+                            let payload = this.popArray(), col = this.popInt(), row = this.popInt();
+                            let result = this.popArray().slice();
+
+                            for (let r = 0; r < payload.length; r++) {
+                                throw Error('nie');
+                            }
+                        }
                     case '|<':
                         if (isInt(this.peek())) this.runMacro('|2*');
                         else if (isArray(this.peek())) {
