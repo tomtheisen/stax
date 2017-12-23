@@ -523,7 +523,7 @@ export class Runtime {
                         break;
                     case 'r':
                         if (isInt(this.peek())) this.push(range(0, this.popInt()));
-                        else if (isArray(this.peek())) this.push(_.reverse(this.popArray()));
+                        else if (isArray(this.peek())) this.push(_.reverse(this.popArray().slice()));
                         break;
                     case 'R':
                         if (isInt(this.peek())) this.push(range(1, (this.pop() as BigInteger).add(1)));
