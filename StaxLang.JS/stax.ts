@@ -810,6 +810,23 @@ export class Runtime {
                         }
                         break;
                     }
+                    case '|F':
+                        if (isInt(this.peek())) { // factorial
+                            let result = one, n = this.popInt();
+                            for (let i = one; i.lesserOrEquals(n); i = i.add(one)) {
+                                result = result.multiply(i);
+                            }
+                            this.push(result);
+                        }
+                        else if (isArray(this.peek())) { // all regex matches
+                            let re = new RegExp(A2S(this.popArray()), "g");
+                            let input = A2S(this.popArray()), result = [], m;
+                            while (m = re.exec(input)) {
+                                result.push(S2A(m[0]));
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|i':
                         this.push(this.indexOuter);
                         break;
