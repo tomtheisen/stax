@@ -649,6 +649,31 @@ export class Runtime {
                     case '|;':
                         this.push(this.index.isEven() ? zero : one);
                         break;
+                    case '||':
+                        if (isInt(this.peek())) {
+                            this.push(this.popInt().or(this.popInt()));
+                        }
+                        else if (isArray(this.peek())) {
+                            // embed grid at coords
+                            let payload = this.popArray(), col = this.popInt().valueOf(), row = this.popInt().valueOf();
+                            let result = this.popArray().slice();
+
+                            for (let r = 0; r < payload.length; r++) {
+                                let payline = payload[r];
+                                if (!isArray(payline)) payline = [payline];
+                                while (result.length <= row + r) result.push([]);
+                                if (!isArray(result[row + r])) result[row + r] = [result[row + r]];
+                                let resultline = result[row + r] as StaxArray;
+
+                                for (let c = 0; c < payline.length; c++) {
+                                    while (resultline.length <= col + c) resultline.push(zero);
+                                    resultline[col + c] = payline[c];
+                                }
+                            }
+
+                            this.push(result);
+                        }
+                        break;
                     case '|(':
                         this.doRotate(-1);
                         break;
