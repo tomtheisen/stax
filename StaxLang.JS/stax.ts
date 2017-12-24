@@ -90,7 +90,9 @@ export class Runtime {
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
 
-        if (isInt(val) || typeof val === "number") val = val.toString();
+        if (isInt(val) || typeof val === "number") {
+            val = val.toString().replace("Infinity", "∞");
+        }
         if (val instanceof Block) val = `Block: ${val.contents}`;
         if (isArray(val)) val = A2S(val);
         if (val instanceof Rational) val = val.toString();
@@ -956,6 +958,7 @@ export class Runtime {
     }
 
     private doPlus() {
+        if (this.totalSize() < 2) return; 
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -1001,7 +1004,7 @@ export class Runtime {
     }
 
     private *doStar() {
-        if (this.totalSize() === 1) return;
+        if (this.totalSize() < 2) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -1048,11 +1051,14 @@ export class Runtime {
     }
 
     private *doSlash() {
-        if (this.totalSize() === 1) return;
+        if (this.totalSize() < 2) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
             [a, b] = widenNumbers(a, b);
+            if (isInt(b) && b.isZero() || b instanceof Rational && b.numerator.isZero()) {
+                [a, b] = [a.valueOf(), b.valueOf()];
+            }
             if (isFloat(a) && isFloat(b)) result = a / b;
             else if (a instanceof Rational && b instanceof Rational) result = a.divide(b);
             else if (isInt(a) && isInt(b)) {
