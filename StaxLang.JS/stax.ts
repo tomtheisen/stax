@@ -799,6 +799,41 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|1':
+                        if (isArray(this.peek())) { // index of 1st truthy
+                            let result = minusOne, i = 0;
+                            for (let e of this.popArray()) {
+                                if (isTruthy(e)) {
+                                    result = bigInt(i);
+                                    break;
+                                }
+                                ++i;
+                            }
+                            this.push(result);
+                        }
+                        else if (isInt(this.peek())) {
+                            this.runMacro("2%U1?"); // power of -1
+                        }
+                        break;
+                    case '|2':
+                        if (isArray(this.peek())) { // diagonal of matrix
+                            let result = [], i = 0;
+                            for (let e of this.popArray()) {
+                                if (isArray(e)) {
+                                    if (e.length > i) result.push(e[i]);
+                                    else result.push(zero);
+                                }
+                                else {
+                                    result.push(i == 0 ? e : zero);
+                                }
+                                ++i;
+                            }
+                            this.push(result);
+                        }
+                        else if (isNumber(this.peek())) {
+                            this.runMacro("2s|*"); // power of 2
+                        }
+                        break;
                     case '|A':
                         if (isInt(this.peek())) {
                             this.push(bigInt[10].pow(this.popInt().valueOf()));
