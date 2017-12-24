@@ -893,6 +893,9 @@ export class Runtime {
                             this.push(S2A(original.replace(from, to)));
                         }
                         break;
+                    case '|E':
+                        this.doBaseConvert(false);
+                        break;
                     case '|f': {
                         let t = this.pop();
                         if (isInt(t)) this.push(primeFactors(t));
