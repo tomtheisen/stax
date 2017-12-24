@@ -115,7 +115,7 @@ function parseCore(program: string, wholeProgram: boolean): Block {
 }
 
 function parseNum(program: string, pos: number): string {
-    let matches = program.substr(pos).match(/^\d+!\d*|[1-9]\d*|0/);
+    let matches = program.substr(pos).match(/^\d+!(\d*[1-9])?|[1-9]\d*|0/);
     if (!matches) throw "tried to parse a number out of a non-number";
     return matches[0] === "10" ? "1" : matches[0];
 }
