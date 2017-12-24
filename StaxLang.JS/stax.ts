@@ -769,6 +769,31 @@ export class Runtime {
                         }
                         break;
                     }
+                    case '|%':
+                        if (isNumber(this.peek())) { // divmod
+                            this.runMacro("ssb%~/,");
+                        }
+                        else if (isArray(this.peek())) { // embed sub-array
+                            let c = this.pop(), b = this.pop(), a = this.popArray();
+                            let result = a.slice(), loc: number, payload: StaxArray;
+                            if (isArray(c)) [payload, loc] = [c, b.valueOf() as number];
+                            else [payload, loc] = [b as StaxArray, c.valueOf() as number];
+
+                            if (loc < 0) {
+                                loc += result.length;
+                                if (loc < 0) {
+                                    result.unshift(...new Array(-loc).fill(zero));
+                                    loc = 0;
+                                } 
+                            }
+
+                            for (let i = 0; i < payload.length; i++) {
+                                while (loc + i >= result.length) result.push(zero);
+                                result[loc + i] = payload[i];
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|c':
                         if (!isTruthy(this.peek())) {
                             this.pop();
