@@ -1334,7 +1334,7 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("keep the elements of a, no more than than their occurrences in b");
-                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    List<object> b = new List<object>(Pop()), a = Pop(), result = new List<object>();
                                     foreach (var e in a) {
                                         for (int i = 0; i < b.Count; i++) {
                                             if (AreEqual(b[i], e)) {

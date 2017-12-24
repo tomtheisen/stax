@@ -849,6 +849,25 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|b':
+                        if (isInt(this.peek())) {
+                            this.doBaseConvert();
+                        }
+                        else if (isArray(this.peek())) {
+                            // keep elements of a, no more than their occurrences in b
+                            let b = this.popArray(), a = this.popArray(), result = [];
+                            for (let e of a) {
+                                for (let i = 0; i < b.length; i++) {
+                                    if (areEqual(b[i], e)) {
+                                        result.push(e);
+                                        b.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|c':
                         if (!isTruthy(this.peek())) {
                             this.pop();
@@ -1298,6 +1317,44 @@ export class Runtime {
             }
         }
         this.push(result);
+    }
+
+    private doBaseConvert(stringRepresentation = true) {
+        let base = this.popInt().valueOf(), number = this.pop();
+
+        if (isInt(number)) {
+            let result = [];
+            if (base === 1) result = new Array(number).fill(zero);
+            else do {
+                let digit = number.mod(base);
+                if (stringRepresentation) {
+                    let d = "0123456789abcdefghijklmnopqrstuvwxyz".charCodeAt(digit.valueOf());
+                    result.unshift(bigInt(d));
+                }
+                else { // digit mode
+                    result.unshift(digit);
+                }
+                number = number.divide(base);
+            } while (number.isPositive());
+
+            this.push(result);
+        }
+        else if (isArray(number)) {
+            let result = zero;
+            if (stringRepresentation) {
+                let s = A2S(number).toLowerCase();
+                for (let c of s) {
+                    let digit = "0123456789abcdefghijklmnopqrstuvwxyz".indexOf(c);
+                    if (digit < 0) digit = c.charCodeAt(0);
+                    result = result.multiply(base).add(digit);
+                }
+            }
+            else {
+                for (let d in number) result = result.multiply(base).add(d);
+            }
+            this.push(result);
+        }
+        else fail("bad types for base conversion");
     }
 
     private doPadLeft() {
