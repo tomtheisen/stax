@@ -799,6 +799,21 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|A':
+                        if (isInt(this.peek())) {
+                            this.push(bigInt[10].pow(this.popInt().valueOf()));
+                        }
+                        else if (isArray(this.peek())) {
+                            let result = one;
+                            for (let e of this.popArray()) {
+                                if (!isTruthy(this.pop())) {
+                                    result = zero;
+                                    break;
+                                }
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|c':
                         if (!isTruthy(this.peek())) {
                             this.pop();
