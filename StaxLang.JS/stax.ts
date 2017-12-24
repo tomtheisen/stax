@@ -296,6 +296,9 @@ export class Runtime {
                         }
                         break;
                     }
+                    case '@':
+                        this.doAt();
+                        break;
                     case '$':
                         this.push(stringFormat(this.pop()));
                         break;
@@ -1142,6 +1145,49 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for %");
+    }
+
+    private doAt() {
+        let top = this.pop();
+
+        if (top instanceof Rational) {
+            this.push(top.floor());
+            return;
+        }
+
+        if (typeof top === 'number') {
+            this.push(Math.floor(top));
+            return;
+        }
+
+        let list = this.pop();
+
+        function readAt(arr: StaxArray, idx: number) {
+            idx %= arr.length;
+            if (idx < 0) idx += arr.length;
+            return arr[idx];
+        }
+
+        // read at index
+        if (isInt(list) && isArray(top)) [list, top] = [top, list];
+        if (isArray(list) && isArray(top)) {
+            let result = [];
+            for (let idx of top) result.push(readAt(list, idx as number));
+            this.push(result);
+            return;
+        }
+        else if (isInt(top)) {
+            let indices = [ top ];
+
+            this.push(list);
+            while (this.totalSize() > 0 && isInt(this.peek())) indices.unshift(this.popInt());
+            list = this.popArray();
+
+            for(let idx of indices) list = readAt(list as StaxArray, idx.valueOf());
+            this.push(list);
+            return;
+        }
+        fail("bad type for @");
     }
 
     private doAssignIndex() {
