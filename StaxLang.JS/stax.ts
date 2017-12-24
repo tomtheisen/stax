@@ -932,6 +932,9 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|H':
+                        this.runMacro("16|b");
+                        break;
                     case '|i':
                         this.push(this.indexOuter);
                         break;
