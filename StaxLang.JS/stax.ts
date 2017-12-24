@@ -868,6 +868,9 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|B':
+                        this.runMacro("2|b");
+                        break;
                     case '|c':
                         if (!isTruthy(this.peek())) {
                             this.pop();
