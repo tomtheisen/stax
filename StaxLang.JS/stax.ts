@@ -932,6 +932,8 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|g':
+                        this.doGCD();
                     case '|H':
                         this.runMacro("16|b");
                         break;
@@ -1364,6 +1366,24 @@ export class Runtime {
             this.push(result);
         }
         else fail("bad types for base conversion");
+    }
+
+    private doGCD() {
+        let b = this.pop();
+        if (isArray(b)) {
+            let result = zero;
+            for (let e of b) result = bigInt.gcd(result, e as BigInteger);
+            this.push(result);
+            return;
+        }
+
+        let a = this.pop();
+        if (isInt(a) && isInt(b)) {
+            this.push(bigInt.gcd(a, b));
+            return;
+        }
+
+        fail("bad types for gcd");
     }
 
     private doPadLeft() {
