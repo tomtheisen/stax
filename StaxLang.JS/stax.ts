@@ -934,6 +934,7 @@ export class Runtime {
                         break;
                     case '|g':
                         this.doGCD();
+                        break;
                     case '|H':
                         this.runMacro("16|b");
                         break;
@@ -942,6 +943,11 @@ export class Runtime {
                         break;
                     case '|I':
                         for (let s of this.doFindIndexAll()) yield s;
+                        break;
+                    case '|l': // lcm
+                        if (isArray(this.peek())) this.runMacro("1s{|lF");
+                        else if (isInt(this.peek())) this.runMacro("b|g~*,/");
+                        else fail("bad types for lcm");
                         break;
                     case '|m': {
                         let top = this.pop();
@@ -1379,7 +1385,8 @@ export class Runtime {
 
         let a = this.pop();
         if (isInt(a) && isInt(b)) {
-            this.push(bigInt.gcd(a, b));
+            let gcd = bigInt.gcd(a, b);
+            this.push(gcd);
             return;
         }
 
