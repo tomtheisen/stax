@@ -834,6 +834,25 @@ export class Runtime {
                             this.runMacro("2s|*"); // power of 2
                         }
                         break;
+                    case '|a':
+                        if (isNumber(this.peek())) { // absolute value
+                            let num = this.pop();
+                            if (isInt(num)) this.push(num.abs());
+                            else if (isFloat(num)) this.push(Math.abs(num));
+                            else if (num instanceof Rational) this.push(num.abs());
+                            else fail("number but not a number in abs");
+                        }
+                        else if (isArray(this.peek())) { // any
+                            let result = zero;
+                            for (let e of this.popArray()) {
+                                if (isTruthy(e)) {
+                                    result = one;
+                                    break;
+                                }
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|A':
                         if (isInt(this.peek())) {
                             this.push(bigInt[10].pow(this.popInt().valueOf()));
@@ -967,6 +986,14 @@ export class Runtime {
                         else if (isArray(top)) this.runMacro("{|Mk");
                         break;
                     }
+                    case '|p':
+                        if (isInt(this.peek())) {
+                            this.runMacro("|f%1="); // is prime?
+                        }
+                        else if (isArray(this.peek())) {
+                            this.runMacro("cr1t+"); // palindromize
+                        }
+                        break;
                     case '|P':
                         this.print('');
                         break;

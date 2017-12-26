@@ -1,4 +1,4 @@
-import * as bigInt from 'big-integer';
+import * as bigInt from 'big-integer';    
 
 export class Rational {
     public numerator: bigInt.BigInteger;
@@ -48,6 +48,10 @@ export class Rational {
 
     negate() {
         return new Rational(this.numerator.negate(), this.denominator);
+    }
+
+    abs() {
+        return new Rational(this.numerator.abs(), this.denominator.abs());
     }
 
     floor() {
