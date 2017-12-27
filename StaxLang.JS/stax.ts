@@ -869,6 +869,9 @@ export class Runtime {
                             this.runMacro("2s|*"); // power of 2
                         }
                         break;
+                    case '|3':
+                        this.runMacro("36|b"); // base 36
+                        break;
                     case '|a':
                         if (isNumber(this.peek())) { // absolute value
                             let num = this.pop();
