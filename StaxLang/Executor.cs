@@ -511,11 +511,11 @@ namespace StaxLang {
                             foreach (var s in DoExtremaBy(-1, block)) yield return s;
                         }
                         break;
-                    case 'E': // explode (de-listify)
+                    case 'E': 
                         if (IsBlock(Peek())) {
                             foreach (var s in DoExtremaBy(1, block)) yield return s;
                         }
-                        else DoExplode(block);
+                        else DoExplode(block); // explode (de-listify)
                         break;
                     case 'f': // block filter
                         { 

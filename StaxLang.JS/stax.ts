@@ -349,6 +349,26 @@ export class Runtime {
                     case 'd':
                         this.pop();
                         break;
+                    case 'D':
+                        if (isArray(this.peek())) { // remove first element
+                            let result = this.popArray();
+                            result.shift();
+                            this.push(result);
+                        }
+                        else if (isInt(this.peek())) { // n times do
+                            let n = this.popInt();
+                            this.pushStackFrame();
+                            for (this.index = zero; this.index.lt(n); this.index = this.index.add(one)) {
+                                this._ = this.index.add(one);
+                                for (let s of this.runSteps(getRest())) yield s;
+                            }
+                            this.popStackFrame();
+                            return;
+                        }
+                        else if (isNumber(this.peek())) {
+                            this.runMacro("1%"); // get fractional part
+                        }
+                        break;
                     case 'e':
                         if (isArray(this.peek())) {
                             if (!this.doEval()) throw new Error("eval failed");
@@ -362,6 +382,12 @@ export class Runtime {
                         else if (this.peek() instanceof Block) {
                             for (let s of this.doExtremaBy(-1)) yield s;
                         }
+                        break;
+                    case 'E':
+                        if (this.peek() instanceof Block) {
+                            for (let s of this.doExtremaBy(-1)) yield s;
+                        }
+                        else this.doExplode();
                         break;
                     case 'f': {
                         let shorthand = !(this.peek() instanceof Block);
@@ -526,14 +552,20 @@ export class Runtime {
                     case 'Q':
                         this.print(this.peek(), false);
                         break;
-                    case 'r':
-                        if (isInt(this.peek())) this.push(range(0, this.popInt()));
-                        else if (isArray(this.peek())) this.push(_.reverse(this.popArray().slice()));
+                    case 'r': {
+                        let top = this.pop();
+                        if (isInt(top)) this.push(range(0, top));
+                        else if (isArray(top)) this.push(_.reverse(top.slice()));
+                        else if (top instanceof Rational) this.push(top.numerator);
                         break;
-                    case 'R':
-                        if (isInt(this.peek())) this.push(range(1, (this.pop() as BigInteger).add(1)));
+                    }
+                    case 'R': {
+                        let top = this.pop();
+                        if (isInt(top)) this.push(range(1, top.add(1)));
+                        else if (top instanceof Rational) this.push(top.denominator);
                         else this.doRegexReplace();
                         break;
+                    }
                     case 's':
                         this.push(this.pop(), this.pop());
                         break;
@@ -774,6 +806,9 @@ export class Runtime {
                         }
                         break;
                     }
+                    case '|/':
+                        this.runMacro("ss~;*{;/c;%!w,d");
+                        break;
                     case '|%':
                         if (isNumber(this.peek())) { // divmod
                             this.runMacro("ssb%~/,");
@@ -1264,6 +1299,24 @@ export class Runtime {
             this.push(result);
         }
         else throw new Error("bad types for %");
+    }
+
+    private doExplode() {
+        let arg = this.pop();
+
+        if (isArray(arg)) {
+            for (let e of arg) this.push(e); // explode array; push items to stack individually
+        }
+        else if (arg instanceof Rational) {
+            this.push(arg.numerator, arg.denominator);
+        }
+        else if (isInt(arg)) {
+            let result = [];  // array of decimal digits
+            for (let c of arg.abs().toString()) {
+                result.push(bigInt(c));
+            }
+            this.push(result);
+        }
     }
 
     private doAt() {
