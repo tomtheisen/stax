@@ -1159,7 +1159,7 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("left-align lines");
-                                    List<object> arr = new List<object> { Pop() };
+                                    List<object> arr = new List<object>(Pop());
                                     int maxlen = 0;
                                     for (int i = 0; i < arr.Count; i++) {
                                         if (!IsArray(arr[i])) arr[i] = ToString(arr[i]);
@@ -1181,7 +1181,7 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("right-align lines");
-                                    List<object> arr = Pop();
+                                    List<object> arr = new List<object>(Pop());
                                     int maxlen = 0;
                                     for (int i = 0; i < arr.Count; i++) {
                                         if (!IsArray(arr[i])) arr[i] = ToString(arr[i]);
