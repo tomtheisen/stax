@@ -4,9 +4,11 @@
   "description": "Stax Golfing Language",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "build": "tsc -p ./tsconfig.json",
+    "test": "npm run build && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
+  "contributors": ["Daniel Mayorga"],
   "license": "WTFPL",
   "dependencies": {
     "@types/node": "^8.0.47",
