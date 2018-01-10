@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, compare, stringFormat } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, indexOf, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -686,6 +686,20 @@ export class Runtime {
                     case '|;':
                         this.push(this.index.isEven() ? zero : one);
                         break;
+                    case '|&':
+                        if (isArray(this.peek())) { // set intersection
+                            let b = this.popArray(), a = this.pop();
+                            if (!isArray(a)) a = [a];
+                            let result: StaxArray = [];
+                            for (let e of a) {
+                                if (indexOf(b, e) >= 0) result.push(e);
+                            }
+                            this.push(result);
+                        }
+                        else {
+                            this.push(this.popInt().and(this.popInt()));
+                        }
+                        break;
                     case '||':
                         if (isInt(this.peek())) {
                             this.push(this.popInt().or(this.popInt()));
@@ -1038,7 +1052,7 @@ export class Runtime {
                     case '|q': {
                         let b = this.pop();
                         if (isNumber(b)) {
-                            this.push(bigInt(Math.floor(Math.sqrt(b.valueOf()))));
+                            this.push(bigInt(Math.floor(Math.sqrt(Math.abs(b.valueOf())))));
                         }
                         else if (isArray(b)) {
                             let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
@@ -1054,7 +1068,7 @@ export class Runtime {
                     case '|Q': {
                         let b = this.pop();
                         if (isNumber(b)) {
-                            this.push(Math.sqrt(b.valueOf()));
+                            this.push(Math.sqrt(Math.abs(b.valueOf())));
                         }
                         else if (isArray(b)) {
                             let a = this.popArray();

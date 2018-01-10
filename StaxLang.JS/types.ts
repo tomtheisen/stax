@@ -72,6 +72,13 @@ export function areEqual(a: StaxValue, b: StaxValue) {
     return false;
 }
 
+export function indexOf(arr: StaxArray, val: StaxValue): number {
+    for (let i = 0; i  < arr.length; i++) {
+        if (areEqual(arr[i], val)) return i;
+    }
+    return -1;
+}
+
 export function compare(a: StaxValue, b: StaxValue): number {
     if (isNumber(a)) {
         if (isNumber(b)) return floatify(a) - floatify(b);
