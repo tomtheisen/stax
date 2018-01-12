@@ -3,69 +3,72 @@ import { Runtime, ExecutionState } from './stax';
 import * as _ from 'lodash';
 import { readFileSync, readdirSync } from 'fs';
 
-interface TestCase {
+class TestCase {
     name: string;
-    io: {in: string[], expected: string[]}[];
-    programs: { line: number, code: string }[];
+    io: {in: string[], expected: string[]}[] = [];
+    programs: { line: number, code: string }[] = [];
 }
 
-enum TestFileState { None, In, Out, Code }
+enum TestFileState { Name, In, Out, Code }
 
 class TestFiles{
-    mode = TestFileState.None;
     cases: TestCase[] = [];
-    currentCase: TestCase | null = null;
-    name: string;
-    attempts: number;
-    passed: number;
+    name: string = '';//test name
+    attempts: number = 0;
+    passed: number = 0;
+
     constructor(path: string, name: string) {
         this.name = name;
         let testFile = readFileSync(path + "/" + name, 'utf8'),
             lines = testFile.split(/\r?\n/);
+        this.cases = this.parse(lines);
+    }
+
+    private parse(lines: string[]): TestCase[] {
+        let mode = TestFileState.Name;
+        let currentCase = new TestCase();
+        let cases: TestCase[] = [];
 
         lines.forEach((fin, i) => {
             if (fin.startsWith("\tname:")) {
-                this.evaluateSet();
-                name = fin.split(":", 2)[1];
-                this.currentCase = null;
-                this.cases = [];
-                this.mode = TestFileState.None;
+                cases.push(new TestCase());
+                currentCase = cases[cases.length -1];
+                currentCase.name = fin.split(":", 2)[1];
+                mode = TestFileState.Name;
             }
             else if (fin.startsWith("\t#")) return; // comment
             else if (fin === "\tin") {
-                if (this.mode === TestFileState.Code) this.evaluateSet();
-                this.ensureCurrentCase();
-                this.currentCase!.io.push({ in: [], expected: [] });
-                this.mode = TestFileState.In;
+                currentCase!.io.push({ in: [], expected: [] });
+                mode = TestFileState.In;
             }
             else if (fin === "\tout") {
-                if (this.mode === TestFileState.Code) this.evaluateSet();
-                this.ensureCurrentCase();
-                if (this.mode === TestFileState.Out || this.mode === TestFileState.Code) this.currentCase!.io.push({ in: [], expected: [] });
-                this.mode = TestFileState.Out;
+                if(!currentCase!.io.length)
+                    currentCase!.io.push({ in: [], expected: [] });
+                mode = TestFileState.Out;
             }
             else if (fin === "\tstax") {
-                this.ensureCurrentCase();
-                this.mode = TestFileState.Code;
+                mode = TestFileState.Code;
             }
             else {
-                switch (this.mode) {
+                switch (mode) {
                     case TestFileState.In:
-                        _.last(this.currentCase!.io)!.in.push(fin);
+                        _.last(currentCase!.io)!.in.push(fin);
                         break;
                     case TestFileState.Out:
-                        _.last(this.currentCase!.io)!.expected.push(fin);
+                        _.last(currentCase!.io)!.expected.push(fin);
                         break;
                     case TestFileState.Code:
-                        this.currentCase!.programs.push({ line: i + 1, code: fin });
+                        currentCase!.programs.push({ line: i + 1, code: fin });
                         break;
                 }
             }
         });
+        return cases;        
     }
 
-    runCases(cases: TestCase[]) {
-        for (let c of cases) {
+    runCases() {
+        console.log("Starting Test Suite: "+this.name);
+        for (let c of this.cases) {
             for (let prog of c.programs) {
                 for (let io of c.io) {
                     ++this.attempts;
@@ -96,17 +99,7 @@ class TestFiles{
                 }
             }
         }
-    }
-
-    evaluateSet() {
-        if (this.currentCase) this.cases.push(this.currentCase);
-        this.runCases(this.cases);
-        this.currentCase = null;
-        this.cases = [];
-    }
-
-     ensureCurrentCase() {
-        if (!this.currentCase) this.currentCase = { io: [], programs: [], name:this.name };
+        console.log("Attempts: " + this.attempts + " Passed: " + this.passed);
     }
 }
 
@@ -115,7 +108,7 @@ let path = process.argv[2];
 let tests = readdirSync(path, 'utf8')
     .filter(file => file.match(/.*staxtest/))
     .map(file => new TestFiles(path, file));
-tests.forEach(test => test.evaluateSet());
+tests.forEach(test => test.runCases());
 
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
 let totAttempts = tests.reduce((accumulator, current) => accumulator + current.attempts, 0);
