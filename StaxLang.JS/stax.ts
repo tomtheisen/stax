@@ -749,6 +749,25 @@ export class Runtime {
                                 throw Error('nie');
                             }
                         }
+                    case '|^':
+                        if (isArray(this.peek())) {
+                            this.runMacro("s b-~ s-, +"); // symmetric array difference
+                        }
+                        else if (isInt(this.peek())) { // tuples of specified size from array elements
+                            let b = this.popInt(), a = this.pop();
+                            if (isArray(a)) {
+                                let result: StaxArray = [[]], els = a;
+                                for (let i = 0; b.greaterOrEquals(i); i++) {
+                                    result = _.flatten(
+                                        result.map((r: StaxArray) => els.map(e => [...r, e])));
+                                }
+                                this.push(result);
+                            }
+                            else if (isInt(a)) { // xor
+                                this.push(a.xor(b));
+                            }
+                        }
+                        break;
                     case '|<':
                         if (isInt(this.peek())) this.runMacro('|2*');
                         else if (isArray(this.peek())) {
