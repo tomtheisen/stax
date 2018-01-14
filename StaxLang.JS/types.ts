@@ -59,6 +59,22 @@ export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     return nums;
 }
 
+export function runLength(arr: StaxArray): StaxArray {
+    if (arr.length === 0) return arr;
+    let result: StaxArray = [], last: StaxValue | null = null, run = 0;
+    for (let e of arr) {
+        if (last != null && areEqual(e, last)) {
+            run += 1;
+        }
+        else {
+            if (run > 0) result.push([last!, bigInt(run)]);
+            [last, run] = [e, 1];
+        }
+    }
+    result.push([last!, bigInt(run)]);
+    return result;
+}
+
 export function areEqual(a: StaxValue, b: StaxValue) {
     if (isArray(a) && isArray(b)) return _.isEqual(a, b);
     if (isArray(a)) a = a[0];

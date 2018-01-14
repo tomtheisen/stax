@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, areEqual, indexOf, compare, stringFormat } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, runLength, areEqual, indexOf, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
@@ -1104,6 +1104,18 @@ export class Runtime {
                         if (isInt(start) && isInt(end)) this.push(range(start, end));
                         else fail("bad types for |r");
                         break;
+                    }
+                    case '|R': {
+                        if (isInt(this.peek())) { // start-end-stride with range
+                            let stride = this.popInt(), end = this.popInt(), start = this.popInt();
+                            let result = range(0, end.minus(start))
+                                .map((n: BigInteger) => n.multiply(stride).add(start))
+                                .filter(n => n.lt(end));
+                            this.push(result);
+                        }
+                        else if (isArray(this.peek())) { // RLE
+                            this.push(runLength(this.popArray()));
+                        }
                     }
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
