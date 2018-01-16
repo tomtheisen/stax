@@ -31,19 +31,23 @@ class TestFiles{
 
         lines.forEach((fin, i) => {
             if (fin.startsWith("\tname:")) {
-                cases.push(new TestCase());
-                currentCase = cases[cases.length -1];
+                cases.push(currentCase = new TestCase());
                 currentCase.name = fin.split(":", 2)[1];
                 mode = TestFileState.Name;
             }
             else if (fin.startsWith("\t#")) return; // comment
             else if (fin === "\tin") {
-                currentCase!.io.push({ in: [], expected: [] });
+                if (mode === TestFileState.Code) {
+                    let lastName = currentCase.name;
+                    cases.push(currentCase = new TestCase());
+                    currentCase.name = lastName;
+                }
+                currentCase.io.push({ in: [], expected: [] });
                 mode = TestFileState.In;
             }
             else if (fin === "\tout") {
-                if(!currentCase!.io.length)
-                    currentCase!.io.push({ in: [], expected: [] });
+                if(!currentCase.io.length)
+                    currentCase.io.push({ in: [], expected: [] });
                 mode = TestFileState.Out;
             }
             else if (fin === "\tstax") {

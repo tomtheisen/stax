@@ -64,6 +64,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `j`          	|frac       	|round         	|round(a)           	|Round to nearest integer.
 `J`          	|num        	|square        	|a ** 2             	|Square number.
 `l`          	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
+`N`          	|number     	|negate        	|-a                 	|Negate a number.
 `r`          	|frac       	|numerator     	|numerator(a)       	|Get the numerator.
 `R`          	|frac       	|denom         	|denom(a)           	|Get the denominator.
 `u`          	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.

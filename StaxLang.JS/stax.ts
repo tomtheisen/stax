@@ -412,7 +412,7 @@ export class Runtime {
                     }
                     case 'h':
                         if (isNumber(this.peek())) this.runMacro("2/");
-                        else if (isArray(this.peek())) this.push((this.pop() as StaxArray)[0]);
+                        else if (isArray(this.peek())) this.push(this.popArray()[0]);
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
@@ -434,7 +434,11 @@ export class Runtime {
                         break;
                     case 'H':
                         if (isNumber(this.peek())) this.runMacro("2*");
-                        else if (isArray(this.peek())) this.push(_.last(this.pop() as StaxArray) || fail("empty array has no last element"));
+                        else if (isArray(this.peek())) {
+                            let arr = this.popArray();
+                            if (arr.length === 0) fail("empty array has no last element");
+                            this.push(_.last(arr)!);
+                        }
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
@@ -1116,6 +1120,7 @@ export class Runtime {
                         else if (isArray(this.peek())) { // RLE
                             this.push(runLength(this.popArray()));
                         }
+                        break;
                     }
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
@@ -1214,13 +1219,15 @@ export class Runtime {
         else if (isInt(a) && isArray(b)) {
             let result: StaxArray = [];
             let count = a.valueOf();
-            for (var i = 0; i < count; i++) result = result.concat(b);
+            if (count < 0) [b, count] = [b.reverse(), -count];
+            for (let i = 0; i < count; i++) result = result.concat(b);
             this.push(result);
         }
         else if (isArray(a) && isInt(b)) {
             let result: StaxArray = [];
             let count = b.valueOf();
-            for (var i = 0; i < count; i++) result = result.concat(a);
+            if (count < 0) [a, count] = [a.reverse(), -count];
+            for (let i = 0; i < count; i++) result = result.concat(a);
             this.push(result);
         }
         else if (isArray(a) && isArray(b)) {
@@ -1374,8 +1381,7 @@ export class Runtime {
             this.push(top.floor());
             return;
         }
-
-        if (typeof top === 'number') {
+        if (isFloat(top)) {
             this.push(Math.floor(top));
             return;
         }
@@ -1419,7 +1425,7 @@ export class Runtime {
         }
         if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
         
-        function doFinalAssign(flatArr: StaxArray, index: number) {
+        const doFinalAssign = (flatArr: StaxArray, index: number) => {
             if (index >= flatArr.length) {
                 flatArr.push(...Array(index + 1 - flatArr.length).fill(zero));
             }
@@ -1817,7 +1823,7 @@ export class Runtime {
     private *doOrder() {
         let top = this.pop();
         if (isArray(top)) {
-            this.push(_.sortBy((n: StaxValue) => n));
+            this.push(_.sortBy(top, (n: StaxValue) => n));
             return;
         }
         if (top instanceof Block) {
