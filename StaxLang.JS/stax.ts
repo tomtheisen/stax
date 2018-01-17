@@ -333,9 +333,9 @@ export class Runtime {
                     }
                     case 'B':
                         if (isInt(this.peek())) this.doOverlappingBatch();
-                        else if (isArray(this.pop())) this.runMacro("c1tsh"); // uncons
+                        else if (isArray(this.peek())) this.runMacro("c1tsh"); // uncons
                         else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
-                        else throw new Error("bad type for B");
+                        else fail("bad type for B");
                         break;
                     case 'c':
                         this.push(this.peek());
@@ -690,6 +690,9 @@ export class Runtime {
                     case '|;':
                         this.push(this.index.isEven() ? zero : one);
                         break;
+                    case '|@':
+                        this.doRemoveOrInsert();
+                        break;
                     case '|&':
                         if (isArray(this.peek())) { // set intersection
                             let b = this.popArray(), a = this.pop();
@@ -807,6 +810,17 @@ export class Runtime {
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
+                    case '|-': { // multiset subtract
+                        let b = this.pop(), a = this.popArray();
+                        if (!isArray(b)) b = [b];
+                        let result = [], bset = new Multiset(b);
+                        for (let e of a) {
+                            if (bset.contains(e)) bset.remove(e);
+                            else result.push(e);
+                        }
+                        this.push(result);
+                        break;
+                    }
                     case '|*': {
                         let b = this.pop(), a = this.pop();
                         if (isInt(b)) {
@@ -838,7 +852,7 @@ export class Runtime {
                         else if (isArray(b)) {
                             if (!isArray(a)) throw new Error('tried to cross-product non-array');
                             let result = [];
-                            for (let a_ of a) for (let b_ of b) result.push([a, b]);
+                            for (let a_ of a) for (let b_ of b) result.push([a_, b_]);
                             this.push(result);
                         }
                         break;
@@ -935,7 +949,7 @@ export class Runtime {
                         else if (isArray(this.peek())) {
                             let result = one;
                             for (let e of this.popArray()) {
-                                if (!isTruthy(this.pop())) {
+                                if (!isTruthy(e)) {
                                     result = zero;
                                     break;
                                 }
@@ -1038,6 +1052,9 @@ export class Runtime {
                     case '|I':
                         for (let s of this.doFindIndexAll()) yield s;
                         break;
+                    case '|J':
+                        this.runMacro("Vn*"); // join with newlines
+                        break;
                     case '|l': // lcm
                         if (isArray(this.peek())) this.runMacro("1s{|lF");
                         else if (isInt(this.peek())) this.runMacro("b|g~*,/");
@@ -1125,6 +1142,13 @@ export class Runtime {
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
                         this.push(text.split(new RegExp(search)).map(S2A));
+                        break;
+                    }
+                    case '|S': { // surround
+                        let b = this.pop(), a = this.pop();
+                        if (!isArray(a)) a = [a];
+                        if (!isArray(b)) b = [b];
+                        this.push([...b, ...a, ...b]);
                         break;
                     }
                     case '|t':
@@ -1468,6 +1492,31 @@ export class Runtime {
             }
         }
         this.push(result);
+    }
+
+    private doRemoveOrInsert() {
+        let b = this.pop(), a = this.pop();
+        if (isArray(a)) { // remove at index
+            if (!isInt(b)) fail("need integer index for remove");
+            let b_ = b.valueOf() as number, result = [...a];
+            if (b < 0) b_ += result.length;
+            if (b >= 0 && b < result.length) result.splice(b_, 1);
+            this.push(result);
+        }
+        else { // insert element at index
+            let arr = this.popArray(), result = [...arr], a_ = a.valueOf() as number;
+            if (a_ < 0) a_ += result.length;
+            if (a_ < 0) {
+                result.unshift(b, ...new Array(-a_).fill(zero));
+            }
+            else if (a > result.length) {
+                result.push(...new Array(a_ - result.length).fill(zero), b);
+            }
+            else {
+                result.splice(a_, 0, b);
+            }
+            this.push(result);
+        }
     }
 
     private doBaseConvert(stringRepresentation = true) {
