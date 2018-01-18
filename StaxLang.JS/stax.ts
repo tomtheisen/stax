@@ -1176,6 +1176,9 @@ export class Runtime {
                     case '|t':
                         this.doTranslate();
                         break;
+                    case '|T':
+                        this.doPermutations();
+                        break;
                     case '|w':
                         this.doTrimElementsFromStart();
                         break;
@@ -1190,6 +1193,23 @@ export class Runtime {
                         break;
                     case '|z':
                         this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
+                        break;
+                    case '|Z':
+                        if (isArray(this.peek())) { // rectangularize using empty array
+                            let arr = [...this.popArray()], maxlen = 0;
+                            for (let i = 0; i < arr.length; i ++) {
+                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                            }
+                            let result: StaxArray = [];
+                            for (let i = 0; i < arr.length; i++) {
+                                let orig = arr[i] as StaxArray;
+                                let line = new Array(maxlen - orig.length).fill([]);
+                                line.unshift(...orig);
+                                result.push(line);
+                            }
+                            this.push(result);
+                        }
                         break;
                     default:
                         throw new Error(`unknown token ${token}`);
@@ -1443,6 +1463,29 @@ export class Runtime {
             result.reverse();
             this.push(result);
         }
+    }
+
+    private doPermutations() {
+        let targetSize = isInt(this.peek()) ? this.popInt().valueOf() : Number.MAX_SAFE_INTEGER;
+        let els = this.popArray(), result: StaxArray = [];
+        targetSize = Math.min(els.length, targetSize);
+
+        // factoradic permutation decoder
+        let totalPerms = 1, stride = 1;
+        for (let i = 1; i <= els.length; i++) totalPerms *= i;
+        for (let i = 1; i <= els.length - targetSize; i++) stride *= i;
+        let idxs = els.map(_ => 0);
+        for (let pi = 0; pi < totalPerms; pi += stride) {
+            let n = pi;
+            for (let i = 1; i <= els.length; n = n / i++ | 0) idxs[els.length - i] = n % i;
+            let dupe = [...els];
+            result.push(idxs.slice(0, targetSize).map(i => {
+                try { return dupe[i]; }
+                finally { dupe.splice(i, 1); }
+            }));
+        }
+
+        this.push(result);
     }
 
     private doAt() {
