@@ -573,6 +573,9 @@ export class Runtime {
                     case 's':
                         this.push(this.pop(), this.pop());
                         break;
+                    case 'S':
+                        this.doPowerset();
+                        break;
                     case 't':
                         if (isArray(this.peek())) {
                             this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
@@ -705,6 +708,12 @@ export class Runtime {
                         }
                         else {
                             this.push(this.popInt().and(this.popInt()));
+                        }
+                        break;
+                    case '|#':
+                        if (isArray(this.peek())) { // number of occurrences in array
+                            let b = this.popArray(), a = this.popArray();
+                            this.push(bigInt(a.filter(e => areEqual(e, b)).length));
                         }
                         break;
                     case '||':
@@ -881,6 +890,19 @@ export class Runtime {
                             for (let i = 0; i < payload.length; i++) {
                                 while (loc + i >= result.length) result.push(zero);
                                 result[loc + i] = payload[i];
+                            }
+                            this.push(result);
+                        }
+                        break;
+                    case '|0':
+                        if (isArray(this.peek())) {
+                            let result = minusOne, i = zero;
+                            for (let e of this.popArray()) {
+                                if (!isTruthy(e)) {
+                                    result = i;
+                                    break;
+                                }
+                                i = i.add(one);
                             }
                             this.push(result);
                         }
@@ -1394,6 +1416,31 @@ export class Runtime {
             for (let c of arg.abs().toString()) {
                 result.push(bigInt(c));
             }
+            this.push(result);
+        }
+    }
+
+    private doPowerset() {
+        let b = this.pop();
+        if (isInt(b)) {
+            let len = b.valueOf(), arr = this.popArray(), result: StaxArray = []; 
+            let idxs = range(0, b).map(i => (i as BigInteger).valueOf());
+            while (len <= arr.length) {
+                result.push(idxs.map(idx => arr[idx]));
+                let i: number;
+                for (i = len - 1; i >= 0 && idxs[i] == i + (arr.length - len); i--) ;
+                if (i < 0) break;
+                idxs[i] += 1;
+                for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+            }
+            this.push(result);
+        }
+        else if (isArray(b)) {
+            let result: StaxArray = [];
+            for (let e of _.reverse(b)) {
+                result.push(...result.map(r => [e, ...r as StaxArray]), [e]);
+            }
+            result.reverse();
             this.push(result);
         }
     }
