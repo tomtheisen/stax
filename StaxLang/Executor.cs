@@ -1521,7 +1521,7 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 else if (IsArray(Peek())) {
-                                    block.AddDesc("combine elements from a and b, removing common elements only as many times as they mutually occur");
+                                    block.AddDesc("combine elements from a and b, removing common elements as many times as they mutually occur");
                                     List<object> b = Pop(), a = Pop(), result = new List<object>();
                                     foreach (var e in a) {
                                         bool found = false;
@@ -2034,7 +2034,7 @@ namespace StaxLang {
                 }
             }
             Push(result);
-        }
+        }  
 
         private void DoCenter(Block block) {
             dynamic top = Pop();

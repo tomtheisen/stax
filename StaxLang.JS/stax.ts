@@ -5,7 +5,7 @@ import * as bigInt from 'big-integer';
 import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
-import { primeFactors } from './primehelper';
+import { primeFactors, allPrimes } from './primehelper';
 import { compress, decompress } from './huffmancompression';
 import { macroTrees, getTypeChar } from './macrotree';
 type BigInteger = bigInt.BigInteger;
@@ -773,7 +773,7 @@ export class Runtime {
                             let b = this.popInt(), a = this.pop();
                             if (isArray(a)) {
                                 let result: StaxArray = [[]], els = a;
-                                for (let i = 0; b.greaterOrEquals(i); i++) {
+                                for (let i = 0; b.gt(i); i++) {
                                     result = _.flatten(
                                         result.map((r: StaxArray) => els.map(e => [...r, e])));
                                 }
@@ -1082,22 +1082,82 @@ export class Runtime {
                         else if (isInt(this.peek())) this.runMacro("b|g~*,/");
                         else fail("bad types for lcm");
                         break;
+                    case '|L': {
+                        let b = this.pop(), a = this.pop();
+                        if (isNumber(b)) { // log with base
+                            this.push(Math.log(a.valueOf() as number) / Math.log(b.valueOf()));
+                        }
+                        else if (isArray(b) && isArray(a)) { 
+                            // combine elements from a and b, with each occurring the max of its occurrences from a and b
+                            let result: StaxArray = [];
+                            b = [...b];
+                            for (let e of a) {
+                                result.push(e);
+                                for (let i = 0; i < b.length; i++) {
+                                    if (areEqual(b[i], e)) {
+                                        b.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                            }
+                            result.push(...b);
+                            this.push(result);
+                        }
+                        break;
+                    }
                     case '|m': {
-                        let top = this.pop();
-                        if (isNumber(top)) {
-                            let next = this.pop();
+                        if (isNumber(this.peek())) {
+                            let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) < 0 ? next : top);
                         }
-                        else if (isArray(top)) this.runMacro("{|mk");
+                        else if (isArray(this.peek())) this.runMacro("{|mk");
                         break;
                     }
                     case '|M': {
-                        let top = this.pop();
-                        if (isNumber(top)) {
-                            let next = this.pop();
+                        if (isNumber(this.peek())) {
+                            let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) > 0 ? next : top);
                         }
-                        else if (isArray(top)) this.runMacro("{|Mk");
+                        else if (isArray(this.peek())) this.runMacro("{|Mk");
+                        break;
+                    }
+                    case '|n': 
+                        if (isInt(this.peek())) { // exponents of sesquential primes in factorization
+                            let target = this.popInt().abs(), result: StaxArray = [];
+                            for (let p of allPrimes()) {
+                                if (target.lesserOrEquals(one)) break;
+                                let exp = zero;
+                                while (target.mod(p).isZero()) {
+                                    target = target.divide(p);
+                                    exp = exp.add(one);
+                                }
+                                result.push(exp);
+                            }
+                            this.push(result);
+                        }
+                        else if (isArray(this.peek())) {
+                            // combine elements from a and b, removing common elements as many times as they mutually occur
+                            let b = this.popArray(), a = this.popArray(), result: StaxArray = [];
+                            for (let e of a) {
+                                let found = false;
+                                for (let i = 0; i < b.length; i++) {
+                                    if (areEqual(b[i], e)) {
+                                        found = true;
+                                        b.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                                if (!found) result.push(e);
+                            }
+                            result.push(...b);
+                            this.push(result);
+                        }
+                        break;
+                    case '|o': { // get indices of elements when ordered
+                        let a = this.popArray(), result: StaxArray = [], i = 0;
+                        let idxs = range(0, a.length).sort((x, y) => compare(a[x.valueOf() as number], a[y.valueOf()  as number]));
+                        for (let t of idxs) result[t.valueOf() as number] = bigInt(i++);
+                        this.push(result);
                         break;
                     }
                     case '|p':
