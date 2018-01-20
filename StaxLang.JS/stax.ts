@@ -1165,8 +1165,7 @@ export class Runtime {
                             result.push(...els.splice(0, i));
                             for (i = els.length - 1; compare(els[i], els[0]) <= 0; i--) ;
                             result.push(...els.splice(i, 1));
-                            els.sort(compare);
-                            result.push(...els);
+                            result.push(...els.sort(compare));
                             this.push(result);
                         }
                         break;
