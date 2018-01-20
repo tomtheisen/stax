@@ -554,7 +554,7 @@ export class Runtime {
                         this.print(this.peek(), false);
                         break;
                     case 'Q':
-                        this.print(this.peek(), false);
+                        this.print(this.peek());
                         break;
                     case 'r': {
                         let top = this.pop();
@@ -1150,6 +1150,23 @@ export class Runtime {
                                 if (!found) result.push(e);
                             }
                             result.push(...b);
+                            this.push(result);
+                        }
+                        break;
+                    case '|N': 
+                        if (isArray(this.peek())) { // next permutation in lexicographic order
+                            let els = [...this.popArray()], result: StaxArray = [], i = els.length - 2;
+                            for (; i >= 0 &&compare(els[i], els[i + 1]) >= 0; i--) ;
+                            if (i < 0) {
+                                this.push(els.reverse());
+                                break;
+                            }
+
+                            result.push(...els.splice(0, i));
+                            for (i = els.length - 1; compare(els[i], els[0]) <= 0; i--) ;
+                            result.push(...els.splice(i, 1));
+                            els.sort(compare);
+                            result.push(...els);
                             this.push(result);
                         }
                         break;
