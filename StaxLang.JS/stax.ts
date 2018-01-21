@@ -873,6 +873,20 @@ export class Runtime {
                     case '|/':
                         this.runMacro("ss~;*{;/c;%!w,d");
                         break;
+                    case '|\\':
+                        if (isArray(this.peek())) {
+                            this.runMacro("b%s% |m~ ;(s,(s \\"); // zip; truncate to shorter
+                        }
+                        else { // zip arrays using fill element
+                            let fill = this.pop(), b = this.popArray(), a = this.popArray(), result = [];
+                            for (let i = 0; i < Math.max(a.length, b.length); i++) {
+                                result.push([
+                                    i < a.length ? a[i] : fill,
+                                    i < b.length ? b[i] : fill]);
+                            }
+                            this.push(result);
+                        }
+                        break;
                     case '|%':
                         if (isNumber(this.peek())) { // divmod
                             this.runMacro("ssb%~/,");
@@ -1936,6 +1950,7 @@ export class Runtime {
                 for (let psize of partition) {
                     listPartition.push(arg.slice(added, added += psize));
                 }
+                result.push(listPartition);
             }
             else {
                 let mapped = partition.map(v => bigInt(v));
