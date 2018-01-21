@@ -816,6 +816,10 @@ export class Runtime {
                             this.push(result);
                         }
                         break;
+                    case '|!':
+                        if (isInt(this.peek())) this.doPartition();
+                        else if (isArray(this.peek())) this.doMultiAntiMode();
+                        break;
                     case '|+':
                         this.runMacro('Z{+F');
                         break;
@@ -1611,7 +1615,10 @@ export class Runtime {
 
         if (isInt(indexes)) {
             indexes = [indexes];
-            while (isInt(this.peek())) indexes.unshift(this.popInt());
+            if (isInt(this.peek())) {
+                while (isInt(this.peek())) indexes.unshift(this.popInt());
+                indexes = [indexes];
+            }
         }
         if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
         
@@ -1907,6 +1914,53 @@ export class Runtime {
         }
 
         let result = a.slice(0, i + 1);
+        this.push(result);
+    }
+
+    private doPartition() {
+        let n = this.popInt().valueOf(), arg = this.pop();
+        let total = isArray(arg) ? arg.length : arg.valueOf() as number;
+
+        let result: StaxArray = [];
+        if (n > total) {
+            this.push(result);
+            return;
+        }
+
+        let partition = new Array(n - 1).fill(1);
+        partition.push(total - n + 1);
+
+        while (true) {
+            if (isArray(arg)) {
+                let added = 0, listPartition = [];
+                for (let psize of partition) {
+                    listPartition.push(arg.slice(added, added += psize));
+                }
+            }
+            else {
+                let mapped = partition.map(v => bigInt(v));
+                result.push(mapped);
+            }
+
+            let i: number;
+            for (i = n - 1; i >= 0 && partition[i] === 1; i --) ;
+            if (i <= 0) break;
+
+            ++partition[i - 1];
+            --partition[i];
+            [partition[i], partition[n - 1]] = [partition[n - 1], partition[i]];
+        }
+        this.push(result);
+    }
+
+    private doMultiAntiMode() {
+        let arr = this.popArray(), result: StaxArray = [];
+        if (arr.length > 0) {
+            let multi = new Multiset(arr), keys = multi.keys();
+            let min = Math.min(...keys.map(multi.get));
+            result = keys.filter(k => multi.get(k) === min);
+            result.sort(compare);
+        }
         this.push(result);
     }
 
