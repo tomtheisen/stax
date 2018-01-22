@@ -204,6 +204,7 @@ export class Runtime {
 
             if (token instanceof Block) {
                 this.push(token);
+                ip += token.contents.length;
                 continue;
             }
             else {
@@ -525,7 +526,7 @@ export class Runtime {
                     case 'm': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doMap(getRest())) yield s;
-                        if (shorthand) return;
+                       if (shorthand) return;
                         break;
                     }
                     case 'M':
@@ -2334,8 +2335,8 @@ export class Runtime {
             map: Block | string = shorthand ? rest : top as Block;
         
         let inner = shorthand ? top : this.pop(), outer =  this.pop();
-        if (isInt(inner)) inner = range(one, inner);
-        if (isInt(outer)) outer = range(one, outer);
+        if (isInt(inner)) inner = range(one, inner.add(one));
+        if (isInt(outer)) outer = range(one, outer.add(one));
         if (!isArray(outer) || !isArray(inner)) throw new Error("need arrays or integers for crossmap");
 
         let result: StaxArray = [];

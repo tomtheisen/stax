@@ -39,13 +39,18 @@ class TestFiles{
             else if (fin === "\tin") {
                 if (mode === TestFileState.Code) {
                     let lastName = currentCase.name;
-                    cases.push(currentCase = new TestCase());
+                    cases.push(currentCase = new TestCase);
                     currentCase.name = lastName;
                 }
                 currentCase.io.push({ in: [], expected: [] });
                 mode = TestFileState.In;
             }
             else if (fin === "\tout") {
+                if (mode === TestFileState.Code) {
+                    let lastName = currentCase.name;
+                    cases.push(currentCase = new TestCase);
+                    currentCase.name = lastName;
+                }
                 if(!currentCase.io.length)
                     currentCase.io.push({ in: [], expected: [] });
                 mode = TestFileState.Out;
