@@ -342,9 +342,14 @@ export class Runtime {
                         this.push(this.peek());
                         break;
                     case 'C':
-                        if (isTruthy(this.pop())) {
-                            yield new ExecutionState(ip, true);
-                            return;
+                        if (this.peek() instanceof Block) {
+                            for (let s of this.doCollect()) yield s;
+                        }
+                        else {
+                            if (isTruthy(this.pop())) {
+                                yield new ExecutionState(ip, true);
+                                return;
+                            }
                         }
                         break;
                     case 'd':
@@ -813,6 +818,18 @@ export class Runtime {
                                 let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
                                 line.push(...arr[i] as StaxArray);
                                 result.push(line);
+                            }
+                            this.push(result);
+                        }
+                        break;
+                    case '|=':
+                        if (isArray(this.peek())) { // multi-mode
+                            let arr = this.popArray(), result: StaxArray = [];
+                            if (arr.length > 0) {
+                                let multi = new Multiset(arr), keys = multi.keys();
+                                let max = Math.max(...keys.map(k => multi.get(k)));
+                                result = keys.filter(k => multi.get(k) === max);
+                                result.sort(compare);
                             }
                             this.push(result);
                         }
@@ -2440,6 +2457,28 @@ export class Runtime {
             this.popStackFrame();
         }
         else throw new Error("bad types in map");
+    }
+
+    private *doCollect() { // reduce and collect
+        let reduce = this.pop() as Block, arr = this.popArray();
+
+        if (arr.length < 2) {
+            this.push(arr);
+            return;
+        }
+
+        let result = [arr[0]];
+        this.pushStackFrame();
+        this.push(arr[0]);
+        for (let e of arr.slice(1)) {
+            this.push(this._ = e);
+            for (let s of this.runSteps(reduce)) yield s;
+            result.push(this.peek());
+            this.index = this.index.add(one);
+        }
+        this.popStackFrame();
+        this.pop();
+        this.push(result);
     }
 
     private doMacroAlias(alias: string) {
