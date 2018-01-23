@@ -3185,7 +3185,7 @@ namespace StaxLang {
             }
             else if (IsInt(Peek())) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "split array into " + e + " equlalish-sized chunks");
-                block.AddDesc("split array into number or equalish-sized chunks");
+                block.AddDesc("split array into number of equalish-sized chunks");
                 int chunks = (int)Pop(), consumed = 0;
                 List<object> arr = Pop(), result = new List<object>();
 

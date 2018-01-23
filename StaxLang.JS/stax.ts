@@ -309,7 +309,7 @@ export class Runtime {
                         for (let s of this.doPadRight()) yield s;
                         break;
                     case ')':
-                        this.doPadLeft();
+                        for (let s of this.doPadLeft()) yield s;
                         break;
                     case '[': {
                         let b = this.pop(), a = this.peek();
@@ -569,13 +569,11 @@ export class Runtime {
                         else if (top instanceof Rational) this.push(top.numerator);
                         break;
                     }
-                    case 'R': {
-                        let top = this.pop();
-                        if (isInt(top)) this.push(range(1, top.add(1)));
-                        else if (top instanceof Rational) this.push(top.denominator);
+                    case 'R': 
+                        if (isInt(this.peek())) this.push(range(1, this.popInt().add(one)));
+                        else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
                         else this.doRegexReplace();
                         break;
-                    }
                     case 's':
                         this.push(this.pop(), this.pop());
                         break;
@@ -1794,7 +1792,7 @@ export class Runtime {
         fail("bad types for gcd");
     }
 
-    private doPadLeft() {
+    private *doPadLeft() {
         let b = this.pop(), a = this.pop();
 
         if (isArray(b) && isInt(a)) [a, b] = [b, a];
@@ -1815,7 +1813,36 @@ export class Runtime {
             }
             this.push(result);
         }
-        else throw new Error("bad types for padleft");
+        else if (isArray(a) && b instanceof Block) {
+            // partition where the block produces a truthy for the pair of values surrounding the boundary
+            let result: StaxArray = [], current = [];
+            if (a.length > 0) current.push(a[0]);
+
+            this.pushStackFrame();
+            for (let i = 1; i < a.length; i++) {
+                this._ = new IteratorPair(a[i-1], a[i]);
+                this.push(a[i-1], a[i]);
+
+                let cancelled = false;
+                for (let s of this.runSteps(b)) {
+                    if (cancelled = s.cancel) break;
+                    yield s;
+                }
+                if (!cancelled) {
+                    if (isTruthy(this.pop())) {
+                        result.push(current);
+                        current = [];
+                    }
+                    current.push(a[i]);
+                }
+                this.index = this.index.add(one);
+            }
+            this.popStackFrame();
+
+            result.push(current);
+            this.push(result);
+        }
+        else fail("bad types for padleft");
     }
 
     private *doPadRight() {

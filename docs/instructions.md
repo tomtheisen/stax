@@ -352,7 +352,7 @@ chars	|Types        	|Name               	|Description
 `*`  	|block int    	|do-times           	|Perform block n times.
 `/`  	|arr block    	|group-by           	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
 `(`  	|arr block    	|partition-when     	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the element following the boundary.
-`(`  	|arr block    	|partition-when-pair	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the pair of elements around the boundary.
+`)`  	|arr block    	|partition-when-pair	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the pair of elements around the boundary.
 `C`  	|any          	|cancel             	|If value is truthy, cancel current block execution.
 `C`  	|block        	|collect            	|Reduce using block, but collect each value in result array.  Does not terminate a block.
 `D`  	|int          	|do-times           	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
