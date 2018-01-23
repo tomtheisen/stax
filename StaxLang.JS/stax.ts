@@ -391,7 +391,7 @@ export class Runtime {
                         break;
                     case 'E':
                         if (this.peek() instanceof Block) {
-                            for (let s of this.doExtremaBy(-1)) yield s;
+                            for (let s of this.doExtremaBy(1)) yield s;
                         }
                         else this.doExplode();
                         break;
@@ -1101,6 +1101,18 @@ export class Runtime {
                     case '|g':
                         this.doGCD();
                         break;
+                    case '|G': { // round-robin flatten
+                        let arr = this.popArray(), result: StaxArray = [];
+                        let maxlen = Math.max(...arr.map(e => (e as StaxArray).length));
+                        for (let i = 0; i < maxlen; i++) {
+                            for (let e of arr) {
+                                let line = e as StaxArray;
+                                if (line.length > i) result.push(line[i]);
+                            }
+                        }
+                        this.push(result);
+                        break;
+                    }
                     case '|H':
                         this.runMacro("16|b");
                         break;
@@ -1485,6 +1497,7 @@ export class Runtime {
                 }
                 this.index = this.index.add(one);
             }
+            if (currentPart) result.push(currentPart);
             this.popStackFrame();
             this.push(result);
         }
@@ -1990,7 +2003,7 @@ export class Runtime {
         let arr = this.popArray(), result: StaxArray = [];
         if (arr.length > 0) {
             let multi = new Multiset(arr), keys = multi.keys();
-            let min = Math.min(...keys.map(multi.get));
+            let min = Math.min(...keys.map(k => multi.get(k)));
             result = keys.filter(k => multi.get(k) === min);
             result.sort(compare);
         }
@@ -2101,25 +2114,36 @@ export class Runtime {
             }
             return;
         }
+        else if (isInt(top)) { // split array into number of equalish-sized chunks
+            let chunks = top.valueOf(), consumed = 0, arr = this.popArray(), result: StaxArray = [];
 
-        if (!isArray(top)) throw new Error("bad types for transpose/maybe");
+            for (; chunks > 0; chunks--) {
+                let toTake = Math.ceil((arr.length - consumed) / chunks);
+                result.push(arr.slice(consumed, consumed + toTake));
+                consumed += toTake;
+            }
 
-        if (top.length > 0 && !isArray(top[0])) top = [top];
-        let result: StaxArray = [];
-        let maxlen = _.max(top.map(e => (e as StaxArray).length))!;
-
-        for (let line of top) {
-            line = line as StaxArray;
-            line.push(..._.fill(Array(maxlen - line.length), zero));
+            this.push(result);
         }
+        else if (isArray(top)) {
+            if (top.length > 0 && !isArray(top[0])) top = [top];
+            let result: StaxArray = [];
+            let maxlen = _.max(top.map(e => (e as StaxArray).length))!;
 
-        for (let i = 0; i < maxlen; i++) {
-            let column: StaxArray = [];
-            for (let row of top) column.push((row as StaxArray)[i]);
-            result.push(column);
+            for (let line of top) {
+                line = line as StaxArray;
+                line.push(..._.fill(Array(maxlen - line.length), zero));
+            }
+
+            for (let i = 0; i < maxlen; i++) {
+                let column: StaxArray = [];
+                for (let row of top) column.push((row as StaxArray)[i]);
+                result.push(column);
+            }
+
+            this.push(result);
         }
-
-        this.push(result);
+        else fail("bad types for transpose/maybe");
     }
 
     private *doOrder() {
