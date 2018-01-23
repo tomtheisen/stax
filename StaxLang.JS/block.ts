@@ -88,6 +88,10 @@ function parseCore(program: string, wholeProgram: boolean): Block {
                 let b = parseCore(program.substr(pos), false);
                 pos += b.contents.length;
                 pushToken(b);
+                // implicit block terminator characters
+                if ("wWmfFkKgo".indexOf(program[pos]) >= 0) {
+                    pushToken(program[pos++]);
+                }
                 break;
 
             case '}':

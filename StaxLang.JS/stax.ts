@@ -90,8 +90,12 @@ export class Runtime {
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
 
-        if (isInt(val) || typeof val === "number") {
-            val = val.toString().replace("Infinity", "∞");
+        if (isFloat(val)) {
+            val = val.toPrecision(15).replace("Infinity", "∞");
+            if (val.indexOf('.') >= 0) val = val.replace(/\.?0+$/, '');
+        }
+        if (isInt(val)) {
+            val = val.toString();
         }
         if (val instanceof Block) val = `Block: ${val.contents}`;
         if (isArray(val)) val = A2S(val);
@@ -2294,7 +2298,7 @@ export class Runtime {
 
     private *doFor(rest: string) {
         if (isInt(this.peek())) {
-            this.push(range(1, (this.pop() as BigInteger).add(one)));
+            this.push(range(1, this.popInt().add(one)));
         }
 
         if (this.peek() instanceof Block) {
@@ -2365,7 +2369,7 @@ export class Runtime {
         if (top instanceof Block) [block, arr] = [top, this.pop()];
         else [block, arr] = [rest, top];
 
-        if (isInt(arr)) arr = range(one, arr);
+        if (isInt(arr)) arr = range(one, arr.add(one));
         else if (isArray(arr)) arr = _.clone(arr);
 
         if (isArray(arr)) {

@@ -2892,7 +2892,7 @@ namespace StaxLang {
                 }
                 PopStackFrame();
 
-                if (current != null) result.Add(current);
+                result.Add(current);
                 Push(result);
             }
             else {
