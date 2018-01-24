@@ -11,7 +11,11 @@ export interface StaxArray extends Array<StaxValue> { }
 
 export function S2A(s: string): StaxArray {
     let result: StaxArray = [];
-    for (let i = 0; i < s.length; i++) result.push(bigInt(s.charCodeAt(i)));
+    for (let i = 0; i < s.length; i++) {
+        let code = s.codePointAt(i)!;
+        result.push(bigInt(code));
+        if (code > 0x10000) i++;
+    }
     return result;
 }
 

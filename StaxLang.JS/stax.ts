@@ -218,7 +218,7 @@ export class Runtime {
                 else if (token[0] === '`') {
                     let compressed = token.replace(/^`|`$/g, '');
                     this.push(S2A(decompress(compressed)));
-                    if (token[token.length - 1] === '`') this.print(this.peek());
+                    if (token[token.length - 1] !== '`') this.print(this.peek());
                 }
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 else if (token[0] === 'V') this.push(constants[token[1]]);
