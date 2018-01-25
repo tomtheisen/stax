@@ -8,6 +8,7 @@ import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
 import { compress, decompress } from './huffmancompression';
 import { macroTrees, getTypeChar } from './macrotree';
+import { isBoolean } from 'util';
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -2534,6 +2535,139 @@ export class Runtime {
         this.popStackFrame();
         this.pop();
         this.push(result);
+    }
+
+    private *doGenerator(shorthand: boolean, spec: string, rest: string) {
+        const lowerSpec = spec.toLowerCase();
+        const stopOnDupe = lowerSpec === 'u' || lowerSpec === 'l';
+        const stopOnFilter = lowerSpec === 'f';
+        const stopOnCancel = lowerSpec ==='c';
+        const stopOnFixPoint = lowerSpec === 'i' || lowerSpec === 'p';
+        const stopOnTargetVal = lowerSpec === 't';
+        const scalarMode = lowerSpec === 's' || lowerSpec === 'e' || lowerSpec === 'p';
+        const keepOnlyLoop = lowerSpec === 'l';
+        let postPop = spec !== lowerSpec;
+        
+        let genBlock: string | Block = rest;
+        if (!shorthand) {
+            let popped = this.pop();
+            if (popped instanceof Block) {
+                genBlock = popped;
+            } else throw new Error("generator block isn't a block");
+        }
+        let filter: Block | null = null;
+        let targetVal: StaxValue | null = null;
+        let targetCount: number | null = null;
+
+        if (this.peek() instanceof Block) filter = this.pop() as Block;
+        else if (stopOnFilter) throw new Error("generator can't stop on filter failure when there is no filter");
+
+        if (stopOnTargetVal) targetVal = this.pop();
+
+        let hardCodedTargetCount = false;
+        if (lowerSpec === 'n') targetCount = this.popInt().valueOf();
+        else if (lowerSpec === 'e') targetCount = this.popInt().valueOf();
+        else if (lowerSpec === 's') [targetCount, hardCodedTargetCount] = [1, true];
+        else {
+            let idx = "1234567890!@#$%^&*()".indexOf(spec);
+            if (idx >= 0) {
+                targetCount = idx % 10 + 1;
+                postPop = idx >= 10;
+                hardCodedTargetCount = true;
+            }
+        }
+
+        if (!stopOnDupe && !stopOnFilter && !stopOnCancel && !stopOnFixPoint && !stopOnTargetVal && targetCount == null) {
+            throw new Error("no end condition for generator");
+        }
+
+        if (targetCount === 0) { // 0 elements requested ??
+            this.push([]);
+            return;
+        }
+
+        this.pushStackFrame();
+        var result: StaxArray = [];
+
+        let lastGenerated : StaxValue | null = null;
+        let genComplete = false, cancelled = false;
+        while (targetCount == null || result.length < targetCount) {
+            this._ = this.peek();
+
+            if (this.index.isPositive() || postPop) {
+                if (genBlock != "" && (!(genBlock instanceof Block) || genBlock.contents !== "")) {
+                    for (let s of this.runSteps(genBlock)) {
+                        if (s.cancel && stopOnCancel) genComplete = cancelled = true;
+                        if (s.cancel) { 
+                            cancelled = true;
+                            break;
+                        }
+                        yield s;
+                    }
+                }
+                else { // empty gen block, use ^
+                    this.runMacro("^");   
+                }
+            }
+
+            if (!cancelled) {
+                let generated = this.peek();
+
+                let passed = true;
+                if (filter) {
+                    this._ = generated;
+                    for (let s of this.runSteps(filter)) {
+                        if (s.cancel && stopOnCancel) genComplete = cancelled = true;
+                        if (s.cancel) { 
+                            cancelled = true;
+                            break;
+                        }
+                        yield s;
+                    }
+
+                    if (!cancelled) {
+                        passed = isTruthy(this.pop());
+                        this.push(generated); // put the gnerated element back
+                        if (stopOnFilter && !passed) break;
+                    }
+                }
+
+                if (!cancelled) {
+                    if (postPop) this.pop();
+                    if (passed) {
+                        // dupe
+                        if (stopOnDupe && indexOf(result, generated) >= 0) {
+                            while (keepOnlyLoop && !areEqual(result[0], generated)) result.shift();
+                            break;
+                        }
+                        // successive equal values
+                        if (stopOnFixPoint && lastGenerated != null && areEqual(generated, lastGenerated)) break;
+                        result.push(generated);
+                        // got to target val
+                        if (stopOnTargetVal && targetVal != null && areEqual(generated, targetVal)) break;
+                    }
+                    lastGenerated = generated;
+                }
+            }
+            if (genComplete) break;
+            this.index = this.index.add(one); 
+        }
+        if (!postPop && !genComplete) {
+            // Remove left-over value from pre-peek mode
+            // It's kept on stack between iterations, but iterations are over now
+            this.pop();
+        }
+        
+        this.popStackFrame();
+
+        if (shorthand) {
+            if (scalarMode) this.print(_.last(result)!);
+            else for (let e of result) this.print(e);
+        }
+        else {
+            if (scalarMode) this.push(_.last(result)!);
+            else this.push(result);
+        }
     }
 
     private doMacroAlias(alias: string) {

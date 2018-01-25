@@ -6,3 +6,112 @@
 13
 	stax
 {JE|+glm
+	name:UniqueShorthand
+	in
+1
+	out
+1
+4
+3
+5
+	stax
+gu^J11%
+	name:FilterTerminate
+	in
+1
+	out
+1
+3
+5
+7
+	stax
+{9<}gf2+
+	name:CancelTerminate
+	in
+abcd
+	out
+abcd
+abc
+ab
+a
+	stax
+gc1T|c
+	name:InvariantTerminate
+	in
+10
+	out
+10
+8
+7
+6
+5
+4
+	stax
+gi^4*5/
+	name:Fixpoint
+	in
+10
+	out
+4
+	stax
+gp^4*5/
+	name:LastPrimeDigitDivModPostPop
+	in
+987641
+	out
+7
+	stax
+{|p}gSA|%
+	name:IndexScalar
+	in
+1 4
+	out
+46
+	stax
+ge^H
+	name:CollatzLoop
+	in
+10
+	out
+4
+2
+1
+	stax
+glX2%x3*^xh?
+	name:ExplicitCount
+	in
+1 10
+	out
+1
+2
+4
+8
+16
+32
+64
+28
+56
+12
+	stax
+gnHAJ%
+	name:ShorthandCountWithFilter
+	in
+1
+	out
+3
+43
+29
+61
+83
+47
+41
+23
+	stax
+{|p}g83*AJ%
+	name:FivePrimeSumDefaultGeneratorBlock
+	in
+1
+	out
+28
+	stax
+{|p}{g5|+
