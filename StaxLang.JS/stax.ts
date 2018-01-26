@@ -55,11 +55,15 @@ export class Runtime {
     }
 
     private peek(): StaxValue {
-        return _.last(this.mainStack) || _.last(this.inputStack) || fail("peeked empty stacks");
+        if (this.mainStack.length) return _.last(this.mainStack)!;
+        if (this.inputStack.length) return _.last(this.inputStack)!;
+        throw new Error("popped empty stacks");
     }
 
     private pop(): StaxValue {
-        return this.mainStack.pop() || this.inputStack.pop() || fail("popped empty stacks");
+        if (this.mainStack.length) return this.mainStack.pop()!;
+        if (this.inputStack.length) return this.inputStack.pop()!;
+        throw new Error("popped empty stacks");
     }
 
     private popArray(): StaxArray {
@@ -1000,6 +1004,15 @@ export class Runtime {
                     case '|3':
                         this.runMacro("36|b"); // base 36
                         break;
+                    case '|7':
+                        this.push(Math.cos((this.pop() as StaxNumber).valueOf()));
+                        break;
+                    case '|8':
+                        this.push(Math.sin((this.pop() as StaxNumber).valueOf()));
+                        break;
+                    case '|9':
+                        this.push(Math.tan((this.pop() as StaxNumber).valueOf()));
+                        break;
                     case '|a':
                         if (isNumber(this.peek())) { // absolute value
                             let num = this.pop();
@@ -1152,7 +1165,8 @@ export class Runtime {
                     case '|L': {
                         let b = this.pop(), a = this.pop();
                         if (isNumber(b)) { // log with base
-                            this.push(Math.log(a.valueOf() as number) / Math.log(b.valueOf()));
+                            let result = Math.log(a.valueOf() as number) / Math.log(b.valueOf());
+                            this.push(result);
                         }
                         else if (isArray(b) && isArray(a)) { 
                             // combine elements from a and b, with each occurring the max of its occurrences from a and b
@@ -2587,7 +2601,7 @@ export class Runtime {
 
         let hardCodedTargetCount = false;
         if (lowerSpec === 'n') targetCount = this.popInt().valueOf();
-        else if (lowerSpec === 'e') targetCount = this.popInt().valueOf();
+        else if (lowerSpec === 'e') targetCount = this.popInt().valueOf() + 1;
         else if (lowerSpec === 's') [targetCount, hardCodedTargetCount] = [1, true];
         else {
             let idx = "1234567890!@#$%^&*()".indexOf(spec);
@@ -2633,7 +2647,6 @@ export class Runtime {
 
             if (!cancelled) {
                 let generated = this.peek();
-
                 let passed = true;
                 if (filter) {
                     this._ = generated;
