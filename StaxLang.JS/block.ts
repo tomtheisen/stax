@@ -56,6 +56,7 @@ function parseCore(program: string, wholeProgram: boolean): Block {
             case '|':
             case ':':
             case "'":
+            case 'g':
                 pushToken(program.substr(pos, 2));
                 pos += 2;
                 break;
@@ -90,7 +91,13 @@ function parseCore(program: string, wholeProgram: boolean): Block {
                 pushToken(b);
                 // implicit block terminator characters
                 if ("wWmfFkKgo".indexOf(program[pos]) >= 0) {
-                    pushToken(program[pos++]);
+                    if (program[pos] === "g") {
+                        pushToken(program.substr(pos, 2));
+                        pos += 2;
+                    }
+                    else {
+                        pushToken(program[pos++]);
+                    } 
                 }
                 break;
 

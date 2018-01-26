@@ -8,7 +8,7 @@ import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
 import { compress, decompress } from './huffmancompression';
 import { macroTrees, getTypeChar } from './macrotree';
-import { isBoolean } from 'util';
+import { isBoolean, error } from 'util';
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -224,6 +224,18 @@ export class Runtime {
                 else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
                 else if (token[0] === 'V') this.push(constants[token[1]]);
                 else if (token[0] === ':') this.doMacroAlias(token[1]);
+                else if (token[0] === 'g') { // generator
+                    // shorthand is indicated by
+                    //  no trailing block
+                    //  OR trailing block with explicit close }, in which case it's a filter
+                    let peeked = this.peek();
+                    let shorthand = !(peeked instanceof Block) 
+                        || (block as Block).contents[ip - 1] == '}';
+                    for (let s of this.doGenerator(shorthand, token[1], getRest())) {
+                        yield s;
+                    }
+                    if (shorthand) break;
+                }
                 else switch (token) {
                     case ' ':
                         break;
@@ -406,7 +418,7 @@ export class Runtime {
                         if (shorthand) return;
                         break;
                     }
-                    case 'F':{
+                    case 'F': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doFor(getRest())) ;
                         if (shorthand) return;
@@ -695,6 +707,10 @@ export class Runtime {
                         break;
                     case 'Z':
                         this.runMacro('0s');
+                        break;
+                    case '|?':
+                        if (block instanceof Block) this.push(S2A(block.contents));
+                        else this.push(S2A(block));
                         break;
                     case '| ':
                         this.print(' ', false);
@@ -1771,7 +1787,10 @@ export class Runtime {
                 }
             }
             else {
-                for (let d in number) result = result.multiply(base).add(d);
+                for (let d of number) {
+                    if (!isInt(d)) throw new Error("digits list contains a non-integer");
+                    result = result.multiply(base).add(d);
+                }
             }
             this.push(result);
         }
@@ -2459,11 +2478,14 @@ export class Runtime {
             this.popStackFrame();
             this.push(result);
         }
-        else if (isArray(this.peek())) {
-            let data = this.pop() as StaxArray, cancelled = false;
+        else {
+            let data = this.pop(), cancelled = false;
+            let arr = isArray(data) ? data 
+                : isInt(data) ? range(1, data.add(one))
+                : fail("bad type for shorthand filter data")
 
             this.pushStackFrame();
-            for (let e of data) {
+            for (let e of arr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(rest)) {
                     if (cancelled = s.cancel) break;
@@ -2474,7 +2496,6 @@ export class Runtime {
             }
             this.popStackFrame();
         }
-        else throw new Error("bad types in filter");
     }
 
     private *doMap(rest: string) {
@@ -2595,7 +2616,7 @@ export class Runtime {
             this._ = this.peek();
 
             if (this.index.isPositive() || postPop) {
-                if (genBlock != "" && (!(genBlock instanceof Block) || genBlock.contents !== "")) {
+                if (genBlock != "" && !(genBlock instanceof Block && genBlock.contents === "{")) {
                     for (let s of this.runSteps(genBlock)) {
                         if (s.cancel && stopOnCancel) genComplete = cancelled = true;
                         if (s.cancel) { 
@@ -2627,7 +2648,7 @@ export class Runtime {
 
                     if (!cancelled) {
                         passed = isTruthy(this.pop());
-                        this.push(generated); // put the gnerated element back
+                        this.push(generated); // put the generated element back
                         if (stopOnFilter && !passed) break;
                     }
                 }
