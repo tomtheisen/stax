@@ -115,6 +115,7 @@ class TestFiles{
 }
 
 function allFiles(dir: string): string[] {
+    if (fs.statSync(dir).isFile()) return [dir];
     let result: string[] = [];
     for (let f of fs.readdirSync(dir)) {
         let joined = path.join(dir, f);
