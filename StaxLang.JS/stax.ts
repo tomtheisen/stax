@@ -264,6 +264,7 @@ export class Runtime {
                         break;
                     case ',':
                         this.inputStack.length || fail("stack empty");
+                        console.log("about to input pop", this.inputStack);
                         this.push(this.inputStack.pop()!);
                         break;
                     case '#': {
@@ -498,6 +499,7 @@ export class Runtime {
                         }
                         break;
                     case 'i':
+                        console.log("doing index", this.index);
                         this.push(this.index);
                         break;
                     case 'I':
@@ -2403,6 +2405,7 @@ export class Runtime {
                 if (cancelled = s.cancel) break;
                 yield s;
             }
+            this.index = this.index.add(one);
         } while (!cancelled);
         this.popStackFrame();
     }
@@ -2417,6 +2420,7 @@ export class Runtime {
                 if (cancelled = s.cancel) break;
                 yield s;
             }
+            this.index = this.index.add(one);
         } while (!cancelled && isTruthy(this.pop()));
         this.popStackFrame();
     }
