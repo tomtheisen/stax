@@ -1,7 +1,8 @@
 import { Block, parseProgram } from './block';
 import { Runtime, ExecutionState } from './stax';
 import * as _ from 'lodash';
-import { readFileSync, readdirSync } from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 class TestCase {
     name: string;
@@ -17,9 +18,9 @@ class TestFiles{
     attempts: number = 0;
     passed: number = 0;
 
-    constructor(path: string, name: string) {
-        this.name = name;
-        let testFile = readFileSync(path + "/" + name, 'utf8'),
+    constructor(fullPath: string) {
+        this.name = path.basename(fullPath);
+        let testFile = fs.readFileSync(fullPath, 'utf8'),
             lines = testFile.split(/\r?\n/);
         this.cases = this.parse(lines);
     }
@@ -72,6 +73,7 @@ class TestFiles{
                 }
             }
         });
+        cases.push(currentCase);
         return cases;        
     }
 
@@ -112,11 +114,23 @@ class TestFiles{
     }
 }
 
+function allFiles(dir: string): string[] {
+    let result: string[] = [];
+    for (let f of fs.readdirSync(dir)) {
+        let joined = path.join(dir, f);
+        if (fs.statSync(joined).isDirectory()) {
+            result.push(...allFiles(joined));
+        }
+        else if (f.match(/.*\.staxtest/)) {
+            result.push(joined);
+        }
+    }
+    return result;
+}
+
 let testFiles: File[] = [];
-let path = process.argv[2];
-let tests = readdirSync(path, 'utf8')
-    .filter(file => file.match(/.*staxtest/))
-    .map(file => new TestFiles(path, file));
+let argpath = process.argv[2];
+let tests = allFiles(argpath).map(file => new TestFiles(file));
 tests.forEach(test => test.runCases());
 
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
