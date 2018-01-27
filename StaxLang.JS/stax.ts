@@ -1004,6 +1004,22 @@ export class Runtime {
                     case '|3':
                         this.runMacro("36|b"); // base 36
                         break;
+                    case '|5': { // 0-indexed fibonacci number
+                        let n = this.popInt().valueOf(), a = one, b = one;
+                        for (let i = 0; i < n; i++) [a, b] = [b, a.plus(b)];
+                        this.push(a);
+                        break;
+                    }
+                    case '|6': { // 0-indexed nth prime
+                        let i = 0, n = this.popInt().valueOf();
+                        for (let p of allPrimes()) {
+                            if (i++ === n) {
+                                this.push(p);
+                                break;
+                            }
+                        }
+                        break;
+                    }
                     case '|7':
                         this.push(Math.cos((this.pop() as StaxNumber).valueOf()));
                         break;
@@ -1654,7 +1670,7 @@ export class Runtime {
             return;
         }
         if (isFloat(top)) {
-            this.push(Math.floor(top));
+            this.push(bigInt(Math.floor(top)));
             return;
         }
 
@@ -1944,12 +1960,11 @@ export class Runtime {
                 result.push(...Array(top.valueOf() - result.length).fill(zero));
                 this.push(result);
             }
-            else if (isInt(data)) {
-                // binomial coefficient
+            else if (isInt(data)) { // binomial coefficient
                 let r = top, n = data, result = one;
                 if (n.isNegative() || r.gt(n)) result = zero;
                 for (let i = one; i.leq(r); i = i.add(one)) {
-                    result = result.multiply(n.subtract(i)).divide(i);
+                    result = result.multiply(n.subtract(i).add(one)).divide(i);
                 }
                 this.push(result);
             }
