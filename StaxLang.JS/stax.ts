@@ -180,6 +180,7 @@ export class Runtime {
         this.inputStack = _.reverse(stdin).map(S2A);
         this.y = _.last(this.inputStack) || [];
         this._ = S2A(stdin.join("\n"));
+        let implicitEval = false;
 
         if (stdin.length === 1) {
             if (!this.doEval()) {
@@ -190,9 +191,18 @@ export class Runtime {
                 this.inputStack = _.reverse(stdin).map(S2A);
             }
             else {
+                implicitEval = true;
                 this.x = this.mainStack[0];
                 [this.mainStack, this.inputStack] = [this.inputStack, this.mainStack];
             }
+        }
+
+        if (this.inputStack.length > 0 && !implicitEval) switch (program[0]) {
+            case 'm': // line-map
+            case 'f': // line-filter
+            case 'F': // line-for
+                this.runMacro("L");
+                break;
         }
 
         for (let s of this.runSteps(program)) yield s;
