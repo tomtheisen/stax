@@ -89,6 +89,12 @@ yyxxx
 -1
 	stax
 "Hello World" "Wr" I
+	in
+abc
+	out
+-1
+	stax
+'dI
 	name:ChunkString
 	in
 	out

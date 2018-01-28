@@ -2167,6 +2167,7 @@ export class Runtime {
                 return;
             }
         }
+        this.push(minusOne); // all else failed
     }
 
     private *doFindFirst(reverse = false) {
