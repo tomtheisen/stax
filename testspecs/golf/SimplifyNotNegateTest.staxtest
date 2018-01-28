@@ -33,37 +33,4 @@ x-1
 -x+1
 	stax
 %|e'-*'x+py{]'~=Ui^|**m|+cU>'+*pP
-	in
-x
-	out
-x+0
-	in
-~x
-	out
--x-1
-	in
--~x
-	out
-x+1
-	in
-~-~x
-	out
--x-2
-	in
--~-~x
-	out
-x+2
-	in
---~~x
-	out
-x+0
-	in
-~-x
-	out
-x-1
-	in
--~-x
-	out
--x+1
-	stax
 %|e'-*'x+py{5%Ui^|**m|+cU>'+*pP

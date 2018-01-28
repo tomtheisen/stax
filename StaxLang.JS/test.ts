@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 import * as fs from 'fs';
 import * as path from 'path';
 
+const TimeoutMs = 2000;
+
 class TestCase {
     name: string;
     io: {in: string[], expected: string[]}[] = [];
@@ -87,7 +89,12 @@ class TestFiles{
                     var rt = new Runtime(output.push.bind(output));
 
                     try {
-                        for (let s of rt.runProgram(prog.code, io.in));
+                        let i = 0, start = (new Date).valueOf();
+                        for (let s of rt.runProgram(prog.code, io.in)) {
+                            if (++i % 1000 === 0 && ((new Date).valueOf() - start) > TimeoutMs) {
+                                throw new Error(`Timeout in ${ i } steps`);
+                            }
+                        }
                     }
                     catch (e) {
                         console.error(e);
