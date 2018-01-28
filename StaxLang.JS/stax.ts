@@ -1864,10 +1864,10 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            a = _.clone(a);
+            a = [...a];
             let bval = b.valueOf();
-            if (bval < 0) b = b.add(a.length);
-            if (a.length < bval) a.unshift(..._.fill(Array(bval - a.length), zero));
+            if (bval < 0) bval += a.length;
+            if (a.length < bval) a.unshift(...Array(bval - a.length).fill(zero));
             if (a.length > bval) a.splice(0, a.length - bval);
             this.push(a);
         }
@@ -1919,7 +1919,7 @@ export class Runtime {
         if (isArray(a) && isInt(b)) {
             a = _.clone(a);
             let bval = b.valueOf();
-            if (bval < 0) b = b.add(a.length);
+            if (bval < 0) bval += a.length;
             if (a.length < bval) a.push(..._.fill(Array(bval - a.length), zero));
             if (a.length > bval) a.splice(bval);
             this.push(a);

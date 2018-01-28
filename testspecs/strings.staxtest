@@ -51,6 +51,12 @@ Hello
 xxxyy
 	stax
 (
+	in
+abc
+	out
+ab
+	stax
+U(
 	name:TruncateLeft
 	in
 Hello
@@ -71,6 +77,12 @@ Hello
 yyxxx
 	stax
 )
+	in
+abc
+	out
+bc
+	stax
+U)
 	name:FindIndex
 	in
 	out
