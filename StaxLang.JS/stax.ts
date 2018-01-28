@@ -1485,21 +1485,25 @@ export class Runtime {
         }
         else if (a instanceof Block && isInt(b)) {
             let block = a, times = b.valueOf();
-            for (let i = 0; i < times; i++) {
+            this.pushStackFrame();
+            for (this.index = zero; this.index.lt(times); this.index = this.index.add(one)) {
                 for (let s of this.runSteps(block)) {
                     if (s.cancel) break; 
                     yield s;
                 }
             }
+            this.popStackFrame();
         }
         else if (isInt(a) && b instanceof Block) {
             let block = b, times = a.valueOf();
-            for (let i = 0; i < times; i++) {
+            this.pushStackFrame();
+            for (this.index = zero; this.index.lt(times); this.index = this.index.add(one)) {
                 for (let s of this.runSteps(block)) {
                     if (s.cancel) break; 
                     yield s;
                 }
             }
+            this.popStackFrame();
         }
     }
 
