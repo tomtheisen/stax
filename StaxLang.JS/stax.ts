@@ -176,8 +176,9 @@ export class Runtime {
     }
 
     public *runProgram(program: string, stdin: string[]) {
+        stdin = [...stdin]; // copy for mutations
         while (stdin[0] === "") stdin.shift();
-        this.inputStack = _.reverse(stdin).map(S2A);
+        this.inputStack = stdin.reverse().map(S2A);
         this.y = _.last(this.inputStack) || [];
         this._ = S2A(stdin.join("\n"));
         let implicitEval = false;
@@ -185,10 +186,10 @@ export class Runtime {
         if (stdin.length === 1) {
             if (!this.doEval()) {
                 this.mainStack = [];
-                this.inputStack = _.reverse(stdin).map(S2A);
+                this.inputStack = stdin.reverse().map(S2A);
             }
             else if (this.totalSize() === 0) {
-                this.inputStack = _.reverse(stdin).map(S2A);
+                this.inputStack = stdin.reverse().map(S2A);
             }
             else {
                 implicitEval = true;
@@ -556,7 +557,7 @@ export class Runtime {
                         break;
                     }
                     case 'L':
-                        this.mainStack = [[..._.reverse(this.mainStack), ..._.reverse(this.inputStack)]];
+                        this.mainStack = [[...this.mainStack.reverse(), ...this.inputStack.reverse()]];
                         this.inputStack = [];
                         break;
                     case 'm': {
@@ -596,7 +597,7 @@ export class Runtime {
                     case 'r': {
                         let top = this.pop();
                         if (isInt(top)) this.push(range(0, top));
-                        else if (isArray(top)) this.push(_.reverse(top.slice()));
+                        else if (isArray(top)) this.push(top.slice().reverse());
                         else if (top instanceof Rational) this.push(top.numerator);
                         break;
                     }
@@ -1641,7 +1642,7 @@ export class Runtime {
         }
         else if (isArray(b)) {
             let result: StaxArray = [];
-            for (let e of _.reverse(b)) {
+            for (let e of b.slice().reverse()) {
                 result.push(...result.map(r => [e, ...r as StaxArray]), [e]);
             }
             result.reverse();
