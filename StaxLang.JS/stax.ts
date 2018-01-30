@@ -178,9 +178,9 @@ export class Runtime {
 
     public *runProgram(program: string, stdin: string[]) {
         if (isPacked(program)) program = unpack(program);
-        stdin = [...stdin]; // copy for mutations
+        stdin = [...stdin].reverse(); // copy for mutations
         while (stdin[0] === "") stdin.shift();
-        this.inputStack = stdin.reverse().map(S2A);
+        this.inputStack = stdin.map(S2A);
         this.y = _.last(this.inputStack) || [];
         this._ = S2A(stdin.join("\n"));
         let implicitEval = false;
