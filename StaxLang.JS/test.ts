@@ -34,7 +34,10 @@ class TestFiles{
 
         lines.forEach((fin, i) => {
             if (fin.startsWith("\tname:")) {
-                cases.push(currentCase = new TestCase());
+                if (currentCase.programs.length) {
+                    cases.push(currentCase);
+                    currentCase = new TestCase;
+                }
                 currentCase.name = fin.split(":", 2)[1];
                 mode = TestFileState.Name;
             }
@@ -42,7 +45,8 @@ class TestFiles{
             else if (fin === "\tin") {
                 if (mode === TestFileState.Code) {
                     let lastName = currentCase.name;
-                    cases.push(currentCase = new TestCase);
+                    cases.push(currentCase);
+                    currentCase = new TestCase;
                     currentCase.name = lastName;
                 }
                 currentCase.io.push({ in: [], expected: [] });
@@ -51,7 +55,8 @@ class TestFiles{
             else if (fin === "\tout") {
                 if (mode === TestFileState.Code) {
                     let lastName = currentCase.name;
-                    cases.push(currentCase = new TestCase);
+                    cases.push(currentCase);
+                    currentCase = new TestCase;
                     currentCase.name = lastName;
                 }
                 if(!currentCase.io.length)
@@ -75,7 +80,7 @@ class TestFiles{
                 }
             }
         });
-        cases.push(currentCase);
+        if (currentCase.programs.length) cases.push(currentCase);
         return cases;        
     }
 

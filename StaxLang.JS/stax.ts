@@ -206,14 +206,15 @@ export class Runtime {
                 break;
         }
 
-        for (let s of this.runSteps(program)) yield s;
+        let block = this.program = parseProgram(program);
+        for (let s of this.runSteps(block)) yield s;
 
         if (this.outBuffer) this.print("");
         if (!this.producedOutput) this.print(this.pop());
     }
 
     private *runSteps(block: Block | string): IterableIterator<ExecutionState> {
-        if (typeof block === "string") block = this.program = parseProgram(block);
+        if (typeof block === "string") block = parseProgram(block);
 
         let ip = 0;
 

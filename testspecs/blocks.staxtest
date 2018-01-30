@@ -246,3 +246,10 @@ fie
 1234 2345 4589
 	stax
 {>} ) J
+	name:Goto
+	out
+foo
+bar
+foo
+	stax
+G"bar"PG}"foo"P
