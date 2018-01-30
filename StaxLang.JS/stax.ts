@@ -1,5 +1,6 @@
 import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, runLength, areEqual, indexOf, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
+import { unpack, unpackBytes, isPacked } from './packer';
 import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
@@ -176,6 +177,7 @@ export class Runtime {
     }
 
     public *runProgram(program: string, stdin: string[]) {
+        if (isPacked(program)) program = unpack(program);
         stdin = [...stdin]; // copy for mutations
         while (stdin[0] === "") stdin.shift();
         this.inputStack = stdin.reverse().map(S2A);
