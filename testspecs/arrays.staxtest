@@ -39,9 +39,11 @@ ABC CAB BCA
 :) J
 	name:ZipShort
 	in
+"abcd" "xyz"
 	out
 ax by cz
 	stax
+|\J
 	name:ZeroRange
 	in
 	out

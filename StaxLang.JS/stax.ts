@@ -31,6 +31,12 @@ function range(start: number | BigInteger, end: number | BigInteger): StaxArray 
     return _.range(start.valueOf(), end.valueOf()).map(n => bigInt(n));
 }
 
+class EarlyTerminate extends Error {
+    constructor(msg: string) {
+        super(msg);
+    }
+}
+
 export class Runtime {
     private lineOut: (line: string) => void;
     private outBuffer = ""; // unterminated line output
@@ -58,13 +64,13 @@ export class Runtime {
     private peek(): StaxValue {
         if (this.mainStack.length) return _.last(this.mainStack)!;
         if (this.inputStack.length) return _.last(this.inputStack)!;
-        throw new Error("popped empty stacks");
+        throw new EarlyTerminate("peeked empty stax");
     }
 
     private pop(): StaxValue {
         if (this.mainStack.length) return this.mainStack.pop()!;
         if (this.inputStack.length) return this.inputStack.pop()!;
-        throw new Error("popped empty stacks");
+        throw new EarlyTerminate("popped empty stax");
     }
 
     private popArray(): StaxArray {
@@ -185,7 +191,8 @@ export class Runtime {
         this._ = S2A(stdin.join("\n"));
         let implicitEval = false;
 
-        if (stdin.length === 1) {
+        // starting 'i' suppresses eval
+        if (stdin.length === 1 && !program.startsWith('i')) {
             if (!this.doEval()) {
                 this.mainStack = [];
                 this.inputStack = stdin.reverse().map(S2A);
@@ -209,7 +216,13 @@ export class Runtime {
         }
 
         let block = this.program = parseProgram(program);
-        for (let s of this.runSteps(block)) yield s;
+        try {
+            for (let s of this.runSteps(block)) yield s;
+        }
+        catch (e) {
+            if (e instanceof EarlyTerminate) {} // proceed 
+            else throw e;
+        }
 
         if (this.outBuffer) this.print("");
         if (!this.producedOutput) this.print(this.pop());
@@ -263,11 +276,11 @@ export class Runtime {
                         this.inputStack.push(this.pop());
                         break;
                     case ';':
-                        this.inputStack.length || fail("stack empty");
+                        if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
                         this.push(_.last(this.inputStack)!);
                         break;
                     case ',':
-                        this.inputStack.length || fail("stack empty");
+                        if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
                         this.push(this.inputStack.pop()!);
                         break;
                     case '#': {
@@ -502,7 +515,8 @@ export class Runtime {
                         }
                         break;
                     case 'i':
-                        this.push(this.index);
+                        // leading i suppresses eval, which is already taken care of
+                        if (this.callStackFrames.length) this.push(this.index);
                         break;
                     case 'I':
                         for (let s of this.doIndexOf()) yield s;
