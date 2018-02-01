@@ -244,8 +244,8 @@ export class Runtime {
                 continue;
             }
             else {
-                if (!!token.match(/\d+!/)) this.push(parseFloat(token.replace("!", ".")));
-                else if (!!token[0].match(/\d/)) this.push(bigInt(token));
+                if (!!token.match(/^\d+!/)) this.push(parseFloat(token.replace("!", ".")));
+                else if (!!token[0].match(/^\d/)) this.push(bigInt(token));
                 else if (token[0] === '"') this.doEvaluateStringToken(token);
                 else if (token[0] === '`') {
                     let compressed = token.replace(/^`|`$/g, '');
