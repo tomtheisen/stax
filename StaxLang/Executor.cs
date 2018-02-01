@@ -3223,7 +3223,7 @@ namespace StaxLang {
             bool shorthand = false;
             Block map;
             if (IsBlock(Peek())) {
-                block.AddDesc("cross-map arrays a and b into result; output[i,j] = f(a[i], b[i])");
+                block.AddDesc("cross-map arrays a and b into result; output[i,j] = f(a[i], b[j])");
                 map = Pop();
             }
             else {
