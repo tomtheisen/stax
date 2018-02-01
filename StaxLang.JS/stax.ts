@@ -216,8 +216,18 @@ export class Runtime {
         }
 
         let block = this.program = parseProgram(program);
+        let steps = 0;
         try {
-            for (let s of this.runSteps(block)) yield s;
+            for (let s of this.runSteps(block)) {
+                yield s;
+                steps += 1;
+            }
+            while (this.totalSize() && this.peek() instanceof Block) {
+                for (let s of this.runSteps(this.pop() as Block)) {
+                    if (s.cancel) break;
+                    steps += 1;
+                }
+            }
         }
         catch (e) {
             if (e instanceof EarlyTerminate) {} // proceed 
