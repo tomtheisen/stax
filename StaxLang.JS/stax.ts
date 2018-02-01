@@ -2260,7 +2260,8 @@ export class Runtime {
     private *doOrder() {
         let top = this.pop();
         if (isArray(top)) {
-            this.push(_.sortBy(top, (n: StaxValue) => n));
+            let result = [...top].sort(compare);
+            this.push(result);
             return;
         }
         if (top instanceof Block) {
@@ -2277,7 +2278,7 @@ export class Runtime {
             }
             this.popStackFrame();
 
-            let result: StaxArray = _.sortBy(combined, t => t.key).map(t => t.val);
+            let  result = combined.sort((a, b) => compare(a.key, b.key)).map(t => t.val);
             this.push(result);
         }
         else throw new Error("bad types for order");
