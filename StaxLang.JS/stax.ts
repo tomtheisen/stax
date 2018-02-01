@@ -1449,7 +1449,6 @@ export class Runtime {
     }
 
     private doMinus() {
-        if (this.totalSize() === 1) return;
         let b = this.pop(), a = this.pop();
         if (isArray(a) && isArray(b)) {
             let bArr = b;
@@ -1525,7 +1524,6 @@ export class Runtime {
     }
 
     private *doSlash() {
-        if (this.totalSize() < 2) return;
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;

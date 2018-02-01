@@ -24,7 +24,7 @@ export function A2S(a: StaxArray): string {
     for (let e of a) {
         if (isInt(e)) result += e.isZero() ? ' ' : String.fromCodePoint(e.valueOf());
         else if (isArray(e)) result += A2S(e);
-        else throw `can't convert ${e} to string`;
+        else throw new Error(`can't convert ${e} to string`);
     }
     return result;
 }
