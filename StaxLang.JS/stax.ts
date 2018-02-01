@@ -2260,25 +2260,29 @@ export class Runtime {
     private *doOrder() {
         let top = this.pop();
         if (isArray(top)) {
-            let result = [...top].sort(compare);
+            let result = top.map((val, idx) => ({ val, idx }))
+                .sort((a, b) => compare(a.val, b.val) || a.idx - b.idx)
+                .map(t => t.val);
             this.push(result);
             return;
         }
         if (top instanceof Block) {
-            let arr = this.pop();
+            let arr = this.pop(), i = 0;
             if (!isArray(arr)) throw new Error("expected array for order");
-            let combined: {val: StaxValue, key: StaxValue}[] = [];
+            let combined: {val: StaxValue, key: StaxValue, idx: number}[] = [];
 
             this.pushStackFrame();
             for (let e of arr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(top)) yield s;
-                combined.push({val: e, key: this.pop()});
+                combined.push({val: e, key: this.pop(), idx: i++});
                 this.index = this.index.add(one);
             }
             this.popStackFrame();
 
-            let  result = combined.sort((a, b) => compare(a.key, b.key)).map(t => t.val);
+            let result = combined
+                .sort((a, b) => compare(a.key, b.key) || a.idx - b.idx)
+                .map(t => t.val);
             this.push(result);
         }
         else throw new Error("bad types for order");
