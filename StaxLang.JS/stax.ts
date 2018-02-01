@@ -151,7 +151,7 @@ export class Runtime {
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     let substring = arg.substr(i);
-                    let match = substring.match(/-?\d+\.\d+/);
+                    let match = substring.match(/^-?\d+\.\d+/);
                     if (match) {
                         newValue(parseFloat(match[0]));
                         i += match[0].length - 1;

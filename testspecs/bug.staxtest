@@ -393,3 +393,17 @@ L {^o m
 z
 	stax
 `0`
+	name:EvalMinusFloats
+	in
+-1.5
+	out
+-2.5
+	stax
+v
+	in
+[0,-0.5]
+	out
+0
+-0.5
+	stax
+m
