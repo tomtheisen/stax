@@ -4,7 +4,7 @@
   "description": "Stax Golfing Language",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json",
+    "build": "tsc -p ./tsconfig.json && webpack",
     "test": "npm run build && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
@@ -20,6 +20,7 @@
     "url": "https://github.com/tomtheisen/stax/"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.80"
+    "@types/lodash": "^4.14.80",
+    "webpack": "^3.10.0"
   }
 }
