@@ -407,3 +407,12 @@ v
 -0.5
 	stax
 m
+	name:RawInputString
+	in
+ab
+cd
+	out
+ab
+cd
+	stax
+_

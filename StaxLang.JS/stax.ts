@@ -184,11 +184,11 @@ export class Runtime {
 
     public *runProgram(program: string, stdin: string[]) {
         if (isPacked(program)) program = unpack(program);
+        this._ = S2A(stdin.join("\n"));
         stdin = [...stdin].reverse(); // copy for mutations
         while (stdin[0] === "") stdin.shift();
         this.inputStack = stdin.map(S2A);
         this.y = _.last(this.inputStack) || [];
-        this._ = S2A(stdin.join("\n"));
         let implicitEval = false;
 
         // starting 'i' suppresses eval
