@@ -8,7 +8,9 @@
     "test": "npm run build && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
-  "contributors": ["Daniel Mayorga"],
+  "contributors": [
+    "Daniel Mayorga"
+  ],
   "license": "WTFPL",
   "dependencies": {
     "@types/node": "^8.0.47",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.80",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-closure-compiler": "^2.1.6"
   }
 }
