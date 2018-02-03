@@ -217,17 +217,10 @@ export class Runtime {
         }
 
         let block = this.program = parseProgram(program);
-        let steps = 0;
         try {
-            for (let s of this.runSteps(block)) {
-                yield s;
-                steps += 1;
-            }
+            for (let s of this.runSteps(block)) yield s;
             while (this.totalSize() && this.peek() instanceof Block) {
-                for (let s of this.runSteps(this.pop() as Block)) {
-                    if (s.cancel) break;
-                    steps += 1;
-                }
+                for (let s of this.runSteps(this.pop() as Block)) { }
             }
         }
         catch (e) {
@@ -462,7 +455,7 @@ export class Runtime {
                     }
                     case 'F': {
                         let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doFor(getRest())) ;
+                        for (let s of this.doFor(getRest())) yield s;
                         if (shorthand) return;
                         break;
                     }

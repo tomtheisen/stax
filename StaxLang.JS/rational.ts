@@ -73,7 +73,7 @@ export class Rational {
     }
 
     private reduce() {
-        if (this.denominator.isZero()) throw "rational divide by zero";
+        if (this.denominator.isZero()) throw new Error("rational divide by zero");
         let gcd = bigInt.gcd(this.numerator, this.denominator);
         this.numerator = this.numerator.divide(gcd);
         this.denominator = this.denominator.divide(gcd);
