@@ -1,6 +1,5 @@
 const path = require('path');
-//const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const ClosureCompilerPlugin = require('webpack-closure-compiler');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
     entry: './js/ui.js',
@@ -9,9 +8,6 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     plugins: [
-      //new UglifyJSPlugin()
-        new ClosureCompilerPlugin({
-            jsCompiler: true  
-        })
+        new UglifyJSPlugin()
     ]
 };
