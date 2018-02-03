@@ -1,20 +1,40 @@
 import { Runtime, ExecutionState } from './stax'
+import { setTimeout } from 'timers';
 
-let runButton = document.getElementsByTagName("button")[0];
+const runButton = document.getElementsByTagName("button")[0];
+const codeArea = document.getElementById("code") as HTMLTextAreaElement;
+const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
+const statusEl = document.getElementById("status") as HTMLDivElement;
+const outputEl = document.getElementById("output") as HTMLDivElement;
+
+let activeStateIterator: Iterator<ExecutionState> | null = null;
+let steps = 0, start = 0, output: string[] = [];
+
+function iterateProgramState() {
+    if (!activeStateIterator) return;
+
+    steps += 1;
+    let elapsed = Math.ceil(new Date().valueOf() - start);
+    statusEl.innerText = `${ steps } steps, ${ elapsed }ms`;
+
+    let result = activeStateIterator.next();
+    if (result.done) {
+        outputEl.innerText = output.join("\n");
+    }
+    else {
+        setTimeout(iterateProgramState, 0);
+    }
+}
 
 runButton.addEventListener("click", () => {
-    let output: string[] = [];
-    let rt = new Runtime(output.push.bind(output)), steps = 0;
-    let code = (document.getElementById("code") as HTMLTextAreaElement).value;
-    let stdin = (document.getElementById("stdin") as HTMLTextAreaElement).value.split("\n");
+    output = []; 
+    steps = 0;
+    start = new Date().valueOf();
 
-    let start = new Date;
-    for (let s of rt.runProgram(code, stdin)) steps += 1;
-    let end = new Date;
-
-    let msg = `${ steps } steps, ${ Math.round(end.valueOf() - start.valueOf()) }ms`;
-    (document.getElementById("status") as HTMLDivElement).innerText = msg;
-
-
-    (document.getElementById("output") as HTMLDivElement).innerText = output.join("\n");
+    let rt = new Runtime(output.push.bind(output));
+    let code = codeArea.value;
+    let stdin = inputArea.value.split("\n");
+    activeStateIterator = rt.runProgram(code, stdin);
+    
+    iterateProgramState();
 });
