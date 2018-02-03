@@ -69,7 +69,7 @@ export class Rational {
     }
 
     equals(other: Rational) {
-        return this.numerator === other.numerator && this.denominator === other.denominator;
+        return this.numerator.eq(other.numerator) && this.denominator.eq(other.denominator);
     }
 
     private reduce() {

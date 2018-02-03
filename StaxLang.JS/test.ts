@@ -1,6 +1,6 @@
 import { Block, parseProgram } from './block';
 import { Runtime, ExecutionState } from './stax';
-import * as _ from 'lodash';
+import { last } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -69,10 +69,10 @@ class TestFiles{
             else {
                 switch (mode) {
                     case TestFileState.In:
-                        _.last(currentCase!.io)!.in.push(fin);
+                        last(currentCase!.io)!.in.push(fin);
                         break;
                     case TestFileState.Out:
-                        _.last(currentCase!.io)!.expected.push(fin);
+                        last(currentCase!.io)!.expected.push(fin);
                         break;
                     case TestFileState.Code:
                         currentCase!.programs.push({ line: i + 1, code: fin });

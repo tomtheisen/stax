@@ -1,6 +1,7 @@
-import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import englishData from './englishhuffman';
+import { last } from './types';
+
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -54,7 +55,7 @@ function setup() {
                 while (path[idx] === '1') idx--;
                 path = path.substr(0, idx) + '1';
             }
-            path += _.repeat('0', zeroes);
+            path += '0'.repeat(zeroes);
 
             trees[prefix].populate(path, ch);
         }
@@ -70,7 +71,7 @@ export function compress(input: string): string | null {
         let tree = trees[input.substr(i - 2, 2)], cpath = tree.findPath(input[i]);
         if (!cpath) return null;
         if (i === input.length - 1) {
-            while (cpath.length >= 2 && _.last(cpath) === '0') {
+            while (cpath.length >= 2 && cpath[cpath.length - 1] === '0') {
                 cpath = cpath.substr(0, cpath.length - 1);
             }
         }

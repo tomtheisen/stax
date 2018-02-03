@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { last } from './types';
 
 export class Block {
     contents: string;
@@ -23,7 +23,7 @@ export class Program extends Block {
     }
 
     getGotoTarget(callDepth: number): Block {
-        return this.gotoTargets[callDepth] || _.last(this.gotoTargets) || this;
+        return this.gotoTargets[callDepth] || last(this.gotoTargets) || this;
     }
 }
 
@@ -38,7 +38,7 @@ function parseCore(program: string, wholeProgram: boolean): Block {
     let gotoTargets: (string | Block)[][] = [];
 
     function pushToken(token: string | Block) {
-        (_.last(gotoTargets) || blockTokens).push(token);
+        (last(gotoTargets) || blockTokens).push(token);
     }
 
     let pos = 0;

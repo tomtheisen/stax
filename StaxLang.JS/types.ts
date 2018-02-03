@@ -1,5 +1,4 @@
 import * as bigInt from 'big-integer';
-import * as _ from 'lodash';
 import { Rational } from './rational';
 import { Block } from './block';
 type BigInteger = bigInt.BigInteger;
@@ -53,12 +52,16 @@ export function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
 }
 
+export function last<T>(arr: T[]): T | undefined {
+    return arr[arr.length - 1];
+}
+
 export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
-    if (_.some(nums, isFloat)) {
-        return _.map(nums, floatify);
+    if (nums.some(isFloat)) {
+        return nums.map(floatify);
     }
-    if (_.some(nums, n => n instanceof Rational)) {
-        return _.map(nums, n => n instanceof Rational ? n : new Rational(n as BigInteger, bigInt.one));
+    if (nums.some(n => n instanceof Rational)) {
+        return nums.map(n => n instanceof Rational ? n : new Rational(n as BigInteger, bigInt.one));
     }
     return nums;
 }
@@ -80,7 +83,13 @@ export function runLength(arr: StaxArray): StaxArray {
 }
 
 export function areEqual(a: StaxValue, b: StaxValue) {
-    if (isArray(a) && isArray(b)) return _.isEqual(a, b);
+    if (isArray(a) && isArray(b)) {
+        if (a.length != b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+            if (!areEqual(a[i], b[i])) return false;
+        }
+        return true;
+    }
     if (isArray(a)) a = a[0];
     if (isArray(b)) b = b[0];
     if (isNumber(a) && isNumber(b)) {

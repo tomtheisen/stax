@@ -1,7 +1,6 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, A2S, S2A, floatify, constants, widenNumbers, runLength, areEqual, indexOf, compare, stringFormat } from './types';
+import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, last, A2S, S2A, floatify, constants, widenNumbers, runLength, areEqual, indexOf, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, unpackBytes, isPacked } from './packer';
-import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
@@ -28,7 +27,9 @@ function fail(msg: string): never {
 }
 
 function range(start: number | BigInteger, end: number | BigInteger): StaxArray {
-    return _.range(start.valueOf(), end.valueOf()).map(n => bigInt(n));
+    let result: StaxArray = [];
+    for (let e = start.valueOf(); e < end.valueOf(); e++) result.push(bigInt(e));
+    return result;
 }
 
 class EarlyTerminate extends Error {
@@ -62,8 +63,8 @@ export class Runtime {
     }
 
     private peek(): StaxValue {
-        if (this.mainStack.length) return _.last(this.mainStack)!;
-        if (this.inputStack.length) return _.last(this.inputStack)!;
+        if (this.mainStack.length) return last(this.mainStack)!;
+        if (this.inputStack.length) return last(this.inputStack)!;
         throw new EarlyTerminate("peeked empty stax");
     }
 
@@ -129,7 +130,7 @@ export class Runtime {
         let activeArrays: StaxArray[] = [];
 
         const newValue = (val: StaxValue) => {
-            if (activeArrays.length) _.last(activeArrays)!.push(val);
+            if (activeArrays.length) last(activeArrays)!.push(val);
             else this.push(val);
         };
 
@@ -188,7 +189,7 @@ export class Runtime {
         stdin = [...stdin].reverse(); // copy for mutations
         while (stdin[0] === "") stdin.shift();
         this.inputStack = stdin.map(S2A);
-        this.y = _.last(this.inputStack) || [];
+        this.y = last(this.inputStack) || [];
         let implicitEval = false;
 
         // starting 'i' suppresses eval
@@ -287,7 +288,7 @@ export class Runtime {
                         break;
                     case ';':
                         if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
-                        this.push(_.last(this.inputStack)!);
+                        this.push(last(this.inputStack)!);
                         break;
                     case ',':
                         if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
@@ -501,13 +502,12 @@ export class Runtime {
                         else if (isArray(this.peek())) {
                             let arr = this.popArray();
                             if (arr.length === 0) fail("empty array has no last element");
-                            this.push(_.last(arr)!);
+                            this.push(last(arr)!);
                         }
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
-                            arr = _.clone(arr); 
-                            arr.reverse();
+                            arr = [...arr].reverse();
                             
                             this.pushStackFrame();
                             for (let e of arr) {
@@ -577,7 +577,7 @@ export class Runtime {
                         }
                         else if (isInt(a)) {
                             let result: StaxArray = [];
-                            _.times(a.valueOf(), () => result.unshift(this.pop()));
+                            for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
                             this.push(result);
                         }
                         else throw new Error("bad types for l");
@@ -649,7 +649,7 @@ export class Runtime {
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result = this.pop(), cancelled = false;
                             if (!isArray(result)) throw new Error("bad types for trim");
-                            result = _.clone(result);
+                            result = [...result];
 
                             this.pushStackFrame();
                             while (result.length) {
@@ -676,11 +676,11 @@ export class Runtime {
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result = this.pop(), cancelled = false;
                             if (!isArray(result)) throw new Error("bad types for trim");
-                            result = _.clone(result);
+                            result = [...result];
 
                             this.pushStackFrame();
                             while (result.length) {
-                                this.push(this._ = _.last(result)!);
+                                this.push(this._ = last(result)!);
                                 for (let s of this.runSteps(pred)) {
                                     if (cancelled = s.cancel) break;
                                     yield s;
@@ -841,8 +841,8 @@ export class Runtime {
                             if (isArray(a)) {
                                 let result: StaxArray = [[]], els = a;
                                 for (let i = 0; b.gt(i); i++) {
-                                    result = _.flatten(
-                                        result.map((r: StaxArray) => els.map(e => [...r, e])));
+                                    result = ([] as StaxArray).concat(
+                                        ...result.map((r: StaxArray) => els.map(e => [...r, e])))
                                 }
                                 this.push(result);
                             }
@@ -1462,7 +1462,7 @@ export class Runtime {
         let b = this.pop(), a = this.pop();
         if (isArray(a) && isArray(b)) {
             let bArr = b;
-            let result = a.filter(a_ => !_.some(bArr, b_ => areEqual(a_, b_)));
+            let result = a.filter(a_ => !bArr.some(b_ => areEqual(a_, b_)));
             this.push(result);
         }
         else if (isArray(a)) {
@@ -1557,7 +1557,7 @@ export class Runtime {
         else if (isArray(a) && isInt(b)) {
             let result = [];
             for (let i = 0; i < a.length; i += b.valueOf()) {
-                result.push(_.slice(a, i, i + b.valueOf()));
+                result.push(a.slice(i, i + b.valueOf()));
             }
             this.push(result);
         }
@@ -1782,7 +1782,7 @@ export class Runtime {
                     if (!isArray(target[idx])) target[idx] = [ target[idx] ];
                     target = target[idx] as StaxArray;
                 }
-                idx = _.last(idxPath)!.valueOf() as number;
+                idx = last(idxPath)!.valueOf() as number;
                 doFinalAssign(target, idx);
             }
             else if (isInt(arg)) {
@@ -1946,10 +1946,10 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            a = _.clone(a);
+            a = [...a];
             let bval = b.valueOf();
             if (bval < 0) bval += a.length;
-            if (a.length < bval) a.push(..._.fill(Array(bval - a.length), zero));
+            if (a.length < bval) a.push(...Array(bval - a.length).fill(zero));
             if (a.length > bval) a.splice(bval);
             this.push(a);
         }
@@ -2046,7 +2046,7 @@ export class Runtime {
         if (!isInt(b) || !isArray(a)) throw new Error("bad types for overlapping-batch");
 
         let bv = b.valueOf(), end = a.length - bv + 1;
-        for (let i = 0; i < end; i++) result.push(_.slice(a, i, i + bv));
+        for (let i = 0; i < end; i++) result.push(a.slice(i, i + bv));
         this.push(result);
     }
 
@@ -2055,7 +2055,7 @@ export class Runtime {
 
         for (; i < a.length; i++) {
             if (isArray(b)) {
-                if (!_.some(b, e => areEqual(e, a[i]))) break;
+                if (!b.some(e => areEqual(e, a[i]))) break;
             } 
             else {
                 if (!areEqual(a[i], b)) break;
@@ -2071,7 +2071,7 @@ export class Runtime {
         
         for (; i >= 0; i--) {
             if (isArray(b)) {
-                if (!_.some(b, e => areEqual(e, a[i]))) break;
+                if (!b.some(e => areEqual(e, a[i]))) break;
             }
             else {
                 if (!areEqual(a[i], b)) break;
@@ -2147,7 +2147,7 @@ export class Runtime {
         distance = distance.mod(arr.length);
         if (distance.isNegative()) distance = distance.add(arr.length);
         let cutpoint = direction < 0 ? distance.valueOf() : (arr.length - distance.valueOf());
-        let result = _.slice(arr, cutpoint).concat(_.slice(arr, 0, cutpoint));
+        let result = arr.slice(cutpoint).concat(arr.slice(0, cutpoint));
         this.push(result);
     }
 
@@ -2203,10 +2203,7 @@ export class Runtime {
         let pred = this.pop(), arr = this.pop(), cancelled = false;
         if (!(pred instanceof Block) || !isArray(arr)) throw new Error("bad types for find-first");
 
-        if (reverse) {
-            arr = _.clone(arr);
-            arr.reverse();
-        }
+        if (reverse) arr = [...arr].reverse();
 
         this.pushStackFrame();
         for (let e of arr) {
@@ -2249,11 +2246,11 @@ export class Runtime {
         else if (isArray(top)) {
             if (top.length > 0 && !isArray(top[0])) top = [top];
             let result: StaxArray = [];
-            let maxlen = _.max(top.map(e => (e as StaxArray).length))!;
+            let maxlen = Math.max(...top.map(e => (e as StaxArray).length));
 
             for (let line of top) {
                 line = line as StaxArray;
-                line.push(..._.fill(Array(maxlen - line.length), zero));
+                line.push(...Array(maxlen - line.length).fill(zero));
             }
 
             for (let i = 0; i < maxlen; i++) {
@@ -2467,7 +2464,7 @@ export class Runtime {
         else [block, arr] = [rest, top];
 
         if (isInt(arr)) arr = range(one, arr.add(one));
-        else if (isArray(arr)) arr = _.clone(arr);
+        else if (isArray(arr)) arr = [...arr];
 
         if (isArray(arr)) {
             if (arr.length === 0) throw new Error("tried to reduce empty array");
@@ -2758,11 +2755,11 @@ export class Runtime {
         this.popStackFrame();
 
         if (shorthand) {
-            if (scalarMode) this.print(_.last(result)!);
+            if (scalarMode) this.print(last(result)!);
             else for (let e of result) this.print(e);
         }
         else {
-            if (scalarMode) this.push(_.last(result)!);
+            if (scalarMode) this.push(last(result)!);
             else this.push(result);
         }
     }
@@ -2773,7 +2770,7 @@ export class Runtime {
         // follow type tree as far as necessary
         while (typeTree.hasChildren()) {
             resPopped.push(this.pop());
-            let type = getTypeChar(_.last(resPopped)!);
+            let type = getTypeChar(last(resPopped)!);
             typeTree = typeTree.children![type];
         }
         // return inspected values to stack

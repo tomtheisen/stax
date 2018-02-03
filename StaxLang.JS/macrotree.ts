@@ -1,8 +1,6 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber } from './types';
+import { StaxArray, StaxNumber, StaxValue, last, isArray, isFloat, isInt, isNumber } from './types';
 import { Block } from './block';
 import { Rational } from './rational';
-
-import * as _ from 'lodash';
 
 type NodeChildren = {[key: string]: MacroTreeNode};
 
@@ -24,7 +22,7 @@ export class MacroTreeNode {
         if (types.length === 0) throw new Error("not enough types");
         if (types.length === 1) this.children![types[0]] = new MacroTreeNode(code);
         else {
-            let key = _.last(types)!;
+            let key = types[types.length - 1];
             if (!(key in this.children!)) this.children![key] = new MacroTreeNode;
             this.children![key].addMacro(types.substr(0, types.length - 1), code);
         }

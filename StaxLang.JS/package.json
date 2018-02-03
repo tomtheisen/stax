@@ -14,15 +14,13 @@
   "license": "WTFPL",
   "dependencies": {
     "@types/node": "^8.0.47",
-    "big-integer": "^1.6.25",
-    "lodash": "^4.17.4"
+    "big-integer": "^1.6.25"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/tomtheisen/stax/"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.80",
     "uglifyjs-webpack-plugin": "^1.1.8",
     "webpack": "^3.10.0"
   }

@@ -1,5 +1,6 @@
-import * as _ from 'lodash';
 import * as bigInt from 'big-integer';
+import { last } from './types';
+
 type BigInteger = bigInt.BigInteger;
 const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 
@@ -26,7 +27,7 @@ export function *allPrimes() {
 }
 
 function addPrime(): BigInteger {
-    for (let c = _.last(primes)!.add(bigInt[2]);; c = c.add(bigInt[2])) {
+    for (let c = last(primes)!.add(bigInt[2]);; c = c.add(bigInt[2])) {
         for (let p of allPrimes()) {
             if (c.isDivisibleBy(p)) break;
             if (p.square().greater(c)) {
