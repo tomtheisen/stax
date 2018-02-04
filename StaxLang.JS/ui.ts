@@ -10,6 +10,7 @@ const codeArea = document.getElementById("code") as HTMLTextAreaElement;
 const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLDivElement;
 const outputEl = document.getElementById("output") as HTMLPreElement;
+const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
@@ -39,3 +40,20 @@ runButton.addEventListener("click", () => {
 
     iterateProgramState();
 });
+
+function load() {
+    let params = new URLSearchParams(location.search);
+    if (params.has('c')) codeArea.value = params.get('c')!;
+    if (params.has('i')) inputArea.value = params.get('i')!;
+}
+load();
+
+function updateStats() {
+    let params = new URLSearchParams;
+    params.set('c', codeArea.value);
+    params.set('i', inputArea.value);
+    saveLink.href = params.toString();
+}
+
+codeArea.addEventListener("change", updateStats);
+inputArea.addEventListener("change", updateStats);
