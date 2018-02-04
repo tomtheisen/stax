@@ -272,6 +272,7 @@ export class Runtime {
                     if (shorthand) break;
                 }
                 else switch (token) {
+                    case '\n':
                     case ' ':
                         break;
                     case '}':

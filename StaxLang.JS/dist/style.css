@@ -1,7 +1,24 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: sans-serif;
+    margin: 1em;
+    background-color: #e1e5f1;
 }
 
 textarea {
+    font-family: monospace;
+    width: 100%;
+    resize: vertical;
+}
+
+h2 {
+    margin: 0.5em 0 0 0;
+    font-size: 13pt;
+}
+
+#compressorOutput {
     font-family: monospace;
 }
