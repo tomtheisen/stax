@@ -1,14 +1,15 @@
-import { Runtime, ExecutionState } from './stax'
+import { Runtime, ExecutionState } from './stax';
 import { setTimeout } from 'timers';
+import { pendWork } from './timeoutzero';
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 20;
 
-const runButton = document.getElementsByTagName("button")[0];
+const runButton = document.getElementById("run") as HTMLButtonElement;
 const codeArea = document.getElementById("code") as HTMLTextAreaElement;
 const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLDivElement;
-const outputEl = document.getElementById("output") as HTMLDivElement;
+const outputEl = document.getElementById("output") as HTMLPreElement;
 
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
@@ -21,11 +22,10 @@ function iterateProgramState() {
         steps += 1;
         if(performance.now() - sliceStart > workMilliseconds) break;
     }
-    
     if (!result.done) pendWork(iterateProgramState);
     
     let elapsed = Math.ceil(performance.now() - start);
-    statusEl.innerText = `${ steps } steps, ${ elapsed }ms`;
+    statusEl.textContent = `${ steps } steps, ${ elapsed }ms`;
 }
 
 runButton.addEventListener("click", () => {
@@ -33,25 +33,9 @@ runButton.addEventListener("click", () => {
     start = performance.now();
     outputEl.textContent = "";
 
+    let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
     let rt = new Runtime(line => outputEl.textContent += line + "\n");
-    let code = codeArea.value;
-    let stdin = inputArea.value.split("\n");
     activeStateIterator = rt.runProgram(code, stdin);
 
     iterateProgramState();
 });
-
-const timeouts: (() => void)[] = [];
-const messageName = "stax-work-pend";
-
-function pendWork(fn: () => void) {
-    timeouts.push(fn);
-    window.postMessage(messageName, "*");
-}
-
-window.addEventListener("message", event => {
-    if (event.source === window && event.data === messageName) {
-        event.stopPropagation();
-        if (timeouts.length) timeouts.shift()!();
-    }
-}, true);
