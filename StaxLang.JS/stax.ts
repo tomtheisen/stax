@@ -53,9 +53,34 @@ export class Runtime {
     private indexOuter = zero;
     private x: StaxValue = zero;
     private y: StaxValue;
+    private implicitEval = false;
 
     constructor(output: (line: string) => void) {
         this.lineOut = output;
+    }
+
+    public getDebugState() {
+        function format(arg: StaxValue | IteratorPair): string {
+            if (arg instanceof IteratorPair) return `(${ format(arg.item1) }, ${ format(arg.item2) })`;
+            if (isNumber(arg)) return arg.toString();
+            if (arg instanceof Block) return `Block {${ arg.contents }}`;
+        
+            if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(128)))) {
+                return JSON.stringify(String.fromCharCode(...arg.map(e => (e as BigInteger).valueOf())));
+            }
+        
+            return '[' + arg.map(format).join(", ") + ']';
+        }
+        
+        return {
+            implicitEval: this.implicitEval,
+            x: format(this.x),
+            y: format(this.y),
+            index: this.index.valueOf(),
+            _: format(this._),
+            main: this.mainStack.map(format),
+            input: this.inputStack.map(format),
+        };
     }
 
     private push(...vals: StaxValue[]) {
@@ -65,13 +90,13 @@ export class Runtime {
     private peek(): StaxValue {
         if (this.mainStack.length) return last(this.mainStack)!;
         if (this.inputStack.length) return last(this.inputStack)!;
-        throw new EarlyTerminate("peeked empty stax");
+        throw new EarlyTerminate("peeked empty stack");
     }
 
     private pop(): StaxValue {
         if (this.mainStack.length) return this.mainStack.pop()!;
         if (this.inputStack.length) return this.inputStack.pop()!;
-        throw new EarlyTerminate("popped empty stax");
+        throw new EarlyTerminate("popped empty stack");
     }
 
     private popArray(): StaxArray {
@@ -190,7 +215,7 @@ export class Runtime {
         while (stdin[0] === "") stdin.shift();
         this.inputStack = stdin.map(S2A);
         this.y = last(this.inputStack) || [];
-        let implicitEval = false;
+        this.implicitEval = false;
 
         // starting 'i' suppresses eval
         if (stdin.length === 1 && !program.startsWith('i')) {
@@ -202,13 +227,13 @@ export class Runtime {
                 this.inputStack = stdin.reverse().map(S2A);
             }
             else {
-                implicitEval = true;
+                this.implicitEval = true;
                 this.x = this.mainStack[0];
                 [this.mainStack, this.inputStack] = [this.inputStack, this.mainStack];
             }
         }
 
-        if (this.inputStack.length > 0 && !implicitEval) switch (program[0]) {
+        if (this.inputStack.length > 0 && !this.implicitEval) switch (program[0]) {
             case 'm': // line-map
             case 'f': // line-filter
             case 'F': // line-for

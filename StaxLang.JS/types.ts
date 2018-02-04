@@ -7,7 +7,6 @@ export type StaxNumber = number | BigInteger | Rational;
 export type StaxValue = StaxNumber | Block | StaxArray;
 export interface StaxArray extends Array<StaxValue> { }
 
-
 export function S2A(s: string): StaxArray {
     let result: StaxArray = [];
     for (let i = 0; i < s.length; i++) {
@@ -145,7 +144,7 @@ export function stringFormat(arg: StaxValue): StaxArray {
     throw new Error("bad type for stringFormat");
 }
 
-const versionInfo = "Stax 0.0.0 (typescript) - Tom Theisen - https://github.com/ttheisen/stax "
+const versionInfo = "Stax 0.1.0 (typescript) - Tom Theisen - https://github.com/ttheisen/stax "
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),

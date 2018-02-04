@@ -8,6 +8,7 @@ import { isPacked, unpack, pack } from './packer';
 const workMilliseconds = 20;
 
 const runButton = document.getElementById("run") as HTMLButtonElement;
+const stepButton = document.getElementById("step") as HTMLButtonElement;
 const codeArea = document.getElementById("code") as HTMLTextAreaElement;
 const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLElement;
@@ -18,8 +19,26 @@ const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 
+let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
+
+function resetRuntime() {
+    steps = 0;
+    start = performance.now();
+    outputEl.textContent = "";
+
+    codeArea.readOnly = inputArea.readOnly = true;
+
+    let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
+    activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
+    activeStateIterator = activeRuntime.runProgram(code, stdin);
+}
+
+function cleanupRuntime() {
+    activeRuntime = activeStateIterator = null;
+    codeArea.readOnly = inputArea.readOnly = false;
+}
 
 function iterateProgramState() {
     if (!activeStateIterator) return;
@@ -29,22 +48,34 @@ function iterateProgramState() {
         steps += 1;
         if(performance.now() - sliceStart > workMilliseconds) break;
     }
-    if (!result.done) pendWork(iterateProgramState);
+    if (result.done) cleanupRuntime();
+    else pendWork(iterateProgramState);
     
     let elapsed = (performance.now() - start) / 1000;
     statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
 }
 
 runButton.addEventListener("click", () => {
-    steps = 0;
-    start = performance.now();
-    outputEl.textContent = "";
-
-    let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
-    let rt = new Runtime(line => outputEl.textContent += line + "\n");
-    activeStateIterator = rt.runProgram(code, stdin);
-
+    resetRuntime();
     iterateProgramState();
+});
+
+// gets instruction pointer if still running
+function step() : number | null {
+    if (!activeStateIterator) resetRuntime();
+    let result = activeStateIterator!.next();
+    if (result.done) {
+        cleanupRuntime();
+        return null;
+    }
+
+    steps += 1;
+    return result.value.ip;
+}
+
+stepButton.addEventListener("click", () => {
+    step();
+    console.log(activeRuntime!.getDebugState());
 });
 
 function load() {
