@@ -31,8 +31,8 @@ function iterateProgramState() {
     }
     if (!result.done) pendWork(iterateProgramState);
     
-    let elapsed = Math.ceil(performance.now() - start);
-    statusEl.textContent = `${ steps } steps, ${ elapsed }ms`;
+    let elapsed = (performance.now() - start) / 1000;
+    statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
 }
 
 runButton.addEventListener("click", () => {
