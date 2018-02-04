@@ -28,16 +28,20 @@ function resetRuntime() {
     start = performance.now();
     outputEl.textContent = "";
 
-    codeArea.readOnly = inputArea.readOnly = true;
+    packButton.disabled = codeArea.readOnly = inputArea.readOnly = true;
 
     let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
     activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
     activeStateIterator = activeRuntime.runProgram(code, stdin);
 }
 
+function isRunning() {
+    return !!activeRuntime;
+}
+
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    codeArea.readOnly = inputArea.readOnly = false;
+    packButton.disabled = codeArea.readOnly = inputArea.readOnly = false;
 }
 
 function iterateProgramState() {
@@ -56,13 +60,13 @@ function iterateProgramState() {
 }
 
 runButton.addEventListener("click", () => {
-    resetRuntime();
+    if (!isRunning()) resetRuntime();
     iterateProgramState();
 });
 
 // gets instruction pointer if still running
 function step() : number | null {
-    if (!activeStateIterator) resetRuntime();
+    if (!isRunning()) resetRuntime();
     let result = activeStateIterator!.next();
     if (result.done) {
         cleanupRuntime();
@@ -70,6 +74,7 @@ function step() : number | null {
     }
 
     steps += 1;
+    statusEl.textContent = `${ steps } steps, paused`;
     return result.value.ip;
 }
 
