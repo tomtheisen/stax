@@ -19,6 +19,24 @@ h2 {
     font-size: 13pt;
 }
 
-#compressorOutput {
+h3 {
+    margin: 0.5em 0 0 0;
+    font-size: 11pt;    
+}
+
+ol {
+    margin: 0;
+}
+
+#compressorOutput, #debugCode, dl, li {
     font-family: monospace;
+}
+
+#debugCodePost {
+    color: grey;
+}
+
+dt {
+    float: left;
+    font-weight: bold;
 }

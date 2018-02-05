@@ -9,6 +9,7 @@ const workMilliseconds = 20;
 
 const runButton = document.getElementById("run") as HTMLButtonElement;
 const stepButton = document.getElementById("step") as HTMLButtonElement;
+const stopButton = document.getElementById("stop") as HTMLButtonElement;
 const codeArea = document.getElementById("code") as HTMLTextAreaElement;
 const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLElement;
@@ -18,30 +19,39 @@ const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
+const debugContainer = document.getElementById("debugState") as HTMLElement;
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
 
+// prepare for new run
 function resetRuntime() {
     steps = 0;
     start = performance.now();
     outputEl.textContent = "";
 
     packButton.disabled = codeArea.readOnly = inputArea.readOnly = true;
+    debugContainer.hidden = true;
 
     let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
     activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
     activeStateIterator = activeRuntime.runProgram(code, stdin);
 }
 
-function isRunning() {
-    return !!activeRuntime;
-}
-
+// mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
     packButton.disabled = codeArea.readOnly = inputArea.readOnly = false;
+    stopButton.disabled = debugContainer.hidden = true;
+}
+stopButton.addEventListener("click", () => {
+    cleanupRuntime();
+    statusEl.textContent = "Stopped";
+});
+
+function isRunning() {
+    return !!activeRuntime;
 }
 
 function iterateProgramState() {
@@ -70,18 +80,58 @@ function step() : number | null {
     let result = activeStateIterator!.next();
     if (result.done) {
         cleanupRuntime();
+        statusEl.textContent = `${ steps } steps, complete`;
         return null;
     }
-
-    steps += 1;
-    statusEl.textContent = `${ steps } steps, paused`;
-    return result.value.ip;
+    else {
+        steps += 1;
+        stopButton.disabled = false;
+        showDebugInfo(result.value.ip);
+        statusEl.textContent = `${ steps } steps, paused`;
+        return result.value.ip;
+    }
 }
 
-stepButton.addEventListener("click", () => {
-    step();
-    console.log(activeRuntime!.getDebugState());
-});
+stepButton.addEventListener("click", step);
+
+function showDebugInfo(ip: number) {
+    if (!activeRuntime) return;
+    debugContainer.hidden = false;
+
+    const debugPreEl = document.getElementById("debugCodePre")!,
+        debugPostEl = document.getElementById("debugCodePost")!;
+    let code = codeArea.value;
+    if (isPacked(code)) {
+        debugPreEl.textContent = debugPostEl.textContent = "";
+    }
+    else {
+        debugPreEl.textContent = code.substr(0, ip);
+        debugPostEl.textContent = code.substr(ip);
+    }
+
+    let state = activeRuntime.getDebugState();
+    document.getElementById("watchX")!.textContent = state.x;
+    document.getElementById("watchY")!.textContent = state.y;
+    document.getElementById("watchi")!.textContent = state.index.toString();
+    document.getElementById("watch_")!.textContent = state._;
+    
+    const watchMainEl = document.getElementById("watchMain") as HTMLOListElement;
+    watchMainEl.innerText = "";
+    state.main.forEach(e => {
+        let li = document.createElement("li");
+        li.textContent = e;
+        watchMainEl.appendChild(li);
+    });
+    
+    const watchInputEl = document.getElementById("watchInput") as HTMLOListElement;
+    watchInputEl.innerText = "";
+    state.input.forEach(e => {
+        let li = document.createElement("li");
+        li.textContent = e;
+        watchInputEl.appendChild(li);
+    });
+
+}
 
 function load() {
     let params = new URLSearchParams(location.hash.substr(1));
@@ -130,6 +180,14 @@ function doCompressor() {
 }
 doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
+
+const compressorDialog = document.getElementById("compressorDialog") as HTMLDialogElement;
+document.getElementById("compressorOpen")!.addEventListener("click", () => {
+    compressorDialog.showModal();
+});
+document.getElementById("compressorClose")!.addEventListener("click", () => {
+    compressorDialog.close();
+})
 
 packButton.addEventListener("click", () => {
     let code = codeArea.value, packed = isPacked(code);
