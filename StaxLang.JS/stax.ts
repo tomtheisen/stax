@@ -63,7 +63,7 @@ export class Runtime {
         function format(arg: StaxValue | IteratorPair): string {
             if (arg instanceof IteratorPair) return `(${ format(arg.item1) }, ${ format(arg.item2) })`;
             if (isNumber(arg)) return arg.toString();
-            if (arg instanceof Block) return `Block {${ arg.contents }}`;
+            if (arg instanceof Block) return `Block ${ arg.contents }`;
         
             if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(128)))) {
                 return JSON.stringify(String.fromCharCode(...arg.map(e => (e as BigInteger).valueOf())));
@@ -78,8 +78,8 @@ export class Runtime {
             y: format(this.y),
             index: this.index.valueOf(),
             _: format(this._),
-            main: this.mainStack.map(format),
-            input: this.inputStack.map(format),
+            main: this.mainStack.map(format).reverse(),
+            input: this.inputStack.map(format).reverse(),
         };
     }
 
@@ -258,9 +258,10 @@ export class Runtime {
     }
 
     private *runSteps(block: Block | string): IterableIterator<ExecutionState> {
-        if (typeof block === "string") block = parseProgram(block);
-
         let ip = 0;
+
+        if (typeof block === "string") block = parseProgram(block);
+        else ip = block.offset;
 
         for (let token of block.tokens) {
             const getRest = () => (block as Block).contents.substr(ip + token.length);

@@ -24,14 +24,16 @@ const debugContainer = document.getElementById("debugState") as HTMLElement;
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
+let pendingBreak = false;
 
 // prepare for new run
 function resetRuntime() {
     steps = 0;
     start = performance.now();
     outputEl.textContent = "";
+    pendingBreak = false;
 
-    packButton.disabled = codeArea.readOnly = inputArea.readOnly = true;
+    packButton.disabled = codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
 
     let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
@@ -42,7 +44,7 @@ function resetRuntime() {
 // mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    packButton.disabled = codeArea.readOnly = inputArea.readOnly = false;
+    packButton.disabled = codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = debugContainer.hidden = true;
 }
 stopButton.addEventListener("click", () => {
@@ -55,7 +57,10 @@ function isRunning() {
 }
 
 function iterateProgramState() {
-    if (!activeStateIterator) return;
+    if (!activeStateIterator || pendingBreak) {
+        pendingBreak = false;
+        return;
+    }
 
     let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
     while (!(result = activeStateIterator.next()).done) {
@@ -84,6 +89,7 @@ function step() : number | null {
         return null;
     }
     else {
+        pendingBreak = true;
         steps += 1;
         stopButton.disabled = false;
         showDebugInfo(result.value.ip);
