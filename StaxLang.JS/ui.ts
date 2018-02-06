@@ -1,5 +1,4 @@
 import { Runtime, ExecutionState } from './stax';
-import { setTimeout } from 'timers';
 import { pendWork } from './timeoutzero';
 import { compress } from './huffmancompression';
 import { isPacked, unpack, pack } from './packer';
@@ -163,8 +162,14 @@ function updateStats() {
 }
 updateStats();
 
-codeArea.addEventListener("change", updateStats);
-inputArea.addEventListener("change", updateStats);
+let statsTimeout: number | null = null;
+function pendUpdateStats() {
+    if (statsTimeout) clearTimeout(statsTimeout);
+    statsTimeout = window.setTimeout(updateStats, 100);
+}
+
+codeArea.addEventListener("input", pendUpdateStats);
+inputArea.addEventListener("input", pendUpdateStats);
 
 function doCompressor() {
     let input = compressorInputEl.value;
