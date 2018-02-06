@@ -1449,6 +1449,8 @@ export class Runtime {
 
             ip += token.length;
         }
+
+        yield new ExecutionState(ip);
     }
 
     private runMacro(macro: string) {

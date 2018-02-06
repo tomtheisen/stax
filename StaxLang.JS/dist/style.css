@@ -5,13 +5,28 @@
 body {
     font-family: sans-serif;
     margin: 1em;
-    background-color: #e1e5f1;
+    background-color: #eee;
 }
 
 textarea {
     font-family: monospace;
     width: 100%;
     resize: vertical;
+    margin: 0.2em;
+}
+
+button {
+    background-color: #44e;
+    color: white;
+    cursor: pointer;
+    padding: 0.5em;
+    border-width: 0;
+}
+
+button:disabled {
+    background-color: #339;
+    color: #bbb;
+    cursor: default;
 }
 
 h2 {
@@ -32,11 +47,24 @@ ol {
     font-family: monospace;
 }
 
-#debugCodePost {
+#debugCodePost, #version {
     color: grey;
 }
 
 dt {
     float: left;
     font-weight: bold;
+}
+
+a {
+    text-decoration: none;
+    color: #44e;
+}
+
+pre {
+    background-color: white;
+    padding: 0.5em;
+}
+pre:empty {
+    display: none;
 }

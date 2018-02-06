@@ -109,7 +109,7 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                     gotoTargets.push({ offset: programOffset + ++pos, tokens: []});
                 }
                 else {
-                    return new Block(program.substr(0, ++pos), blockTokens, 0, true);
+                    return new Block(program.substr(0, ++pos), blockTokens, programOffset, true);
                 }
                 break;
 

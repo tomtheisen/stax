@@ -75,6 +75,7 @@ function iterateProgramState() {
 }
 
 runButton.addEventListener("click", () => {
+    pendingBreak = false;
     if (!isRunning()) resetRuntime();
     iterateProgramState();
 });
@@ -200,3 +201,12 @@ packButton.addEventListener("click", () => {
     codeArea.value = packed ? unpack(code) : pack(code);
     updateStats();
 });
+
+function setVersion() {
+    let out: string;
+    let rt = new Runtime(o => { out = o; });
+    for (let s of rt.runProgram("V?", [])) ;
+    let version = out!.match(/[0-9.]+/)![0]
+    document.getElementById("version")!.textContent = `v${ version }`;
+}
+setVersion();

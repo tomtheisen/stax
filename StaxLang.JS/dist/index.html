@@ -6,11 +6,15 @@
     </head>
     <body>
         <div style="float: right;">
+            <a href="#" id="version" title="Version history"></a>
+        </div>
+        <h1><a href="https://github.com/tomtheisen/stax">Stax</a></h1>
+        <div style="float: right;">
             <a href="#" id="compressorOpen">Text compressor</a>
-            <a id="savelink" href="#" style="text-decoration: none;">&#128279;</a>
+            <a id="savelink" href="#" title="Perma-link">&#128279;</a>
             <span id="properties"></span>
+            <a href="#" title="About code size">&#x2754;</a>
             <button id="pack">Pack</button>
-            <a href="#" style="text-decoration: none;">&#x2754;</a>
         </div>
         <h2>Code</h2>
         <textarea id="code" spellcheck="false"></textarea>
@@ -46,8 +50,9 @@
         <dialog id="compressorDialog">
             <h2>String Literal Compressor</h2>
             <p>This tool can help you generate the shortest representation for a given input string.  Closing delimiters are optional at the end of a program.</p>
-            Input <input id="compressorInput">
-            <br>Output <input id="compressorOutput" readonly>
+            <label>Input <br><input id="compressorInput"></label>
+            <br>
+            <label>Output <br><input id="compressorOutput" readonly></label>
             <p><button id="compressorClose">Close</button></p>
         </dialog>
         
