@@ -257,14 +257,16 @@ export class Runtime {
         if (!this.producedOutput) this.print(this.pop());
     }
 
-    private *runSteps(block: Block | string): IterableIterator<ExecutionState> {
-        let ip = 0;
-
-        if (typeof block === "string") block = parseProgram(block);
-        else ip = block.offset;
+    private *runSteps(block: Block): IterableIterator<ExecutionState> {
+        let ip = block.offset, i = 0;
 
         for (let token of block.tokens) {
-            const getRest = () => (block as Block).contents.substr(ip + token.length);
+            i += 1;
+            const getRest = () => new Block(
+                block.contents.substr(ip + token.length), 
+                block.tokens.slice(i),
+                ip + token.length, 
+                false);
 
             yield new ExecutionState(ip);
 
@@ -1455,7 +1457,7 @@ export class Runtime {
     }
 
     private runMacro(macro: string) {
-        for (let s of this.runSteps(macro)) ;
+        for (let s of this.runSteps(parseProgram(macro))) { }
     }
 
     private doPlus() {
@@ -2411,7 +2413,7 @@ export class Runtime {
         else throw new Error("bad types for replace");
     }
 
-    private *doFor(rest: string) {
+    private *doFor(rest: Block) {
         if (isInt(this.peek())) {
             this.push(range(1, this.popInt().add(one)));
         }
@@ -2449,7 +2451,7 @@ export class Runtime {
         else throw new Error("bad types in for");
     }
 
-    private *doUnconditionalWhile(rest: string) {
+    private *doUnconditionalWhile(rest: Block) {
         let cancelled = false;
         let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
     
@@ -2464,7 +2466,7 @@ export class Runtime {
         this.popStackFrame();
     }
 
-    private *doWhile(rest: string) {
+    private *doWhile(rest: Block) {
         let cancelled = false;
         let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
     
@@ -2479,7 +2481,7 @@ export class Runtime {
         this.popStackFrame();
     }
 
-    private *doReduce(rest: string) {
+    private *doReduce(rest: Block) {
         let top = this.pop(), shorthand = !(top instanceof Block);
         let block: Block | string, arr: StaxValue;
 
@@ -2518,7 +2520,7 @@ export class Runtime {
         }
     }
 
-    private *doCrossMap(rest: string) {
+    private *doCrossMap(rest: Block) {
         let top = this.pop(), 
             shorthand = !(top instanceof Block), 
             map: Block | string = shorthand ? rest : top as Block;
@@ -2556,7 +2558,7 @@ export class Runtime {
         if (!shorthand) this.push(result);
     }
 
-    private *doFilter(rest: string) {
+    private *doFilter(rest: Block) {
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
             if (isInt(data)) data = range(1, data.add(one));
@@ -2595,7 +2597,7 @@ export class Runtime {
         }
     }
 
-    private *doMap(rest: string) {
+    private *doMap(rest: Block) {
         let top = this.pop();
         if (top instanceof Block) {
             let block = top, data = this.pop(), result: StaxArray = [], cancelled = false;
@@ -2655,7 +2657,7 @@ export class Runtime {
         this.push(result);
     }
 
-    private *doGenerator(shorthand: boolean, spec: string, rest: string) {
+    private *doGenerator(shorthand: boolean, spec: string, rest: Block) {
         const lowerSpec = spec.toLowerCase();
         const stopOnDupe = lowerSpec === 'u' || lowerSpec === 'l';
         const stopOnFilter = lowerSpec === 'f';
@@ -2666,7 +2668,7 @@ export class Runtime {
         const keepOnlyLoop = lowerSpec === 'l';
         let postPop = spec !== lowerSpec;
         
-        let genBlock: string | Block = rest;
+        let genBlock = rest;
         if (!shorthand) {
             let popped = this.pop();
             if (popped instanceof Block) {
@@ -2713,7 +2715,7 @@ export class Runtime {
             this._ = this.peek();
 
             if (this.index.isPositive() || postPop) {
-                if (genBlock != "" && !(genBlock instanceof Block && genBlock.contents === "{")) {
+                if (genBlock.contents !== "" && genBlock.contents !== "{") {
                     for (let s of this.runSteps(genBlock)) {
                         if (s.cancel && stopOnCancel) genComplete = cancelled = true;
                         if (s.cancel) { 
