@@ -19,6 +19,7 @@ const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 const debugContainer = document.getElementById("debugState") as HTMLElement;
+const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
@@ -154,7 +155,10 @@ function load() {
     let params = new URLSearchParams(location.hash.substr(1));
     if (params.has('c')) codeArea.value = params.get('c')!;
     if (params.has('i')) inputArea.value = params.get('i')!;
-    if (params.get('a')) run();
+    if (params.get('a')) {
+        autoCheckEl.checked = true;
+        run();
+    }
 }
 load();
 
@@ -162,6 +166,7 @@ function updateStats() {
     let params = new URLSearchParams;
     params.set('c', codeArea.value);
     params.set('i', inputArea.value);
+    if (autoCheckEl.checked) params.set('a', '1');
     saveLink.href = '#' + params.toString();
 
     let packed = isPacked(codeArea.value);
@@ -173,6 +178,8 @@ function updateStats() {
     packButton.textContent = packed ? "Unpack" : "Pack";
 }
 updateStats();
+
+autoCheckEl.addEventListener("change", updateStats);
 
 let statsTimeout: number | null = null;
 function pendUpdateStats() {
