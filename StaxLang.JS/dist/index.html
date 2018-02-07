@@ -21,16 +21,15 @@
         <textarea id="stdin" spellcheck="false"></textarea>
 
         <div style="float: right;">
-            <a href="#" id="compressorOpen">Text compressor</a>
-            <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
             <a id="savelink" href="#" title="Perma-link">&#128279;</a>
+            <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
         </div>
         <button id="run">&#x25b6; Run (F8)</button>
         <button id="step">Step (F11)</button>
         <button id="stop" disabled>Stop (Esc)</button>
         <span id="status"></span>
         
-        <div id="debugState" hidden>
+        <div id="debugState" class="well" hidden>
             <h2>State</h2>
             <div id="debugCode">
                 <span id="debugCodePre"></span><span id="debugCodePost"></span>
@@ -50,14 +49,18 @@
         <h2>Output</h2>
         <pre id="output"></pre>
 
-        <dialog id="compressorDialog">
-            <h2>String Literal Compressor</h2>
-            <p>This tool can help you generate the shortest representation for a given input string.  Closing delimiters are optional at the end of a program.</p>
-            <label>Input <br><input id="compressorInput"></label>
+        <h3><a href="#" id="compressorOpen">String Literal Compressor</a></h3>
+        <div id="compressorDialog" class="well" hidden>
+            <p>
+                This tool can help you generate the shortest representation for a given input string.  
+                Closing delimiters are optional at the end of a program.  
+                English-like strings compreses particularly well. 
+                <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings">More info</a>
+            </p>
+            <label>Value <br><input id="compressorInput"></label>
             <br>
-            <label>Output <br><input id="compressorOutput" readonly></label>
-            <p><button id="compressorClose">Close</button></p>
-        </dialog>
+            <label>Stax literal <br><input id="compressorOutput" readonly></label>
+        </div>
         
         <script src="bundle.js" charset="UTF-8"></script>
     </body>

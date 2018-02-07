@@ -73,3 +73,9 @@ pre {
 pre:empty {
     display: none;
 }
+
+.well {
+    background-color: #ddd;
+    margin: 0.5em;
+    padding: 0.5em;
+}

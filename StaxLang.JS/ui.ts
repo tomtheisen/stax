@@ -64,6 +64,8 @@ function runProgramTimeSlice() {
         return;
     }
 
+    debugContainer.hidden = true;
+
     let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
     try {
         while (!(result = activeStateIterator.next()).done) {
@@ -212,13 +214,10 @@ function doCompressor() {
 doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
 
-const compressorDialog = document.getElementById("compressorDialog") as HTMLDialogElement;
+const compressorDialog = document.getElementById("compressorDialog") as HTMLDivElement;
 document.getElementById("compressorOpen")!.addEventListener("click", () => {
-    compressorDialog.showModal();
+    compressorDialog.hidden = !compressorDialog.hidden;
 });
-document.getElementById("compressorClose")!.addEventListener("click", () => {
-    compressorDialog.close();
-})
 
 packButton.addEventListener("click", () => {
     let code = codeArea.value, packed = isPacked(code);
