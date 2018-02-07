@@ -46,12 +46,14 @@ function cleanupRuntime() {
     packButton.disabled = codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = debugContainer.hidden = true;
 }
-stopButton.addEventListener("click", () => {
+
+function stop() {
     cleanupRuntime();
     statusEl.textContent = "Stopped";
-});
+}
+stopButton.addEventListener("click", stop);
 
-function isRunning() {
+function isActive() {
     return !!activeRuntime;
 }
 
@@ -80,15 +82,17 @@ function runProgramTimeSlice() {
     statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
 }
 
-runButton.addEventListener("click", () => {
+function run() {
     pendingBreak = false;
-    if (!isRunning()) resetRuntime();
+    if (!isActive()) resetRuntime();
     runProgramTimeSlice();
-});
+}
+
+runButton.addEventListener("click", run);
 
 // gets instruction pointer if still running
 function step() : number | null {
-    if (!isRunning()) resetRuntime();
+    if (!isActive()) resetRuntime();
     let result = activeStateIterator!.next();
     if (result.done) {
         cleanupRuntime();
@@ -150,6 +154,7 @@ function load() {
     let params = new URLSearchParams(location.hash.substr(1));
     if (params.has('c')) codeArea.value = params.get('c')!;
     if (params.has('i')) inputArea.value = params.get('i')!;
+    if (params.get('a')) run();
 }
 load();
 
@@ -222,3 +227,20 @@ function setVersion() {
     document.getElementById("version")!.textContent = `v${ version }`;
 }
 setVersion();
+
+document.addEventListener("keydown", ev => {
+    switch (ev.key) {
+        case "F8":
+            run();
+            ev.preventDefault();
+            break;
+        case "F11":
+            step();
+            ev.preventDefault();
+            break;
+        case "Escape":
+            if (isActive()) stop();
+            ev.preventDefault();
+            break;
+    }
+});
