@@ -55,19 +55,26 @@ function isRunning() {
     return !!activeRuntime;
 }
 
-function iterateProgramState() {
+function runProgramTimeSlice() {
     if (!activeStateIterator || pendingBreak) {
         pendingBreak = false;
         return;
     }
 
     let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
-    while (!(result = activeStateIterator.next()).done) {
-        steps += 1;
-        if(performance.now() - sliceStart > workMilliseconds) break;
+    try {
+        while (!(result = activeStateIterator.next()).done) {
+            steps += 1;
+            if(performance.now() - sliceStart > workMilliseconds) break;
+        }
+        if (result.done) cleanupRuntime();
+        else pendWork(runProgramTimeSlice);
     }
-    if (result.done) cleanupRuntime();
-    else pendWork(iterateProgramState);
+    catch (e) {
+        if (e instanceof Error) outputEl.textContent += "\nStax runtime error: " + e.message;
+        cleanupRuntime();
+        return;
+    }
     
     let elapsed = (performance.now() - start) / 1000;
     statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
@@ -76,7 +83,7 @@ function iterateProgramState() {
 runButton.addEventListener("click", () => {
     pendingBreak = false;
     if (!isRunning()) resetRuntime();
-    iterateProgramState();
+    runProgramTimeSlice();
 });
 
 // gets instruction pointer if still running

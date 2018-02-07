@@ -276,16 +276,16 @@ export class Runtime {
             else {
                 if (!!token.match(/^\d+!/)) this.push(parseFloat(token.replace("!", ".")));
                 else if (!!token[0].match(/^\d/)) this.push(bigInt(token));
-                else if (token[0] === '"') this.doEvaluateStringToken(token);
-                else if (token[0] === '`') {
+                else if (token.startsWith('"')) this.doEvaluateStringToken(token);
+                else if (token.startsWith('`')) {
                     let compressed = token.replace(/^`|`$/g, '');
                     this.push(S2A(decompress(compressed)));
                     if (token[token.length - 1] !== '`') this.print(this.peek());
                 }
-                else if (token[0] === "'" || token[0] === ".") this.push(S2A(token.substr(1)));
-                else if (token[0] === 'V') this.push(constants[token[1]]);
-                else if (token[0] === ':') this.doMacroAlias(token[1]);
-                else if (token[0] === 'g') { // generator
+                else if (token.startsWith("'") || token.startsWith(".")) this.push(S2A(token.substr(1)));
+                else if (token.startsWith('V')) this.push(constants[token[1]]);
+                else if (token.startsWith(':')) this.doMacroAlias(token[1]);
+                else if (token.startsWith('g')) { // generator
                     // shorthand is indicated by
                     //  no trailing block
                     //  OR trailing block with explicit close }, in which case it's a filter
@@ -297,6 +297,7 @@ export class Runtime {
                     }
                     if (shorthand) break;
                 }
+                else if (token.startsWith('\t')) {} // tab starts comment
                 else switch (token) {
                     case '\n':
                     case ' ':

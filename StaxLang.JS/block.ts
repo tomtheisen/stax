@@ -70,6 +70,14 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                 pos += 3;
                 break;
 
+            case '\t': {
+                let lineEnd = program.indexOf('\n', pos);
+                if (lineEnd < 0) lineEnd = program.length - 1;
+                pushToken(program.substring(pos, lineEnd + 1));
+                pos = lineEnd + 1;
+                break;
+            }
+            
             case '0': case '1': case '2': case '3': case '4': 
             case '5': case '6': case '7': case '8': case '9': 
                 let n = parseNum(program, pos);

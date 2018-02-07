@@ -21,6 +21,11 @@ button {
     cursor: pointer;
     padding: 0.5em;
     border-width: 0;
+    font-size: 12pt;
+}
+#run {
+    background-color: #2c3;
+    font-size: 14pt;
 }
 
 button:disabled {
