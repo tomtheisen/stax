@@ -1,7 +1,7 @@
-#Fizzbuzz Walkthrough
+# Fizzbuzz Walkthrough
 This is how you write FizzBuzz in Stax.  
 
-	Count from 1 to 100, but replace multiples of 3 with "Fizz", and multiples of 5 with "Buzz".  Multiples of both should be replaced with "FizzBuzz".
+> Count from 1 to 100, but replace multiples of 3 with "Fizz", and multiples of 5 with "Buzz".  Multiples of both should be replaced with "FizzBuzz".
 
 Let's start by counting to 100.  Stax is a stack-based language, so all inputs and outputs [use one of the two stacks](https://github.com/tomtheisen/stax/blob/master/docs/stacks.md#stacks).
 
