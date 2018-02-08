@@ -15,10 +15,12 @@ const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
 export class ExecutionState {
     public ip: number;
     public cancel: boolean;
+    public break: boolean;
 
-    constructor(ip: number, cancel = false) {
+    constructor(ip: number, cancel = false, break_ = false) {
         this.ip = ip;
         this.cancel = cancel;
+        this.break = break_;
     }
 }
 
@@ -268,6 +270,11 @@ export class Runtime {
                 ip + token.length, 
                 false);
 
+            if (token === '|`') {
+                ip += 2;
+                yield new ExecutionState(ip, false, true);
+                continue;
+            }
             yield new ExecutionState(ip);
 
             if (token instanceof Block) {

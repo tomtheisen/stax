@@ -70,6 +70,11 @@ function runProgramTimeSlice() {
     try {
         while (!(result = activeStateIterator.next()).done) {
             steps += 1;
+            if (result.value.break) {
+                showDebugInfo(result.value.ip);
+                statusEl.textContent = `${ steps } steps, paused`;
+                return;
+            }
             if(performance.now() - sliceStart > workMilliseconds) break;
         }
         if (result.done) cleanupRuntime();
