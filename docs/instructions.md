@@ -8,7 +8,7 @@ chars   	|Description
 `q`     	|Peek and print with no newline.
 `Q`     	|Peek and print with a newline.
 `\|_`   	|(space, not underscore) Print a single space character.
-``\|` ``	|Dump debug state.  Shows registers, iteration info, and both stacks.
+``\|` ``	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
 `\|P`   	|Print newline.
 `\|V`   	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
