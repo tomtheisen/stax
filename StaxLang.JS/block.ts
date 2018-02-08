@@ -44,15 +44,11 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
         else blockTokens.push(token);
     }
 
-    let pos = 0;
-    if (!wholeProgram) {
-        pos = 1;
-        programOffset += 1;
-    }
+    let pos = wholeProgram ? 0 : 1, firstInstruction = programOffset + pos;
 
     while (pos < program.length) {
         if (!wholeProgram && "wWmfFkKgo".indexOf(program[pos]) >= 0) {
-            return new Block(program.substr(0, pos), blockTokens, programOffset, false);
+            return new Block(program.substr(0, pos), blockTokens, firstInstruction, false);
         }
 
         switch (program[pos]) {
@@ -117,7 +113,7 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                     gotoTargets.push({ offset: programOffset + ++pos, tokens: []});
                 }
                 else {
-                    return new Block(program.substr(0, ++pos), blockTokens, programOffset, true);
+                    return new Block(program.substr(0, ++pos), blockTokens, firstInstruction, true);
                 }
                 break;
 
