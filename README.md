@@ -1,6 +1,8 @@
 # Stax
 Stax Golfing Language
 
+[Try stax online.](http://stax.tomtheisen.com/)
+
 Have you ever noticed that software is just too *big*?  Hello world mobile apps are tens of megabytes.  Websites are making hundreds of requests for a single page.  There's just too much stuff.  Stax is the answer!  Unfortunately, it's the answer to another question.  That question is "is it possible to make another golfing language?".  It's not possible to write a mobile app or website in stax, but if it was, they'd probably be extremely small.  Don't make the mistake of thinking that means "efficient".  If you want a more efficient language, you should probably try any other language.  But small, definitely.
 
 Stax is yet another stack-based programming language, optimized for code golf.  Stax is influenced by [GS2](https://github.com/nooodl/gs2), [05AB1E](https://github.com/Adriandmen/05AB1E), and others.  Stax is written in printable ASCII characters, although it can be optionally packed into bytes.  The language isn't stable yet, and I haven't publicized it much yet.  For more detail check the [docs](docs/README.md).  Or, you know, the code.

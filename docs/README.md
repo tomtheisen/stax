@@ -1,7 +1,7 @@
 # Stax
 Stax Golfing Language
 
-* [Examples](examples.md)
+* [Walkthrough](walkthrough.md)
 * [PackedStax](packed.md)
 * [AnnotatedStax](annotate.md)
 * [Stacks](stacks.md)
