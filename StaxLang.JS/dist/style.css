@@ -52,6 +52,9 @@ ol {
     font-family: monospace;
 }
 
+#debugCodePre {
+    background-color: #aac;
+}
 #debugCodePost, #version {
     color: grey;
 }

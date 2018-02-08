@@ -178,6 +178,9 @@ function updateStats() {
     propsEl.textContent = `${ size } bytes, ${ type }`;
 
     packButton.textContent = packed ? "Unpack" : "Pack";
+
+    let packable = !packed && !!codeArea.value.match(/^[ -~]+$/);
+    packButton.disabled = !packed && !packable;
 }
 updateStats();
 
