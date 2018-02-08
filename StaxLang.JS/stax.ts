@@ -359,7 +359,7 @@ export class Runtime {
                         this.doPercent();
                         break;
                     case '&':
-                        this.doAssignIndex();
+                        for (let s of this.doAssignIndex()) yield s;
                         break;
                     case '=':
                         this.push(areEqual(this.pop(), this.pop()) ? one : zero);
@@ -1776,7 +1776,7 @@ export class Runtime {
         fail("bad type for @");
     }
 
-    private doAssignIndex() {
+    private *doAssignIndex() {
         let element = this.pop(), indexes = this.pop();
 
         if (isInt(indexes)) {
@@ -1788,16 +1788,20 @@ export class Runtime {
         }
         if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
         
-        const doFinalAssign = (flatArr: StaxArray, index: number) => {
+        const self = this;
+        function *doFinalAssign (flatArr: StaxArray, index: number) {
             if (index >= flatArr.length) {
                 flatArr.push(...Array(index + 1 - flatArr.length).fill(zero));
             }
 
             if (element instanceof Block) {
-                this.push(flatArr[index]);
+                self.push(flatArr[index]);
                 let cancelled = false;
-                for (let s of this.runSteps(element)) cancelled = s.cancel;
-                if (!cancelled) flatArr[index] = this.pop();
+                for (let s of self.runSteps(element)) {
+                    yield s;
+                    cancelled = s.cancel;
+                }
+                if (!cancelled) flatArr[index] = self.pop();
             }
             else {
                 flatArr[index] = element;
@@ -1815,7 +1819,7 @@ export class Runtime {
                     target = target[idx] as StaxArray;
                 }
                 idx = last(idxPath)!.valueOf() as number;
-                doFinalAssign(target, idx);
+                for (let s of doFinalAssign(target, idx)) yield s;
             }
             else if (isInt(arg)) {
                 let index = arg.valueOf();
@@ -1826,8 +1830,7 @@ export class Runtime {
                         index = 0;
                     }
                 }
-
-                doFinalAssign(result, index);
+                for (let s of doFinalAssign(result, index)) yield s;
             }
         }
         this.push(result);
