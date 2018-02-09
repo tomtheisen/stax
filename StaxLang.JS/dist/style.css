@@ -14,6 +14,9 @@ textarea {
     resize: vertical;
     margin: 0.2em;
 }
+input {
+    font-family: monospace;
+}
 
 button {
     background-color: #44e;
