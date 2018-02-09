@@ -377,7 +377,7 @@ chars	|Types        	|Name               	|Description
 `k`  	|int block    	|reduce-range       	|Terminate a block and reduce (fold) [1 .. n] using the block.
 `k`  	|int          	|reduce-short       	|If there is no open block, use the rest of the program as the block to reduce the array.  Implicitly print the result.
 `k`  	|arr          	|reduce-short-range 	|If there is no open block, use the rest of the program as the block to reduce [1 .. n].  Implicitly print the result.
-`K`  	|arr arr block	|cross-map          	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be a single flat array.
+`K`  	|arr arr block	|cross-map          	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be an array of arrays.
 `m`  	|arr block    	|map                	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
 `m`  	|arr          	|map-short          	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`  	|int          	|map-range-short    	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
