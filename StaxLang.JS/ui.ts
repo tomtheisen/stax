@@ -71,8 +71,7 @@ function runProgramTimeSlice() {
         while (!(result = activeStateIterator.next()).done) {
             steps += 1;
             if (result.value.break) {
-                showDebugInfo(result.value.ip);
-                statusEl.textContent = `${ steps } steps, paused`;
+                showDebugInfo(result.value.ip, steps);
                 return;
             }
             if(performance.now() - sliceStart > workMilliseconds) break;
@@ -109,30 +108,26 @@ function step() : number | null {
     }
     else {
         pendingBreak = true;
-        steps += 1;
-        stopButton.disabled = false;
-        showDebugInfo(result.value.ip);
-        statusEl.textContent = `${ steps } steps, paused`;
+        showDebugInfo(result.value.ip, ++steps);
         return result.value.ip;
     }
 }
 
 stepButton.addEventListener("click", step);
 
-function showDebugInfo(ip: number) {
+function showDebugInfo(ip: number, steps: number) {
     if (!activeRuntime) return;
     debugContainer.hidden = false;
+
+    stopButton.disabled = false;
+    statusEl.textContent = `${ steps } steps, paused`;
 
     const debugPreEl = document.getElementById("debugCodePre")!,
         debugPostEl = document.getElementById("debugCodePost")!;
     let code = codeArea.value;
-    if (isPacked(code)) {
-        debugPreEl.textContent = debugPostEl.textContent = "";
-    }
-    else {
-        debugPreEl.textContent = code.substr(0, ip);
-        debugPostEl.textContent = code.substr(ip);
-    }
+    if (isPacked(code)) code = unpack(code);
+    debugPreEl.textContent = code.substr(0, ip);
+    debugPostEl.textContent = code.substr(ip);
 
     let state = activeRuntime.getDebugState();
     document.getElementById("watchX")!.textContent = state.x;
@@ -155,7 +150,6 @@ function showDebugInfo(ip: number) {
         li.textContent = e;
         watchInputEl.appendChild(li);
     });
-
 }
 
 function load() {
