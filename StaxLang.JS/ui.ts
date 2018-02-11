@@ -20,11 +20,13 @@ const compressorInputEl = document.getElementById("compressorInput") as HTMLInpu
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 const debugContainer = document.getElementById("debugState") as HTMLElement;
 const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
+const multiInputEl = document.getElementById("multiInput") as HTMLInputElement;
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0;
 let pendingBreak = false;
+let pendingInputs: string[] = [];
 
 // prepare for new run
 function resetRuntime() {
@@ -36,9 +38,24 @@ function resetRuntime() {
     packButton.disabled = codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
 
-    let code = codeArea.value, stdin = inputArea.value.split(/\r?\n/);
+    if (multiInputEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
+    else pendingInputs = [inputArea.value];
+    startNextInput();
+}
+
+// begin the next test case, or clean up if done
+function startNextInput() {
+    if (pendingInputs.length === 0) {
+        cleanupRuntime();
+        return;
+    }
+
+    let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
     activeStateIterator = activeRuntime.runProgram(code, stdin);
+    steps = 0;
+    if (outputEl.textContent) outputEl.textContent += "\n";
+    pendWork(runProgramTimeSlice);
 }
 
 // mark program finished
@@ -76,12 +93,12 @@ function runProgramTimeSlice() {
             }
             if(performance.now() - sliceStart > workMilliseconds) break;
         }
-        if (result.done) cleanupRuntime();
+        if (result.done) startNextInput();
         else pendWork(runProgramTimeSlice);
     }
     catch (e) {
         if (e instanceof Error) outputEl.textContent += "\nStax runtime error: " + e.message;
-        cleanupRuntime();
+        startNextInput();
         return;
     }
     
@@ -102,7 +119,7 @@ function step() : number | null {
     if (!isActive()) resetRuntime();
     let result = activeStateIterator!.next();
     if (result.done) {
-        cleanupRuntime();
+        startNextInput();
         statusEl.textContent = `${ steps } steps, complete`;
         return null;
     }
@@ -152,10 +169,21 @@ function showDebugInfo(ip: number, steps: number) {
     });
 }
 
+function sizeTextArea(el: HTMLTextAreaElement) {
+    el.rows = Math.max(el.rows, 2, el.value.split("\n").length);
+}
+
 function load() {
     let params = new URLSearchParams(location.hash.substr(1));
-    if (params.has('c')) codeArea.value = params.get('c')!;
-    if (params.has('i')) inputArea.value = params.get('i')!;
+    if (params.has('c')) {
+        codeArea.value = params.get('c')!;
+        sizeTextArea(codeArea);
+    }
+    if (params.has('i')) {
+        inputArea.value = params.get('i')!;
+        sizeTextArea(inputArea);
+    }
+    if (params.has('m')) multiInputEl.checked = true;
     if (params.get('a')) {
         autoCheckEl.checked = true;
         run();
@@ -168,6 +196,7 @@ function updateStats() {
     params.set('c', codeArea.value);
     params.set('i', inputArea.value);
     if (autoCheckEl.checked) params.set('a', '1');
+    if (multiInputEl.checked) params.set('m', '1');
     saveLink.href = '#' + params.toString();
 
     let packed = isPacked(codeArea.value);
@@ -186,13 +215,15 @@ updateStats();
 autoCheckEl.addEventListener("change", updateStats);
 
 let statsTimeout: number | null = null;
-function pendUpdateStats() {
+function pendUpdate() {
+    const el = this instanceof HTMLTextAreaElement ? this : null;
+    if (el) sizeTextArea(el);
     if (statsTimeout) clearTimeout(statsTimeout);
     statsTimeout = window.setTimeout(updateStats, 100);
 }
 
-codeArea.addEventListener("input", pendUpdateStats);
-inputArea.addEventListener("input", pendUpdateStats);
+codeArea.addEventListener("input", pendUpdate);
+inputArea.addEventListener("input", pendUpdate);
 
 function doCompressor() {
     let input = compressorInputEl.value;

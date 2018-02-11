@@ -85,3 +85,10 @@ pre:empty {
     margin: 0.5em;
     padding: 0.5em;
 }
+
+.upperRight {
+    float: right;
+    height: 0;
+    position: relative;
+    top: -1.2em;
+}
