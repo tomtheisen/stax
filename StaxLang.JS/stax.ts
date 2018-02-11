@@ -755,7 +755,7 @@ export class Runtime {
                         break;
                     }
                     case 'W':
-                        let shorthand = !(this.peek() instanceof Block);
+                        let shorthand = !(this.totalSize() && this.peek() instanceof Block);
                         for (let s of this.doUnconditionalWhile(getRest())) {
                             if (s.cancel) return;
                             yield s;
@@ -2463,7 +2463,7 @@ export class Runtime {
 
     private *doUnconditionalWhile(rest: Block) {
         let cancelled = false;
-        let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
+        let body: (Block | string) = (this.totalSize() && this.peek() instanceof Block) ? this.pop() as Block : rest;
     
         this.pushStackFrame();
         do {
