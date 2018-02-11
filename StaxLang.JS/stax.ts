@@ -746,7 +746,7 @@ export class Runtime {
                         else throw new Error("unknown type for ^");
                         break;
                     case 'w': {
-                        let shorthand = !(this.peek() instanceof Block);
+                        let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
                         for (let s of this.doWhile(getRest())) {
                             if (s.cancel) return;
                             yield s;
@@ -754,14 +754,15 @@ export class Runtime {
                         if (shorthand) return;
                         break;
                     }
-                    case 'W':
-                        let shorthand = !(this.totalSize() && this.peek() instanceof Block);
+                    case 'W': {
+                        let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
                         for (let s of this.doUnconditionalWhile(getRest())) {
                             if (s.cancel) return;
                             yield s;
                         }
                         if (shorthand) return;
                         break;
+                    }
                     case 'x':
                         this.push(this.x);
                         break;
@@ -2478,7 +2479,7 @@ export class Runtime {
 
     private *doWhile(rest: Block) {
         let cancelled = false;
-        let body: (Block | string) = (this.peek() instanceof Block) ? this.pop() as Block : rest;
+        let body: (Block | string) = (this.totalSize() && this.peek() instanceof Block) ? this.pop() as Block : rest;
     
         this.pushStackFrame();
         do {

@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.0.0 - Tom Theisen - https://github.com/ttheisen/stax";
+        public const string VersionInfo = "Stax 1.0.1 - Tom Theisen - https://github.com/ttheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -856,14 +856,14 @@ namespace StaxLang {
                         break;
                     case 'w': // do-while
                         {
-                            bool shorthand = !IsBlock(Peek());
+                            bool shorthand = this.TotalStackSize == 0 || !IsBlock(Peek());
                             foreach (var s in DoWhile(block, block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
                         break;
                     case 'W':
                         {
-                            bool shorthand = !IsBlock(Peek());
+                            bool shorthand = this.TotalStackSize == 0 || !IsBlock(Peek());
                             foreach (var s in DoPreCheckWhile(block, block.SubBlock(ip + 1))) yield return s;
                             if (shorthand) ip = program.Length;
                         }
@@ -2955,7 +2955,7 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoPreCheckWhile(Block block, Block rest) {
-            if (!IsBlock(Peek())) {
+            if (this.TotalStackSize == 0 || !IsBlock(Peek())) {
                 block.AddDesc("loop rest of program until cancelled");
                 PushStackFrame();
                 while (true) {
@@ -2987,7 +2987,7 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoWhile(Block block, Block rest) {
-            if (!IsBlock(Peek())) {
+            if (this.TotalStackSize == 0 || !IsBlock(Peek())) {
                 block.AddDesc("while loop rest of program; pop condition at end");
                 PushStackFrame();
                 do {

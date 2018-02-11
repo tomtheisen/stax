@@ -416,3 +416,9 @@ ab
 cd
 	stax
 _
+	name:NakedLoops
+	out
+foo
+	stax
+W"foo"1C
+w"foo"0
