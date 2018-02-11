@@ -37,6 +37,7 @@ function resetRuntime() {
 
     packButton.disabled = codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
+    stopButton.disabled = false;
 
     if (multiInputEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
     else pendingInputs = [inputArea.value];
@@ -55,7 +56,6 @@ function startNextInput() {
     activeStateIterator = activeRuntime.runProgram(code, stdin);
     steps = 0;
     if (outputEl.textContent) outputEl.textContent += "\n";
-    pendWork(runProgramTimeSlice);
 }
 
 // mark program finished
@@ -94,7 +94,7 @@ function runProgramTimeSlice() {
             if(performance.now() - sliceStart > workMilliseconds) break;
         }
         if (result.done) startNextInput();
-        else pendWork(runProgramTimeSlice);
+        pendWork(runProgramTimeSlice);
     }
     catch (e) {
         if (e instanceof Error) outputEl.textContent += "\nStax runtime error: " + e.message;
