@@ -941,3 +941,20 @@ L{jm :| mJ
 1 5 6 2 7 3 4
 	stax
 |G J
+	name:DivisorReduceArray
+	in
+[1 2 3 4]
+[]
+[2 4 6]
+[0]
+[-2 0]
+[2]
+	out
+1 2 3 4
+
+1 2 3
+0
+-1 0
+1
+	stax
+me :_ J

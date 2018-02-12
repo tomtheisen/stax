@@ -312,6 +312,7 @@ chars	|Types              	|Name              	|Description
 `:/` 	|arr int            	|split-at          	|Split array at index; push both parts.
 `:/` 	|int arr            	|split-at          	|Split array at index; push both parts.
 `:\` 	|arr arr            	|diff-indices      	|Get indices of unequal elements between arrays.
+`:_` 	|arr                	|reduce-array      	|Divide all integers in array by their collective gcd.
 `:=` 	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
 `:|` 	|arr                	|column-align      	|Right pad each column to equal length.
 `:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.

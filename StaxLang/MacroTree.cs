@@ -67,6 +67,7 @@ namespace StaxLang {
                 ('_', "if", "1!*/", "float divide"),
                 ('_', "fi", "1!*/", "float divide"),
                 ('_', "ff", "1!*/", "float divide"),
+                ('_', "a", "css|g1|M~{;/m,d", "reduce array; divide all elements by gcd"),
                 ('*', "a", "{*k", "array product"),
                 ('+', "f", "c0>s0<-", "number sign"),
                 ('+', "r", "c0>s0<-", "number sign"),
