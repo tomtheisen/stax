@@ -98,9 +98,9 @@ function runProgramTimeSlice() {
         pendWork(runProgramTimeSlice);
     }
     catch (e) {
-        if (e instanceof Error) outputEl.textContent += "\nStax runtime error: " + e.message;
+        if (e instanceof Error) outputEl.textContent += "Stax runtime error: " + e.message + "\n";
         startNextInput();
-        return;
+        pendWork(runProgramTimeSlice);
     }
     
     let elapsed = (performance.now() - start) / 1000;
