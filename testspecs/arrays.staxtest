@@ -451,8 +451,18 @@ cdefg
 ab
 	stax
 2 :/ PP
-	stax
 2s :/ PP
+	in
+	out
+-ab
+-ab
+a-b
+-ab
+a-b
+ab-
+ab-
+	stax
+3:rF.abs:/sp'-pP
 	name:Powerset
 	in
 ABC
