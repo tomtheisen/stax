@@ -2,6 +2,7 @@ import { Runtime, ExecutionState } from './stax';
 import { pendWork } from './timeoutzero';
 import { compress } from './huffmancompression';
 import { isPacked, unpack, pack } from './packer';
+import 'url-search-params-polyfill';
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 20;

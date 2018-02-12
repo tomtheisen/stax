@@ -14,7 +14,8 @@
   "license": "WTFPL",
   "dependencies": {
     "@types/node": "^8.0.47",
-    "big-integer": "^1.6.25"
+    "big-integer": "^1.6.25",
+    "url-search-params-polyfill": "^2.0.3"
   },
   "repository": {
     "type": "git",
