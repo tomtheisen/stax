@@ -1583,7 +1583,7 @@ namespace StaxLang {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "regex in " + e + " matches all of string");
                                     else block.AddDesc("regex matches all of string");
                                     List<object> b = Pop(), a = Pop();
-                                    bool match = Regex.IsMatch(A2S(a), "^(" + A2S(b) + ")$");
+                                    bool match = Regex.IsMatch(A2S(a), "^(?:" + A2S(b) + ")$");
                                     Push(match ? BigInteger.One : BigInteger.Zero);
                                 }
                                 break;
