@@ -256,7 +256,7 @@ export class Runtime {
         }
 
         if (this.outBuffer) this.print("");
-        if (!this.producedOutput) this.print(this.pop());
+        if (!this.producedOutput && this.totalSize()) this.print(this.pop());
     }
 
     private *runSteps(block: Block): IterableIterator<ExecutionState> {
@@ -446,7 +446,7 @@ export class Runtime {
                         break;
                     case 'D':
                         if (isArray(this.peek())) { // remove first element
-                            let result = this.popArray();
+                            let result = [...this.popArray()];
                             result.shift();
                             this.push(result);
                         }
@@ -507,7 +507,11 @@ export class Runtime {
                     }
                     case 'h':
                         if (isNumber(this.peek())) this.runMacro("2/");
-                        else if (isArray(this.peek())) this.push(this.popArray()[0]);
+                        else if (isArray(this.peek())) {
+                            let arr = this.popArray();
+                            if (arr.length === 0) fail("empty array has no first element");
+                            this.push(arr[0]);
+                        }
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
@@ -590,7 +594,7 @@ export class Runtime {
                         break;
                     case 'k': {
                         let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doReduce(getRest())) ;
+                        for (let s of this.doReduce(getRest())) yield s;
                         if (shorthand) return;
                         break;
                     }
@@ -1420,6 +1424,9 @@ export class Runtime {
                         break;
                     case '|T':
                         this.doPermutations();
+                        break;
+                    case '|V':
+                        this.push([]); // command line args
                         break;
                     case '|w':
                         this.doTrimElementsFromStart();
