@@ -25,13 +25,13 @@ const multiInputEl = document.getElementById("multiInput") as HTMLInputElement;
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
-let steps = 0, start = 0;
+let steps = 0, start = 0, input = 0;
 let pendingBreak = false;
 let pendingInputs: string[] = [];
 
 // prepare for new run
 function resetRuntime() {
-    steps = 0;
+    input = steps = 0;
     start = performance.now();
     outputEl.textContent = "";
     pendingBreak = false;
@@ -56,7 +56,7 @@ function startNextInput() {
     activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
     activeStateIterator = activeRuntime.runProgram(code, stdin);
     steps = 0;
-    if (outputEl.textContent) outputEl.textContent += "\n";
+    if (input++) outputEl.textContent += "\n";
 }
 
 // mark program finished
