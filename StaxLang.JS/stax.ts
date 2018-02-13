@@ -1380,7 +1380,7 @@ export class Runtime {
                         }
                         else if (isArray(b)) {
                             let a = this.popArray();
-                            let match = RegExp(`^(${ A2S(b) })$`).exec(A2S(a));
+                            let match = RegExp(`^(?:${ A2S(b) })$`).exec(A2S(a));
                             this.push(match ? one : zero);
                         }
                         break;

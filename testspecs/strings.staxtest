@@ -514,6 +514,12 @@ abcd
 	stax
 "[a-z]+" |Q
 	in
+aba
+	out
+1
+	stax
+"(a)b\1" |Q
+	in
 fizz buzzz
 	out
 zz zzz
