@@ -422,3 +422,9 @@ foo
 	stax
 W"foo"1C
 w"foo"0
+	name:NearPrime
+	out
+foo
+	stax
+8 :P "foo"
+8 :p "foo"
