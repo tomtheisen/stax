@@ -1,7 +1,7 @@
 # Stax
 Stax Golfing Language
 
-[Try stax online.](http://stax.tomtheisen.com/)
+[Run and debug stax online.](https://staxlang.xyz/)
 
 Have you ever noticed that software is just too *big*?  Hello world mobile apps are tens of megabytes.  Websites are making hundreds of requests for a single page.  There's just too much stuff.  Stax is the answer!  Unfortunately, it's the answer to another question.  That question is "is it possible to make another golfing language?".  It's not possible to write a mobile app or website in stax, but if it was, they'd probably be extremely small.  Don't make the mistake of thinking that means "efficient".  If you want a more efficient language, you should probably try any other language.  But small, definitely.
 
