@@ -55,7 +55,6 @@ function startNextInput() {
     let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
     activeStateIterator = activeRuntime.runProgram(code, stdin);
-    steps = 0;
     if (input++) outputEl.textContent += "\n";
 }
 
