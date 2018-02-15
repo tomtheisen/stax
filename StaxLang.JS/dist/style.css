@@ -62,7 +62,7 @@ ol {
 #debugCodePre {
     background-color: #aac;
 }
-#debugCodePost, #version {
+#debugCodePost, #version, #buildInfo {
     color: grey;
 }
 

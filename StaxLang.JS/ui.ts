@@ -4,6 +4,10 @@ import { compress } from './huffmancompression';
 import { isPacked, unpack, pack } from './packer';
 import 'url-search-params-polyfill';
 
+declare var __COMMIT_HASH__: string;
+declare var __BUILD_DATE__: string;
+document.getElementById("buildInfo")!.textContent = `${__COMMIT_HASH__} built ${__BUILD_DATE__}`;
+
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 20;
 
