@@ -51,6 +51,10 @@ ol {
     margin: 0;
 }
 
+#compressorDialog input {
+    width: 100%;
+}
+
 #compressorOutput, #debugCode, dl, li {
     font-family: monospace;
 }
