@@ -75,6 +75,10 @@ function isActive() {
     return !!activeRuntime;
 }
 
+function showError(err: Error) {
+    outputEl.textContent += "Stax runtime error: " + err.message + "\n";
+}
+
 function runProgramTimeSlice() {
     if (!activeStateIterator || pendingBreak) {
         pendingBreak = false;
@@ -97,7 +101,7 @@ function runProgramTimeSlice() {
         pendWork(runProgramTimeSlice);
     }
     catch (e) {
-        if (e instanceof Error) outputEl.textContent += "Stax runtime error: " + e.message + "\n";
+        if (e instanceof Error) showError(e);
         startNextInput();
         pendWork(runProgramTimeSlice);
     }
@@ -116,17 +120,30 @@ runButton.addEventListener("click", run);
 
 // gets instruction pointer if still running
 function step() : number | null {
-    if (!isActive()) resetRuntime();
-    let result = activeStateIterator!.next();
-    if (result.done) {
+    function caseComplete() {
         startNextInput();
-        statusEl.textContent = `${ steps } steps, complete`;
-        return null;
+        debugContainer.hidden = true;
+        if (isActive()) statusEl.textContent = `${ steps } steps, program ended`
+        else statusEl.textContent = `${ steps } steps, complete`;
     }
-    else {
-        pendingBreak = true;
-        showDebugInfo(result.value.ip, ++steps);
-        return result.value.ip;
+
+    if (!isActive()) resetRuntime();
+    try {
+        let result = activeStateIterator!.next();
+        if (result.done) {
+            caseComplete();
+            return null;
+        }
+        else {
+            pendingBreak = true;
+            showDebugInfo(result.value.ip, ++steps);
+            return result.value.ip;
+        }
+    }
+    catch (e) {
+        if (e instanceof Error) showError(e);
+        caseComplete();
+        return null;
     }
 }
 
@@ -270,16 +287,16 @@ setVersion();
 document.addEventListener("keydown", ev => {
     switch (ev.key) {
         case "F8":
-            run();
             ev.preventDefault();
+            run();
             break;
         case "F11":
-            step();
             ev.preventDefault();
+            step();
             break;
         case "Escape":
-            if (isActive()) stop();
             ev.preventDefault();
+            if (isActive()) stop();
             break;
     }
 });
