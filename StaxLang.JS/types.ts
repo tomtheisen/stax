@@ -144,7 +144,7 @@ export function stringFormat(arg: StaxValue): StaxArray {
     throw new Error("bad type for stringFormat");
 }
 
-const versionInfo = "Stax 1.0.2 - Tom Theisen - https://github.com/ttheisen/stax"
+const versionInfo = "Stax 1.0.3 - Tom Theisen - https://github.com/ttheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),

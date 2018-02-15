@@ -10,12 +10,11 @@ using System.Text.RegularExpressions;
 
 /* To add:
  *     flood rle contiguous grid coordinates
- *     debugger
  */
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.0.2 - Tom Theisen - https://github.com/ttheisen/stax";
+        public const string VersionInfo = "Stax 1.0.3 - Tom Theisen - https://github.com/ttheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
