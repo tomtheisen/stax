@@ -20,9 +20,18 @@
         
         <h2>Input</h2>
         <div class="upperRight">
+            <strong>Input separator:</strong>
             <label>
-                <input type="checkbox" id="multiInput">
-                Blank lines separate inputs
+                <input type="radio" name="splitMode" id="blankSplit">
+                Blank lines
+            </label>
+            <label>
+                <input type="radio" name="splitMode" id="lineSplit">
+                Every line
+            </label>
+            <label>
+                <input type="radio" name="splitMode" id="noSplit">
+                None
             </label>
         </div>
         <textarea id="stdin" spellcheck="false"></textarea>

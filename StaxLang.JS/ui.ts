@@ -21,7 +21,9 @@ const compressorInputEl = document.getElementById("compressorInput") as HTMLInpu
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 const debugContainer = document.getElementById("debugState") as HTMLElement;
 const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
-const multiInputEl = document.getElementById("multiInput") as HTMLInputElement;
+const blankSplitEl = document.getElementById("blankSplit") as HTMLInputElement;
+const lineSplitEl = document.getElementById("lineSplit") as HTMLInputElement;
+const noSplitEl = document.getElementById("noSplit") as HTMLInputElement;
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
@@ -40,7 +42,8 @@ function resetRuntime() {
     debugContainer.hidden = true;
     stopButton.disabled = false;
 
-    if (multiInputEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
+    if (blankSplitEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
+    else if (lineSplitEl.checked) pendingInputs = inputArea.value.split(/\r?\n/);
     else pendingInputs = [inputArea.value];
     startNextInput();
 }
@@ -200,7 +203,17 @@ function load() {
         inputArea.value = params.get('i')!;
         sizeTextArea(inputArea);
     }
-    if (params.has('m')) multiInputEl.checked = true;
+    switch (params.get('m')) {
+        case '1':
+            blankSplitEl.checked = true;
+            break;
+        case '2':
+            lineSplitEl.checked = true;
+            break;
+        default: 
+            noSplitEl.checked = true;
+            break;
+    }
     if (params.get('a')) {
         autoCheckEl.checked = true;
         run();
@@ -213,7 +226,8 @@ function updateStats() {
     params.set('c', codeArea.value);
     params.set('i', inputArea.value);
     if (autoCheckEl.checked) params.set('a', '1');
-    if (multiInputEl.checked) params.set('m', '1');
+    if (blankSplitEl.checked) params.set('m', '1');
+    if (lineSplitEl.checked) params.set('m', '2');
     saveLink.href = '#' + params.toString();
 
     let packed = isPacked(codeArea.value);
@@ -230,6 +244,9 @@ function updateStats() {
 updateStats();
 
 autoCheckEl.addEventListener("change", updateStats);
+lineSplitEl.addEventListener("change", updateStats);
+blankSplitEl.addEventListener("change", updateStats);
+noSplitEl.addEventListener("change", updateStats);
 
 let statsTimeout: number | null = null;
 function pendUpdate() {
