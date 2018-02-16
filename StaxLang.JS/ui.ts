@@ -234,16 +234,25 @@ function updateStats() {
     if (lineSplitEl.checked) params.set('m', '2');
     saveLink.href = '#' + params.toString();
 
-    let packed = isPacked(codeArea.value);
-    let type = packed ? "packed" : "ascii";
+    if (isPacked(codeArea.value)) {
+        propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
+        packButton.textContent = "Unpack";
+        packButton.disabled = false;
+    }
+    else {
+        packButton.textContent = "Pack";
+        let unknown = false;
+        codeArea.value.split("").forEach(c => {
+            let codepoint = c.charCodeAt(0);
+            if (codepoint < 32 || codepoint > 127) {
+                packButton.disabled = true;
+                unknown = unknown || (codepoint !== 9 && codepoint !== 10 && codepoint !== 13); 
+            }
+        });
 
-    let size = codeArea.value.length;
-    propsEl.textContent = `${ size } bytes, ${ type }`;
-
-    packButton.textContent = packed ? "Unpack" : "Pack";
-
-    let packable = !packed && !!codeArea.value.match(/^[ -~]+$/);
-    packButton.disabled = !packed && !packable;
+        if (unknown) propsEl.textContent = `${ codeArea.value.length } characters`
+        else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
+    }
 }
 updateStats();
 
