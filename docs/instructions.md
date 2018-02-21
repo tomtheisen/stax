@@ -147,7 +147,6 @@ chars	|Name        	|Description
 `=`  	|equal       	|Equals.  Numberic types are coerced as necessary.  Arrays are equal to scalars if their first element is equal.
 `?`  	|if-then-else	|If the first value, then yield the second, else the third.  If the result is a block, execute it.
 
-
 ## String
 Strings are really just arrays of integers, but some operations are oriented towards strings anyway.  In these contexts, 0 is usually converted to 32, so that 0 can be used as a space in addition to its normal codepoint.
 
@@ -204,7 +203,6 @@ chars    	|Types          	|Name              	|Description
 `:t`     	|arr arr        	|ring-tranlate     	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 `:w`     	|arr            	|brace-palindromize	|Concatenate all but the last character reversed.  Braces and slashes are individually reversed also.
 `:W`     	|arr            	|brace-mirror      	|Concatenate the string reversed.  Braces and slashes are individually reversed also.
-
 
 ## Array
 chars	|Types              	|Name              	|Description
@@ -268,6 +266,7 @@ chars	|Types              	|Name              	|Description
 `\|^`	|arr int            	|multi-self-join   	|Generate all arrays of size b using elements from a.
 `\|*`	|arr int            	|repeat-elements   	|Repeat each element n times.
 `\|*`	|arr arr            	|cross-product     	|Cartesian join of arrays, producing a flat array of pairs.
+`\|/`	|arr arr            	|multi-group       	|Partition a into differently sized groups from b.
 `\|-`	|arr arr            	|multiset-subtract 	|Remove elements in b individually from a, if they're present.
 `\|-`	|arr num            	|remove-first      	|Remove first instance of b from a.
 `\|\`	|arr arr            	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
@@ -341,7 +340,6 @@ chars	|Types              	|Name              	|Description
 `:T` 	|arr                	|truthy-indices    	|Get all indices of truthy elements.
 `:u` 	|arr                	|multi-single      	|Array contains exactly 1 distinct element?
 `:V` 	|arr                	|mean              	|Mean of array. (rational or float)
-
 
 ## Blocks
 

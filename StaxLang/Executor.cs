@@ -1105,11 +1105,33 @@ namespace StaxLang {
                                     break;
                                 }
                                 throw new StaxException("Bad types for |*");
-                            case '/': 
-                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "divide out " + e + " as many times as possible");
-                                else block.AddDesc("divide by n until no longer a multiple");
-                                RunMacro("ss~;*{;/c;%!w,d");
+                            case '/': {
+                                dynamic b = this.Pop(), a = this.Pop();
+                                if (IsInt(a) && IsInt(b)) {
+                                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "divide out " + e + " as many times as possible");
+                                    else block.AddDesc("divide by n until no longer a multiple");
+                                    this.Push(a);
+                                    this.Push(b);
+                                    RunMacro("~;*{;/c;%!w,d");
+                                }
+                                else if (IsArray(a) && IsArray(b)) {
+                                    var result = new List<object>();
+                                    for (int i = 0, offset = 0; offset < a.Count; i++) {
+                                        var size = b[i % b.Count];
+                                        int sizeInt;
+                                        switch (size) {
+                                            case BigInteger bi: sizeInt = (int)bi; break;
+                                            case Rational r: sizeInt = (int)r.Floor(); break;
+                                            case double d: sizeInt = (int)d; break;
+                                            default: throw new StaxException("can't multi-chunk by non-number");
+                                        } 
+                                        result.Add(((List<object>)a).Skip(offset).Take(sizeInt).ToList());
+                                        offset += sizeInt;
+                                    }
+                                    this.Push(result);
+                                }
                                 break;
+                            }
                             case '\\':
                                 if (IsArray(Peek())) {
                                     block.AddDesc("zip; truncate to shorter");

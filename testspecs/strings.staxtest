@@ -109,10 +109,18 @@ abc
 'dI
 	name:ChunkString
 	in
+abcdefgh
 	out
 abc,def,gh
 	stax
-"abcdefgh" 3/ ',*
+3/ ',*
+	name:MultichunkString
+	in
+abcdefgh
+	out
+a bc d ef g h
+	stax
+2R |/ J
 	name:Transpose
 	in
 	out

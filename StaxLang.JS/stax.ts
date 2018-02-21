@@ -984,9 +984,25 @@ export class Runtime {
                         }
                         break;
                     }
-                    case '|/':
-                        this.runMacro("ss~;*{;/c;%!w,d");
+                    case '|/': {
+                        let b = this.pop(), a = this.pop();
+                        if (isInt(a) && isInt(b)) {
+                            this.push(a, b);
+                            this.runMacro("~;*{;/c;%!w,d");
+                        }
+                        else if (isArray(a) && isArray(b)) {
+                            let result: StaxArray = [];
+                            for (let i = 0, offset = 0; offset < a.length; i++) {
+                                let size = b[i % b.length];
+                                if (isNumber(size)) {
+                                    result.push(a.slice(offset, offset += Math.floor(size.valueOf())));
+                                }
+                                else fail("can't multi-chunk by non-number");
+                            }
+                            this.push(result);
+                        }
                         break;
+                    }
                     case '|\\':
                         if (isArray(this.peek())) {
                             this.runMacro("b%s% |m~ ;(s,(s \\"); // zip; truncate to shorter
