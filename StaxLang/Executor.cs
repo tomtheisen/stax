@@ -316,11 +316,18 @@ namespace StaxLang {
                     case '}':
                         block.AddDesc("end");
                         yield break;
-                    case '!':
-                        if (block.LastInstrType == InstructionType.Comparison) block.AmendDesc(e => "not " + e);
-                        else block.AddDesc("not");
-                        Push(IsTruthy(Pop()) ? BigInteger.Zero : BigInteger.One);
+                    case '!': {
+                        var a = this.Pop();
+                        if (a is Block) {
+                            foreach (var s in this.RunSteps(a)) yield return s;
+                        }
+                        else {
+                            if (block.LastInstrType == InstructionType.Comparison) block.AmendDesc(e => "not " + e);
+                            else block.AddDesc("not");
+                            Push(IsTruthy(a) ? BigInteger.Zero : BigInteger.One);
+                        }
                         break;
+                    }
                     case '+':
                         DoPlus(block);
                         break;
@@ -1115,6 +1122,7 @@ namespace StaxLang {
                                     RunMacro("~;*{;/c;%!w,d");
                                 }
                                 else if (IsArray(a) && IsArray(b)) {
+                                    block.AddDesc("partition array by specified group sizes");
                                     var result = new List<object>();
                                     for (int i = 0, offset = 0; offset < a.Count; i++) {
                                         var size = b[i % b.Count];

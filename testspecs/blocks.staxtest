@@ -253,3 +253,9 @@ bar
 foo
 	stax
 G"bar"PG}"foo"P
+	name:ExecuteBlock
+	in
+	out
+foo
+	stax
+{"foo"P}!

@@ -349,6 +349,7 @@ chars	|Types        	|Name               	|Description
 `}`  	|             	|                   	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
 `*`  	|int block    	|do-times           	|Perform block n times.
 `*`  	|block int    	|do-times           	|Perform block n times.
+`!`  	|block        	|execute-block      	|Execute a block.  Does not terminate a block.
 `/`  	|arr block    	|group-by           	|Group adjacent values that produce equal values using the block.  Does not terminate a block.
 `(`  	|arr block    	|partition-when     	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the element following the boundary.
 `)`  	|arr block    	|partition-when-pair	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the pair of elements around the boundary.

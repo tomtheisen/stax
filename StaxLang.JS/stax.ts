@@ -338,7 +338,10 @@ export class Runtime {
                         else this.push(this._);
                         break;
                     case '!':
-                        this.push(isTruthy(this.pop()) ? zero : one);
+                        if (this.peek() instanceof Block) {
+                            for (let s of this.runSteps(this.pop() as Block)) yield s;
+                        }
+                        else this.push(isTruthy(this.pop()) ? zero : one);
                         break;
                     case '+':
                         this.doPlus();
