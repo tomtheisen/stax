@@ -447,8 +447,8 @@ chars	|Value
 `VE` 	|sqrt(3)
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"
-`Vi` 	|"negative infinity"
-`VI` 	|"positive infinity"
+`Vi` 	|negative infinity
+`VI` 	|positive infinity
 `Vk` 	|1000
 `Vl` 	|"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `VL` 	|"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
