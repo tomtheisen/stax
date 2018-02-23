@@ -14,6 +14,10 @@ export function primeFactors(n: BigInteger): BigInteger[] {
             result.push(d);
             n = n.divide(d);
         }
+        if (d.square().gt(n)) {
+            result.push(n);
+            return result;
+        }
         if (n.equals(one)) return result;
     }
     throw new Error("Ran out of primes...?");
