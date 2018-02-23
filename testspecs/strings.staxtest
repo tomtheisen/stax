@@ -568,3 +568,10 @@ xxasdfgx
 asdfg
 	stax
 'xh :D
+	name:InvertCase
+	in
+abc123XYZ
+	out
+ABC123xyz
+	stax
+:C

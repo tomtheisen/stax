@@ -100,6 +100,7 @@ function setup() {
         { alias: "c", types: "iii", code: "a|m|M"},
         { alias: "c", types: "rii", code: "a|m|M1!*"},
         { alias: "c", types: "a", code: "{[?k"},
+        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t"},
         { alias: "d", types: "i", code: "c|a{[%!fsd"},
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},
         { alias: "D", types: "ai", code: "~;|w,|W"},

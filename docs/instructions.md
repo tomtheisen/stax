@@ -197,9 +197,10 @@ chars    	|Types          	|Name              	|Description
 `:{`     	|any            	|parenthesize      	|Embed value in parentheses as string.
 `:}`     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
-`:e`     	|arr            	|excerpts          	|Get all contiguous subarrays.
+`:C`     	|arr            	|invert-case       	|Invert case of letters a-z.
 `:D`     	|arr int        	|trim-both         	|Trim element from both ends of string.
 `:D`     	|arr arr        	|trim-both         	|Trim all characters from both ends of string.
+`:e`     	|arr            	|excerpts          	|Get all contiguous subarrays.
 `:R`     	|arr            	|brace-reflect     	|Reflect string, `(<[{/` becomes `\}]>)`
 `:t`     	|arr arr        	|ring-tranlate     	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 `:w`     	|arr            	|brace-palindromize	|Concatenate all but the last character reversed.  Braces and slashes are individually reversed also.

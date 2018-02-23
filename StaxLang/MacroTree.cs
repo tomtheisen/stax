@@ -107,6 +107,7 @@ namespace StaxLang {
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('c', "a", "{[?k", "get first truthy element"),
+                ('C', "a", "VaVA\\{cr+m$|t", "invert case of letters"),
                 ('d', "i", "c|a{[%!fsd", "all divisors"),
                 ('d', "a", "oc%vh~;t,Tc|+s%u*", "median"),
                 ('D', "ai", "~;|w,|W", "trim element from both ends of string"),
