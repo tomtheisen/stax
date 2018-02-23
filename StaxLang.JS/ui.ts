@@ -234,10 +234,10 @@ function updateStats() {
     if (lineSplitEl.checked) params.set('m', '2');
     saveLink.href = '#' + params.toString();
 
+    packButton.disabled = false;
     if (isPacked(codeArea.value)) {
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
-        packButton.disabled = false;
     }
     else {
         packButton.textContent = "Pack";
