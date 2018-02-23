@@ -99,6 +99,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|e`        	|int        	|is-even       	|(a + 1) % 2        	|Is even?
 `\|E`        	|int int    	|digits        	|                   	|Generate array of digit values in base.
 `\|E`        	|arr int    	|un-digit      	|                   	|Produce the number represented by the array of digits in the given base.
+`\|f`        	|int        	|factorize     	|                   	|Prime factorization array. 
 `\|F`        	|int        	|factorial     	|a!                 	|Factorial.
 `\|g`        	|int int    	|gcd           	|                   	|Greatest common denominator.
 `\|H`        	|int        	|base-16       	|                   	|Convert to base 16.
@@ -239,6 +240,7 @@ chars	|Types              	|Name              	|Description
 `I`  	|arr num            	|index-of          	|Get the index of the first occurrence.
 `I`  	|num arr            	|index-of          	|Get the index of the first occurrence.
 `M`  	|arr int            	|chunkify          	|Partition a into b chunks of almost equal size.  The largest chunks come first. They're one larger than the smaller ones.
+`M`  	|arr                	|transpose         	|Flip array of arrays about the diagonal. Non-array elements are considered to be singleton arrays.  Arrays are padded with zeroes as necessary to preserve layout. 
 `N`  	|arr                	|uncons-right      	|Remove last element from array.  Push the beginning of the array, then the removed element.
 `r`  	|int                	|0-range           	|Make range [0 .. n-1].
 `r`  	|arr                	|reverse           	|Reverse array.
@@ -443,7 +445,7 @@ chars	|Value
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
 `VD` 	|sqrt(2)
-`Ve` 	|"natural log base"
+`Ve` 	|natural log base`
 `VE` 	|sqrt(3)
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"

@@ -8,7 +8,7 @@ All integers are big integers, meaning they can have arbitray size and never ove
 These are just regular boring double precision floats.
 
 ## Rationals
-These are fractions of integers.  Most of the same arithmetic can be done on them, and they stay reduced.
+These are fractions of integers.  Most of the same arithmetic can be done on them, and they stay reduced.  There are no rational literals.  Instead, to produce an arbitrary rational like `3/8`, you could use `8u3*`. 
 
 ## Blocks
 These are pieces of code, not yet executed, like functions.  Except they don't really have arguments.
