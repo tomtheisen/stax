@@ -445,7 +445,7 @@ chars	|Value
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
 `Vd` 	|"0123456789"
 `VD` 	|sqrt(2)
-`Ve` 	|natural log base`
+`Ve` 	|natural log base
 `VE` 	|sqrt(3)
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"
