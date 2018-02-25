@@ -68,8 +68,9 @@ function startNextInput() {
 // mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    packButton.disabled = codeArea.disabled = inputArea.disabled = false;
+    codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = debugContainer.hidden = true;
+    updateStats();
 }
 
 function stop() {
