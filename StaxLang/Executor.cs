@@ -1293,6 +1293,9 @@ namespace StaxLang {
                                 else block.AddDesc("base 36");
                                 RunMacro("36|b");
                                 break;
+                            case '4':
+                                Push(IsArray(Pop()) ? BigInteger.One : BigInteger.Zero);
+                                break;
                             case '5':
                                 block.AddDesc("0-indexed fibonacci number"); 
                                 {

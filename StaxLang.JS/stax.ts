@@ -1096,6 +1096,9 @@ export class Runtime {
                     case '|3':
                         this.runMacro("36|b"); // base 36
                         break;
+                    case '|4':
+                        this.push(isArray(this.pop()) ? one : zero);
+                        break;
                     case '|5': { // 0-indexed fibonacci number
                         let n = this.popInt().valueOf(), a = one, b = one;
                         for (let i = 0; i < n; i++) [a, b] = [b, a.plus(b)];

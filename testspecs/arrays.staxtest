@@ -968,3 +968,14 @@ L{jm :| mJ
 1
 	stax
 me :_ J
+	name:IsArray
+	in
+[1 2 3]
+	out
+1
+	in
+987
+	out
+0
+	stax
+|4

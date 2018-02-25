@@ -147,6 +147,7 @@ chars	|Name        	|Description
 `>`  	|greater     	|Is greater than.  Arrays use string-style lexicographic ordering.
 `=`  	|equal       	|Equals.  Numberic types are coerced as necessary.  Arrays are equal to scalars if their first element is equal.
 `?`  	|if-then-else	|If the first value, then yield the second, else the third.  If the result is a block, execute it.
+`\|4` 	|is-array    	|Tests if a value is an array or not.  Produces 0 or 1.
 
 ## String
 Strings are really just arrays of integers, but some operations are oriented towards strings anyway.  In these contexts, 0 is usually converted to 32, so that 0 can be used as a space in addition to its normal codepoint.
