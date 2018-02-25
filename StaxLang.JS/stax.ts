@@ -2307,6 +2307,7 @@ export class Runtime {
         }
         else if (isArray(top)) {
             if (top.length > 0 && !isArray(top[0])) top = [top];
+            top = top.map((line) => [...line as StaxArray]); // prevent mutations
             let result: StaxArray = [];
             let maxlen = Math.max(...top.map(e => (e as StaxArray).length));
 

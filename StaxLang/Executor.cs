@@ -3230,6 +3230,7 @@ namespace StaxLang {
                 var result = new List<object>();
 
                 if (list.Count > 0 && !IsArray(list[0])) list = new List<object> { list };
+                list = list.Select(row => ((List<object>)row).ToList() as object).ToList();
 
                 int maxLen = 0;
                 foreach (List<object> row in list) maxLen = Math.Max(maxLen, row.Count);
