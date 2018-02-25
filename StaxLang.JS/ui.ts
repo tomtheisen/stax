@@ -270,6 +270,15 @@ function pendUpdate() {
 }
 
 codeArea.addEventListener("input", pendUpdate);
+codeArea.addEventListener("keydown", ev => {
+    if (ev.key === "i" && ev.ctrlKey) {
+        ev.preventDefault();
+        let s = codeArea.selectionStart;
+        codeArea.value = codeArea.value.substr(0, s)
+            + "\t" + codeArea.value.substr(s);
+        codeArea.selectionEnd = s + 1;
+    }
+});
 inputArea.addEventListener("input", pendUpdate);
 
 function doCompressor() {
