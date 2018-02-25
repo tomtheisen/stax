@@ -978,6 +978,9 @@ namespace StaxLang {
                                 if (IsInt(Peek())) DoPartition(block);
                                 else if (IsArray(Peek())) DoMultiAntiMode(block);
                                 break;
+                            case '~':
+                                DoLastIndexOf();
+                                break;
                             case '@':
                                 DoRemoveOrInsert(block);
                                 break;
@@ -2671,6 +2674,25 @@ namespace StaxLang {
                 }
                 Push(result);
             }
+        }
+
+        private void DoLastIndexOf() {
+            List<object> target = this.Pop(), arr = this.Pop();
+
+            for (int i = arr.Count - 1 - target.Count; i >= 0; i--) {
+                var match = true;
+                for (int j = 0; j < target.Count; j++) {
+                    if (!AreEqual(target[j], arr[i + j])) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    Push(new BigInteger(i));
+                    return;
+                }
+            }
+            Push(BigInteger.MinusOne);
         }
 
         private IEnumerable<ExecutionState> DoFindIndex() {

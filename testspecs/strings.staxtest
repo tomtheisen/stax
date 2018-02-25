@@ -89,6 +89,17 @@ U)
 6
 	stax
 "Hello World" "Wo" I
+	name:FindLastIndex
+	in
+foo bar foo baz asdf foo zxcv
+	out
+21
+	in
+sadf sdfjlk;sdfjk lsadfkjl fsad
+	out
+-1
+	stax
+"foo" |~
 	name:FindAllIndexes
 	in
 	out

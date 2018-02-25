@@ -798,6 +798,9 @@ export class Runtime {
                     case '|;':
                         this.push(this.index.isEven() ? zero : one);
                         break;
+                    case '|~':
+                        this.doLastIndexOf();
+                        break;
                     case '|@':
                         this.doRemoveOrInsert();
                         break;
@@ -1311,7 +1314,7 @@ export class Runtime {
                         break;
                     }
                     case '|n': 
-                        if (isInt(this.peek())) { // exponents of sesquential primes in factorization
+                        if (isInt(this.peek())) { // exponents of sequential primes in factorization
                             let target = this.popInt().abs(), result: StaxArray = [];
                             for (let p of allPrimes()) {
                                 if (target.lesserOrEquals(one)) break;
@@ -2213,6 +2216,17 @@ export class Runtime {
         this.push(result);
     }
 
+    private doLastIndexOf() {
+        let target = this.popArray(), arr = this.popArray();
+        for (let i = arr.length - 1 - target.length; i >= 0; i--) {
+            if (areEqual(target, arr.slice(i, i + target.length))) {
+                this.push(bigInt(i));
+                return;
+            }
+        }
+        this.push(minusOne);
+    }
+
     private *doIndexOf() {
         let target = this.pop(), arr = this.pop();
         if (!isArray(arr)) [arr, target] = [target, arr];
@@ -2225,14 +2239,7 @@ export class Runtime {
                     this.push(minusOne);
                     return;
                 }
-                let match = true;
-                for (let j = 0; j < target.length; j++) {
-                    if (!areEqual(arr[i + j], target[j])) {
-                        match = false;
-                        break;
-                    }
-                }
-                if (match) {
+                if (areEqual(target, arr.slice(i, i + target.length))) {
                     this.push(bigInt(i));
                     return;
                 }

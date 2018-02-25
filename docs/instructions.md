@@ -174,6 +174,7 @@ chars    	|Types          	|Name              	|Description
 `R`      	|arr arr arr    	|regex-replace     	|Regex replace using ECMA regex.
 `t`      	|arr            	|trim-left         	|Trim whitespace from left of string.
 `T`      	|arr            	|trim-right        	|Trim whitespace from right of string.
+`\|~`    	|arr arr        	|last-index-of     	|Get the index of the last occurrence of the substring.
 `\|<`    	|arr            	|left-align        	|Left align lines of text, padding to longest line.
 `\|>`    	|arr            	|right-align       	|Right align lines of text, padding to longest line.
 `\|\|`   	|arr int int arr	|embed-grid        	|Embed a grid inside another grid at the specfied coordinates.  Negative coordinates are not allowed.  OOB extends the necessary dimensions.
