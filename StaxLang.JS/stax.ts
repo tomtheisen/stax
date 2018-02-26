@@ -668,7 +668,7 @@ export class Runtime {
                     case 'R': 
                         if (isInt(this.peek())) this.push(range(1, this.popInt().add(one)));
                         else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
-                        else this.doRegexReplace();
+                        else for (let s of this.doRegexReplace()) yield s;
                         break;
                     case 's':
                         this.push(this.pop(), this.pop());
@@ -2428,26 +2428,36 @@ export class Runtime {
         }
     }
 
-    private doRegexReplace() {
+    private *doRegexReplace() {
         let replace = this.pop(), search = this.pop(), text = this.pop();
         if (!isArray(text) || !isArray(search)) throw new Error("bad types for replace");
-        let ts = A2S(text), ss = RegExp(A2S(search), "g");
+        let ts = A2S(text);
         
         if (isArray(replace)) {
-            let pattern
+            let ss = RegExp(A2S(search), "g");
             this.push(S2A(ts.replace(ss, A2S(replace))));
         }
         else if (replace instanceof Block) {
+            let ss = RegExp(A2S(search));
             let replaceBlock = replace;
+            
+            let result = "";
+            let charsUsed = 0;
+            let match: RegExpMatchArray | null;
+
             this.pushStackFrame();
-            let result = ts.replace(ss, m => {
-                this.push(this._ = S2A(m));
-                for (let s of this.runSteps(replaceBlock)) ; // todo: yield the execution states
+            while ((match = ts.substr(charsUsed).match(ss))) {
+                result += ts.substring(charsUsed, charsUsed + match.index!);
+                
+                this.push(S2A(match[0]));
+                for (let s of this.runSteps(replaceBlock)) yield s;
+                result += A2S(this.popArray());
+                charsUsed += match.index! + match[0].length;
+                
                 this.index = this.index.add(one);
-                let out = this.pop();
-                if (!isArray(out)) throw new Error("regex replace block didn't yield string");
-                return A2S(out);
-            });
+            }
+            result += ts.substr(charsUsed);
+
             this.popStackFrame();
             this.push(S2A(result));
         }
