@@ -243,15 +243,18 @@ function updateStats() {
     else {
         packButton.textContent = "Pack";
         let unknown = false;
-        codeArea.value.split("").forEach(c => {
-            let codepoint = c.charCodeAt(0);
-            if (codepoint < 32 || codepoint > 127) {
+        let pairs = 0;
+        for (let i = 0; i < codeArea.value.length; i++) {
+            let charCode = codeArea.value.charCodeAt(i);
+            let codePoint = codeArea.value.codePointAt(i);
+            if (charCode !== codePoint) pairs += 1;
+            if (charCode < 32 || charCode > 127) {
                 packButton.disabled = true;
-                unknown = unknown || (codepoint !== 9 && codepoint !== 10 && codepoint !== 13); 
+                unknown = unknown || (charCode !== 9 && charCode !== 10 && charCode !== 13); 
             }
-        });
+        }
 
-        if (unknown) propsEl.textContent = `${ codeArea.value.length } characters`
+        if (unknown) propsEl.textContent = `${ codeArea.value.length - pairs } characters`
         else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
     }
 }
