@@ -2449,7 +2449,7 @@ export class Runtime {
             while ((match = ts.substr(charsUsed).match(ss))) {
                 result += ts.substring(charsUsed, charsUsed + match.index!);
                 
-                this.push(S2A(match[0]));
+                this.push(this._ = S2A(match[0]));
                 for (let s of this.runSteps(replaceBlock)) yield s;
                 result += A2S(this.popArray());
                 charsUsed += match.index! + match[0].length;
