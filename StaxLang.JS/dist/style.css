@@ -51,6 +51,16 @@ ol {
     margin: 0;
 }
 
+#aboutInfo {
+    float: right;
+    max-width: calc(100vw - 9em);
+    text-align: right;
+}
+
+#status {
+    white-space: nowrap;
+}
+
 #compressorDialog input {
     width: 100%;
 }
@@ -95,4 +105,10 @@ pre:empty {
     height: 0;
     position: relative;
     top: -1.2em;
+}
+
+@media (max-width: 600px) {
+    .shortcut {
+        display: none;
+    }
 }

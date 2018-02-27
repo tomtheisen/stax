@@ -2,11 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Stax Golfing Language</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div style="float: right;">
+        <div id="aboutInfo">
             <a href="https://github.com/tomtheisen/stax/releases" id="version" title="Version history"></a>
             (<a href="https://github.com/tomtheisen/stax/tree/master/docs#stax">docs</a>)
             <small id="buildInfo"></small>
@@ -21,14 +22,14 @@
         
         <h2>Input</h2>
         <div class="upperRight">
-            <strong>Case separator:</strong>
+            <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
             <label>
                 <input type="radio" name="splitMode" id="blankSplit">
-                Blank lines
+                \n\n+
             </label>
             <label>
                 <input type="radio" name="splitMode" id="lineSplit">
-                Every line
+                \n
             </label>
             <label>
                 <input type="radio" name="splitMode" id="noSplit">
@@ -41,9 +42,9 @@
             <a id="savelink" href="#" title="Perma-link">&#128279;</a>
             <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
         </div>
-        <button id="run">&#x25b6; Run (F8)</button>
-        <button id="step">Step (F11)</button>
-        <button id="stop" disabled>Stop (Esc)</button>
+        <button id="run">&#x25b6; Run<span class="shortcut"> (F8)</span></button>
+        <button id="step">Step<span class="shortcut"> (F11)</span></button>
+        <button id="stop" disabled>Stop<span class="shortcut"> (Esc)</span></button>
         <span id="status"></span>
         
         <div id="debugState" class="well" hidden>
