@@ -65,7 +65,7 @@ ol {
     width: 100%;
 }
 
-#compressorOutput, #debugCode, dl, li {
+#compressorOutput, #debugCode, #debugState dl, #debugState li {
     font-family: monospace;
 }
 
@@ -74,6 +74,21 @@ ol {
 }
 #debugCodePost, #version, #buildInfo {
     color: grey;
+}
+
+#gallery {
+    display: none;
+    position: fixed;
+    background-color: #ddd;
+    padding: 0.5em 1em;
+}
+#gallery  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+#galleryOpen:hover + #gallery, #gallery:hover {
+    display: inline-block;
 }
 
 dt {
