@@ -61,7 +61,7 @@ function setup() {
         { alias: "_", types: "fi", code: "1!*/"},
         { alias: "_", types: "ff", code: "1!*/"},
         { alias: "_", types: "a", code: "css|g1|M~{;/m,d" },
-        { alias: "*", types: "a", code: "{*k"},
+        { alias: "*", types: "a", code: "O{*F"},
         { alias: "+", types: "f", code: "c0>s0<-"},
         { alias: "+", types: "r", code: "c0>s0<-"},
         { alias: "+", types: "i", code: "c0>s0<-"},

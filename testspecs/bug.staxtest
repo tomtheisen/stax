@@ -428,3 +428,16 @@ foo
 	stax
 8 :P "foo"
 8 :p "foo"
+	name:TransposeMutation
+	in
+[[1 2][3]]
+	out
+1 2
+3
+	stax
+cMdmJ
+	name:EmptyProduct
+	out
+1
+	stax
+z:*

@@ -1,0 +1,27 @@
+	#https://codegolf.stackexchange.com/questions/150675/visualize-merge-sort
+	in
+[[10,2]]
+	out
+10 2
+10|2
+2 10
+	in
+[[4,17,1,32]]
+	out
+4 17 1 32
+4 17|1 32
+4|17|1|32
+4 17|1 32
+1 4 17 32
+	in
+[[6,5,4,3,2,1]]
+	out
+6 5 4 3 2 1
+6 5 4|3 2 1
+6 5|4|3 2|1
+6|5|4|3|2|1
+5 6|4|2 3|1
+4 5 6|1 2 3
+1 2 3 4 5 6
+	stax
+{c{Jm'|*Pc{2Mm:f{fc{Dm$wW{{eoJm'|*P

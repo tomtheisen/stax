@@ -2,11 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Stax Golfing Language</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div style="float: right;">
+        <div id="aboutInfo">
             <a href="https://github.com/tomtheisen/stax/releases" id="version" title="Version history"></a>
             (<a href="https://github.com/tomtheisen/stax/tree/master/docs#stax">docs</a>)
             <small id="buildInfo"></small>
@@ -21,14 +22,14 @@
         
         <h2>Input</h2>
         <div class="upperRight">
-            <strong>Case separator:</strong>
+            <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
             <label>
                 <input type="radio" name="splitMode" id="blankSplit">
-                Blank lines
+                \n\n+
             </label>
             <label>
                 <input type="radio" name="splitMode" id="lineSplit">
-                Every line
+                \n
             </label>
             <label>
                 <input type="radio" name="splitMode" id="noSplit">
@@ -41,9 +42,9 @@
             <a id="savelink" href="#" title="Perma-link">&#128279;</a>
             <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
         </div>
-        <button id="run">&#x25b6; Run (F8)</button>
-        <button id="step">Step (F11)</button>
-        <button id="stop" disabled>Stop (Esc)</button>
+        <button id="run">&#x25b6; Run<span class="shortcut"> (F8)</span></button>
+        <button id="step">Step<span class="shortcut"> (F11)</span></button>
+        <button id="stop" disabled>Stop<span class="shortcut"> (Esc)</span></button>
         <span id="status"></span>
         
         <div id="debugState" class="well" hidden>
@@ -77,6 +78,19 @@
             <label>Value <br><input id="compressorInput" value="Hello, world!"></label>
             <br>
             <label>Stax literal <br><input id="compressorOutput" readonly></label>
+        </div>
+
+        <span id="galleryOpen">Examples</span>
+        <div id="gallery">
+            <ul>
+                <li><a target="_new" href="#c=Am&i=&a=1">Count to 10</a>
+                <li><a target="_new" href="#c=VVVv%2B-&i=The+quick+brown+fox+jumped+over+the+lazy+dog.&a=1">Remove vowels</a>
+                <li><a target="_new" href="#c=guX2%25x3*^xh%3F&i=196&a=1">Collatz</a>
+                <li><a target="_new" href="#c=1%5D%2CDcJP2B%7B%7C%2Bm1%7CS&i=15&a=1">Pascal's triangle</a>
+                <li><a target="_new" href="#c=.%3A%3A]{c{c%25H(_%2Bms{3*m|S}%2C*m&i=3&a=1">Sierpinski carpet</a>
+                <li><a target="_new" href="#c=&quot;sf0isf3y3n2oje4204&quot;2%2F{|3m3%2Fmy{]e~c{%3B|>.|_i%400\%40mm&i=31337&a=1">Seven segment</a>
+                <li><a target="_new" href="#c=%60%23i%3EAeyk%22%60%5D%60Qn%2Cp0C1n%3Dp%7BY%26JkR2%7CILUZF-n%29%3CC%23s3zVxy6j%40ZE%3ES%5D%5BRI%3Aw%5COGbq%23%60.%2C+%2F%5CA%5C%60YO%5B%24n9%7Cbl%7CI%3F%22C.e_twu4%7CUAc%5DnEIyd%5Bca_-hQT9Y%29%3APjwx%40O7%27-.%28Usi%215p%3C3zK_D99l%3EE%5C8N0_-%7ByH%3AxW%3C9u_4Z6%27%60c64%29%7EG%60GnA%3C+%7Dh%3B%26f%29NbMG%2Bwf%24L%26kIO%2F9%5B%2F-CYNm%22M%5E%222m4A4eDH%7DB-aiXFyF%7Bo.%3FbG0%4062%3AQx_%2F%2F%5C%25e6n%5D%3AECLVTa%5CAOF%5Dc%24F%22n%24%2F%7C.%2BHg9_%40V%2C%27%5B%3BhG%3D%22%60YGQ%60Eky-n+j%3C%60%3A%7BQQ%22%28Ooh%29%22A%2B%60%7EO*96L%5Bw%21%23%60%22N%60c%2C+n%60+%22%2BA%2B.%28G%2Bs11%29%2BQP%7CPy176%28..+%2B%2C%2BGQq%7D..+%2FA%5CPQ&i=&a=1">Never gonna give you up</a>
+            </ul>
         </div>
         
         <script src="bundle.js" charset="UTF-8"></script>

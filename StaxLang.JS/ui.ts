@@ -6,7 +6,7 @@ import 'url-search-params-polyfill';
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
-document.getElementById("buildInfo")!.textContent = `${__COMMIT_HASH__} built ${__BUILD_DATE__}`;
+document.getElementById("buildInfo")!.textContent = `${__COMMIT_HASH__} built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")}`;
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 20;
@@ -68,8 +68,9 @@ function startNextInput() {
 // mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    packButton.disabled = codeArea.disabled = inputArea.disabled = false;
+    codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = debugContainer.hidden = true;
+    updateStats();
 }
 
 function stop() {
@@ -242,15 +243,18 @@ function updateStats() {
     else {
         packButton.textContent = "Pack";
         let unknown = false;
-        codeArea.value.split("").forEach(c => {
-            let codepoint = c.charCodeAt(0);
-            if (codepoint < 32 || codepoint > 127) {
+        let pairs = 0;
+        for (let i = 0; i < codeArea.value.length; i++) {
+            let charCode = codeArea.value.charCodeAt(i);
+            let codePoint = codeArea.value.codePointAt(i);
+            if (charCode !== codePoint) pairs += 1;
+            if (charCode < 32 || charCode > 127) {
                 packButton.disabled = true;
-                unknown = unknown || (codepoint !== 9 && codepoint !== 10 && codepoint !== 13); 
+                unknown = unknown || (charCode !== 9 && charCode !== 10 && charCode !== 13); 
             }
-        });
+        }
 
-        if (unknown) propsEl.textContent = `${ codeArea.value.length } characters`
+        if (unknown) propsEl.textContent = `${ codeArea.value.length - pairs } characters`
         else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
     }
 }
@@ -270,6 +274,15 @@ function pendUpdate() {
 }
 
 codeArea.addEventListener("input", pendUpdate);
+codeArea.addEventListener("keydown", ev => {
+    if (ev.key === "i" && ev.ctrlKey) {
+        ev.preventDefault();
+        let s = codeArea.selectionStart;
+        codeArea.value = codeArea.value.substr(0, s)
+            + "\t" + codeArea.value.substr(s);
+        codeArea.selectionEnd = s + 1;
+    }
+});
 inputArea.addEventListener("input", pendUpdate);
 
 function doCompressor() {

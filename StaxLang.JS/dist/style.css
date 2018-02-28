@@ -51,11 +51,21 @@ ol {
     margin: 0;
 }
 
+#aboutInfo {
+    float: right;
+    max-width: calc(100vw - 9em);
+    text-align: right;
+}
+
+#status {
+    white-space: nowrap;
+}
+
 #compressorDialog input {
     width: 100%;
 }
 
-#compressorOutput, #debugCode, dl, li {
+#compressorOutput, #debugCode, #debugState dl, #debugState li {
     font-family: monospace;
 }
 
@@ -64,6 +74,21 @@ ol {
 }
 #debugCodePost, #version, #buildInfo {
     color: grey;
+}
+
+#gallery {
+    display: none;
+    position: fixed;
+    background-color: #ddd;
+    padding: 0.5em 1em;
+}
+#gallery  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+#galleryOpen:hover + #gallery, #gallery:hover {
+    display: inline-block;
 }
 
 dt {
@@ -95,4 +120,10 @@ pre:empty {
     height: 0;
     position: relative;
     top: -1.2em;
+}
+
+@media (max-width: 600px) {
+    .shortcut {
+        display: none;
+    }
 }
