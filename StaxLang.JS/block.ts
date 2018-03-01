@@ -61,6 +61,13 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                 pos += 2;
                 break;
 
+            case ' ':
+            case '\n':
+                let token = program.substr(pos).match(/\s+/)![0];
+                pushToken(token);
+                pos += token.length;
+                break;
+
             case '.':
                 pushToken(program.substr(pos, 3));
                 pos += 3;

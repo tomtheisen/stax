@@ -307,10 +307,8 @@ export class Runtime {
                     if (shorthand) break;
                 }
                 else if (token.startsWith('\t')) {} // tab starts comment
+                else if (token.match(/^\s+$/)) {} // noop
                 else switch (token) {
-                    case '\n':
-                    case ' ':
-                        break;
                     case '}':
                         return;
                     case '~':
