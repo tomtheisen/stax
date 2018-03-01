@@ -190,6 +190,7 @@ export const constants: {[key: string]: StaxValue} = {
     'S': Math.PI * 4 / 3,
     't': Math.PI * 2,
     'T': 10.0,
+    'u': bigInt(4294967296),
     'v': S2A("aeiou"),
     'V': S2A("AEIOU"),
     'w': S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
