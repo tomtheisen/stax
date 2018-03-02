@@ -281,6 +281,7 @@ codeArea.addEventListener("keydown", ev => {
         codeArea.value = codeArea.value.substr(0, s)
             + "\t" + codeArea.value.substr(s);
         codeArea.selectionEnd = s + 1;
+        pendUpdate();
     }
 });
 inputArea.addEventListener("input", pendUpdate);
