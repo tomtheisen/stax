@@ -82,3 +82,11 @@ F
 1/2
 	stax
 x
+	name:NewLineInEval
+	in
+"foo\nbar"
+	out
+rab
+oof
+	stax
+r

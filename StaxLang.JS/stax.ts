@@ -172,7 +172,7 @@ export class Runtime {
                     break;
                 case '"':
                     let finishPos = arg.indexOf('"', i + 1);
-                    newValue(S2A(arg.substring(i + 1, finishPos)));
+                    newValue(S2A(arg.substring(i + 1, finishPos).replace("\\n", "\n")));
                     i = finishPos;
                     break;
                 case '-':
