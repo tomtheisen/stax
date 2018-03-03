@@ -17,6 +17,10 @@ module.exports = {
             __COMMIT_HASH__: JSON.stringify(commitHash),
             __BUILD_DATE__: JSON.stringify(new Date),
         }),
-        new UglifyJSPlugin
+        new UglifyJSPlugin({
+            uglifyOptions: {
+                safari10: true
+            }
+        })
     ]
 };
