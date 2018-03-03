@@ -330,8 +330,8 @@ chars	|Types              	|Name              	|Description
 `:d` 	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:f` 	|arr                	|flatten           	|Flatten array of arrays one time.
 `:F` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
-`:g` 	|arr                	|run-elements      	|Get the lengths of runs of duplicate elements.
-`:G` 	|arr                	|run-lengths       	|Remove adjacent duplicate elements from array.
+`:g` 	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
+`:G` 	|arr                	|run-lengths       	|Get the lengths of runs of duplicate elements.
 `:I` 	|arr arr            	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
 `:J` 	|arr                	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m` 	|arr int            	|repeat-to         	|Repeat array until it is exactly length n.
@@ -426,17 +426,17 @@ chars	|Value
 ---  	|---
 `\|?`	|source of current program for quines or something
 `V?` 	|Version info
-`!`  	|"[a-z]"
-`@`  	|"[A-Z]"
-`#`  	|"[a-zA-Z]"
-`$`  	|"[a-z]+"
-`%`  	|"[A-Z]+"
-`^`  	|"[a-zA-Z]+"
-`&`  	|"[a-z]*"
-`*`  	|"[A-Z]*"
-`(`  	|"[a-zA-Z]*"
-`:`  	|"http://"
-`;`  	|"https://"
+`V!`  	|"[a-z]"
+`V@`  	|"[A-Z]"
+`V#`  	|"[a-zA-Z]"
+`V$`  	|"[a-z]+"
+`V%`  	|"[A-Z]+"
+`V^`  	|"[a-zA-Z]+"
+`V&`  	|"[a-z]*"
+`V*`  	|"[A-Z]*"
+`V(`  	|"[a-zA-Z]*"
+`V:`  	|"http://"
+`V;`  	|"https://"
 `V0` 	|rational 0/1
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
