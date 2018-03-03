@@ -269,7 +269,7 @@ chars	|Types              	|Name              	|Description
 `\|&`	|arr arr            	|arr-intersect     	|Keep all elements from a that are in b.
 `\|^`	|arr arr            	|arr-xor           	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
 `\|^`	|arr int            	|multi-self-join   	|Generate all arrays of size b using elements from a.
-`\|*`	|arr int            	|repeat-elements   	|Repeat each element n times.
+`\|*`	|arr int            	|repeat-elements   	|Repeat each element in a, abs(b) times.
 `\|*`	|arr arr            	|cross-product     	|Cartesian join of arrays, producing a flat array of pairs.
 `\|/`	|arr arr            	|multi-group       	|Partition a into differently sized groups from b.
 `\|-`	|arr arr            	|multiset-subtract 	|Remove elements in b individually from a, if they're present.

@@ -290,11 +290,11 @@ ax,by,cx,dy,ex
 	stax
 "abcd" N pP
 	name:ElementRepeat
-	in
 	out
 111122223333
 	stax
 3R4|*$
+3R4N|*$
 	name:CrossProduct
 	in
 	out

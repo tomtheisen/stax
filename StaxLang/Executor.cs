@@ -1088,7 +1088,8 @@ namespace StaxLang {
                                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "repeat each element " + e + " times");
                                         else block.AddDesc("repeat each element n times");
                                         var result = new List<object>();
-                                        foreach (var e in Pop()) result.AddRange(Enumerable.Repeat((object)e, (int)b));
+                                        int repeat = Math.Abs((int)b);
+                                        foreach (var e in Pop()) result.AddRange(Enumerable.Repeat((object)e, repeat));
                                         Push(result);
                                         break;
                                     }

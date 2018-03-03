@@ -970,7 +970,7 @@ export class Runtime {
                             }
                             else if (isArray(a)) {
                                 let result = [];
-                                for (let e of a) result.push(...Array(b.valueOf()).fill(e));
+                                for (let e of a) result.push(...Array(Math.abs(b.valueOf())).fill(e));
                                 this.push(result);
                             }
                             else {
