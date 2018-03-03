@@ -328,16 +328,26 @@ ff
 |Y|Ypp
 	name:Minimum
 	in
+3 7
 	out
 3
+	in
+4
+	out
+4
 	stax
-3 7 |m
+|m
 	name:Maximum
 	in
+3 7
 	out
 7
+	in
+4
+	out
+4
 	stax
-3 7 |M
+|M
 	name:AbsoluteValue
 	in
 	out

@@ -1522,6 +1522,7 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);
                                 else block.AddDesc("minimum of");
                                 if (IsNumber(Peek())) {
+                                    if (TotalStackSize < 2) break;
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) < 0 ? a : b);
                                 }
@@ -1539,6 +1540,7 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "maximum of n and " + e);
                                 else block.AddDesc("maximum of");
                                 if (IsNumber(Peek())) {
+                                    if (TotalStackSize < 2) break;
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) > 0 ? a : b);
                                 }

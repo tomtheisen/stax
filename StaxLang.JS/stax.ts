@@ -1300,6 +1300,7 @@ export class Runtime {
                     }
                     case '|m': {
                         if (isNumber(this.peek())) {
+                            if (this.totalSize() < 2) break;
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) < 0 ? next : top);
                         }
@@ -1315,6 +1316,7 @@ export class Runtime {
                     }
                     case '|M': {
                         if (isNumber(this.peek())) {
+                            if (this.totalSize() < 2) break;
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) > 0 ? next : top);
                         }
