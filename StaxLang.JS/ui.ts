@@ -198,34 +198,6 @@ function sizeTextArea(el: HTMLTextAreaElement) {
     el.rows = Math.max(el.rows, 2, el.value.split("\n").length);
 }
 
-function load() {
-    let params = new URLSearchParams(location.hash.substr(1));
-    if (params.has('c')) {
-        codeArea.value = params.get('c')!;
-        sizeTextArea(codeArea);
-    }
-    if (params.has('i')) {
-        inputArea.value = params.get('i')!;
-        sizeTextArea(inputArea);
-    }
-    switch (params.get('m')) {
-        case '1':
-            blankSplitEl.checked = true;
-            break;
-        case '2':
-            lineSplitEl.checked = true;
-            break;
-        default: 
-            noSplitEl.checked = true;
-            break;
-    }
-    if (params.get('a')) {
-        autoCheckEl.checked = true;
-        run();
-    }
-}
-load();
-
 function updateStats() {
     let params = new URLSearchParams;
     params.set('c', codeArea.value);
@@ -258,7 +230,38 @@ function updateStats() {
         else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
     }
 }
-updateStats();
+
+function load() {
+    let params = new URLSearchParams(location.hash.substr(1));
+    if (params.has('c')) {
+        codeArea.value = params.get('c')!;
+        sizeTextArea(codeArea);
+    }
+    if (params.has('i')) {
+        inputArea.value = params.get('i')!;
+        sizeTextArea(inputArea);
+    }
+    switch (params.get('m')) {
+        case '1':
+            blankSplitEl.checked = true;
+            break;
+        case '2':
+            lineSplitEl.checked = true;
+            break;
+        default: 
+            noSplitEl.checked = true;
+            break;
+    }
+
+    updateStats();
+
+    if (params.get('a')) {
+        autoCheckEl.checked = true;
+        debugger;
+        run();
+    }
+}
+load();
 
 autoCheckEl.addEventListener("change", updateStats);
 lineSplitEl.addEventListener("change", updateStats);
