@@ -1303,7 +1303,14 @@ export class Runtime {
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) < 0 ? next : top);
                         }
-                        else if (isArray(this.peek())) this.runMacro("{|mk");
+                        else if (isArray(this.peek())) {
+                            let arr = this.popArray();
+                            let result = arr[0];
+                            for (let e of arr.slice(1)) {
+                                if (compare(e, result) < 0) result = e; 
+                            }
+                            this.push(result);
+                        }
                         break;
                     }
                     case '|M': {
@@ -1311,7 +1318,14 @@ export class Runtime {
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) > 0 ? next : top);
                         }
-                        else if (isArray(this.peek())) this.runMacro("{|Mk");
+                        else if (isArray(this.peek())) {
+                            let arr = this.popArray();
+                            let result = arr[0];
+                            for (let e of arr.slice(1)) {
+                                if (compare(e, result) > 0) result = e; 
+                            }
+                            this.push(result);
+                        }
                         break;
                     }
                     case '|n': 

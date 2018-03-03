@@ -1525,7 +1525,14 @@ namespace StaxLang {
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) < 0 ? a : b);
                                 }
-                                else if (IsArray(Peek())) RunMacro("{|mk");
+                                else if (IsArray(Peek())) {
+                                    List<object> arr = Pop();
+                                    var result = arr[0];
+                                    foreach (var e in arr.Skip(1)) {
+                                        if (Comparer.Instance.Compare(e, result) < 0) result = e;
+                                    }
+                                    this.Push(result);
+                                }
                                 else throw new StaxException("Bad types for min");
                                 break;
                             case 'M': // max
@@ -1535,7 +1542,14 @@ namespace StaxLang {
                                     dynamic b = Pop(), a = Pop();
                                     Push(Comparer.Instance.Compare(a, b) > 0 ? a : b);
                                 }
-                                else if (IsArray(Peek())) RunMacro("{|Mk");
+                                else if (IsArray(Peek())) {
+                                    List<object> arr = Pop();
+                                    var result = arr[0];
+                                    foreach (var e in arr.Skip(1)) {
+                                        if (Comparer.Instance.Compare(e, result) > 0) result = e;
+                                    }
+                                    this.Push(result);
+                                }
                                 else throw new StaxException("Bad types for max");
                                 break;
                             case 'n': 

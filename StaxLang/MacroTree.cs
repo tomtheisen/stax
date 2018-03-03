@@ -135,7 +135,7 @@ namespace StaxLang {
                 ('m', "ai", "0|Mbs%/^a*s(", "repeat array to specified length"),
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror (reverse and concatenate with self)"),
-                ('M', "a", "|R{HoHh", "mode - last to appear wins tie"),
+                ('M', "a", "~;uc{;#i\\m|MH@,d", "mode - last to appear wins tie"),
                 ('o', "aa", @"Vi|\{|Mm", "overlay; keep the maximum respective elements from two arrays"),
                 ('p', "i", "v{|p}{vgs", "last prime <n"),
                 ('P', "i", "{|p}{gs", "next prime >=n"),
