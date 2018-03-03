@@ -9,7 +9,7 @@ declare var __BUILD_DATE__: string;
 document.getElementById("buildInfo")!.textContent = `${__COMMIT_HASH__} built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")}`;
 
 // duration to run stax program before yielding to ui and pumping messages
-const workMilliseconds = 20;
+const workMilliseconds = 40;
 
 const runButton = document.getElementById("run") as HTMLButtonElement;
 const stepButton = document.getElementById("step") as HTMLButtonElement;
