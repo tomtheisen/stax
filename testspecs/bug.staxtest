@@ -446,3 +446,10 @@ z:*
 262143
 	stax
 18RS%
+	name:MalformedInputString
+	in
+"a
+	out
+2
+	stax
+%

@@ -2425,6 +2425,7 @@ namespace StaxLang {
                         break;
                     case '"':
                         int finishPos = arg.IndexOf('"', i+1);
+                        if (finishPos < 0) return false;
                         NewValue(S2A(arg.Substring(i + 1, finishPos - i - 1).Replace("\\n", "\n")));
                         i = finishPos;
                         break;
