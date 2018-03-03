@@ -426,17 +426,17 @@ chars	|Value
 ---  	|---
 `\|?`	|source of current program for quines or something
 `V?` 	|Version info
-`!`  	|"[a-z]"
-`@`  	|"[A-Z]"
-`#`  	|"[a-zA-Z]"
-`$`  	|"[a-z]+"
-`%`  	|"[A-Z]+"
-`^`  	|"[a-zA-Z]+"
-`&`  	|"[a-z]*"
-`*`  	|"[A-Z]*"
-`(`  	|"[a-zA-Z]*"
-`:`  	|"http://"
-`;`  	|"https://"
+`V!`  	|"[a-z]"
+`V@`  	|"[A-Z]"
+`V#`  	|"[a-zA-Z]"
+`V$`  	|"[a-z]+"
+`V%`  	|"[A-Z]+"
+`V^`  	|"[a-zA-Z]+"
+`V&`  	|"[a-z]*"
+`V*`  	|"[A-Z]*"
+`V(`  	|"[a-zA-Z]*"
+`V:`  	|"http://"
+`V;`  	|"https://"
 `V0` 	|rational 0/1
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
