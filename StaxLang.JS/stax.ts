@@ -1293,8 +1293,7 @@ export class Runtime {
                                     }
                                 }
                             }
-                            result.push(...b);
-                            this.push(result);
+                            this.push(result.concat(b));
                         }
                         break;
                     }
@@ -1358,8 +1357,7 @@ export class Runtime {
                                 }
                                 if (!found) result.push(e);
                             }
-                            result.push(...b);
-                            this.push(result);
+                            this.push(result.concat(b));
                         }
                         break;
                     case '|N': 
@@ -1757,10 +1755,10 @@ export class Runtime {
         else if (isArray(b)) {
             let result: StaxArray = [];
             for (let e of b.slice().reverse()) {
-                result.push(...result.map(r => [e, ...r as StaxArray]), [e]);
+                result = result.concat(result.map(r => [e, ...r as StaxArray]));
+                result.push([e]);
             }
-            result.reverse();
-            this.push(result);
+            this.push(result.reverse());
         }
     }
 
@@ -2084,8 +2082,8 @@ export class Runtime {
             let data = this.pop();
             if (isArray(data)) {
                 let result = Array((top.valueOf() - data.length) >> 1).fill(zero);
-                result.push(...data);
-                result.push(...Array(top.valueOf() - result.length).fill(zero));
+                result = result.concat(data);
+                result = result.concat(Array(top.valueOf() - result.length).fill(zero));
                 this.push(result);
             }
             else if (isInt(data)) { // binomial coefficient
