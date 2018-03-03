@@ -315,6 +315,17 @@ ff
 1232
 	stax
 |X|X|X|x Lr $
+	in
+[3, 4]
+	out
+1
+	stax
+|X
+	in
+	out
+21
+	stax
+|Y|Ypp
 	name:Minimum
 	in
 	out

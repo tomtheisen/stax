@@ -1463,6 +1463,12 @@ export class Runtime {
                     case '|X':
                         this.push(this.x = (isInt(this.x) ? this.x : zero).add(one));
                         break;
+                    case '|y':
+                        this.push(this.y = (isInt(this.y) ? this.y : zero).subtract(one));
+                        break;
+                    case '|Y':
+                        this.push(this.y = (isInt(this.y) ? this.y : zero).add(one));
+                        break;
                     case '|z':
                         this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
                         break;

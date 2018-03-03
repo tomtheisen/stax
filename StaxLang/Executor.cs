@@ -1676,11 +1676,23 @@ namespace StaxLang {
                                 break;
                             case 'x': // decrement X, push
                                 block.AddDesc("decrement x and push");
+                                if (!IsInt(X)) X = BigInteger.Zero;
                                 Push(--X);
                                 break;
                             case 'X': // increment X, push
                                 block.AddDesc("increment x and push");
+                                if (!IsInt(X)) X = BigInteger.Zero;
                                 Push(++X);
+                                break;
+                            case 'y': // decrement Y, push
+                                block.AddDesc("decrement y and push");
+                                if (!IsInt(Y)) Y = BigInteger.Zero;
+                                Push(--Y);
+                                break;
+                            case 'Y': // increment X, push
+                                block.AddDesc("increment y and push");
+                                if (!IsInt(Y)) Y = BigInteger.Zero;
+                                Push(++Y);
                                 break;
                             case 'z': // zero-fill
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "zero-fill to " + e + " places");

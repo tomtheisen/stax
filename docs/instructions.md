@@ -403,10 +403,12 @@ chars	|Description
 ---  	|---
 `x`  	|Value of register x.  Default is parsed integer value from standard input, or 0.
 `X`  	|Peek and write register x.
-`\|x`	|Decrement register x and push.
-`\|X`	|Increment register x and push.
+`\|x`	|Decrement register x and push.  If x is not an integer, set it to 0 first.
+`\|X`	|Increment register x and push.  If x is not an integer, set it to 0 first.
 `y`  	|Value of register y.  Default is first line of standard input.
 `Y`  	|Peek and write register y.
+`\|y`	|Decrement register y and push.  If y is not an integer, set it to 0 first.
+`\|Y`	|Increment register y and push.  If y is not an integer, set it to 0 first.
 
 ## Prefix Directives
 Some instructions behave differently when they are the first character in a program.  These directives do not apply if the implicit eval of standard input succeeded.
