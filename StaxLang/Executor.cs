@@ -3677,13 +3677,23 @@ namespace StaxLang {
         }
 
         private List<object> ToString(dynamic arg) {
-            if (IsNumber(arg)) {
-                return S2A(arg.ToString());
+            List<object> Flatten(List<object> arr) {
+                var result = new List<object>();
+                foreach (var e in arr) {
+                    if (IsNumber(e)) result.Add(e);
+                    else if (IsArray(e)) result.AddRange(Flatten((List<object>)e));
+                }
+                return result;
             }
+
+            if (IsNumber(arg)) return S2A(arg.ToString());
             else if (IsArray(arg)) {
-                var result = new StringBuilder();
-                foreach (var e in arg) result.Append(IsInt(e) ? e : A2S(e));
-                return S2A(result.ToString());
+                var result = new List<object>();
+                foreach (var e in arg) {
+                    if (IsArray(e)) result.AddRange(Flatten(e));
+                    else result.AddRange(S2A(e.ToString()));
+                }
+                return result;
             }
             throw new StaxException("Bad type for ToString");
         }

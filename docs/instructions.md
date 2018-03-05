@@ -164,7 +164,7 @@ chars    	|Types          	|Name              	|Description
 `*`      	|int arr        	|repeat            	|Repeat string n times.  If n is negative, reverse array.
 `*`      	|arr arr        	|join              	|Join array of strings with delimiter.
 `$`      	|num            	|tostring          	|Convert number to string.
-`$`      	|arr            	|arr-tostring      	|Convert each element to string, and concat.
+`$`      	|arr            	|arr-tostring      	|Convert each element to string, and concat. Nested arrays will just be flattened. 
 `(`      	|arr arr        	|begin-with        	|Overwrite the end of b with a.
 `)`      	|arr arr        	|end-with          	|Overwrite the beginning of b with a.
 `v`      	|arr            	|lower             	|To lower case.

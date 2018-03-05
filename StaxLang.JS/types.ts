@@ -132,14 +132,23 @@ export function compare(a: StaxValue, b: StaxValue): number {
 }
 
 export function stringFormat(arg: StaxValue): StaxArray {
+    function flatten(arr: StaxArray): StaxNumber[] {
+        let result: StaxNumber[] = [];
+        for (let e of arr) {
+            if (isNumber(e)) result.push(e);
+            else if (isArray(e)) result = result.concat(flatten(e));
+        }
+        return result;
+    }
+    
     if (isNumber(arg)) return S2A(arg.toString());
     if (isArray(arg)) {
-        let result = "";
+        let result: StaxArray = [];
         for (let e of arg) {
-            if (isArray(e)) result += A2S(e);
-            else result += e.toString();
+            if (isArray(e)) result = result.concat(flatten(e));
+            else result = result.concat(S2A(e.toString()));
         }
-        return S2A(result);
+        return result;
     }
     throw new Error("bad type for stringFormat");
 }

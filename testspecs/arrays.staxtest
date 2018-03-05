@@ -172,11 +172,15 @@ ax by cz
 	stax
 3R 6N 77& J
 	name:ArrayToString
-	in
 	out
 12345
 	stax
 5R$
+	name:ToString
+	out
+-1
+	stax
+U]] $h
 	name:SingletonWrap
 	in
 	out
