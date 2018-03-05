@@ -1027,3 +1027,12 @@ me :_ J
 8 3
 	stax
 \ |M J
+	name:IsOrdered
+	in
+abcde
+abced
+	out
+1
+0
+	stax
+m :O
