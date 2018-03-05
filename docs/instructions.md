@@ -318,6 +318,7 @@ chars	|Types              	|Name              	|Description
 `:\` 	|arr arr            	|diff-indices      	|Get indices of unequal elements between arrays.
 `:_` 	|arr                	|reduce-array      	|Divide all integers in array by their collective gcd.
 `:=` 	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
+`:!` 	|arr                	|all-partitions     |Get all the ways of splitting array into pieces.
 `:\|`	|arr                	|column-align      	|Right pad each column to equal length.
 `:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
@@ -359,7 +360,7 @@ chars	|Types        	|Name               	|Description
 `(`  	|arr block    	|partition-when     	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the element following the boundary.
 `)`  	|arr block    	|partition-when-pair	|Partition the original array into consecutive subarrays that begin when the block produces a truthy value. The block is provided with the pair of elements around the boundary.
 `C`  	|any          	|cancel             	|If value is truthy, cancel current block execution.
-`C`  	|block        	|collect            	|Reduce using block, but collect each value in result array.  Does not terminate a block.
+`C`  	|arr block    	|collect            	|Reduce using block, but collect each value in result array.  Does not terminate a block.
 `D`  	|int          	|do-times           	|Execute the rest of the program n times.  _ will give the 1-based iteration count.
 `e`  	|block        	|min-by             	|Get the values which yield the minimum value when applying the block to the array. Does not terminate a block.
 `E`  	|block        	|max-by             	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.

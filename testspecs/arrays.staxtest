@@ -768,6 +768,20 @@ ab cd e
 abc d e
 	stax
 |! mJ
+	name:AllPartitions
+	in
+abcd
+	out
+abcd
+a bcd
+ab cd
+abc d
+a b cd
+a bc d
+ab c d
+a b c d
+	stax
+:! mJ
 	name:Embed
 	in
 hello, world!

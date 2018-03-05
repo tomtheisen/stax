@@ -41,6 +41,7 @@ namespace StaxLang {
             // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
             var macros = new(char alias, string types, string code, string desc)[] {
                 ('!', "ii", "|g1=", "coprime?"),
+                ('!', "a", "c%{[|!m{+ksd", "all partitionings of array"),
                 ('#', "i", "1!*", "floatify"),
                 ('#', "f", "1!*", "floatify"),
                 ('#', "r", "", "floatify"),
