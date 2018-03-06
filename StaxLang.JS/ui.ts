@@ -303,7 +303,7 @@ function doCompressor() {
     }
     else {
         let compressed = compress(input);
-        if (compressed) result = '`' + compressed + '`';
+        if (compressed && compressed.length < input.length) result = '`' + compressed + '`';
         else result = '"' + input.replace('"', '`"') + '"'
     }
     compressorOutputEl.value = result;
