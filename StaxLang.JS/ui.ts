@@ -1,7 +1,7 @@
 import { Runtime, ExecutionState } from './stax';
 import { pendWork } from './timeoutzero';
 import { compress } from './huffmancompression';
-import { isPacked, unpack, pack } from './packer';
+import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 
 declare var __COMMIT_HASH__: string;
@@ -198,14 +198,34 @@ function sizeTextArea(el: HTMLTextAreaElement) {
     el.rows = Math.max(el.rows, 2, el.value.split("\n").length);
 }
 
+function encodePacked(packed: string): string | null {
+    let bytes = staxDecode(packed);
+    if (bytes.some(b => b < 0)) return null;
+    return bytes.map(b => (256 + b).toString(16).substr(1)).join("");
+}
+
+function decodePacked(packed: string): string {
+    let bytes = [];
+    for (let i = 0; i < packed.length; i += 2) bytes.push(parseInt(packed.substr(i, 2), 16));
+    return staxEncode(bytes);
+}
+
 function updateStats() {
     let params = new URLSearchParams;
-    params.set('c', codeArea.value);
+    if (isPacked(codeArea.value)) {
+        let packed = encodePacked(codeArea.value);
+        if (packed) params.set('p', packed);
+    }
+    if (!params.has('p')) params.set('c', codeArea.value);
     params.set('i', inputArea.value);
     if (autoCheckEl.checked) params.set('a', '1');
     if (blankSplitEl.checked) params.set('m', '1');
     if (lineSplitEl.checked) params.set('m', '2');
-    saveLink.href = '#' + params.toString();
+    
+    saveLink.href = '#' + params.toString()
+        .replace(/%2C/g, ",")
+        .replace(/%5B/g, "[")
+        .replace(/%5D/g, "]");
 
     packButton.disabled = false;
     if (isPacked(codeArea.value)) {
@@ -233,6 +253,10 @@ function updateStats() {
 
 function load() {
     let params = new URLSearchParams(location.hash.substr(1));
+    if (params.has('p')) {
+        codeArea.value = decodePacked(params.get('p')!);
+        sizeTextArea(codeArea);
+    }
     if (params.has('c')) {
         codeArea.value = params.get('c')!;
         sizeTextArea(codeArea);

@@ -34,12 +34,20 @@ export function packBytes(asciiStax: string): number[] {
     return result;
 }
 
+export function staxDecode(packedStax: string): number[] {
+    return packedStax.split('').map(c => CodePageIndex[c]);
+}
+
+export function staxEncode(bytes: number[]): string {
+    return bytes.map(b => CodePage[b]).join("");
+}
+
 export function unpack(packedStax: string): string {
-    let bytes = packedStax.split('').map(c => CodePageIndex[c]);
+    let bytes = staxDecode(packedStax);
     return unpackBytes(bytes);
 }
 
-export function unpackBytes(bytes: number[]) {
+export function unpackBytes(bytes: number[]): string {
     let result = "";
     let big = bigInt.zero;
     bytes[0] &= 0x7f;
