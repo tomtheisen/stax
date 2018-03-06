@@ -339,7 +339,6 @@ chars	|Types              	|Name              	|Description
 `:m` 	|arr                	|mirror            	|Append reversed copy to array.
 `:M` 	|arr                	|mode              	|Mode.  In case of tie, the last element to appear wins.
 `:o` 	|arr arr            	|overlay           	|Keep the maximum element respective element from two arrays.
-`:O` 	|arr                	|is-ordered        	|Is array sorted?
 `:r` 	|arr arr            	|replace-all       	|Replace all substring occurrences.
 `:r` 	|int                	|centered-range    	|Make range [-n .. n] centered around 0.
 `:s` 	|arr                	|span              	|Get the span of an array. (maximum minus minimum)
