@@ -1708,7 +1708,10 @@ export class Runtime {
         if (isNumber(a) && isNumber(b)) {
             [a, b] = widenNumbers(a, b);
             let result: StaxNumber;
-            if (typeof a === "number" && typeof b === "number") result = a % b;
+            if (typeof a === "number" && typeof b === "number") {
+                result = a % b;
+                if (result < 0) result += Math.abs(b);
+            }
             else if (isInt(a) && isInt(b)) {
                 result = a.mod(b);
                 if (result.isNegative()) result = result.add(b);

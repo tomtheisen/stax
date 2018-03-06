@@ -3568,7 +3568,10 @@ namespace StaxLang {
                     b = (Rational)b;
                 }
                 var result = a % b;
-                if (result < 0) result += b;
+                if (result < 0) {
+                    if (b < 0) b = -b;
+                    result += b;
+                }
                 Push(result);
             }
             else {
