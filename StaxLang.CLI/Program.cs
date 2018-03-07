@@ -28,6 +28,7 @@ namespace StaxLang.CLI {
             }
             else if (args[0] == "-u") {
                 string program = File.ReadAllText(args[1], Encoding.UTF8);
+                program = program.TrimEnd('\n', '\r');
                 string[] input = null;
                 if (args.Length >= 3) input = File.ReadAllLines(args[2], Encoding.UTF8);
                 new Executor(args.Skip(3).ToArray()).Run(program, input);
