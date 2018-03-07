@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace StaxLang.CLI {
     class Program {
@@ -23,6 +24,12 @@ namespace StaxLang.CLI {
                 string program = args[1];
                 string[] input = null;
                 if (args.Length >= 3) input = File.ReadAllLines(args[2]);
+                new Executor(args.Skip(3).ToArray()).Run(program, input);
+            }
+            else if (args[0] == "-u") {
+                string program = File.ReadAllText(args[1], Encoding.UTF8);
+                string[] input = null;
+                if (args.Length >= 3) input = File.ReadAllLines(args[2], Encoding.UTF8);
                 new Executor(args.Skip(3).ToArray()).Run(program, input);
             }
             else {
@@ -167,7 +174,9 @@ namespace StaxLang.CLI {
             Console.WriteLine(Executor.VersionInfo);
             Console.WriteLine("Usage:");
             Console.WriteLine("Run a program from a source file:");
-            Console.WriteLine("\tstax program.stax [inputfile]");
+            Console.WriteLine("\tstax [-u] program.stax [inputfile]");
+            Console.WriteLine("-u reads the program using utf-8, rather than stax encoding");
+            Console.WriteLine();
             Console.WriteLine("Run ad-hoc code:");
             Console.WriteLine("\tstax -c staxcode [inputfile]");
         }
