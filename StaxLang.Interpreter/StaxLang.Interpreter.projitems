@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>d5823874-e470-4918-81a2-58999e696bce</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>StaxLang.Interpreter</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)english-huffman.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Block.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExecutionState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Executor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HuffmanCompressor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IteratorPair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MacroTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrimeHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Rational.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StaxException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StaxPacker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)packages.config" />
+  </ItemGroup>
+</Project>
