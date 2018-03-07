@@ -153,7 +153,7 @@ export function stringFormat(arg: StaxValue): StaxArray {
     throw new Error("bad type for stringFormat");
 }
 
-const versionInfo = "Stax 1.0.5 - Tom Theisen - https://github.com/tomtheisen/stax"
+const versionInfo = "Stax 1.0.6 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
