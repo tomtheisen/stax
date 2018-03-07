@@ -453,8 +453,15 @@ z:*
 2
 	stax
 %
-	name:ScalarGenerator
+	name:ScalarGeneratorPush
 	out
 -1
 	stax
 GU}2AgeEFJ+
+	name:ZipWithEmpty
+	in
+"a" ""
+	out
+
+	stax
+\
