@@ -2860,7 +2860,7 @@ export class Runtime {
         this.popStackFrame();
 
         if (shorthand) {
-            if (scalarMode) this.print(last(result)!);
+            if (scalarMode) this.push(last(result)!);
             else for (let e of result) this.print(e);
         }
         else {
