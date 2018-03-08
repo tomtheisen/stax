@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.0.5 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.0.6 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -2309,14 +2309,9 @@ namespace StaxLang {
             GenComplete:
             PopStackFrame();
 
-            if (shorthand) {
-                if (scalarMode) Print(result.Last());
-                else foreach (var e in result) Print(e);
-            }
-            else {
-                if (scalarMode) Push(result.Last());
-                else Push(result);
-            }
+            if (scalarMode) Push(result.Last());
+            else if (shorthand) foreach (var e in result) Print(e);
+            else Push(result);
         }
 
         enum RotateDirection { Left, Right };
