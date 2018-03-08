@@ -227,7 +227,7 @@ function updateStats() {
         .replace(/%5B/g, "[")
         .replace(/%5D/g, "]");
 
-    packButton.disabled = false;
+    packButton.disabled = isActive();
     if (isPacked(codeArea.value)) {
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
