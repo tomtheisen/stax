@@ -29,14 +29,16 @@ namespace StaxLang.CLI {
             else if (args[0] == "-u") {
                 string program = File.ReadAllText(args[1], Encoding.UTF8);
                 program = program.TrimEnd('\n', '\r');
-                string[] input = null;
+                string[] input;
                 if (args.Length >= 3) input = File.ReadAllLines(args[2], Encoding.UTF8);
+                else input = Console.In.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
                 new Executor(args.Skip(3).ToArray()).Run(program, input);
             }
             else {
                 byte[] program = File.ReadAllBytes(args[0]);
-                string[] input = null;
+                string[] input;
                 if (args.Length >= 2) input = File.ReadAllLines(args[1]);
+                else input = Console.In.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
                 new Executor(args.Skip(2).ToArray()).Run(program, input);
             }
         }
