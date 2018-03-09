@@ -653,7 +653,7 @@ namespace StaxLang {
                     case 'J':
                         if (IsArray(Peek())) {
                             block.AddDesc("join with spaces");
-                            RunMacro("' *");
+                            RunMacro("0]*");
                         }
                         else if (IsNumber(Peek())) {
                             block.AddDesc("square");
@@ -1932,7 +1932,7 @@ namespace StaxLang {
             List<object> a = Pop();
             var result = new object[a.Count];
             int i = 0;
-            foreach (var t in Enumerable.Range(0, a.Count).OrderBy(j => a[j])) result[t] = i++;
+            foreach (var t in Enumerable.Range(0, a.Count).OrderBy(j => a[j])) result[t] = new BigInteger(i++);
             Push(result.ToList());
         }
 
@@ -3609,14 +3609,14 @@ namespace StaxLang {
             if (IsArray(a) && IsArray(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "join with " + e);
                 else block.AddDesc("string join");
-                string result = "", joiner = A2S(b);
-                bool subsequent = false;
+                var result = new List<object>();
+                int i = 0;
                 foreach (var e in a) {
-                    if (subsequent) result += joiner;
-                    result += IsArray(e) ? A2S(e): e;
-                    subsequent = true;
+                    if (i++ > 0) result.AddRange(b);
+                    if (IsArray(e)) result.AddRange(e);
+                    else result.AddRange(ToString(e));
                 }
-                Push(S2A(result));
+                Push(result);
                 yield break;
             }
 

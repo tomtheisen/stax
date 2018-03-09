@@ -586,3 +586,10 @@ abc123XYZ
 ABC123xyz
 	stax
 :C
+	name:SpaceJoinCodepoint
+	out
+1
+0
+2
+	stax
+2RMJm

@@ -584,7 +584,7 @@ export class Runtime {
                         break;
                     case 'J':
                         if (isArray(this.peek())) {
-                            this.runMacro("' *");
+                            this.runMacro("0]*");
                         }
                         else if (isNumber(this.peek())) {
                             this.runMacro("c*");
@@ -1591,7 +1591,13 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(a) && isArray(b)) {
-            this.push(S2A(a.map(e => isArray(e) ? A2S(e) : e.toString()).join(A2S(b))));
+            let result: StaxArray = [];
+            a.forEach((e, i) => {
+                if (i) result = result.concat(b);
+                if (isArray(e)) result = result.concat(e);
+                else result = result.concat(S2A(e.toString()));
+            });
+            this.push(result);
         }
         else if (a instanceof Block && isInt(b)) {
             let block = a, times = b.valueOf();
