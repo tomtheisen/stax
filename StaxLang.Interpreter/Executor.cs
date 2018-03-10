@@ -306,14 +306,23 @@ namespace StaxLang {
                     case '\'':
                         block.AddDesc("single character string literal");
                         type = InstructionType.Value;
-                        Push(S2A(program.Substring(++ip, 1)));
+                        if (char.IsHighSurrogate(program[ip + 1])) {
+                            Push(S2A(program.Substring(++ip, 2)));
+                            ip += 1;
+                        }
+                        else Push(S2A(program.Substring(++ip, 1)));
                         break;
-                    case '.':
+                    case '.': {
                         block.AddDesc("two character string literal");
                         type = InstructionType.Value;
-                        Push(S2A(program.Substring(ip + 1, 2)));
-                        ip += 2;
+                        int length = 0;
+                        for (int i = 0; i < 2; i++) {
+                            if (char.IsHighSurrogate(program[ip + ++length])) length += 1;
+                        }
+                        Push(S2A(program.Substring(ip + 1, length)));
+                        ip += length;
                         break;
+                    }
                     case '{':
                         block.AddDesc("code block");
                         type = InstructionType.Block;

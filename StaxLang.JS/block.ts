@@ -55,22 +55,34 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
             case 'V':
             case '|':
             case ':':
-            case "'":
             case 'g':
                 pushToken(program.substr(pos, 2));
                 pos += 2;
                 break;
+
+            case "'": {
+                // test for surrogate pair
+                let length = (program.charCodeAt(pos + 1) !== program.codePointAt(pos + 1)) ? 3 : 2; 
+                pushToken(program.substr(pos, length));
+                pos += length;
+                break;
+            }
+
+            case '.': {
+                let length = 1;
+                for (let i = 0; i < 2; i++, length++) {
+                    if (program.charCodeAt(pos + length) !== program.codePointAt(pos + length)) length += 1;
+                }
+                pushToken(program.substr(pos, length));
+                pos += length;
+                break;
+            }
 
             case ' ':
             case '\n':
                 let token = program.substr(pos).match(/[ \n]+/)![0];
                 pushToken(token);
                 pos += token.length;
-                break;
-
-            case '.':
-                pushToken(program.substr(pos, 3));
-                pos += 3;
                 break;
 
             case '\t': {

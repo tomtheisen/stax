@@ -593,3 +593,12 @@ ABC123xyz
 2
 	stax
 2RMJm
+	name:SurrogatePairs
+	out
+🍹1
+	stax
+.🍹1
+	out
+🍹
+	stax
+'🍹
