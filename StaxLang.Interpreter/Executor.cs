@@ -132,7 +132,7 @@ namespace StaxLang {
                 }
             }
             catch (InvalidOperationException) { }
-            if (!OutputWritten) {
+            if (!OutputWritten && TotalStackSize > 0) {
                 block.AddAmbient("top of stack implicitly printed");
                 Print(Pop());
             }
