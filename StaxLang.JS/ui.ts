@@ -215,6 +215,13 @@ function decodePacked(packed: string): string {
     return staxEncode(bytes);
 }
 
+function countUtf8Bytes(s: string) {
+    // https://stackoverflow.com/a/25994411/44743
+    let b = 0, i = 0, c: number;
+    for(; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
+    return b;
+}
+
 function updateStats() {
     let params = new URLSearchParams;
     if (isPacked(codeArea.value)) {
@@ -251,7 +258,11 @@ function updateStats() {
             }
         }
 
-        if (unknown) propsEl.textContent = `${ codeArea.value.length - pairs } characters`
+        if (unknown) {
+            let chars = codeArea.value.length - pairs;
+            let bytes = countUtf8Bytes(codeArea.value);
+            propsEl.textContent = `${ chars } characters, ${ bytes } bytes utf-8`;
+        }
         else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
     }
 }
