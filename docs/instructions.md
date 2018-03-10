@@ -211,6 +211,7 @@ chars    	|Types          	|Name              	|Description
 ## Array
 chars	|Types              	|Name              	|Description
 ---  	|---                	|---               	|---
+`"…"!`	|                   	|crammed-array     	|Crammed array of integers. This uses a scheme to represent arbitrary integers in a string literal, and then uncram them.  There will be at most one number per character in the string literal.  Large numbers require more characters.
 `#`  	|arr num            	|count-instances   	|Count instances of b in a.
 `#`  	|num arr            	|count-instances   	|Count instances of b in a.
 `+`  	|arr arr            	|concat            	|Concatenate arrays.

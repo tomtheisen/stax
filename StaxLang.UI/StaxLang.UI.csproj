@@ -59,6 +59,12 @@
     <Compile Include="CodeViewForm.Designer.cs">
       <DependentUpon>CodeViewForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ArrayCrammer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ArrayCrammer.Designer.cs">
+      <DependentUpon>ArrayCrammer.cs</DependentUpon>
+    </Compile>
     <Compile Include="CompressorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +86,9 @@
     </Compile>
     <EmbeddedResource Include="CodeViewForm.resx">
       <DependentUpon>CodeViewForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ArrayCrammer.resx">
+      <DependentUpon>ArrayCrammer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CompressorForm.resx">
       <DependentUpon>CompressorForm.cs</DependentUpon>

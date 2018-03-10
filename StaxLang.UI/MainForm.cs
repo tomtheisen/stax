@@ -91,10 +91,6 @@ namespace StaxLang.UI {
             Settings.Default.Save();
         }
 
-        private void CompressorButton_Click(object sender, EventArgs e) {
-            new CompressorForm().Show(this);
-        }
-
         private void PackButton_Click(object sender, EventArgs e) {
             string code = ProgramTextbox.Text;
 
@@ -104,6 +100,14 @@ namespace StaxLang.UI {
             else {
                 ProgramTextbox.Text = StaxPacker.Pack(code);
             }
+        }
+
+        private void stringCompressorToolStripMenuItem_Click(object sender, EventArgs e) {
+            new CompressorForm().Show(this);
+        }
+
+        private void integerArrayCrammerToolStripMenuItem_Click(object sender, EventArgs e) {
+            new ArrayCrammerForm().Show(this);
         }
     }
 }

@@ -276,13 +276,20 @@ namespace StaxLang {
                         break;
                     case '"': 
                         {
-                            Push(ParseString(program, true, ref ip, out bool implicitEnd));
+                            Push(ParseString(program, true, ref ip, out var stringType));
                             type = InstructionType.Value;
-                            if (implicitEnd) {
-                                block.AddDesc("print unclosed literal");
-                                Print(Pop(), newline: false);
+                            switch (stringType) {
+                                case StringLiteralType.Normal:
+                                    block.AddDesc("literal");
+                                    break;
+                                case StringLiteralType.ImplicitEnd:
+                                    block.AddDesc("print unclosed literal");
+                                    Print(Pop(), newline: false);
+                                    break;
+                                case StringLiteralType.CrammedIntegers:
+                                    block.AddDesc($"crammed integer array [{ string.Join(", ", Peek()) }]");
+                                    break;
                             }
-                            else block.AddDesc("literal");
                         }
                         break;
                     case '`': 
@@ -3801,8 +3808,9 @@ namespace StaxLang {
             return S2A(decompressed);
         }
 
+        enum StringLiteralType { Normal, ImplicitEnd, CrammedIntegers }
         /// <summary>
-        /// parse a string literal
+        /// parse a string literal or packed integer array
         /// </summary>
         /// <param name="program"></param>
         /// <param name="doTemplates"></param>
@@ -3810,9 +3818,9 @@ namespace StaxLang {
         /// input: index of first character in interior of literal
         /// output: index of closing quote or last character of string
         /// </param>
-        /// <param name="implicitEnd"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        private List<object> ParseString(string program, bool doTemplates, ref int ip, out bool implicitEnd) {
+        private List<object> ParseString(string program, bool doTemplates, ref int ip, out StringLiteralType type) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
                 if (program[ip] == '`') {
@@ -3847,11 +3855,14 @@ namespace StaxLang {
                             break;
                     }
                 }
-                else {
-                    result += program[ip];
-                }
+                else result += program[ip];
             }
-            implicitEnd = program[ip] != '"';
+            type = program[ip] != '"' ? StringLiteralType.ImplicitEnd : StringLiteralType.Normal;
+            if (ip + 1 < program.Length  && program[ip + 1] == '!') {
+                ++ip;
+                type = StringLiteralType.CrammedIntegers;
+                return ArrayCrammer.Uncram(result);
+            }
             return S2A(result);
         }
 
@@ -3887,7 +3898,7 @@ namespace StaxLang {
                 }
 
                 if (contents[ip] == '"') {
-                    ParseString(contents, false, ref ip, out bool implicitEnd);
+                    ParseString(contents, false, ref ip, out var type);
                     continue;
                 }
 

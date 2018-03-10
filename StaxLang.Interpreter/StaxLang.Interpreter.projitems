@@ -12,6 +12,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)english-huffman.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArrayCrammer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Block.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Executor.cs" />
