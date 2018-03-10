@@ -1,8 +1,11 @@
 import { Runtime, ExecutionState } from './stax';
 import { pendWork } from './timeoutzero';
 import { compress } from './huffmancompression';
+import { cram } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
+import * as bigInt from 'big-integer';
 import 'url-search-params-polyfill';
+type BigInteger = bigInt.BigInteger;
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
@@ -23,6 +26,8 @@ const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
+const crammerInputEl = document.getElementById("crammerInput") as HTMLInputElement;
+const crammerOutputEl = document.getElementById("crammerOutput") as HTMLInputElement;
 const debugContainer = document.getElementById("debugState") as HTMLElement;
 const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
 const blankSplitEl = document.getElementById("blankSplit") as HTMLInputElement;
@@ -316,15 +321,9 @@ inputArea.addEventListener("input", pendUpdate);
 function doCompressor() {
     let input = compressorInputEl.value;
     let result: string;
-    if (input === "") {
-        result = "z";
-    }
-    else if (input.length === 1) {
-        result = "'" + input;
-    }
-    else if (input.length === 2) {
-        result = "." + input;
-    }
+    if (input === "") result = "z";
+    else if (input.length === 1) result = "'" + input;
+    else if (input.length === 2) result = "." + input;
     else {
         let compressed = compress(input);
         if (compressed && compressed.length < input.length) result = '`' + compressed + '`';
@@ -338,6 +337,22 @@ compressorInputEl.addEventListener("input", doCompressor);
 const compressorDialog = document.getElementById("compressorDialog") as HTMLDivElement;
 document.getElementById("compressorOpen")!.addEventListener("click", () => {
     compressorDialog.hidden = !compressorDialog.hidden;
+});
+
+function doCrammer() {
+    let matches = crammerInputEl.value.match(/-?\d+/g);
+    if (matches) {
+        let crammed = cram(matches.map(e => bigInt(e)));
+        crammerOutputEl.value = `"${ crammed }"!`;
+    }
+    else crammerOutputEl.value = "z";
+}
+doCrammer();
+crammerInputEl.addEventListener("input", doCrammer);
+
+const crammerDialog = document.getElementById("crammerDialog") as HTMLDivElement;
+document.getElementById("crammerOpen")!.addEventListener("click", () => {
+    crammerDialog.hidden = !crammerDialog.hidden;
 });
 
 packButton.addEventListener("click", () => {

@@ -7,6 +7,6 @@ Stax Golfing Language
 * [Stacks](stacks.md)
 * [Types](types.md)
 * [Execution](execution.md)
-* [Compressed Strings](compressed.md)
+* [Compression](compressed.md)
 * [Instructions](instructions.md)
 * [Generators](generators.md)

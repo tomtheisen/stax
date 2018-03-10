@@ -59,11 +59,11 @@
     <Compile Include="CodeViewForm.Designer.cs">
       <DependentUpon>CodeViewForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ArrayCrammer.cs">
+    <Compile Include="ArrayCrammerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ArrayCrammer.Designer.cs">
-      <DependentUpon>ArrayCrammer.cs</DependentUpon>
+    <Compile Include="ArrayCrammerForm.Designer.cs">
+      <DependentUpon>ArrayCrammerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="CompressorForm.cs">
       <SubType>Form</SubType>
@@ -87,8 +87,8 @@
     <EmbeddedResource Include="CodeViewForm.resx">
       <DependentUpon>CodeViewForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ArrayCrammer.resx">
-      <DependentUpon>ArrayCrammer.cs</DependentUpon>
+    <EmbeddedResource Include="ArrayCrammerForm.resx">
+      <DependentUpon>ArrayCrammerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CompressorForm.resx">
       <DependentUpon>CompressorForm.cs</DependentUpon>

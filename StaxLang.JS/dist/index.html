@@ -67,10 +67,10 @@
         <h2>Output</h2>
         <pre id="output"></pre>
 
-        <h3><a href="#" id="compressorOpen">String Literal Compressor</a></h3>
+        <h3><a href="javascript:void(0)" id="compressorOpen">String Literal Compressor</a></h3>
         <div id="compressorDialog" class="well" hidden>
             <p>
-                This tool can help you generate a short representation for a given input string.  It's not necessarily optimal.
+                This tool generates a short representation for a given input string.  It's not necessarily optimal.
                 Closing delimiters are optional at the end of a program.
                 English-like strings compress particularly well.
                 <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings">More info</a>
@@ -78,6 +78,17 @@
             <label>Value <br><input id="compressorInput" value="Hello, world!"></label>
             <br>
             <label>Stax literal <br><input id="compressorOutput" readonly></label>
+        </div>
+
+        <h3><a href="javascript:void(0)" id="crammerOpen">Integer Array Crammer</a></h3>
+        <div id=crammerDialog class="well" hidden>
+            <p>
+                This tool generates a short representation for arbitrary integer arrays.
+                <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#crammed-integer-arrays">More info</a>
+            </p>
+            <label>Array <br><input id="crammerInput" value="123, -234, 456"></label>
+            <br>
+            <label>Stax crammed array <br><input id="crammerOutput" readonly></label>
         </div>
 
         <span id="galleryOpen">Examples</span>

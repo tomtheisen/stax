@@ -144,7 +144,7 @@ function parseNum(program: string, pos: number): string {
 }
 
 function parseString(program: string, pos: number) {
-    let matches = program.substr(pos).match(/^"([^`"]|`([V:|].|[^V:|]))*("|$)/);
+    let matches = program.substr(pos).match(/^"([^`"]|`([V:|].|[^V:|]))*("!?|$)/);
     if (!matches) throw "tried to parse a string, but no quote";
     return matches[0];
 }

@@ -6,7 +6,8 @@ import { Rational } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
-import { compress, decompress } from './huffmancompression';
+import { decompress } from './huffmancompression';
+import { uncram } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
 import { isBoolean, error } from 'util';
 type BigInteger = bigInt.BigInteger;
@@ -2915,6 +2916,11 @@ export class Runtime {
             }
             else if (token[i] == '"') {
                 terminated = true;
+                if (token[++i] === '!') { // uncram integer array
+                    let uncrammed = uncram(unescaped);
+                    this.push(uncrammed);
+                    return;
+                }
                 break;
             }
             else {

@@ -13,7 +13,7 @@ namespace StaxLang {
 	
 	        for (int i = 0; i < str.Length; i++) {
 		        int charValue = Symbols.IndexOf(str[i]);
-		        if (charValue < 0) throw new ArgumentException("Bad character for number decode");
+		        if (charValue < 0) throw new ArgumentException("Bad character for uncram");
 		        if (continuing) result[result.Count - 1] = result.Last() * 46 + charValue / (result.Last() < 0 ? -2 : 2);
 		        else result.Add(charValue / (charValue % 4 >= 2 ? -4 : 4));
 		        continuing = charValue % 2 == 1;
@@ -33,12 +33,12 @@ namespace StaxLang {
 		    for (int i = 0; i < a.Count; i++) {
 			    var parts = new List<int>();
 			    int signBit = a[i] < 0 ? 2 : 0;
-			    int continueBit = (offsetMode && i == a.Count - 1) ? 1 : 0;
+			    int continuing = (offsetMode && i == a.Count - 1) ? 1 : 0;
 			    var remain = BigInteger.Abs(a[i]);
-			    for (; remain > 23; remain /= 46, continueBit = 1) {
-				    parts.Insert(0, (int)(remain % 46 * 2 + continueBit));
+			    for (; remain > 23; remain /= 46, continuing = 1) {
+				    parts.Insert(0, (int)(remain % 46 * 2 + continuing));
 			    }
-			    parts.Insert(0, (int)(remain * 4 + signBit + continueBit));
+			    parts.Insert(0, (int)(remain * 4 + signBit + continuing));
 			    foreach (int part in parts) result += Symbols[part];
 		    }
 		    return result;
