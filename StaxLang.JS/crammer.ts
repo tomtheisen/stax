@@ -11,7 +11,10 @@ export function uncram(str: string): BigInteger[] {
     for (let i = 0; i < str.length; i++) {
         let charValue = Symbols.indexOf(str[i]);
         if (charValue < 0) throw new Error("Bad character for uncram");
-        if (continuing) result[result.length - 1] = last(result)!.multiply(46).add(charValue / (last(result)!.isNegative() ? -2 : 2));
+        if (continuing) {
+            let toAdd = (charValue >> 1) * (last(result)!.isNegative() ? -1 : 1);
+            result[result.length - 1] = last(result)!.multiply(46).add(toAdd);
+        }
         else result.push(bigInt((charValue >> 2) * (charValue % 4 >= 2 ? -1 : 1)));
         continuing = charValue % 2 === 1;
     }
