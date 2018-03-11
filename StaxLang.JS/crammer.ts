@@ -34,7 +34,7 @@ function encode(a: BigInteger[], offsetMode: boolean) {
         let parts: number[] = [], signBit = a[i].isNegative() ? 2 : 0;
         let continuing = (offsetMode && i === a.length - 1) ? 1 : 0, remain = a[i].abs();
         for (; remain.gt(23); remain = remain.divide(46), continuing = 1) {
-            parts.unshift(remain.valueOf() % 46 * 2 + continuing);
+            parts.unshift(remain.mod(bigInt[46]).valueOf() * 2 + continuing);
         }
         parts.unshift(remain.valueOf() * 4 + signBit + continuing);
         result += parts.map(p => Symbols[p]).join("");
