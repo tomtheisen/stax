@@ -328,6 +328,7 @@ chars	|Types              	|Name              	|Description
 `:v` 	|arr                	|non-ascending     	|Is array non-ascending? (has no adjacent pair of ascending elements)
 `:a` 	|arr                	|minima-indices    	|Get indices of array minima.
 `:A` 	|arr                	|maxima-indices    	|Get indices of array maxima.
+`:B` 	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
 `:c` 	|arr                	|coalesce          	|Get first truthy element of array.
 `:d` 	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:f` 	|arr                	|flatten           	|Flatten array of arrays one time.

@@ -98,6 +98,7 @@ function setup() {
         { alias: "b", types: "a", code: "2|E"},
         { alias: "B", types: "ia", code: "~;%|E{;@m,d"},
         { alias: "B", types: "i", code: "2|E"},
+        { alias: "B", types: "aa", code: "s{]ni@*mzs+{+ksd"},
         { alias: "c", types: "iii", code: "a|m|M"},
         { alias: "c", types: "rii", code: "a|m|M1!*"},
         { alias: "c", types: "a", code: "{[?k"},

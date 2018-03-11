@@ -105,6 +105,7 @@ namespace StaxLang {
                 ('b', "a", "2|E", "number from binary digits"),
                 ('B', "ia", "~;%|E{;@m,d", "number in custom base"),
                 ('B', "i", "2|E", "array of binary digit values"),
+                ('B', "aa", "s{]ni@*mzs+{+ksd", "repeat elements respective number of times"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('c', "a", "{[?k", "get first truthy element"),

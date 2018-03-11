@@ -1041,3 +1041,10 @@ me :_ J
 -1809
 	stax
 "$q?"!h
+	name:RepeatElementByArray
+	in
+abcdef
+	out
+bcceff
+	stax
+3r :B
