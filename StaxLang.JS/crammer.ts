@@ -2,7 +2,7 @@ import { StaxArray, StaxNumber, StaxValue, last } from './types';
 import * as bigInt from 'big-integer';
 type BigInteger = bigInt.BigInteger;
 
-const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}";
 
 export function uncram(str: string): BigInteger[] {
     let result: BigInteger[] = [];
@@ -33,7 +33,7 @@ function encode(a: BigInteger[], offsetMode: boolean) {
     for (let i = 0; i < a.length; i++) {
         let parts: number[] = [], signBit = a[i].isNegative() ? 2 : 0;
         let continuing = (offsetMode && i === a.length - 1) ? 1 : 0, remain = a[i].abs();
-        for (; remain.gt(23); remain = remain.divide(46), continuing = 1) {
+        for (; remain.gt(22); remain = remain.divide(46), continuing = 1) {
             parts.unshift(remain.mod(bigInt[46]).valueOf() * 2 + continuing);
         }
         parts.unshift(remain.valueOf() * 4 + signBit + continuing);

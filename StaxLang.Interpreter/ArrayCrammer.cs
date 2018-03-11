@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace StaxLang {
     public static class ArrayCrammer {
-        private const string Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+        private const string Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}";
 
         public static List<object> Uncram(string str) {
 	        var result = new List<BigInteger>();
@@ -35,7 +35,7 @@ namespace StaxLang {
 			    int signBit = a[i] < 0 ? 2 : 0;
 			    int continuing = (offsetMode && i == a.Count - 1) ? 1 : 0;
 			    var remain = BigInteger.Abs(a[i]);
-			    for (; remain > 23; remain /= 46, continuing = 1) {
+			    for (; remain > 22; remain /= 46, continuing = 1) {
 				    parts.Insert(0, (int)(remain % 46 * 2 + continuing));
 			    }
 			    parts.Insert(0, (int)(remain * 4 + signBit + continuing));
