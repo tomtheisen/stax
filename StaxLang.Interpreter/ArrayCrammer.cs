@@ -10,12 +10,19 @@ namespace StaxLang {
         public static List<object> Uncram(string str) {
 	        var result = new List<BigInteger>();
 	        bool continuing = false;
+            int sign = 0;
 	
 	        for (int i = 0; i < str.Length; i++) {
 		        int charValue = Symbols.IndexOf(str[i]);
 		        if (charValue < 0) throw new ArgumentException("Bad character for uncram");
-		        if (continuing) result[result.Count - 1] = result.Last() * 46 + charValue / (result.Last() < 0 ? -2 : 2);
-		        else result.Add(charValue / (charValue % 4 >= 2 ? -4 : 4));
+		        if (continuing) {
+                    var toAdd = charValue / 2 * sign;
+                    result[result.Count - 1] = result.Last() * 46 + toAdd;
+                }
+		        else {
+                    sign = charValue % 4 >= 2 ? -1 : 1;
+                    result.Add(charValue / 4 * sign);
+                }
 		        continuing = charValue % 2 == 1;
 	        }
 	
