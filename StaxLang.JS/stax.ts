@@ -277,7 +277,8 @@ export class Runtime {
                 yield new ExecutionState(ip, false, true);
                 continue;
             }
-            yield new ExecutionState(ip);
+            // don't step on a no-op
+            if (typeof token !== 'string' || !token.match(/^\s/)) yield new ExecutionState(ip);
 
             if (token instanceof Block) {
                 this.push(token);
