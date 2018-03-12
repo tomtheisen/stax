@@ -993,8 +993,8 @@ export class Runtime {
                     case '|/': {
                         let b = this.pop(), a = this.pop();
                         if (isInt(a) && isInt(b)) {
-                            this.push(a, b);
-                            this.runMacro("~;*{;/c;%!w,d");
+                            while (a.mod(b).isZero() && b.neq(one)) a = a.divide(b);
+                            this.push(a);
                         }
                         else if (isArray(a) && isArray(b)) {
                             let result: StaxArray = [];
