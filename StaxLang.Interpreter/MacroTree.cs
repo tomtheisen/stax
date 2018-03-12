@@ -115,7 +115,7 @@ namespace StaxLang {
                 ('D', "ai", "~;|w,|W", "trim element from both ends of string"),
                 ('D', "aa", "~;|w,|W", "trim all characters from both ends of string"),
                 ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
-                ('f', "a", "{+k", "flatten array"),
+                ('f', "a", "zs{+F", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),
                 ('F', "i", "|fu", "distinct prime factors"),
                 ('F', "a", "{Cim", "get all falsy indices"),

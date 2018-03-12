@@ -321,7 +321,7 @@ chars	|Types              	|Name              	|Description
 `:=` 	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
 `:!` 	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
 `:\|`	|arr                	|column-align      	|Right pad each column to equal length.
-`:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
+`:@` 	|arr                	|truthy-count    ****  	|Count the number of truthy elements in the array.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.
 `:^` 	|arr                	|non-descending    	|Is array non-descending? (has no adjacent pair of descending elements)
@@ -331,7 +331,7 @@ chars	|Types              	|Name              	|Description
 `:B` 	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
 `:c` 	|arr                	|coalesce          	|Get first truthy element of array.
 `:d` 	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
-`:f` 	|arr                	|flatten           	|Flatten array of arrays one time.
+`:f` 	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`
 `:F` 	|arr                	|falsy-indices     	|Get all indices of falsy elements.
 `:g` 	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
 `:G` 	|arr                	|run-lengths       	|Get the lengths of runs of duplicate elements.
