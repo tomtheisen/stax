@@ -1040,12 +1040,13 @@ namespace StaxLang {
                                         List<object> payline = IsArray(payload[r]) ? (List<object>)payload[r] : new List<object> { payload[r] };
                                         while (result.Count <= row + r) result.Add(new List<object>());
                                         if (!IsArray(result[row + r])) result[row + r] = new List<object> { result[row + r] };
-                                        var resultline = (List<object>)result[row + r];
-
+                                        
+                                        var resultline = new List<object>((List<object>)result[row + r]);
                                         for (int c = 0; c < payline.Count; c++) {
                                             while (resultline.Count <= col + c) resultline.Add(BigInteger.Zero);
                                             resultline[col + c] = payline[c];
                                         }
+                                        result[row + r] = resultline;
                                     }
 
                                     Push(result);

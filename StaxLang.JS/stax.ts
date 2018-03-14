@@ -839,12 +839,13 @@ export class Runtime {
                                 if (!isArray(payline)) payline = [payline];
                                 while (result.length <= row + r) result.push([]);
                                 if (!isArray(result[row + r])) result[row + r] = [result[row + r]];
-                                let resultline = result[row + r] as StaxArray;
 
+                                let resultline = (result[row + r] as StaxArray).slice();
                                 for (let c = 0; c < payline.length; c++) {
                                     while (resultline.length <= col + c) resultline.push(zero);
                                     resultline[col + c] = payline[c];
                                 }
+                                result[row + r] = resultline;
                             }
 
                             this.push(result);
