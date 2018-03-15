@@ -996,7 +996,9 @@ export class Runtime {
                     case '|/': {
                         let b = this.pop(), a = this.pop();
                         if (isInt(a) && isInt(b)) {
-                            while (a.mod(b).isZero() && b.neq(one)) a = a.divide(b);
+                            if (!a.isZero() && b.abs().gt(one)) {
+                                while (a.mod(b).isZero() && b.neq(one)) a = a.divide(b);
+                            }
                             this.push(a);
                         }
                         else if (isArray(a) && isArray(b)) {

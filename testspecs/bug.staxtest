@@ -476,3 +476,10 @@ GU}2AgeEFJ+
 ====
 	stax
 "===="]4*1c"abcd"2/||m
+	name:ZeroDivideAll
+	in
+0 3
+	out
+0
+	stax
+|/

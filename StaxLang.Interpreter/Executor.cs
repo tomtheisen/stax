@@ -1138,7 +1138,11 @@ namespace StaxLang {
                                 if (IsInt(a) && IsInt(b)) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "divide out " + e + " as many times as possible");
                                     else block.AddDesc("divide by n until no longer a multiple");
-                                    while (a % b == 0 && b != 1) a /= b;
+
+                                    if (a != 0 && BigInteger.Abs(b) > 1) {
+                                        while (a % b == 0) a /= b;
+                                    }
+
                                     this.Push(a);
                                 }
                                 else if (IsArray(a) && IsArray(b)) {
