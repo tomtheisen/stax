@@ -247,3 +247,6 @@ ModelManifest.xml
 StaxLang.JS/*.js
 StaxLang.JS/temp.staxtest
 StaxLang.JS/.vscode/*
+
+#Mac hidden file
+.DS_Store
