@@ -35,7 +35,11 @@ export function packBytes(asciiStax: string): number[] {
 }
 
 export function staxDecode(packedStax: string): number[] {
-    return packedStax.split('').map(c => CodePageIndex[c]);
+    return packedStax.split('').map(c => {
+        let result = CodePageIndex[c];
+        if (result == null) throw new Error("Not a packed stax character: " + c);
+        return result;
+    });
 }
 
 export function staxEncode(bytes: number[]): string {
@@ -62,6 +66,11 @@ export function unpackBytes(bytes: number[]): string {
 }
 
 export function isPacked(stax: string | number[]) {
-    if (typeof stax === 'string') return stax.charCodeAt(0) >= 0x80;
-    return stax[0] >= 0x80;
+    try {
+        if (typeof stax === 'string') stax = staxDecode(stax);
+        return stax[0] >= 0x80;
+    }
+    catch {
+        return false;
+    }
 }
