@@ -33,4 +33,4 @@ Stax supports fraction arithmetic.  You can use `u` to turn an integer upside do
 PackedStax is an alternative representation for Stax code.  It is never ambiguous with Stax, since PackedStax always has the leading bit of the first byte set.  That means the same interpreter can be used for both representations with no extra information.  For ease of clipboard use, PackedStax can be represented using a modified CP437 character encoding.  It yields ~18% savings over ASCII.
 
 ### Annotator
-Golfing languages are pretty unreadable by their nature.  But Stax comes with an annotation feature to break down a program into individual instructions and explain each one in English.
+Golfing languages are pretty unreadable by their nature.  But Stax C# windows forms gui comes with an annotation feature to break down a program into individual instructions and explain each one in English.
