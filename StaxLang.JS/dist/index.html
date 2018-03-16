@@ -75,9 +75,10 @@
                 English-like strings compress particularly well.
                 <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings">More info</a>
             </p>
-            <label>Value <br><input id="compressorInput" value="Hello, world!"></label>
+            <label>Value <br><input id="compressorInput" value="Hello, world!" class="wide"></label>
             <br>
-            <label>Stax literal <br><input id="compressorOutput" readonly></label>
+            <label for="compressorOutput">Stax literal</label> <label><input type="checkbox" id="compressorForce"> Force compressed literal</label><br>
+            <input id="compressorOutput" readonly class="wide">
         </div>
 
         <h3><a href="javascript:void(0)" id="crammerOpen">Integer Array Crammer</a></h3>
@@ -86,9 +87,9 @@
                 This tool generates a short representation for arbitrary integer arrays.
                 <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#crammed-integer-arrays">More info</a>
             </p>
-            <label>Array <br><input id="crammerInput" value="123, -234, 456"></label>
+            <label>Array <br><input id="crammerInput" value="123, -234, 456" class="wide"></label>
             <br>
-            <label>Stax crammed array <br><input id="crammerOutput" readonly></label>
+            <label>Stax crammed array <br><input id="crammerOutput" readonly class="wide"></label>
         </div>
 
         <span id="galleryOpen">Examples</span>

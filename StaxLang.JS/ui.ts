@@ -26,6 +26,7 @@ const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
+const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
 const crammerInputEl = document.getElementById("crammerInput") as HTMLInputElement;
 const crammerOutputEl = document.getElementById("crammerOutput") as HTMLInputElement;
 const debugContainer = document.getElementById("debugState") as HTMLElement;
@@ -333,6 +334,7 @@ function doCompressor() {
     let input = compressorInputEl.value;
     let result: string;
     if (input === "") result = "z";
+    else if (compressorForceEl.checked) result = '`' + compress(input) + '`'
     else if (input.length === 1) result = "'" + input;
     else if (input.length === 2) result = "." + input;
     else {
@@ -344,6 +346,7 @@ function doCompressor() {
 }
 doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
+compressorForceEl.addEventListener("change", doCompressor);
 
 const compressorDialog = document.getElementById("compressorDialog") as HTMLDivElement;
 document.getElementById("compressorOpen")!.addEventListener("click", () => {

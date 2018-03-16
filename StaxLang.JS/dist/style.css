@@ -61,7 +61,7 @@ ol {
     white-space: nowrap;
 }
 
-#compressorDialog input, #crammerDialog input {
+input.wide {
     width: 100%;
 }
 
