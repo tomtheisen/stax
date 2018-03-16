@@ -3627,16 +3627,24 @@ namespace StaxLang {
             }
 
             if (IsArray(a) && IsArray(b)) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "join with " + e);
-                else block.AddDesc("string join");
-                var result = new List<object>();
-                int i = 0;
-                foreach (var e in a) {
-                    if (i++ > 0) result.AddRange(b);
-                    if (IsArray(e)) result.AddRange(e);
-                    else result.AddRange(ToString(e));
+                if (IsMatrix(a) && IsMatrix(b)) {
+                    block.AddDesc("matrix multiply");
+                    Push(a);
+                    Push(b);
+                    RunMacro("M~{;{n|\\{:*m|+msdm,d");
                 }
-                Push(result);
+                else {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "join with " + e);
+                    else block.AddDesc("string join");
+                    var result = new List<object>();
+                    int i = 0;
+                    foreach (var e in a) {
+                        if (i++ > 0) result.AddRange(b);
+                        if (IsArray(e)) result.AddRange(e);
+                        else result.AddRange(ToString(e));
+                    }
+                    Push(result);
+                }
                 yield break;
             }
 
@@ -3752,6 +3760,7 @@ namespace StaxLang {
         private static bool IsNumber(object b) => IsInt(b) || IsFrac(b) || IsFloat(b);
         private static bool IsArray(object b) => b is List<object>;
         private static bool IsBlock(object b) => b is Block;
+        private static bool IsMatrix(List<object> b) => b.Count > 0 && b.All(IsArray);
         private static bool IsTruthy(dynamic b) => (IsNumber(b) && b != 0) || (IsArray(b) && b.Count != 0);
 
         private static List<object> S2A(string arg) {

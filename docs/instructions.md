@@ -219,6 +219,7 @@ chars	|Types              	|Name              	|Description
 `+`  	|arr num            	|append            	|Append element to array.
 `-`  	|arr arr            	|array-diff        	|Remove all elements in b from a.
 `-`  	|arr num            	|array-remove      	|Remove all instances of b from a.
+`*`  	|matrix matrix      	|matrix-mul        	|Matrix multiplication. A matrix is any array that contains at least one array, and no non-arrays.
 `/`  	|arr int            	|array-group       	|Split array into groups of specified size.  The last group will be smaller if it's not a multiple.
 `%`  	|arr                	|length            	|Array length
 `\`  	|num num            	|pair              	|Make a 2 length array.

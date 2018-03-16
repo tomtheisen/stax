@@ -47,6 +47,9 @@ export function isInt(n: any): n is BigInteger {
 export function isArray(n: StaxValue | string): n is StaxArray {
     return Array.isArray(n);
 }
+export function isMatrix(n: StaxArray): n is StaxArray[] {
+    return n.length > 0 && n.every(isArray);
+}
 export function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
 }

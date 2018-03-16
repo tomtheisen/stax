@@ -1,4 +1,7 @@
-import { StaxArray, StaxNumber, StaxValue, isArray, isFloat, isInt, isNumber, isTruthy, last, A2S, S2A, floatify, constants, widenNumbers, runLength, areEqual, indexOf, compare, stringFormat } from './types';
+import { StaxArray, StaxNumber, StaxValue, 
+    isArray, isFloat, isInt, isNumber, isTruthy, isMatrix,
+    last, A2S, S2A, floatify, constants, widenNumbers, runLength, 
+    areEqual, indexOf, compare, stringFormat } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, unpackBytes, isPacked } from './packer';
 import * as bigInt from 'big-integer';
@@ -1597,13 +1600,19 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(a) && isArray(b)) {
-            let result: StaxArray = [];
-            a.forEach((e, i) => {
-                if (i) result = result.concat(b);
-                if (isArray(e)) result = result.concat(e);
-                else result = result.concat(S2A(e.toString()));
-            });
-            this.push(result);
+            if (isMatrix(a) && isMatrix(b)) {
+                this.push(a, b); // matrix multiplication
+                this.runMacro("M~{;{n|\\{:*m|+msdm,d");
+            }
+            else {
+                let result: StaxArray = [];
+                a.forEach((e, i) => {
+                    if (i) result = result.concat(b);
+                    if (isArray(e)) result = result.concat(e);
+                    else result = result.concat(S2A(e.toString()));
+                });
+                this.push(result);
+            }
         }
         else if (a instanceof Block && isInt(b)) {
             let block = a, times = b.valueOf();

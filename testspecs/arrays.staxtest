@@ -1054,3 +1054,11 @@ abcdef
 bcceff
 	stax
 3r :B
+	name:MatrixMultiplication
+	out
+11 14 17 20
+23 30 37 44
+35 46 57 68
+47 62 77 92
+	stax
+8R2/ 8R4/ * mJ
