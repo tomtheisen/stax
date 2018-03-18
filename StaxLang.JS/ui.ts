@@ -164,6 +164,9 @@ function step() : number | null {
 stepButton.addEventListener("click", step);
 
 function showDebugInfo(ip: number, steps: number) {
+    function stripComments(stax: string): string {
+        return stax.split(/\n/g).map(line => line.replace(/\t.*/, "")).join("\n");
+    }
     if (!activeRuntime) return;
     debugContainer.hidden = false;
 
@@ -174,8 +177,8 @@ function showDebugInfo(ip: number, steps: number) {
         debugPostEl = document.getElementById("debugCodePost")!;
     let code = codeArea.value;
     if (isPacked(code)) code = unpack(code);
-    debugPreEl.textContent = code.substr(0, ip);
-    debugPostEl.textContent = code.substr(ip);
+    debugPreEl.textContent = stripComments(code.substr(0, ip));
+    debugPostEl.textContent = stripComments(code.substr(ip));
 
     let state = activeRuntime.getDebugState();
     document.getElementById("watchX")!.textContent = state.x;
