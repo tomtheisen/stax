@@ -50,6 +50,13 @@ ABC CAB BCA
 ax by cz
 	stax
 |\J
+	name:ZipEnd
+	in
+"abcd" "xyz"
+	out
+bx cy dz
+	stax
+:,J
 	name:ZeroRange
 	in
 	out

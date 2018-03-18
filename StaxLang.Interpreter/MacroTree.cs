@@ -94,6 +94,7 @@ namespace StaxLang {
                 ('-', "ff", "-|a", "absolute difference"),
                 ('-', "a", "2B{Es-m", "pairwise difference of array"),
                 ('.', "a", "j{1:/vs^s+mJ", "title case string"),
+                (',', "aa", "rsrs|\\r", "zip arrays;  drop prefix from longer array so end is aligned"),
                 ('a', "a", "c|m|I", "indices of minima"),
                 ('A', "a", "c|M|I", "indices of maxima"),
                 ('A', "i", "A|L@", "floor log base A"),

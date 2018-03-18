@@ -323,6 +323,7 @@ chars	|Types              	|Name              	|Description
 `:!` 	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
 `:\|`	|arr                	|column-align      	|Right pad each column to equal length.
 `:@` 	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
+`:,` 	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
 `:(` 	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)` 	|arr                	|right-rotations   	|All right rotations, starting from original.
 `:^` 	|arr                	|non-descending    	|Is array non-descending? (has no adjacent pair of descending elements)
