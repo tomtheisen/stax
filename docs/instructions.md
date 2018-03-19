@@ -127,6 +127,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:B`         	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
 `:B`         	|int        	|binary-digits 	|                   	|Generate array of binary values.
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
+`:C`         	|int        	|catalan       	|choose(2a,a)/(a+1) 	|Catalan number; number of strings with a matched pairs of brackets.
 `:d`         	|int        	|divisors      	|                   	|Get all divisors of n.
 `:f`         	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
 `:F`         	|int        	|dist-factors  	|                   	|Distinct prime factors.
