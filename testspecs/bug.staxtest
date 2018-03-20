@@ -483,3 +483,21 @@ GU}2AgeEFJ+
 0
 	stax
 |/
+	name:ZeroLCM
+	in
+0 3
+3 0
+0 0
+	out
+0
+0
+0
+	stax
+me|l
+	name:LCMFromInput
+	in
+3 4
+	out
+12
+	stax
+|l

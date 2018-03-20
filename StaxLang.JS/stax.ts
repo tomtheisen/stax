@@ -1280,8 +1280,8 @@ export class Runtime {
                         this.runMacro("Vn*"); // join with newlines
                         break;
                     case '|l': // lcm
-                        if (isArray(this.peek())) this.runMacro("1s{|lF");
-                        else if (isInt(this.peek())) this.runMacro("b|g~*,/");
+                        if (isArray(this.peek())) this.runMacro("O{|lF");
+                        else if (isInt(this.peek())) this.runMacro("sb|g~*,n{/}{d}?");
                         else fail("bad types for lcm");
                         break;
                     case '|L': {

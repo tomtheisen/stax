@@ -1511,8 +1511,8 @@ namespace StaxLang {
                                 break;
                             case 'l':
                                 block.AddDesc("lowest common denominator");
-                                if (IsArray(Peek())) RunMacro("1s{|lF");
-                                else if (IsInt(Peek())) RunMacro("b|g~*,/");
+                                if (IsArray(Peek())) RunMacro("O{|lF");
+                                else if (IsInt(Peek())) RunMacro("sb|g~*,n{/}{d}?");
                                 else throw new StaxException("Bad type for lcm");
                                 break;
                             case 'L': 
