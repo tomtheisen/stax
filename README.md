@@ -24,7 +24,7 @@ Stax does lots of stuff, but here are the highlights and most interesting.
 Stax has a variant of string literals suitable for compressing English-like text with no special characters.  It is compressed using Huffman codes.  It uses a different set of Huffman codes for every pair of preceding characters.  The character weights were derived from a large corpus of English-like text.  `"Hello, World!"` could be written as  `` `jaH1"jS3!` ``.  The language comes with a compression utility.
 
 ### Crammed integer arrays
-Similarly to compressed string literals, stax also has a special feature for efficiently representing arrays of arbitrary integers.  It uses almost all the printable ascii characters.  It uses the information in each character efficiently to embed how long each integer is, and their values.  This feature is new in Stax 1.1.
+Similarly to compressed string literals, stax also has a special feature for efficiently representing arrays of arbitrary integers.  It uses almost all the printable ascii characters.  It uses the information in each character efficiently to embed how long each integer is, and their values. 
 
 ### Rationals
 Stax supports fraction arithmetic.  You can use `u` to turn an integer upside down. So `3u` yields `1/3`.  Fractions are always in reduced terms.  `3u 6*` multiplies 1/3 by 6, but the result will be `2/1`.
@@ -33,4 +33,4 @@ Stax supports fraction arithmetic.  You can use `u` to turn an integer upside do
 PackedStax is an alternative representation for Stax code.  It is never ambiguous with Stax, since PackedStax always has the leading bit of the first byte set.  That means the same interpreter can be used for both representations with no extra information.  For ease of clipboard use, PackedStax can be represented using a modified CP437 character encoding.  It yields ~18% savings over ASCII.
 
 ### Annotator
-Golfing languages are pretty unreadable by their nature.  But Stax comes with an annotation feature to break down a program into individual instructions and explain each one in English.
+Golfing languages are pretty unreadable by their nature.  But Stax C# windows forms gui comes with an annotation feature to break down a program into individual instructions and explain each one in English.
