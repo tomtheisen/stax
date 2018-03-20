@@ -77,6 +77,10 @@ export class Rational {
         let gcd = bigInt.gcd(this.numerator, this.denominator);
         this.numerator = this.numerator.divide(gcd);
         this.denominator = this.denominator.divide(gcd);
+        if (this.denominator.isNegative()) {
+            this.numerator = this.numerator.negate();
+            this.denominator = this.denominator.negate();
+        }
     }
 }
 
