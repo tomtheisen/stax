@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p ./tsconfig.json && webpack",
-    "test": "npm run build && node js/test.js ../testspecs"
+    "test": "npm run --silent build && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
   "contributors": [

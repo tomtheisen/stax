@@ -3,6 +3,7 @@ import { Runtime, ExecutionState } from './stax';
 import { last } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
 
 const TimeoutMs = 2000;
 
@@ -13,6 +14,12 @@ class TestCase {
 }
 
 enum TestFileState { Name, In, Out, Code }
+
+function rewindLine() {
+    // move cursor in node console https://stackoverflow.com/a/10830168/44743
+    process.stdout.write("\x1b[1A");
+    readline.clearLine(process.stdout, 0);
+}
 
 class TestFiles{
     cases: TestCase[] = [];
@@ -84,8 +91,8 @@ class TestFiles{
         return cases;        
     }
 
-    runCases() {
-        console.log("Starting Test Suite: "+this.name);
+    runCases(idx: number, total: number) {
+        console.log(`[${ idx + 1 }/${ total }] Running test suite: ${ this.name }`);
         for (let c of this.cases) {
             for (let prog of c.programs) {
                 for (let io of c.io) {
@@ -102,8 +109,10 @@ class TestFiles{
                         }
                     }
                     catch (e) {
-                        console.error(e);
+                        rewindLine();
+                        process.stdout.write("\x1b[31m");
                         console.error(`Code(${prog.line}): ${prog.code}`);
+                        process.stdout.write("\x1b[0m");
                         continue;
                     }
 
@@ -112,17 +121,22 @@ class TestFiles{
                     if (expectedFlat === outputFlat) {
                         ++this.passed;
                     } else {
+                        rewindLine();
+                        // colors https://stackoverflow.com/a/41407246/44743
+                        process.stdout.write("\x1b[31m");
+                        console.error(`Error in ${this.name} ${ c.name || "" }:${ prog.line }`);
                         console.error("Expected:");
                         for (let e of io.expected) console.error(e);
-                        console.error("Got:");
+                        console.error("Actual:");
                         for (let o of output) console.error(o);
-                        console.error(`Code(${prog.line}): ${prog.code}`);
                         console.error();
+                        console.error();
+                        process.stdout.write("\x1b[0m");
                     }
                 }
             }
         }
-        console.log("Attempts: " + this.attempts + " Passed: " + this.passed);
+        rewindLine();
     }
 }
 
@@ -144,10 +158,11 @@ function allFiles(dir: string): string[] {
 let testFiles: File[] = [];
 let argpath = process.argv[2];
 let tests = allFiles(argpath).map(file => new TestFiles(file));
-tests.forEach(test => test.runCases());
+let start = new Date;
+tests.forEach((test, i) => test.runCases(i, tests.length));
 
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
 let totAttempts = tests.reduce((accumulator, current) => accumulator + current.attempts, 0);
 
-console.log(`Total Passed: ${ totPassed }/${ totAttempts }`);
+console.log(`${ tests.length } specs complete in ${ ((new Date).valueOf() - start.valueOf()) / 1000 }`);
 process.exit();

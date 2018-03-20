@@ -50,7 +50,6 @@ namespace StaxLang.CLI {
             var canon = Path.GetFullPath(path);
             var files = Directory.GetFiles(canon, "*.staxtest", SearchOption.AllDirectories);
             int i = 0;
-            Console.WriteLine();
             foreach (var file in files) {
                 var name = Path.GetFileNameWithoutExtension(file);
                 string msg = string.Format("[{0}/{1}] {2}", ++i, files.Length, name);
@@ -59,9 +58,7 @@ namespace StaxLang.CLI {
 
                 DoTest(file, @throw);
             }
-            Overwrite(string.Format("[{0}/{0}] specifications complete", files.Length));
-            Console.WriteLine("{0} programs executed", ProgramsExecuted);
-            Console.WriteLine(sw.Elapsed);
+            Overwrite(string.Format("{0} specs complete in {1}", files.Length, sw.ElapsedMilliseconds / 1000.0));
         }
 
         private static int ProgramsExecuted = 0;
@@ -156,7 +153,6 @@ namespace StaxLang.CLI {
                     foreach (var a in outLines) {
                         Console.WriteLine(a);
                     }
-                    Console.WriteLine();
                     Console.ResetColor();
                 }
             }
