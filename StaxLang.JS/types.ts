@@ -164,7 +164,7 @@ export const constants: {[key: string]: StaxValue} = {
 	'@': S2A("[A-Z]"),
 	'#': S2A("[a-zA-Z]"),
 	'$': S2A("[a-z]+"),
-	'%': S2A("[A-Z]+"),
+	')': S2A("[A-Z]+"),
 	'^': S2A("[a-zA-Z]+"),
 	'&': S2A("[a-z]*"),
 	'*': S2A("[A-Z]*"),
