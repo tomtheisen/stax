@@ -65,6 +65,23 @@ input.wide {
     width: 100%;
 }
 
+.linkIcons {
+    line-height: 1em;
+    float: right;
+}
+
+#generatepost {
+    vertical-align: bottom;
+    transition-property: all;
+    transition-duration: 200ms;
+}
+
+#generatepost:active {
+    font-size: 150%;
+    transition-duration: 50ms;
+    letter-spacing: -5px;
+}
+
 #compressorOutput, #debugCode, #debugState dl {
     font-family: monospace;
 }
@@ -86,7 +103,7 @@ input.wide {
     background-color: #ddd;
     padding: 0.5em 1em;
 }
-#gallery  ul {
+#gallery ul {
     margin: 0;
     padding: 0;
     list-style-type: none;

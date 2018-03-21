@@ -23,6 +23,7 @@ const statusEl = document.getElementById("status") as HTMLElement;
 const propsEl = document.getElementById("properties") as HTMLElement;
 const outputEl = document.getElementById("output") as HTMLPreElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
+const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
@@ -332,6 +333,35 @@ codeArea.addEventListener("keydown", ev => {
     }
 });
 inputArea.addEventListener("input", pendUpdate);
+
+postLink.addEventListener("click", ev => {
+    let template = " # [Stax](https://github.com/tomtheisen/stax), ";
+
+    let sizeSpec = propsEl.textContent!;
+    if (sizeSpec.indexOf("packed") > 0) {
+        template += sizeSpec.split(' ', 2)[0]; 
+        template += " [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)";
+    }
+    else template += sizeSpec;
+    template += "\n\n";
+
+    for (let line of codeArea.value.split(/\n/g)) {
+        template += `\t${ line }\n`
+    }
+    template += "\n";
+    template += `[Run and debug it](${ saveLink.href })`
+    
+    let tempArea = document.createElement("textarea");
+    tempArea.style.position = "fixed";
+    tempArea.style.top = tempArea.style.left = "0";
+    tempArea.value = template;
+
+    document.body.appendChild(tempArea);
+    tempArea.focus();
+    tempArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempArea);
+});
 
 function doCompressor() {
     let input = compressorInputEl.value;
