@@ -956,7 +956,7 @@ namespace StaxLang {
                             case '%':
                                 if (IsNumber(Peek())) {
                                     block.AddDesc("divmod; push a/b and a%b");
-                                    RunMacro("ssb%~/,");
+                                    RunMacro("ssb%~/1u*@,");
                                 }
                                 else if (IsArray(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "embed " + e + " in array at position");

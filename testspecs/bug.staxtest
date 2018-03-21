@@ -506,3 +506,10 @@ me|l
 -1/2
 	stax
 2Nu
+	name:NegativeFractionMod
+	in
+5/4 -1/3
+	out
+1/4
+	stax
+%

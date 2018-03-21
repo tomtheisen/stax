@@ -64,6 +64,7 @@ export class Rational {
     }
 
     mod(other: Rational) {
+        other = other.abs();
         let intPart = this.divide(other).floor();
         return this.subtract(other.multiply(new Rational(intPart, bigInt.one)));
     }

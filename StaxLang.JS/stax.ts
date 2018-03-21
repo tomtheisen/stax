@@ -1033,7 +1033,7 @@ export class Runtime {
                         break;
                     case '|%':
                         if (isNumber(this.peek())) { // divmod
-                            this.runMacro("ssb%~/,");
+                            this.runMacro("ssb%~/1u*@,");
                         }
                         else if (isArray(this.peek())) { // embed sub-array
                             let c = this.pop(), b = this.pop(), a = this.popArray();

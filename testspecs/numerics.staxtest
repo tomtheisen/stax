@@ -144,10 +144,15 @@
 %
 	name:DivMod
 	in
+17 5
 	out
-2 3
+3 2
+	in
+17/1 10/2
+	out
+3 2/1
 	stax
-17 5 |% p ' p p
+|% \J
 	name:Increment
 	in
 	out
