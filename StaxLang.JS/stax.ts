@@ -65,28 +65,28 @@ export class Runtime {
         this.lineOut = output;
     }
 
-    public getDebugState() {
-        function format(arg: StaxValue | IteratorPair): string {
-            if (arg instanceof IteratorPair) return `(${ format(arg.item1) }, ${ format(arg.item2) })`;
-            if (isNumber(arg)) return arg.toString();
-            if (arg instanceof Block) return `Block ${ arg.contents }`;
-        
-            if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(128)))) {
-                return JSON.stringify(String.fromCharCode(...arg.map(e => (e as BigInteger).valueOf())))
-                    .replace(/\\u0000/g, "\\0");
-            }
-        
-            return '[' + arg.map(format).join(", ") + ']';
+    private format(arg: StaxValue | IteratorPair): string {
+        if (arg instanceof IteratorPair) return `(${ this.format(arg.item1) }, ${ this.format(arg.item2) })`;
+        if (isNumber(arg)) return arg.toString();
+        if (arg instanceof Block) return `Block ${ arg.contents }`;
+    
+        if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(128)))) {
+            return JSON.stringify(String.fromCharCode(...arg.map(e => (e as BigInteger).valueOf())))
+                .replace(/\\u0000/g, "\\0");
         }
-        
+    
+        return '[' + arg.map(this.format).join(", ") + ']';
+    }
+    
+    public getDebugState() {
         return {
             implicitEval: this.implicitEval,
-            x: format(this.x),
-            y: format(this.y),
+            x: this.format(this.x),
+            y: this.format(this.y),
             index: this.index.valueOf(),
-            _: format(this._),
-            main: this.mainStack.map(format).reverse(),
-            input: this.inputStack.map(format).reverse(),
+            _: this.format(this._),
+            main: this.mainStack.map(this.format).reverse(),
+            input: this.inputStack.map(this.format).reverse(),
         };
     }
 
@@ -2142,9 +2142,12 @@ export class Runtime {
             let result = [];
             let map: {[key: string]: StaxValue} = {};
 
-            for (let i = 0; i < translation.length; i += 2) map[translation[i].toString()] = translation[i + 1];
+            for (let i = 0; i < translation.length; i += 2) {
+                let key = this.format(translation[i]);
+                map[key] = translation[i + 1];
+            }
             for (let e of input) {
-                let mapped = map[e.toString()];
+                let mapped = map[this.format(e)];
                 result.push(mapped == null ? e : mapped);
             }
             this.push(result);

@@ -2545,10 +2545,16 @@ namespace StaxLang {
 
             if (IsArray(input) && IsArray(translation)) {
                 var result = new List<object>();
-                var map = new Dictionary<BigInteger, BigInteger>();
+                var map = new Dictionary<string, object>();
 
-                for (int i = 0; i < translation.Count; i += 2) map[translation[i]] = translation[i + 1];
-                foreach (var e in input) result.Add(map.ContainsKey(e) ? map[e] : e);
+                for (int i = 0; i < translation.Count; i += 2) {
+                    var key = Format(translation[i]);
+                    map[key] = translation[i + 1];
+                }
+                foreach (var e in input) {
+                    var key = Format(e);
+                    result.Add(map.ContainsKey(key) ? map[key] : e);
+                }
                 Push(result);
             }
             else {
@@ -3787,6 +3793,11 @@ namespace StaxLang {
         private static List<object> Range(BigInteger start, BigInteger count) =>
             Enumerable.Range((int)start, (int)count).Select(n => new BigInteger(n) as object).ToList();
 
+        /// <summary>
+        /// debug repr for stax value
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private string Format(dynamic e) {
             if (IsArray(e)) {
                 if (((List<object>)e).TrueForAll(ee => ee is BigInteger bi && (bi >= 32 && bi < 127 || bi == 0))) {
