@@ -20,6 +20,9 @@ Strings are not a type in stax.  Strings are represented as arrays of integer co
 ## Features
 Stax does lots of stuff, but here are the highlights and most interesting.
 
+### Step through debugger
+Stax's web environment features a debugger that lets you step through code as its executing.  You can also break execution to find out why a program is in an infinite loop.  When execution is broken, you can inspect all the internal state of the execution environment, including the register values, both stacks, and current instruction pointer.  If you want to break at a certain point in code, you can use the programmatic breakpoint instruction, which is `` |` ``. 
+
 ### Compressed string literals
 Stax has a variant of string literals suitable for compressing English-like text with no special characters.  It is compressed using Huffman codes.  It uses a different set of Huffman codes for every pair of preceding characters.  The character weights were derived from a large corpus of English-like text.  `"Hello, World!"` could be written as  `` `jaH1"jS3!` ``.  The language comes with a compression utility.
 
