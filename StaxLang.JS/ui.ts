@@ -1,5 +1,6 @@
 import { Runtime, ExecutionState } from './stax';
 import { pendWork } from './timeoutzero';
+import { setClipboard } from './clipboard';
 import { compress } from './huffmancompression';
 import { cram } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
@@ -41,6 +42,11 @@ let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0, input = 0;
 let pendingBreak = false;
 let pendingInputs: string[] = [];
+
+enum CodeType { ASCII, Packed, UnpackedWithExtended }
+let codeType: CodeType;
+let codeBytes: number;
+let codeChars: number;
 
 // prepare for new run
 function resetRuntime() {
@@ -246,6 +252,8 @@ function updateStats() {
 
     packButton.disabled = isActive();
     if (isPacked(codeArea.value)) {
+        codeType = CodeType.Packed;
+        codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
     }
@@ -264,11 +272,16 @@ function updateStats() {
         }
 
         if (unknown) {
-            let chars = codeArea.value.length - pairs;
-            let bytes = countUtf8Bytes(codeArea.value);
-            propsEl.textContent = `${ chars } characters, ${ bytes } bytes utf-8`;
+            codeChars = codeArea.value.length - pairs;
+            codeType = CodeType.UnpackedWithExtended;
+            codeBytes = countUtf8Bytes(codeArea.value);
+            propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes utf-8`;
         }
-        else propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
+        else {
+            codeType = CodeType.ASCII;
+            codeChars = codeBytes = codeArea.value.length;
+            propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
+        }
     }
 }
 
@@ -335,32 +348,23 @@ codeArea.addEventListener("keydown", ev => {
 inputArea.addEventListener("input", pendUpdate);
 
 postLink.addEventListener("click", ev => {
-    let template = " # [Stax](https://github.com/tomtheisen/stax), ";
-
-    let sizeSpec = propsEl.textContent!;
-    if (sizeSpec.indexOf("packed") > 0) {
-        template += sizeSpec.split(' ', 2)[0]; 
-        template += " [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)";
+    let template = "# [Stax](https://github.com/tomtheisen/stax), ";
+    switch (codeType) {
+        case CodeType.ASCII:
+            template += `${ codeBytes } bytes`;
+            break;
+        case CodeType.Packed:
+            template += `${ codeBytes } [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)`;
+            break;
+        case CodeType.UnpackedWithExtended:
+            template += `${ codeBytes } bytes, (${ codeChars } chars, UTF-8)`;
+            break;
     }
-    else template += sizeSpec;
     template += "\n\n";
+    for (let line of codeArea.value.split(/\n/g)) template += `\t${ line }\n`
+    template += `\n[Run and debug it](${ saveLink.href })`
 
-    for (let line of codeArea.value.split(/\n/g)) {
-        template += `\t${ line }\n`
-    }
-    template += "\n";
-    template += `[Run and debug it](${ saveLink.href })`
-    
-    let tempArea = document.createElement("textarea");
-    tempArea.style.position = "fixed";
-    tempArea.style.top = tempArea.style.left = "0";
-    tempArea.value = template;
-
-    document.body.appendChild(tempArea);
-    tempArea.focus();
-    tempArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempArea);
+    setClipboard(template);
 });
 
 function doCompressor() {
