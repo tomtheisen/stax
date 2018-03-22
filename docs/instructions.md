@@ -9,7 +9,7 @@ chars     	|Description
 `Q`     	|Peek and print with a newline.
 `\|_`   	|(space, not underscore) Print a single space character.
 ``\|` ``	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
-`\|P`   	|Print newline.
+`\|P`   	|~~Print newline.~~  Deprecated.  Use `zP` instead.  *Deprecations don't happen often in stax, and when they do, they'll usually be accompanied by an equivalent way of accomplishing the same thing.*
 `\|V`   	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
 ## Stack
