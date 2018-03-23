@@ -77,6 +77,13 @@ namespace StaxLang {
             ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
         };
 
+        private static NumberFormatInfo NumberFormat;
+        static Executor() {
+            NumberFormat = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            NumberFormat.PositiveInfinitySymbol = "∞";
+            NumberFormat.NegativeInfinitySymbol = "-∞";
+        }
+
         private BigInteger Index; // loop iteration
         private BigInteger IndexOuter; // outer loop iteration
         private dynamic X; // register - default to numeric value of first input
@@ -3718,7 +3725,9 @@ namespace StaxLang {
                 return result;
             }
 
-            if (IsNumber(arg)) return S2A(arg.ToString());
+            if (IsNumber(arg)) {
+                return S2A(arg.ToString(NumberFormat));
+            }
             else if (IsArray(arg)) {
                 var result = new List<object>();
                 foreach (var e in arg) {
