@@ -1,7 +1,7 @@
 import { StaxArray, StaxNumber, StaxValue, 
     isArray, isFloat, isInt, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength, 
-    areEqual, indexOf, compare, stringFormat } from './types';
+    areEqual, indexOf, compare, stringFormat, unEval } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, unpackBytes, isPacked } from './packer';
 import * as bigInt from 'big-integer';
@@ -1472,6 +1472,9 @@ export class Runtime {
                         break;
                     case '|T':
                         this.doPermutations();
+                        break;
+                    case '|u':
+                        this.push(S2A(unEval(this.popArray())));
                         break;
                     case '|V':
                         this.push([]); // command line args

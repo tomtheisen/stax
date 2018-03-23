@@ -10,6 +10,7 @@ chars     	|Description
 `\|_`   	|(space, not underscore) Print a single space character.
 ``\|` ``	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
 `\|P`   	|~~Print newline.~~  Deprecated.  Use `zP` instead.  *Deprecations don't happen often in stax, and when they do, they'll usually be accompanied by an equivalent way of accomplishing the same thing.*
+`\|u`   	|Un-eval.  Produce string representation of array. e.g. `"[1, 2, 3, [4, 5]]"`
 `\|V`   	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
 ## Stack

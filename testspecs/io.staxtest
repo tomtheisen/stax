@@ -95,3 +95,10 @@ r
 ∞
 	stax
 VIP
+	name:Uneval
+	in
+[1 22 33 [44 5]]
+	out
+[1, 22, 33, [44, 5]]
+	stax
+|u

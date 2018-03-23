@@ -1710,6 +1710,10 @@ namespace StaxLang {
                             case 'T':
                                 DoPermutations(block);
                                 break;
+                            case 'u':
+                                block.AddDesc("Uneval array");
+                                Push(S2A(UnEval(Pop())));
+                                break;
                             case 'V':
                                 type = InstructionType.Value;
                                 Push(Arguments.Select(S2A).Cast<object>().ToList());
@@ -3719,6 +3723,11 @@ namespace StaxLang {
                 return BigInteger.Parse(A2S(arg));
             }
             throw new StaxException("Bad type for ToNumber");
+        }
+
+        private string UnEval(List<object> arr) {
+            var mapped = arr.Select((dynamic e) => IsArray(e) ? UnEval(e) : e.ToString(NumberFormat));
+            return "[" + string.Join(", ", mapped) + "]";
         }
 
         private List<object> ToString(dynamic arg) {

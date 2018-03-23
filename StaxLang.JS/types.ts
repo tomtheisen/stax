@@ -156,6 +156,11 @@ export function stringFormat(arg: StaxValue): StaxArray {
     throw new Error("bad type for stringFormat");
 }
 
+export function unEval(arr: StaxArray): string {
+    let mapped = arr.map(e => isArray(e) ? unEval(e) : e.toString());
+    return "[" + mapped.join(", ") + "]";
+}
+
 const versionInfo = "Stax 1.0.7 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
