@@ -275,12 +275,12 @@ function updateStats() {
             codeChars = codeArea.value.length - pairs;
             codeType = CodeType.UnpackedWithExtended;
             codeBytes = countUtf8Bytes(codeArea.value);
-            propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes utf-8`;
+            propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes UTF-8`;
         }
         else {
             codeType = CodeType.ASCII;
             codeChars = codeBytes = codeArea.value.length;
-            propsEl.textContent = `${ codeArea.value.length } bytes, ascii`;
+            propsEl.textContent = `${ codeArea.value.length } bytes, ASCII`;
         }
     }
 }
