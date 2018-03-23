@@ -65,7 +65,7 @@ export class Runtime {
         this.lineOut = output;
     }
 
-    private format(arg: StaxValue | IteratorPair): string {
+    private format: (arg: StaxValue | IteratorPair) => string = arg => {
         if (arg instanceof IteratorPair) return `(${ this.format(arg.item1) }, ${ this.format(arg.item2) })`;
         if (isNumber(arg)) return arg.toString();
         if (arg instanceof Block) return `Block ${ arg.contents }`;
@@ -947,7 +947,8 @@ export class Runtime {
                         else if (isArray(this.peek())) this.doMultiAntiMode();
                         break;
                     case '|+':
-                        this.runMacro('Z{+F');
+                        if (isNumber(this.peek())) this.runMacro("c^*h");
+                        else this.runMacro('Z{+F');
                         break;
                     case '|-': { // multiset subtract
                         let b = this.pop(), a = this.popArray();
@@ -2894,13 +2895,13 @@ export class Runtime {
     }
 
     private doMacroAlias(alias: string) {
-        let typeTree = macroTrees[alias];
+        let typeTree = macroTrees[alias] || fail(`macro not found for types in ${ alias }`);
         let resPopped: StaxArray = [];
         // follow type tree as far as necessary
         while (typeTree.hasChildren()) {
             resPopped.push(this.pop());
             let type = getTypeChar(last(resPopped)!);
-            typeTree = typeTree.children![type];
+            typeTree = typeTree.children![type] || fail(`macro not found for types in ${ alias }`);
         }
         // return inspected values to stack
         this.push(...resPopped.reverse());

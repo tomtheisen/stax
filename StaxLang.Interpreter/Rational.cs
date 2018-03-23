@@ -61,6 +61,7 @@ namespace StaxLang {
         }
 
         public override string ToString() => $"{Num}/{Den}";
+        public string ToString(IFormatProvider format) => Num.ToString(format) + "/" + Den.ToString(format);
         public override bool Equals(object obj) => obj is Rational r && Num == r.Num && Den == r.Den;
         public override int GetHashCode() => Num.GetHashCode() ^ (Den.GetHashCode() * 37);
 

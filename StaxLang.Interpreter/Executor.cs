@@ -990,9 +990,15 @@ namespace StaxLang {
                                     Push(result);
                                 }
                                 break;
-                            case '+': 
-                                block.AddDesc("sum of array");
-                                RunMacro("Z{+F");
+                            case '+':
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("nth triangular number (n*(n+1)/2)");
+                                    RunMacro("c^*h");
+                                }
+                                else {
+                                    block.AddDesc("sum of array");
+                                    RunMacro("Z{+F");
+                                }
                                 break;
                             case '-':
                                 DoMultisetSubtract(block);

@@ -111,7 +111,9 @@ class TestFiles{
                     catch (e) {
                         rewindLine();
                         process.stdout.write("\x1b[31m");
-                        console.error(`Code(${prog.line}): ${prog.code}`);
+                        console.error(`Error in ${this.name} ${ c.name || "" }:${ prog.line }`);
+                        console.error(e);
+                        console.error();
                         process.stdout.write("\x1b[0m");
                         continue;
                     }
@@ -164,5 +166,6 @@ tests.forEach((test, i) => test.runCases(i, tests.length));
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
 let totAttempts = tests.reduce((accumulator, current) => accumulator + current.attempts, 0);
 
+console.log(`${totPassed}/${totAttempts} passed`);
 console.log(`${ tests.length } specs complete in ${ ((new Date).valueOf() - start.valueOf()) / 1000 }`);
 process.exit();

@@ -138,7 +138,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:p`         	|int        	|last-prime    	|                   	|Last prime < n.
 `:P`         	|int        	|next-prime    	|                   	|Next prime >= n.
 `:t`         	|int        	|totient       	|totient(a)         	|Euler's totient of n.
-`:T`         	|int        	|triangular-num	|a * (a+1) / 2      	|Get a triangular number.
+`:T`         	|int        	|triangular-num	|a * (a+1) / 2      	|~~Get a triangular number.~~ Deprecated. Use `|+` instead. 
 
 ## Logic
 chars  	|Name        	|Description
