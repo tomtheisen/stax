@@ -27,6 +27,10 @@ export class Program extends Block {
     getGotoTarget(callDepth: number): Block {
         return this.gotoTargets[callDepth - 1] || last(this.gotoTargets) || this;
     }
+
+    getGotoTargetCount(): number {
+        return this.gotoTargets.length;
+    }
 }
 
 export function parseProgram(program: string): Program {

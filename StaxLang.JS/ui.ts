@@ -428,7 +428,11 @@ function golf(tokens: (string | Block)[]): string {
 }
 golfButton.addEventListener("click", ev => {
     let program = parseProgram(codeArea.value);
-    codeArea.value = golf(program.tokens);
+    let golfed = golf(program.tokens), count = program.getGotoTargetCount();
+    for (let i = 1; i <= count; i++) {
+        golfed += "}" + golf(program.getGotoTarget(i).tokens);
+    }
+    codeArea.value = golfed;
     sizeTextArea(codeArea);
     updateStats();
 });
