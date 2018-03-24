@@ -1,4 +1,5 @@
 import { Runtime, ExecutionState } from './stax';
+import { parseProgram, Block } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import { compress } from './huffmancompression';
@@ -26,6 +27,7 @@ const outputEl = document.getElementById("output") as HTMLPreElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
+const golfButton = document.getElementById("golf") as HTMLButtonElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
@@ -55,7 +57,7 @@ function resetRuntime() {
     outputEl.textContent = "";
     pendingBreak = false;
 
-    packButton.disabled = codeArea.disabled = inputArea.disabled = true;
+    golfButton.disabled = packButton.disabled = codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
     stopButton.disabled = false;
 
@@ -233,6 +235,7 @@ function countUtf8Bytes(s: string) {
     return b;
 }
 
+// show code size and update permalink
 function updateStats() {
     let params = new URLSearchParams;
     if (isPacked(codeArea.value)) {
@@ -250,7 +253,9 @@ function updateStats() {
         .replace(/%5B/g, "[")
         .replace(/%5D/g, "]");
 
-    packButton.disabled = isActive();
+    golfButton.hidden = true;
+    packButton.hidden = false;
+    golfButton.disabled = packButton.disabled = isActive();
     if (isPacked(codeArea.value)) {
         codeType = CodeType.Packed;
         codeChars = codeBytes = codeArea.value.length;
@@ -266,7 +271,8 @@ function updateStats() {
             let codePoint = codeArea.value.codePointAt(i);
             if (charCode !== codePoint) pairs += 1;
             if (charCode < 32 || charCode > 127) {
-                packButton.disabled = true;
+                golfButton.hidden = false;
+                packButton.hidden = true;
                 unknown = unknown || (charCode !== 9 && charCode !== 10 && charCode !== 13); 
             }
         }
@@ -406,9 +412,24 @@ document.getElementById("crammerOpen")!.addEventListener("click", () => {
     crammerDialog.hidden = !crammerDialog.hidden;
 });
 
-packButton.addEventListener("click", () => {
+packButton.addEventListener("click", ev => {
     let code = codeArea.value, packed = isPacked(code);
     codeArea.value = packed ? unpack(code) : pack(code);
+    updateStats();
+});
+
+function golf(tokens: (string | Block)[]): string {
+    let golfed = tokens.map(t => {
+        if (typeof t === "string") return /^\s/.test(t) ? "" : t;
+        // golf block
+        return "{" + golf(t.tokens) + t.explicitlyTerminated ? "}" : "";
+    });
+    return golfed.join("");
+}
+golfButton.addEventListener("click", ev => {
+    let program = parseProgram(codeArea.value);
+    codeArea.value = golf(program.tokens);
+    sizeTextArea(codeArea);
     updateStats();
 });
 
