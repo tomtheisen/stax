@@ -422,7 +422,7 @@ function golf(tokens: (string | Block)[]): string {
     let golfed = tokens.map(t => {
         if (typeof t === "string") return /^\s/.test(t) ? "" : t;
         // golf block
-        return "{" + golf(t.tokens) + t.explicitlyTerminated ? "}" : "";
+        return "{" + golf(t.tokens) + (t.explicitlyTerminated ? "}" : "");
     });
     return golfed.join("");
 }
