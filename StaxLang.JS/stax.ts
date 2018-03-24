@@ -1797,13 +1797,15 @@ export class Runtime {
         targetSize = Math.min(els.length, targetSize);
 
         // factoradic permutation decoder
-        let totalPerms = 1, stride = 1;
-        for (let i = 1; i <= els.length; i++) totalPerms *= i;
-        for (let i = 1; i <= els.length - targetSize; i++) stride *= i;
+        let totalPerms = one, stride = one;
+        for (let i = 1; i <= els.length; i++) totalPerms = totalPerms.multiply(i);
+        for (let i = 1; i <= els.length - targetSize; i++) stride = stride.multiply(i);
         let idxs = els.map(_ => 0);
-        for (let pi = 0; pi < totalPerms; pi += stride) {
+        for (let pi = zero; pi.lt(totalPerms); pi = pi.add(stride)) {
             let n = pi;
-            for (let i = 1; i <= els.length; n = n / i++ | 0) idxs[els.length - i] = n % i;
+            for (let i = 1; i <= els.length; n = n.divide(i++)) {
+                idxs[els.length - i] = n.mod(i).valueOf();
+            }
             let dupe = [...els];
             result.push(idxs.slice(0, targetSize).map(i => {
                 try { return dupe[i]; }
