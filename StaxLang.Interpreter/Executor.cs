@@ -2026,13 +2026,13 @@ namespace StaxLang {
             var result = new List<object>();
 
             // factoradic permutation decoder
-            int totalPerms = 1, stride = 1;
+            BigInteger totalPerms = 1, stride = 1;
             for (int i = 1; i <= els.Count; i++) totalPerms *= i;
             for (int i = 1; i <= els.Count - targetSize; i++) stride *= i;
             var idxs = new int[els.Count];
-            for (int pi = 0; pi < totalPerms; pi += stride) {
-                int n = pi;
-                for (int i = 1; i <= els.Count; n /= i++) idxs[els.Count - i] = n % i;
+            for (BigInteger pi = 0; pi < totalPerms; pi += stride) {
+                BigInteger n = pi;
+                for (int i = 1; i <= els.Count; n /= i++) idxs[els.Count - i] = (int)(n % i);
                 var dupe = new List<object>(els);
                 result.Add(idxs.Take(targetSize).Select(i => {
                     try { return dupe[i]; } finally { dupe.RemoveAt(i); }
