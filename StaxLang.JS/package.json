@@ -1,6 +1,6 @@
 {
   "name": "stax",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Stax Golfing Language",
   "main": "index.js",
   "scripts": {
