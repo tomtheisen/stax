@@ -1893,17 +1893,23 @@ export class Runtime {
         let list = this.popArray(), result: StaxArray = [...list];
         for (let arg of indexes) {
             if (isArray(arg)) {
+                // path to deep target element 
                 let idxPath = arg, target = result, idx: number;
                 for (let i = 0; i < idxPath.length - 1; i++) {
                     idx = idxPath[i].valueOf() as number;
                     while (target.length <= idx) target.push([]);
-                    if (!isArray(target[idx])) target[idx] = [ target[idx] ];
-                    target = target[idx] as StaxArray;
+                    if (isArray(target[idx])) {
+                        target = target[idx] = (target[idx] as StaxArray).slice();
+                    } 
+                    else {
+                        target = target[idx] = [ target[idx] ];
+                    }
                 }
                 idx = last(idxPath)!.valueOf() as number;
                 for (let s of doFinalAssign(target, idx)) yield s;
             }
             else if (isInt(arg)) {
+                // multiple top indices to assign
                 let index = arg.valueOf();
                 if (index < 0) {
                     index += result.length;

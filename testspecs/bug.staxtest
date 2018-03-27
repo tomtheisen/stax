@@ -518,3 +518,11 @@ me|l
 380
 	stax
 VA20(2|T%
+	name:AssignIndexMutation
+	in
+["ab","cd"]
+	out
+xbcd
+abcd
+	stax
+c00'x&PP

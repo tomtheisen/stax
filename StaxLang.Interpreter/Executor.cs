@@ -2886,7 +2886,12 @@ namespace StaxLang {
                         for (int i = 0; i < idxPath.Count - 1; i++) {
                             idx = (int)(BigInteger)idxPath[i];
                             while (target.Count <= idx) target.Add(new List<object>());
-                            if (!IsArray(target[idx])) target[idx] = new List<object> { target[idx] };
+                            if (IsArray(target[idx])) {
+                                target[idx] = new List<object>((List<object>)target[idx]);
+                            }
+                            else {
+                                target[idx] = new List<object> { target[idx] };
+                            }
                             target = (List<object>)target[idx];
                         }
                         idx = (int)(BigInteger)idxPath[idxPath.Count - 1];
