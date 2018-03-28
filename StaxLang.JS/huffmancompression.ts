@@ -80,8 +80,8 @@ export function compress(input: string): string | null {
 
     let big = one, result = "", symlen = bigInt(symbols.length);
     for (let i = 0; i < path.length; i++) {
-        big = big.multiply(bigInt[2]);
-        big = big.or(path[i] === '1' ? one : zero);
+        big = big.shiftLeft(1);
+        big = big.add(path[i] === '1' ? one : zero);
     }
     while (big.isPositive()) {
         let { quotient, remainder } = big.divmod(symlen);
