@@ -2679,6 +2679,9 @@ namespace StaxLang {
 
             if (IsInt(number)) {
                 var result = new List<object>();
+                bool negative = number < 0;
+                number = BigInteger.Abs(number);
+
                 if (@base == 1) result.AddRange(Enumerable.Repeat(BigInteger.Zero, number));
                 else do {
                     BigInteger digit = number % @base;
@@ -2691,6 +2694,7 @@ namespace StaxLang {
                     }
                     number /= @base;
                 } while (number > 0);
+                if (negative) result.Insert(0, new BigInteger('-'));
 
                 Push(result);
             }
@@ -2698,11 +2702,15 @@ namespace StaxLang {
                 BigInteger result = 0;
                 if (stringRepresentation) {
                     string s = A2S(number).ToLower();
+                    bool negative = s.StartsWith("-");
+                    s = s.TrimStart('-');
+
                     foreach (var c in s) {
                         int digit = "0123456789abcdefghijklmnopqrstuvwxyz".IndexOf(c);
                         if (digit < 0) digit = c + 0;
                         result = result * @base + digit;
                     }
+                    if (negative) result = -result;
                 }
                 else {
                     foreach (var d in number) result = result * @base + d;

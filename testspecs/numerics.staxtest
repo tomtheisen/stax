@@ -248,16 +248,30 @@ H
 9 |1
 	name:BaseConvert
 	in
+255
 	out
 ff
 	stax
-255 16 |b
+16 |b
+	in
+-14
+	out
+-112
+	stax
+3 |b
 	name:BaseUnconvert
 	in
+ff
 	out
 255
 	stax
-"ff" 16 |b
+16 |b
+	in
+"-112"
+	out
+-14
+	stax
+3 |b
 	name:BaseUnconvertDigits
 	in
 	out

@@ -1953,7 +1953,9 @@ export class Runtime {
         let base = this.popInt().valueOf(), number = this.pop();
 
         if (isInt(number)) {
-            let result = [];
+            let result = [], negative = number.isNegative();
+            number = number.abs();
+
             if (base === 1) result = new Array(number).fill(zero);
             else do {
                 let digit = number.mod(base);
@@ -1966,18 +1968,22 @@ export class Runtime {
                 }
                 number = number.divide(base);
             } while (number.isPositive());
-
+            if (negative) result.unshift(bigInt("-".charCodeAt(0)));
+            
             this.push(result);
         }
         else if (isArray(number)) {
             let result = zero;
             if (stringRepresentation) {
                 let s = A2S(number).toLowerCase();
+                let negative = s.startsWith("-");
+                s = s.replace(/^-/, "");
                 for (let c of s) {
                     let digit = "0123456789abcdefghijklmnopqrstuvwxyz".indexOf(c);
                     if (digit < 0) digit = c.charCodeAt(0);
                     result = result.multiply(base).add(digit);
                 }
+                if (negative) result = result.negate();
             }
             else {
                 for (let d of number) {
