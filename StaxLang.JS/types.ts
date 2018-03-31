@@ -1,6 +1,7 @@
 import * as bigInt from 'big-integer';
 import { Rational } from './rational';
 import { Block } from './block';
+import { zero } from 'big-integer';
 type BigInteger = bigInt.BigInteger;
 
 export type StaxNumber = number | BigInteger | Rational;
@@ -165,6 +166,7 @@ const versionInfo = "Stax 1.0.8 - Tom Theisen - https://github.com/tomtheisen/st
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
+    '%': [zero, zero],
 	'!': S2A("[a-z]"),
 	'@': S2A("[A-Z]"),
 	'#': S2A("[a-zA-Z]"),
