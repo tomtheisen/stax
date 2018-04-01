@@ -4,7 +4,7 @@ import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import { compress } from './huffmancompression';
 import { cram } from './crammer';
-import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
+import { isPacked, unpack, pack, staxDecode, staxEncode, unpackBytes } from './packer';
 import * as bigInt from 'big-integer';
 import 'url-search-params-polyfill';
 type BigInteger = bigInt.BigInteger;
@@ -28,6 +28,9 @@ const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const golfButton = document.getElementById("golf") as HTMLButtonElement;
+const downLink = document.getElementById("download") as HTMLAnchorElement;
+const upButton = document.getElementById("upload") as HTMLButtonElement;
+const fileInputEl = document.getElementById("uploadFile") as HTMLInputElement;
 const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
 const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
 const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
@@ -219,7 +222,11 @@ function sizeTextArea(el: HTMLTextAreaElement) {
 function encodePacked(packed: string): string | null {
     let bytes = staxDecode(packed);
     if (bytes.some(b => b < 0)) return null;
-    return bytes.map(b => (256 + b).toString(16).substr(1)).join("");
+    let result = "";
+    bytes.forEach(b => {
+        result += (256 + b).toString(16).substr(1);
+    });
+    return result;
 }
 
 function decodePacked(packed: string): string {
@@ -289,6 +296,21 @@ function updateStats() {
             propsEl.textContent = `${ codeArea.value.length } bytes, ASCII`;
         }
     }
+
+    // make download blob link
+    if (downLink.href !== "#") URL.revokeObjectURL(downLink.href);
+    let buffer = new ArrayBuffer(codeBytes);
+    let blob: Blob;
+    if (codeType === CodeType.Packed) {
+        let view = new Uint8Array(buffer);
+        let decoded = staxDecode(codeArea.value);
+        for (let i = 0; i < codeBytes; i++) view[i] = decoded[i];
+        blob = new Blob([buffer], { type: "x/stax" });
+    }
+    else {
+        blob = new Blob([codeArea.value], { type: "x/stax" });
+    }
+    downLink.href = URL.createObjectURL(blob);
 }
 
 function load() {
@@ -436,6 +458,37 @@ golfButton.addEventListener("click", ev => {
     sizeTextArea(codeArea);
     updateStats();
 });
+
+upButton.addEventListener("click", ev => {
+    fileInputEl.click();
+})
+fileInputEl.addEventListener("change", ev => {
+    let file = fileInputEl.files && fileInputEl.files[0];
+    if (!file) return;
+
+    let reader = new FileReader;
+    reader.addEventListener("load", ev => {
+        let buffer = reader.result as ArrayBuffer;
+        let bytes = new Uint8Array(buffer);
+        if (bytes.length === 0) {
+            alert("Uploaded file is empty.");
+            return;
+        }
+        else if (bytes[0] >= 0x80) { // packed
+            codeArea.value = staxEncode(bytes);
+            updateStats();
+        }
+        else { // ascii or utf8
+            let stringReader = new FileReader;
+            stringReader.addEventListener("load", ev => {
+                codeArea.value = stringReader.result as string;
+                updateStats();
+            });
+            stringReader.readAsText(file!); 
+        }
+    });
+    reader.readAsArrayBuffer(file);
+})
 
 function setVersion() {
     let out: string;

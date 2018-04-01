@@ -18,7 +18,8 @@ input {
     font-family: monospace;
 }
 
-button {
+button, .btn {
+    display: inline-block;
     background-color: #44e;
     color: white;
     cursor: pointer;
