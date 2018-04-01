@@ -15,7 +15,7 @@
   "dependencies": {
     "@types/node": "^8.0.47",
     "big-integer": "^1.6.25",
-    "npm": "^5.7.1",
+    "npm": "^5.8.0",
     "ssri": "^5.2.2",
     "url-search-params-polyfill": "^2.0.3"
   },
