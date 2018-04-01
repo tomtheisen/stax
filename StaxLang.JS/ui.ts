@@ -236,10 +236,7 @@ function decodePacked(packed: string): string {
 }
 
 function countUtf8Bytes(s: string) {
-    // https://stackoverflow.com/a/25994411/44743
-    let b = 0, i = 0, c: number;
-    for(; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
-    return b;
+    return new Blob([s]).size;
 }
 
 // show code size and update permalink
@@ -260,10 +257,10 @@ function updateStats() {
         .replace(/%5B/g, "[")
         .replace(/%5D/g, "]");
 
-    golfButton.hidden = true;
     packButton.hidden = false;
     golfButton.disabled = packButton.disabled = isActive();
     if (isPacked(codeArea.value)) {
+        golfButton.hidden = true;
         codeType = CodeType.Packed;
         codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
@@ -271,18 +268,21 @@ function updateStats() {
     }
     else {
         packButton.textContent = "Pack";
-        let unknown = false;
+        let unknown = false, extraWhitespace = false;
         let pairs = 0;
         for (let i = 0; i < codeArea.value.length; i++) {
             let charCode = codeArea.value.charCodeAt(i);
             let codePoint = codeArea.value.codePointAt(i);
             if (charCode !== codePoint) pairs += 1;
             if (charCode < 32 || charCode > 127) {
-                golfButton.hidden = false;
                 packButton.hidden = true;
-                unknown = unknown || (charCode !== 9 && charCode !== 10 && charCode !== 13); 
+
+                // could be calculated better by parsing
+                extraWhitespace = extraWhitespace || (charCode === 9 || charCode === 10 || charCode === 13);
+                unknown = unknown || !extraWhitespace; 
             }
         }
+        golfButton.hidden = !extraWhitespace;
 
         if (unknown) {
             codeChars = codeArea.value.length - pairs;
