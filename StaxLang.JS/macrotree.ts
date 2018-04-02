@@ -6,25 +6,27 @@ type NodeChildren = {[key: string]: MacroTreeNode};
 
 export class MacroTreeNode {
     code: string;
+    deprecation?: string;
     children: NodeChildren | undefined;
 
     hasChildren() { 
         return this.children != null;
     }
 
-    constructor(code?: string | null) {
+    constructor(code?: string | null, deprecation?: string | null) {
         if (typeof code === 'string') this.code = code;
+        if (typeof deprecation === 'string') this.deprecation = deprecation;
         else this.children = {};
     }
 
-    addMacro(types: string, code: string) {
+    addMacro(types: string, code: string, deprecation?: string) {
         // types: (a)rray, (b)lock, (f)raction, (i)nt, (r)eal
         if (types.length === 0) throw new Error("not enough types");
-        if (types.length === 1) this.children![types[0]] = new MacroTreeNode(code);
+        if (types.length === 1) this.children![types[0]] = new MacroTreeNode(code, deprecation);
         else {
             let key = types[types.length - 1];
             if (!(key in this.children!)) this.children![key] = new MacroTreeNode;
-            this.children![key].addMacro(types.substr(0, types.length - 1), code);
+            this.children![key].addMacro(types.substr(0, types.length - 1), code, deprecation);
         }
     }
 }
@@ -103,7 +105,7 @@ function setup() {
         { alias: "c", types: "iii", code: "a|m|M"},
         { alias: "c", types: "rii", code: "a|m|M1!*"},
         { alias: "c", types: "a", code: "{[?k"},
-        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t"},
+        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t", deprecation: "<code>:C<code> for case inversion is deprecated.  Use <code>:~</code> instead."},
         { alias: "C", types: "i", code: "~;H;|C,^/"},
         { alias: "d", types: "i", code: "c|a{[%!fsd"},
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},
@@ -144,7 +146,7 @@ function setup() {
         { alias: "t", types: "aa", code: "2|*|(|t"},
         { alias: "t", types: "i", code: "c|fu{u1-N*F@"},
         { alias: "T", types: "a", code: "{!Cim"},
-        { alias: "T", types: "i", code: "c^*h"},
+        { alias: "T", types: "i", code: "c^*h", deprecation: "<code>:T<code> for triangular numbers is deprecated.  Use <code>|+</code> instead."},
         { alias: "u", types: "a", code: "u%1="},
         { alias: "v", types: "a", code: "cor="},
         { alias: "V", types: "a", code: "c%us|+*"},

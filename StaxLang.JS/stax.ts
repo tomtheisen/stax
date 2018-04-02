@@ -45,12 +45,14 @@ class EarlyTerminate extends Error {
 }
 
 export class Runtime {
-    private lineOut: (line: string) => void;
+    private standardOut: (line: string) => void;
+    private infoOut: (line: string) => void;
     private outBuffer = ""; // unterminated line output
     private program: Program;
     private mainStack: StaxArray = [];
     private inputStack: StaxArray = [];
     private producedOutput = false;
+    private warnedInstructions: string[] = [];
 
     private gotoCallDepth = 0;
     private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: BigInteger}[] = [];
@@ -61,8 +63,9 @@ export class Runtime {
     private y: StaxValue;
     private implicitEval = false;
 
-    constructor(output: (line: string) => void) {
-        this.lineOut = output;
+    constructor(output: (line: string) => void, info: (line: string) => void) {
+        this.standardOut = output;
+        this.infoOut = info;
     }
 
     private format: (arg: StaxValue | IteratorPair) => string = arg => {
@@ -78,18 +81,6 @@ export class Runtime {
         return '[' + arg.map(this.format).join(", ") + ']';
     }
     
-    public getDebugState() {
-        return {
-            implicitEval: this.implicitEval,
-            x: this.format(this.x),
-            y: this.format(this.y),
-            index: this.index.valueOf(),
-            _: this.format(this._),
-            main: this.mainStack.map(this.format).reverse(),
-            input: this.inputStack.map(this.format).reverse(),
-        };
-    }
-
     private push(...vals: StaxValue[]) {
         vals.forEach(e => this.mainStack.push(e));
     }
@@ -147,7 +138,7 @@ export class Runtime {
         if (val instanceof Rational) val = val.toString();
 
         if (newline) {
-            (this.outBuffer + val).split("\n").forEach(l => this.lineOut(l));
+            (this.outBuffer + val).split("\n").forEach(l => this.standardOut(l));
             this.outBuffer = "";
         }
         else {
@@ -1403,6 +1394,10 @@ export class Runtime {
                         }
                         break;
                     case '|P':
+                        if (this.warnedInstructions.indexOf(token) < 0) {
+                            this.warnedInstructions.push(token);
+                            this.infoOut("<code>|P<code> is deprecated.  Use <code>zP</code> instead.");
+                        }
                         this.print('');
                         break;
                     case '|q': {
@@ -2922,6 +2917,11 @@ export class Runtime {
         }
         // return inspected values to stack
         this.push(...resPopped.reverse());
+
+        if (typeTree.deprecation && this.warnedInstructions.indexOf(':' + alias) < 0) {
+            this.infoOut(typeTree.deprecation);
+            this.warnedInstructions.push(':' + alias);
+        }
 
         // disable line modes
         this.runMacro(' ' + typeTree.code);
