@@ -53,6 +53,9 @@ let codeType: CodeType;
 let codeBytes: number;
 let codeChars: number;
 
+runButton.disabled = false;
+stepButton.disabled = false;
+
 // prepare for new run
 function resetRuntime() {
     input = steps = 0;
