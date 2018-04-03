@@ -60,6 +60,14 @@ ol {
     text-align: right;
 }
 
+#warnings {
+    padding: 0.5em 1.5em;
+    background-color: #ee7;
+}
+#warnings:empty {
+    display: none;
+}
+
 #status {
     white-space: nowrap;
 }

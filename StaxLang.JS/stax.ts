@@ -46,7 +46,7 @@ class EarlyTerminate extends Error {
 
 export class Runtime {
     private standardOut: (line: string) => void;
-    private infoOut: (line: string) => void;
+    private infoOut?: (line: string) => void;
     private outBuffer = ""; // unterminated line output
     private program: Program;
     private mainStack: StaxArray = [];
@@ -63,7 +63,7 @@ export class Runtime {
     private y: StaxValue;
     private implicitEval = false;
 
-    constructor(output: (line: string) => void, info: (line: string) => void) {
+    constructor(output: (line: string) => void, info?: (line: string) => void) {
         this.standardOut = output;
         this.infoOut = info;
     }
@@ -80,7 +80,19 @@ export class Runtime {
     
         return '[' + arg.map(this.format).join(", ") + ']';
     }
-    
+
+    public getDebugState() {	
+        return {	
+            implicitEval: this.implicitEval,	
+            x: this.format(this.x),	
+            y: this.format(this.y),	
+            index: this.index.valueOf(),	
+            _: this.format(this._),	
+            main: this.mainStack.map(this.format).reverse(),	
+            input: this.inputStack.map(this.format).reverse(),	
+        };	
+    }
+
     private push(...vals: StaxValue[]) {
         vals.forEach(e => this.mainStack.push(e));
     }
@@ -1396,7 +1408,7 @@ export class Runtime {
                     case '|P':
                         if (this.warnedInstructions.indexOf(token) < 0) {
                             this.warnedInstructions.push(token);
-                            this.infoOut("<code>|P<code> is deprecated.  Use <code>zP</code> instead.");
+                            if (this.infoOut) this.infoOut("<code>|P</code> is deprecated.  Use <code>zP</code> instead.");
                         }
                         this.print('');
                         break;
@@ -2919,7 +2931,7 @@ export class Runtime {
         this.push(...resPopped.reverse());
 
         if (typeTree.deprecation && this.warnedInstructions.indexOf(':' + alias) < 0) {
-            this.infoOut(typeTree.deprecation);
+            if (this.infoOut) this.infoOut(typeTree.deprecation);
             this.warnedInstructions.push(':' + alias);
         }
 

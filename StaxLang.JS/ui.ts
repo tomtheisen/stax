@@ -24,6 +24,7 @@ const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLElement;
 const propsEl = document.getElementById("properties") as HTMLElement;
 const outputEl = document.getElementById("output") as HTMLPreElement;
+const warningsEl = document.getElementById("warnings") as HTMLUListElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
@@ -61,6 +62,7 @@ function resetRuntime() {
     input = steps = 0;
     start = performance.now();
     outputEl.textContent = "";
+    warningsEl.textContent = "";
     pendingBreak = false;
 
     golfButton.disabled = packButton.disabled = codeArea.disabled = inputArea.disabled = true;
@@ -81,7 +83,10 @@ function startNextInput() {
     }
 
     let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
-    activeRuntime = new Runtime(line => outputEl.textContent += line + "\n");
+    activeRuntime = new Runtime(
+        line => outputEl.textContent += line + "\n",
+        warning => warningsEl.innerHTML += `<li>${ warning }`
+    );
     activeStateIterator = activeRuntime.runProgram(code, stdin);
     if (input++) outputEl.textContent += "\n";
 }

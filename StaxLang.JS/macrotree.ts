@@ -13,10 +13,10 @@ export class MacroTreeNode {
         return this.children != null;
     }
 
-    constructor(code?: string | null, deprecation?: string | null) {
+    constructor(code?: string | null, deprecation?: string | undefined) {
         if (typeof code === 'string') this.code = code;
-        if (typeof deprecation === 'string') this.deprecation = deprecation;
         else this.children = {};
+        this.deprecation = deprecation;
     }
 
     addMacro(types: string, code: string, deprecation?: string) {
@@ -105,7 +105,7 @@ function setup() {
         { alias: "c", types: "iii", code: "a|m|M"},
         { alias: "c", types: "rii", code: "a|m|M1!*"},
         { alias: "c", types: "a", code: "{[?k"},
-        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t", deprecation: "<code>:C<code> for case inversion is deprecated.  Use <code>:~</code> instead."},
+        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t", deprecation: "<code>:C</code> for case inversion is deprecated.  Use <code>:~</code> instead."},
         { alias: "C", types: "i", code: "~;H;|C,^/"},
         { alias: "d", types: "i", code: "c|a{[%!fsd"},
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},
@@ -146,7 +146,7 @@ function setup() {
         { alias: "t", types: "aa", code: "2|*|(|t"},
         { alias: "t", types: "i", code: "c|fu{u1-N*F@"},
         { alias: "T", types: "a", code: "{!Cim"},
-        { alias: "T", types: "i", code: "c^*h", deprecation: "<code>:T<code> for triangular numbers is deprecated.  Use <code>|+</code> instead."},
+        { alias: "T", types: "i", code: "c^*h", deprecation: "<code>:T</code> for triangular numbers is deprecated.  Use <code>|+</code> instead."},
         { alias: "u", types: "a", code: "u%1="},
         { alias: "v", types: "a", code: "cor="},
         { alias: "V", types: "a", code: "c%us|+*"},
@@ -156,7 +156,7 @@ function setup() {
 
     for (let macro of macros) {
         if (!(macro.alias in macroTrees)) macroTrees[macro.alias] = new MacroTreeNode;
-        macroTrees[macro.alias].addMacro(macro.types, macro.code);
+        macroTrees[macro.alias].addMacro(macro.types, macro.code, macro.deprecation);
     }
 }
 setup();
