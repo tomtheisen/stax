@@ -58,10 +58,12 @@ namespace StaxLang.CLI {
 
                 DoTest(file, @throw);
             }
-            Overwrite(string.Format("{0} specs complete in {1}", files.Length, sw.ElapsedMilliseconds / 1000.0));
+            Overwrite(string.Format("{0}/{1} passed", TestsPassed, ProgramsExecuted));
+            Console.WriteLine("{0} specs complete in {1}", files.Length, sw.ElapsedMilliseconds / 1000.0);
         }
 
         private static int ProgramsExecuted = 0;
+        private static int TestsPassed = 0;
         private enum ReadMode { Input = 1, Expected, Code }
         private static void DoTest(string file, bool @throw) {
             string name = Path.GetFileNameWithoutExtension(file);
@@ -141,7 +143,9 @@ namespace StaxLang.CLI {
                 var outLines = writer.ToString()
                     .TrimEnd('\n', '\r')
                     .Split(new[] { Environment.NewLine }, int.MaxValue, StringSplitOptions.None);
-                if (!outLines.SequenceEqual(expected)) {
+
+                if (outLines.SequenceEqual(expected)) ++TestsPassed;
+                else {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Overwrite(string.Format("Error in {0}", name));
                     Console.WriteLine(fileSpecifier);
