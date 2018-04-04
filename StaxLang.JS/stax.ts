@@ -1975,7 +1975,7 @@ export class Runtime {
                 }
                 number = number.divide(base);
             } while (number.isPositive());
-            if (negative) result.unshift(bigInt("-".charCodeAt(0)));
+            if (negative && stringRepresentation) result.unshift(bigInt("-".charCodeAt(0)));
             
             this.push(result);
         }

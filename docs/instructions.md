@@ -55,7 +55,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `D`          	|num        	|frac-part     	|a%1                	|Get fractional non-integer part of rational or float.
 `e`          	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
 `e`          	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
-`E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.
+`E`          	|int        	|dec-digits    	|                   	|Array of decimal digits.  Absolute value is used in case of negative number.
 `E`          	|frac       	|num-den       	|                   	|Push numerator and denominator separately.
 `h`          	|int        	|halve         	|a / 2              	|Floor divide by 2.
 `h`          	|num        	|halve         	|a / 2              	|Divide by 2.
@@ -98,7 +98,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `\|B`        	|arr        	|convert-binary	|                   	|Convert from base 2.
 `\|C`        	|int int    	|choose        	|choose(a, b)       	|Binomial coefficient - calculate a choose b.
 `\|e`        	|int        	|is-even       	|(a + 1) % 2        	|Is even?
-`\|E`        	|int int    	|digits        	|                   	|Generate array of digit values in base.
+`\|E`        	|int int    	|digits        	|                   	|Generate array of digit values in base.  Absolute value is used in case of negative number.
 `\|E`        	|arr int    	|un-digit      	|                   	|Produce the number represented by the array of digits in the given base.
 `\|f`        	|int        	|factorize     	|                   	|Prime factorization array. 
 `\|F`        	|int        	|factorial     	|a!                 	|Factorial.
@@ -126,7 +126,7 @@ chars        	|Types      	|Name          	|Pseudo-code        	|Description
 `:b`         	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:b`         	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits.
 `:B`         	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
-`:B`         	|int        	|binary-digits 	|                   	|Generate array of binary values.
+`:B`         	|int        	|binary-digits 	|                   	|Generate array of binary digits.  Absolute value is used in case of negative number.
 `:c`         	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:C`         	|int        	|catalan       	|choose(2a,a)/(a+1) 	|Catalan number; number of strings with a matched pairs of brackets.
 `:d`         	|int        	|divisors      	|                   	|Get all divisors of n.

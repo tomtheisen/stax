@@ -280,10 +280,17 @@ ff
 4R A |b
 	name:BaseExplodeDigits
 	in
+255
 	out
 8
 	stax
-255 2 |E |+ 
+2 |E |+
+	in
+-14
+	out
+112
+	stax
+3 |E $
 	name:BinaryConvert
 	in
 	out
@@ -481,10 +488,15 @@ D
 7 3u* @
 	name:ExplodeNumber
 	in
+147
+	out
+2 8 14
+	in
+-147
 	out
 2 8 14
 	stax
-147 E {Hm J
+E {Hm J
 	name:Base36Encode
 	in
 	out

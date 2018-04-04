@@ -2694,7 +2694,7 @@ namespace StaxLang {
                     }
                     number /= @base;
                 } while (number > 0);
-                if (negative) result.Insert(0, new BigInteger('-'));
+                if (negative && stringRepresentation) result.Insert(0, new BigInteger('-'));
 
                 Push(result);
             }
