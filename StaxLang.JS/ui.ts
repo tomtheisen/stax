@@ -65,7 +65,8 @@ function resetRuntime() {
     warningsEl.textContent = "";
     pendingBreak = false;
 
-    golfButton.disabled = packButton.disabled = codeArea.disabled = inputArea.disabled = true;
+    golfButton.disabled = packButton.disabled = upButton.disabled = true;
+    codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
     stopButton.disabled = false;
 
@@ -94,7 +95,7 @@ function startNextInput() {
 // mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    codeArea.disabled = inputArea.disabled = false;
+    upButton.disabled = codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = debugContainer.hidden = true;
     updateStats();
 }
