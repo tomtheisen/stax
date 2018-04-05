@@ -51,6 +51,8 @@ Hm.
  * `100` can be replaced with `AJ`.  `A` is `10`, and `J` is square integer.
  * Instead of using an `F` (for) loop, use an `m` (map) loop, which implicitly prints its results in shorthand mode.  (If `m` is used prior to the end of a program, it yields an array, just like a functional map)
 
+Two more bytes.
+
 	AJm3%!"Fizz"*_5%!"Buzz"*+c_?
 
 [Run it](http://stax.tomtheisen.com/#c=AJm3%25%21%22Fizz%22*_5%25%21%22Buzz%22*%2Bc_%3F&i=&a=1)
