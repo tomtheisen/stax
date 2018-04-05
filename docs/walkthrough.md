@@ -63,7 +63,7 @@ That's 28. Hm. We can save a little more by using [compressed string literals](h
 
 [Run it](http://stax.tomtheisen.com/#c=AJm3%25%21%60M%22%28%60*_5%25%21%60-C%60*%2Bc_%3F&i=&a=1)
 
-That's 25 bytes. Hm. So far the program is using only printable ascii, which is kind of wasteful, since there are 256 different byte values, and printable ascii is only 95, unless you count tabs or newlines.  We can convert the program to the equivalent [packed-stax representation of the same program.
+That's 25 bytes. Hm. So far the program is using only printable ascii, which is kind of wasteful, since there are 256 different byte values, and printable ascii is only 95, unless you count tabs or newlines.  We can convert the program to the equivalent [packed-stax](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax) representation of the same program.
 
 	åS╬╕ø┤╝Φûµ╡τ╓δR╚╦>«C▲
 
