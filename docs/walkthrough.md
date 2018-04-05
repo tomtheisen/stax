@@ -57,7 +57,7 @@ Two more bytes.
 
 [Run it](http://stax.tomtheisen.com/#c=AJm3%25%21%22Fizz%22*_5%25%21%22Buzz%22*%2Bc_%3F&i=&a=1)
 
-That's 28. Hm. We can save a little more by using [compressed string literals](https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings).  Enlish-looking strings can be encoded using a different kind of string enclosed in backticks.  You can use the string compression tool to automatically convert string literals.
+That's 28. Hm. We can save a little more by using [compressed string literals](https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings).  English-looking strings can be encoded using a different kind of string enclosed in backticks.  You can use the string compression tool to automatically convert string literals.
 
 	AJm3%!`M"(`*_5%!`-C`*+c_?
 
