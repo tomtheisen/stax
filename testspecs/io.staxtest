@@ -84,8 +84,9 @@ F
 x
 	name:NewLineInEval
 	in
-"foo\nbar"
+"foo\nbar\nquux"
 	out
+xuuq
 rab
 oof
 	stax
