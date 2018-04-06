@@ -8,6 +8,10 @@ body {
     background-color: #eee;
 }
 
+h1 {
+    margin-bottom: 0;
+}
+
 textarea {
     font-family: monospace;
     width: 100%;
