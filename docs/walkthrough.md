@@ -51,17 +51,19 @@ Hm.
  * `100` can be replaced with `AJ`.  `A` is `10`, and `J` is square integer.
  * Instead of using an `F` (for) loop, use an `m` (map) loop, which implicitly prints its results in shorthand mode.  (If `m` is used prior to the end of a program, it yields an array, just like a functional map)
 
+Two more bytes.
+
 	AJm3%!"Fizz"*_5%!"Buzz"*+c_?
 
 [Run it](http://stax.tomtheisen.com/#c=AJm3%25%21%22Fizz%22*_5%25%21%22Buzz%22*%2Bc_%3F&i=&a=1)
 
-That's 28. Hm. We can save a little more by using [compressed string literals](https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings).  Enlish-looking strings can be encoded using a different kind of string enclosed in backticks.  You can use the string compression tool to automatically convert string literals.
+That's 28. Hm. We can save a little more by using [compressed string literals](https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings).  English-looking strings can be encoded using a different kind of string enclosed in backticks.  You can use the string compression tool to automatically convert string literals.
 
 	AJm3%!`M"(`*_5%!`-C`*+c_?
 
 [Run it](http://stax.tomtheisen.com/#c=AJm3%25%21%60M%22%28%60*_5%25%21%60-C%60*%2Bc_%3F&i=&a=1)
 
-That's 25 bytes. Hm. So far the program is using only printable ascii, which is kind of wasteful, since there are 256 different byte values, and printable ascii is only 95, unless you count tabs or newlines.  We can convert the program to the equivalent [packed-stax representation of the same program.
+That's 25 bytes. Hm. So far the program is using only printable ascii, which is kind of wasteful, since there are 256 different byte values, and printable ascii is only 95, unless you count tabs or newlines.  We can convert the program to the equivalent [packed-stax](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax) representation of the same program.
 
 	åS╬╕ø┤╝Φûµ╡τ╓δR╚╦>«C▲
 
