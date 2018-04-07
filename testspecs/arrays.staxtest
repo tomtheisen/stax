@@ -245,11 +245,19 @@ U]] $h
 :- J
 	name:JoinWithNewlines
 	in
+abcd
 	out
 dc
 ba
 	stax
-"abcd" 2/ |J r
+2/ |J r
+	name:SplitOnNewlines
+	in
+"ab\ncd"
+	out
+ab cd
+	stax
+|j J
 	name:Palindromize
 	in
 	out

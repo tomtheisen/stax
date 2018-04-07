@@ -186,6 +186,7 @@ chars    	|Types          	|Name              	|Description
 `\|C`    	|arr            	|center-block      	|Center lines of text, using longest line.
 `\|F`    	|arr arr        	|regex-find-all    	|Get all regex pattern matches.
 `\|I`    	|arr arr        	|str-index-all     	|Find all indexes of the substring.
+`\|j`    	|arr            	|split-newline     	|Split string on newlines.
 `\|J`    	|arr            	|join-newline      	|Join strings with newline.
 `\|q`    	|arr arr        	|regex-indices     	|Get all indices of regex matches.
 `\|Q`    	|arr arr        	|regex-is-match    	|Regex matches entire string?

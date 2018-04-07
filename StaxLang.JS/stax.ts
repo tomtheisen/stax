@@ -1280,6 +1280,9 @@ export class Runtime {
                     case '|I':
                         for (let s of this.doFindIndexAll()) yield s;
                         break;
+                    case '|j':
+                        this.runMacro("Vn/"); // split on newlines
+                        break;
                     case '|J':
                         this.runMacro("Vn*"); // join with newlines
                         break;

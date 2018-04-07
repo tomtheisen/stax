@@ -1518,6 +1518,10 @@ namespace StaxLang {
                                 block.AddDesc("find all indexes of");
                                 foreach (var s in DoFindIndexAll()) yield return s;
                                 break;
+                            case 'j':
+                                block.AddDesc("split on newlines");
+                                RunMacro("Vn/");
+                                break;
                             case 'J':
                                 block.AddDesc("join with newlines");
                                 RunMacro("Vn*");
