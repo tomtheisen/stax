@@ -1840,8 +1840,8 @@ export class Runtime {
 
         let list = this.pop();
 
-        function readAt(arr: StaxArray, idx: number) {
-            idx %= arr.length;
+        function readAt(arr: StaxArray, idx: StaxNumber) {
+            idx = Math.floor(idx.valueOf()) % arr.length;
             if (idx < 0) idx += arr.length;
             return arr[idx];
         }
@@ -1850,7 +1850,10 @@ export class Runtime {
         if (isInt(list) && isArray(top)) [list, top] = [top, list];
         if (isArray(list) && isArray(top)) {
             let result = [];
-            for (let idx of top) result.push(readAt(list, idx as number));
+            for (let idx of top) {
+                if (isNumber(idx)) result.push(readAt(list, idx));
+                else fail("couldn't index at non-number");
+            }
             this.push(result);
             return;
         }
