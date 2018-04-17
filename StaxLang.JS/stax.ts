@@ -73,7 +73,10 @@ export class Runtime {
         if (isNumber(arg)) return arg.toString();
         if (arg instanceof Block) return `Block ${ arg.contents }`;
     
-        if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(128)))) {
+        if (arg.every(e => isInt(e) && e.isZero())) {
+            return '[' + Array(arg.length).fill("0").join(", ") + ']';
+        }
+        if (arg.every(e => isInt(e) && (e.isZero() || e.eq(10) || e.greaterOrEquals(32) && e.lt(127)))) {
             return JSON.stringify(String.fromCharCode(...arg.map(e => (e as BigInteger).valueOf())))
                 .replace(/\\u0000/g, "\\0");
         }
