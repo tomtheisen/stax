@@ -417,6 +417,7 @@ function doCompressor() {
         else result = '"' + input.replace('"', '`"') + '"'
     }
     compressorOutputEl.value = result;
+    (document.getElementById("compressorInfo") as HTMLDivElement).textContent = `${ compressorOutputEl.value.length } bytes`;
 }
 doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
@@ -434,6 +435,7 @@ function doCrammer() {
         crammerOutputEl.value = `"${ crammed }"!`;
     }
     else crammerOutputEl.value = "z";
+    (document.getElementById("crammerInfo") as HTMLDivElement).textContent = `${ crammerOutputEl.value.length } bytes`;
 }
 doCrammer();
 crammerInputEl.addEventListener("input", doCrammer);

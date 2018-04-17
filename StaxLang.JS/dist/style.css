@@ -105,6 +105,10 @@ input.wide {
     white-space: pre-wrap;
 }
 
+#compressorInfo, #crammerInfo {
+    float: right;
+}
+
 #debugCodePre {
     background-color: #aac;
 }
