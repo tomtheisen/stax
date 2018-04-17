@@ -342,7 +342,10 @@ namespace StaxLang {
                     case '!': {
                         var a = this.Pop();
                         if (a is Block) {
-                            foreach (var s in this.RunSteps(a)) yield return s;
+                            foreach (var s in this.RunSteps((Block)a)) {
+                                if (s.Cancel) break;
+                                yield return s;
+                            }
                         }
                         else {
                             if (block.LastInstrType == InstructionType.Comparison) block.AmendDesc(e => "not " + e);

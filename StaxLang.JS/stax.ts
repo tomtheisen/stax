@@ -347,7 +347,10 @@ export class Runtime {
                         break;
                     case '!':
                         if (this.peek() instanceof Block) {
-                            for (let s of this.runSteps(this.pop() as Block)) yield s;
+                            for (let s of this.runSteps(this.pop() as Block)) {
+                                if (s.cancel) break;
+                                yield s;
+                            }
                         }
                         else this.push(isTruthy(this.pop()) ? zero : one);
                         break;

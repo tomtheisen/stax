@@ -259,3 +259,10 @@ G"bar"PG}"foo"P
 foo
 	stax
 {"foo"P}!
+	name:ExecuteBlockCancel
+	out
+1
+2
+3
+	stax
+3m{1C}!
