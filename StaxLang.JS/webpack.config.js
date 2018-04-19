@@ -7,10 +7,19 @@ const commitHash = require('child_process')
   .toString();
 
 module.exports = {
-    entry: './js/ui.js',
+    entry: './ui.ts',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
+    },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js"]
+    },
+    module: {
+        rules: [
+            // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+            { test: /\.tsx?$/, loader: "ts-loader" }
+        ]
     },
     stats: 'errors-only',
     plugins: [
