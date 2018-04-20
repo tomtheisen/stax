@@ -510,6 +510,14 @@ function setVersion() {
 }
 setVersion();
 
+function setupQuickRef() {
+    const quickrefEl = document.getElementById("quickref") as HTMLDivElement;
+
+    quickrefEl.innerHTML += require("../docs/instructions.md") as string;
+    quickrefEl.innerHTML += require("../docs/generators.md") as string;
+}
+setupQuickRef();
+
 document.addEventListener("keydown", ev => {
     switch (ev.key) {
         case "F8":

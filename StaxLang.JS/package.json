@@ -24,6 +24,8 @@
     "url": "https://github.com/tomtheisen/stax/"
   },
   "devDependencies": {
+    "html-loader": "^0.5.5",
+    "markdown-loader": "^2.0.2",
     "ts-loader": "^4.2.0",
     "typescript": "^2.7.2",
     "uglifyjs-webpack-plugin": "^1.2.3",
