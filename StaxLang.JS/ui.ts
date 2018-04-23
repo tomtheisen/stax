@@ -515,6 +515,11 @@ function setupQuickRef() {
 
     quickrefEl.innerHTML += require("../docs/instructions.md") as string;
     quickrefEl.innerHTML += require("../docs/generators.md") as string;
+
+    const quickrefFilter = document.getElementById("quickrefFilter") as HTMLInputElement;
+    quickrefFilter.addEventListener("input", ev => {
+        quickrefEl.querySelectorAll("tr").forEach(tr => tr.hidden = !(tr.textContent || '').includes(quickrefFilter.value));
+    })
 }
 setupQuickRef();
 
