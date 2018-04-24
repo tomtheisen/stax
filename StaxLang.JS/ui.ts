@@ -512,13 +512,31 @@ setVersion();
 
 function setupQuickRef() {
     const quickrefEl = document.getElementById("quickref") as HTMLDivElement;
-
     quickrefEl.innerHTML += require("../docs/instructions.md") as string;
     quickrefEl.innerHTML += require("../docs/generators.md") as string;
-
     const quickrefFilter = document.getElementById("quickrefFilter") as HTMLInputElement;
+
+    let els = Array.from(quickrefEl.childNodes);
+    els.forEach(el => {
+        if (!["INPUT", "H2", "TABLE"].includes(el.nodeName)) {
+            quickrefEl.removeChild(el);
+        }
+    });
+
     quickrefFilter.addEventListener("input", ev => {
-        quickrefEl.querySelectorAll("tr").forEach(tr => tr.hidden = !(tr.textContent || '').includes(quickrefFilter.value));
+        let h2s = Array.from(quickrefEl.querySelectorAll("h2"));
+        h2s.forEach(h2 => h2.hidden = true);
+        let trs = Array.from(quickrefEl.querySelectorAll("tr"));
+        // janky hard-coded filter
+        trs.forEach(tr => {
+            let show = (tr.textContent || '').includes(quickrefFilter.value);
+            tr.hidden = !show;
+            if (show && tr.parentElement && tr.parentElement.parentElement) {
+                let table = tr.parentElement.parentElement as HTMLTableElement;
+                table.querySelector("tr")!.hidden = false;
+                (table.previousElementSibling as HTMLHeadingElement).hidden = false;
+            }
+        });
     })
 }
 setupQuickRef();

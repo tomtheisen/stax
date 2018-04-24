@@ -10,7 +10,7 @@ Generators can have these parts.
 
 The `g` instruction is always followed by a mode specifier character which encodes the generator's modes.  Here is a lookup for the different mode specifiers.  Columns are value production modes, and rows are termination modes.  Pre-peek means that the first value produced by the generator is the one on top of the stack before it starts.  After each invokation of the generator block, the stack will be peeked again.
 
-## Specifiers and Modes
+## Generator Specifiers and Modes
 Modes    	|Pre-peek	|Post-pop	|Termination Mode Description
 ---      	|---     	|---     	|---
 Duplicate	|`u`     	|`U`     	|Stops when finding any duplicate value
