@@ -524,15 +524,15 @@ function setupQuickRef() {
     });
 
     quickrefFilter.addEventListener("input", ev => {
-        let h2s = Array.from(quickrefEl.querySelectorAll("h2"));
+        let h2s = Array.from(quickrefEl.getElementsByTagName("h2"));
         h2s.forEach(h2 => h2.hidden = true);
-        let trs = Array.from(quickrefEl.querySelectorAll("tr"));
+        let trs = Array.from(quickrefEl.getElementsByTagName("tr"));
         // janky hard-coded filter
         trs.forEach(tr => {
-            let show = (tr.textContent || '').includes(quickrefFilter.value);
-            tr.hidden = !show;
-            if (show && tr.parentElement && tr.parentElement.parentElement) {
-                let table = tr.parentElement.parentElement as HTMLTableElement;
+            let foundMatch = (tr.textContent || '').includes(quickrefFilter.value);
+            tr.hidden = !foundMatch;
+            if (foundMatch) {
+                let table = tr.parentElement!.parentElement as HTMLTableElement;
                 table.querySelector("tr")!.hidden = false;
                 (table.previousElementSibling as HTMLHeadingElement).hidden = false;
             }

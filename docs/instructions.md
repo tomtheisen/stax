@@ -1,7 +1,7 @@
 ﻿# Instructions
 
 ## Input / Output
-chars               	|Description
+op                  	|Description
 ---                 	|---
 `p`                 	|Pop and print with no newline.
 `P`                 	|Pop and print with a newline.
@@ -14,7 +14,7 @@ chars               	|Description
 <code>&#124;V</code>	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
 ## Stack
-chars               	|Example           	|Name         	|Description
+op                  	|Example           	|Name         	|Description
 ---                 	|----              	|----         	|--------------
 `a`                 	|… a b c -> … b c a	|alter-stack  	|Moves the third element in the stack to the top.
 `b`                 	|… a b -> … a b a b	|both-copy    	|Copies the top two stack elements
@@ -37,7 +37,7 @@ chars               	|Example           	|Name         	|Description
 
 
 ## Numerics
-chars                    	|Types      	|Name          	|Pseudo-code        	|Description
+op                       	|Types      	|Name          	|Pseudo-code        	|Description
 ---                      	|---        	|---           	|---                	|---
 `0123456789`             	|           	|              	|                   	|Integer literal.  Leading `0` is always separate number. Use `A` for 10. `10` is 1 and 0.
 `A`                      	|           	|              	|10                 	|Constant 10, as in hexidecimal.
@@ -74,7 +74,7 @@ chars                    	|Types      	|Name          	|Pseudo-code        	|Des
 `U`                      	|           	|              	|-1                 	|Negative unit.
 <code>&#124;%</code>     	|int int    	|divmod        	|a / b, a % b       	|Perform division and modulus.
 <code>&#124;&</code>     	|int int    	|bit-and       	|a & b              	|Bitwise and.
-<code>&#124;&#124;</code>	|int int    	|bit-or        	|a | b              	|Bitwise or.
+<code>&#124;&#124;</code>	|int int    	|bit-or        	|a &#124; b         	|Bitwise or.
 <code>&#124;^</code>     	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
 <code>&#124;*</code>     	|int int    	|pow           	|a ** b             	|Exponent.	
 <code>&#124;*</code>     	|frac int   	|pow           	|a ** b             	|Exponent.	
@@ -142,7 +142,7 @@ chars                    	|Types      	|Name          	|Pseudo-code        	|Des
 `:T`                     	|int        	|triangular-num	|a * (a+1) / 2      	|~~Get a triangular number.~~ Deprecated. Use <code>&#124;+</code> instead. 
 
 ## Logic
-chars               	|Name        	|Description
+op                  	|Name        	|Description
 ---                 	|---         	|---
 `!`                 	|not         	|Logical not.  Produces 0 or 1.  Numeric 0 and empty lists are considered falsy.  All other values are truthy.
 `<`                 	|less        	|Is less than.  Arrays use string-style lexicographic ordering.
@@ -154,7 +154,7 @@ chars               	|Name        	|Description
 ## String
 Strings are really just arrays of integers, but some operations are oriented towards strings anyway.  In these contexts, 0 is usually converted to 32, so that 0 can be used as a space in addition to its normal codepoint.
 
-chars                    	|Types          	|Name              	|Description
+op                       	|Types          	|Name              	|Description
 ---                      	|---            	|---               	|---
 `#`                      	|arr arr        	|count-substrings  	|Count occurrences of substring b in a.
 `"…"`                    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `01234` yield `\0 \n \t \r \v` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
@@ -212,7 +212,7 @@ chars                    	|Types          	|Name              	|Description
 `:W`                     	|arr            	|brace-mirror      	|Concatenate the string reversed.  Braces and slashes are individually reversed also.
 
 ## Array
-chars               	|Types              	|Name              	|Description
+op                  	|Types              	|Name              	|Description
 ---                 	|---                	|---               	|---
 `"…"!`              	|                   	|crammed-array     	|Crammed array of integers. This uses a scheme to represent arbitrary integers in a string literal, and then uncram them.  There will be at most one number per character in the string literal.  Large numbers require more characters.
 `#`                 	|arr num            	|count-instances   	|Count instances of b in a.
@@ -356,7 +356,7 @@ chars               	|Types              	|Name              	|Description
 
 ## Blocks
 
-chars               	|Types        	|Name               	|Description
+op                  	|Types        	|Name               	|Description
 ---                 	|---          	|---                	|---
 `{`                 	|             	|                   	|Begin a block.  Blocks can be ended by any block terminator, not just }.
 `}`                 	|             	|                   	|Terminate a block and push to stack.  If there is not a block currently open, start program execution over.
@@ -407,7 +407,7 @@ chars               	|Types        	|Name               	|Description
 <code>&#124;I</code>	|arr block    	|filter-index       	|Get all indexes in the array that produce a truthy value from the block.
 
 ## Registers
-chars               	|Description
+op                  	|Description
 ---                 	|---
 `x`                 	|Value of register x.  Default is parsed integer value from standard input, or 0.
 `X`                 	|Peek and write register x.
@@ -430,7 +430,7 @@ char	|Name        	|Description
 
 ## Constants
 
-chars	|Value
+op   	|Value
 ---  	|---
 <code>&#124;?</code>	|source of current program for quines or something
 `V?` 	|Version info

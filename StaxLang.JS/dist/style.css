@@ -131,6 +131,19 @@ input.wide {
     display: inline-block;
 }
 
+#quickref td {
+    border-top: solid #aaa 1px;
+    padding: 0.2em 0.4em;
+}
+#quickref td:nth-child(even) {
+    background-color: white;
+}
+#quickref code {
+    background-color: pink;
+    outline: solid #888 1px;
+    padding: 0 0.2em;
+}
+
 dt {
     float: left;
     font-weight: bold;
