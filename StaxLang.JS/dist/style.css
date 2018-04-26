@@ -131,6 +131,28 @@ input.wide {
     display: inline-block;
 }
 
+html.show-quickref body {
+    margin-right: calc(1em + 60vw);
+}
+html.show-quickref #quickref {
+    display: block;
+}
+#quickref {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 60vw;
+    overflow-y: scroll;
+    background: #eee;
+    padding: 0.5em;
+    box-shadow: 0em 0em 0.5em 0em black;    
+}
+#quickref table {
+    border-left: solid #aaa 1px; 
+    border-right: solid #aaa 1px; 
+}
 #quickref td {
     border-top: solid #aaa 1px;
     padding: 0.2em 0.4em;

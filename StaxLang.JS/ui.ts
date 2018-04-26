@@ -511,22 +511,22 @@ function setVersion() {
 setVersion();
 
 function setupQuickRef() {
-    const quickrefEl = document.getElementById("quickref") as HTMLDivElement;
-    quickrefEl.innerHTML += require("../docs/instructions.md") as string;
-    quickrefEl.innerHTML += require("../docs/generators.md") as string;
+    const contentEl = document.getElementById("quickref-content") as HTMLDivElement;
+    contentEl.innerHTML += require("../docs/instructions.md") as string;
+    contentEl.innerHTML += require("../docs/generators.md") as string;
     const quickrefFilter = document.getElementById("quickrefFilter") as HTMLInputElement;
 
-    let els = Array.from(quickrefEl.childNodes);
+    let els = Array.from(contentEl.childNodes);
     els.forEach(el => {
-        if (!["INPUT", "H2", "TABLE"].includes(el.nodeName)) {
-            quickrefEl.removeChild(el);
+        if (!["H2", "TABLE"].includes(el.nodeName)) {
+            contentEl.removeChild(el);
         }
     });
 
     quickrefFilter.addEventListener("input", ev => {
-        let h2s = Array.from(quickrefEl.getElementsByTagName("h2"));
+        let h2s = Array.from(contentEl.getElementsByTagName("h2"));
         h2s.forEach(h2 => h2.hidden = true);
-        let trs = Array.from(quickrefEl.getElementsByTagName("tr"));
+        let trs = Array.from(contentEl.getElementsByTagName("tr"));
         // janky hard-coded filter
         trs.forEach(tr => {
             let foundMatch = (tr.textContent || '').includes(quickrefFilter.value);
@@ -540,6 +540,13 @@ function setupQuickRef() {
     })
 }
 setupQuickRef();
+
+function toggleQuickRef() {
+    document.documentElement.classList.toggle("show-quickref");
+}
+for (let id of ["quickref-close", "quickref-link"]) {
+    (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
+}
 
 document.addEventListener("keydown", ev => {
     switch (ev.key) {

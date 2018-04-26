@@ -11,7 +11,7 @@
         <div id="aboutInfo">
             <a href="https://github.com/tomtheisen/stax/releases" id="version" title="Version history"></a>
             (<a href="https://github.com/tomtheisen/stax/tree/master/docs#stax">docs</a>,
-            <a href="">quickref</a>)
+            <a href="javascript:void(0)" id="quickref-link">quickref</a>)
             <small id="buildInfo">loading...</small>
         </div>
         <h1><a href="https://github.com/tomtheisen/stax">Stax</a></h1>
@@ -116,7 +116,16 @@
         </div>
 
         <div id="quickref">
-            <input id="quickrefFilter">
+            <fieldset>
+                <label>
+                    Filter
+                    <input id="quickrefFilter" type="search">
+                </label>
+            </fieldset>
+            <div style="position: absolute; top: 1em; right: 1em;">
+                <button id="quickref-close">&times;</button>
+            </div>
+            <div id="quickref-content"></div>
         </div>
         
         <script src="bundle.js" charset="UTF-8"></script>
