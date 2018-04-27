@@ -514,7 +514,7 @@ function setupQuickRef() {
     const contentEl = document.getElementById("quickref-content") as HTMLDivElement;
     contentEl.innerHTML += require("../docs/instructions.md") as string;
     contentEl.innerHTML += require("../docs/generators.md") as string;
-    const quickrefFilter = document.getElementById("quickrefFilter") as HTMLInputElement;
+    const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 
     let els = Array.from(contentEl.childNodes);
     els.forEach(el => {
@@ -526,8 +526,8 @@ function setupQuickRef() {
     quickrefFilter.addEventListener("input", ev => {
         let h2s = Array.from(contentEl.getElementsByTagName("h2"));
         h2s.forEach(h2 => h2.hidden = true);
+
         let trs = Array.from(contentEl.getElementsByTagName("tr"));
-        // janky hard-coded filter
         trs.forEach(tr => {
             let foundMatch = (tr.textContent || '').includes(quickrefFilter.value);
             tr.hidden = !foundMatch;
@@ -550,6 +550,10 @@ for (let id of ["quickref-close", "quickref-link"]) {
 
 document.addEventListener("keydown", ev => {
     switch (ev.key) {
+        case "F1":
+            ev.preventDefault();
+            toggleQuickRef();
+            break;
         case "F8":
             ev.preventDefault();
             run();

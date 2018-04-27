@@ -10,9 +10,7 @@
     <body>
         <div id="aboutInfo">
             <a href="https://github.com/tomtheisen/stax/releases" id="version" title="Version history"></a>
-            (<a href="https://github.com/tomtheisen/stax/tree/master/docs#stax">docs</a>,
-            <a href="javascript:void(0)" id="quickref-link">quickref</a>)
-            <small id="buildInfo">loading...</small>
+            <button id="quickref-link" title="Help">?<span class="shortcut"> (F1)</span></button>
         </div>
         <h1><a href="https://github.com/tomtheisen/stax">Stax</a></h1>
         <div style="float: right;">
@@ -116,10 +114,14 @@
         </div>
 
         <div id="quickref">
+            <p>
+                <span id="buildInfo">loading...</span>
+                <a href="https://github.com/tomtheisen/stax/tree/master/docs#stax" target="_new">Complete Documentation</a>
+            </p>
             <fieldset>
                 <label>
-                    Filter
-                    <input id="quickrefFilter" type="search">
+                    Quick-reference filter:
+                    <input id="quickref-filter" type="search">
                 </label>
             </fieldset>
             <div style="position: absolute; top: 1em; right: 1em;">

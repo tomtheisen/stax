@@ -202,3 +202,11 @@ pre:empty {
         display: none;
     }
 }
+@media screen and (max-width: 960px) {
+    #quickref {
+        width: 100%;
+    }
+    html.show-quickref body {
+        overflow-y: hidden;
+    }
+}
