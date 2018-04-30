@@ -112,7 +112,7 @@ input.wide {
 #debugCodePre {
     background-color: #aac;
 }
-#debugCodePost, #version, #buildInfo {
+#debugCodePost, #version {
     color: grey;
 }
 

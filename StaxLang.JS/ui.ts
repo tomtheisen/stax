@@ -27,6 +27,7 @@ const outputEl = document.getElementById("output") as HTMLPreElement;
 const warningsEl = document.getElementById("warnings") as HTMLUListElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
+const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const golfButton = document.getElementById("golf") as HTMLButtonElement;
 const downLink = document.getElementById("download") as HTMLAnchorElement;
@@ -514,7 +515,6 @@ function setupQuickRef() {
     const contentEl = document.getElementById("quickref-content") as HTMLDivElement;
     contentEl.innerHTML += require("../docs/instructions.md") as string;
     contentEl.innerHTML += require("../docs/generators.md") as string;
-    const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 
     let els = Array.from(contentEl.childNodes);
     els.forEach(el => {
@@ -543,6 +543,12 @@ setupQuickRef();
 
 function toggleQuickRef() {
     document.documentElement.classList.toggle("show-quickref");
+    if (document.documentElement.classList.contains("show-quickref")) {
+        quickrefFilter.focus();
+    }
+    else {
+        codeArea.focus();
+    }
 }
 for (let id of ["quickref-close", "quickref-link"]) {
     (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
