@@ -1,11 +1,11 @@
 {
   "name": "stax",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Stax Golfing Language",
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "test": "npm run --silent build && node js/test.js ../testspecs"
+    "test": "tsc && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
   "contributors": [
@@ -27,7 +27,7 @@
     "html-loader": "^0.5.5",
     "markdown-loader": "^2.0.2",
     "ts-loader": "^4.2.0",
-    "typescript": "^2.7.2",
+    "typescript": "^2.8.3",
     "uglifyjs-webpack-plugin": "^1.2.3",
     "webpack": "^4.6.0",
     "webpack-cli": "^2.0.14"

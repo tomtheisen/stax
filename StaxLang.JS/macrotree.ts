@@ -33,8 +33,15 @@ export class MacroTreeNode {
 
 export const macroTrees: NodeChildren = {};
 
+interface Macro {
+    alias: string;
+    types: string;
+    code: string;
+    deprecation?: string;
+}
+
 function setup() {
-    const macros = [
+    const macros: Macro[] = [
         { alias: "!", types: "ii", code: "|g1="},
         { alias: "!", types: "a", code: "c%{[|!m {+k sd"},
         { alias: "#", types: "i", code: "1!*"},
