@@ -524,12 +524,30 @@ function setupQuickRef() {
     });
 
     quickrefFilter.addEventListener("input", ev => {
+        function isInstruction(str: string): boolean {
+            switch (str.length) {
+                case 1:
+                    return !":|Vg'.\"".includes(str);
+                case 2:
+                    return ":|V".includes(str[0])
+                default:
+                    return false;
+            }
+        }
+
         let h2s = Array.from(contentEl.getElementsByTagName("h2"));
         h2s.forEach(h2 => h2.hidden = true);
 
         let trs = Array.from(contentEl.getElementsByTagName("tr"));
         trs.forEach(tr => {
-            let foundMatch = (tr.textContent || '').includes(quickrefFilter.value);
+            let foundMatch = false;
+            if (isInstruction(quickrefFilter.value)) {
+                let codes = tr.querySelectorAll("code");
+                foundMatch = Array.from(codes).map(c => c.textContent).includes(quickrefFilter.value);
+            }
+            else {
+                foundMatch = (tr.textContent || '').toLowerCase().includes(quickrefFilter.value.toLowerCase());
+            }
             tr.hidden = !foundMatch;
             if (foundMatch) {
                 let table = tr.parentElement!.parentElement as HTMLTableElement;
