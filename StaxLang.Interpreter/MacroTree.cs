@@ -125,6 +125,7 @@ namespace StaxLang {
                 ('g', "i", "c{2:/|2}M", "unset all but lowest bit"),
                 ('G', "a", "|R{Hm", "get the lengths of runs of duplicate elements"),
                 ('G', "i", "2|E|22|E", "unset all but the highest bit"),
+                ('h', "a", "'<s+'>+", "embed string in angle brackets"),
                 ('I', "aa", "{[Imsd", "get indexes of all"),
                 ('J', "a", "c%|Qe~;J(,/", "squarify"),
                 ('J', "ii", "JsJs", "square top 2 stack elements"),

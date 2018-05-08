@@ -566,6 +566,13 @@ foo
 [foo]
 	stax
 :}
+	name:Taggerize
+	in
+fieldset
+	out
+<fieldset>
+	stax
+:h
 	name:TrimBoth
 	in
 xxasdfgx
