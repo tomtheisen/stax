@@ -95,7 +95,7 @@ function setup() {
         { alias: "-", types: "rr", code: "-|a"},
         { alias: "-", types: "ff", code: "-|a"},
         { alias: "-", types: "a", code: "2B{Es-m"},
-        { alias: ".", types: "a", code: "j{1:/vs^s+mJ"},
+        { alias: ".", types: "a", code: "vZ+\"\\W\\w\"{^}RD"},
         { alias: ",", types: "aa", code: "rsrs|\\r"},
         { alias: "a", types: "a", code: "c|m|I"},
         { alias: "A", types: "a", code: "c|M|I"},

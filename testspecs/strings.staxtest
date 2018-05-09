@@ -514,6 +514,14 @@ foO BaR 123
 Foo Bar 123
 	stax
 :.
+	in
+foO BaR 123
+ding dong
+	out
+Foo Bar 123
+Ding Dong
+	stax
+_:.
 	name:ToggleCase
 	in
 foO BaR 123
