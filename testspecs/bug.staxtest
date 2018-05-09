@@ -526,3 +526,10 @@ xbcd
 abcd
 	stax
 c00'x&PP
+	name:RegexBlockReplaceBoundary
+	in
+foo bar
+	out
+Foo Bar
+	stax
+"\b."{^}R

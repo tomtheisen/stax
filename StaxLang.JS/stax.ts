@@ -2528,25 +2528,25 @@ export class Runtime {
             this.push(S2A(ts.replace(ss, A2S(replace))));
         }
         else if (replace instanceof Block) {
-            let ss = RegExp(A2S(search));
+            let ss = RegExp(A2S(search), "g");
             let replaceBlock = replace;
             
             let result = "";
-            let charsUsed = 0;
+            let lastEnd = 0;
             let match: RegExpMatchArray | null;
 
             this.pushStackFrame();
-            while ((match = ts.substr(charsUsed).match(ss))) {
-                result += ts.substring(charsUsed, charsUsed + match.index!);
+            while (match = ss.exec(ts)) {
+                result += ts.substring(lastEnd, match.index!);
                 
                 this.push(this._ = S2A(match[0]));
                 for (let s of this.runSteps(replaceBlock)) yield s;
                 result += A2S(this.popArray());
-                charsUsed += match.index! + match[0].length;
+                lastEnd = match.index! + match[0].length;
                 
                 this.index = this.index.add(one);
             }
-            result += ts.substr(charsUsed);
+            result += ts.substr(lastEnd);
 
             this.popStackFrame();
             this.push(S2A(result));
