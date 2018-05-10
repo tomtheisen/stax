@@ -116,21 +116,6 @@ input.wide {
     color: grey;
 }
 
-#gallery {
-    display: none;
-    position: fixed;
-    background-color: #ddd;
-    padding: 0.5em 1em;
-}
-#gallery ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-}
-#galleryOpen:hover + #gallery, #gallery:hover {
-    display: inline-block;
-}
-
 html.show-quickref body {
     margin-right: calc(1em + 60vw);
 }
