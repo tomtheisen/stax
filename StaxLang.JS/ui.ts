@@ -559,14 +559,13 @@ function setupQuickRef() {
 }
 setupQuickRef();
 
+function isQuickRef(): boolean {
+    return document.documentElement.classList.contains("show-quickref"); 
+}
 function toggleQuickRef() {
     document.documentElement.classList.toggle("show-quickref");
-    if (document.documentElement.classList.contains("show-quickref")) {
-        quickrefFilter.focus();
-    }
-    else {
-        codeArea.focus();
-    }
+    if (isQuickRef()) quickrefFilter.focus();
+    else codeArea.focus();
 }
 for (let id of ["quickref-close", "quickref-link"]) {
     (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
@@ -588,7 +587,8 @@ document.addEventListener("keydown", ev => {
             break;
         case "Escape":
             ev.preventDefault();
-            if (isActive()) stop();
+            if (isQuickRef()) toggleQuickRef();
+            else if (isActive()) stop();
             break;
     }
 });
