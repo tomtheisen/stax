@@ -523,7 +523,7 @@ function setupQuickRef() {
         }
     });
 
-    quickrefFilter.addEventListener("input", ev => {
+    function searchQuickref() {
         function isInstruction(str: string): boolean {
             switch (str.length) {
                 case 1:
@@ -555,7 +555,9 @@ function setupQuickRef() {
                 (table.previousElementSibling as HTMLHeadingElement).hidden = false;
             }
         });
-    })
+    }
+    quickrefFilter.addEventListener("input", searchQuickref);
+    searchQuickref();
 }
 setupQuickRef();
 
@@ -564,7 +566,10 @@ function isQuickRef(): boolean {
 }
 function toggleQuickRef() {
     document.documentElement.classList.toggle("show-quickref");
-    if (isQuickRef()) quickrefFilter.focus();
+    if (isQuickRef()) {
+        quickrefFilter.focus();
+        quickrefFilter.setSelectionRange(0, quickrefFilter.value.length);
+    }
     else codeArea.focus();
 }
 for (let id of ["quickref-close", "quickref-link"]) {
