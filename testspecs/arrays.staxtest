@@ -1077,3 +1077,20 @@ bcceff
 47 62 77 92
 	stax
 8R2/ 8R4/ * mJ
+	name:TruncateToShortest
+	in
+salutations
+world
+	out
+salut
+world
+	stax
+L :P m
+	in
+salutations
+world
+	out
+tions
+world
+	stax
+L :p m
