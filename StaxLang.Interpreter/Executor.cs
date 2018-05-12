@@ -2465,8 +2465,17 @@ namespace StaxLang {
                         break;
                     case '"':
                         int finishPos = arg.IndexOf('"', i+1);
+                        while (finishPos > 0 && arg[finishPos - 1] == '\\') {
+                            finishPos = arg.IndexOf('"', finishPos + 1);
+                        }
                         if (finishPos < 0) return false;
-                        NewValue(S2A(arg.Substring(i + 1, finishPos - i - 1).Replace("\\n", "\n")));
+                        var str = arg.Substring(i + 1, finishPos - i - 1);
+                        str = str.Replace("\\n", "\n");
+                        str = str.Replace("\\\"", "\"");
+                        str = str.Replace(@"\\", @"\");
+                        str = Regex.Replace(str, @"\\x[0-9a-fA-F]{2}", 
+                            m => "" + (char)int.Parse(m.Value.Substring(2), NumberStyles.AllowHexSpecifier));
+                        NewValue(S2A(str));
                         i = finishPos;
                         break;
                     case '-':

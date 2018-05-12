@@ -91,6 +91,13 @@ rab
 oof
 	stax
 r
+	name:EscapedEval
+	in
+"\"\\\x41"
+	out
+"\A
+	stax
+ie
 	name:Infinity
 	out
 ∞

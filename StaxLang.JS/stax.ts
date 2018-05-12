@@ -183,8 +183,17 @@ export class Runtime {
                     break;
                 case '"':
                     let finishPos = arg.indexOf('"', i + 1);
+                    while (arg[finishPos - 1] === '\\') {
+                        finishPos = arg.indexOf('"', finishPos + 1);
+                    }
                     if (finishPos < 0) return false;
-                    newValue(S2A(arg.substring(i + 1, finishPos).replace(/\\n/g, "\n")));
+                    let str = arg.substring(i + 1, finishPos);
+                    str = str.replace(/\\n/g, "\n");
+                    str = str.replace(/\\"/g, '"');
+                    str = str.replace(/\\\\/g, "\\");
+                    str = str.replace(/\\x[0-9a-f]{2}/ig, 
+                        s => String.fromCharCode(parseInt(s.substr(2), 16)));
+                    newValue(S2A(str));
                     i = finishPos;
                     break;
                 case '-':
