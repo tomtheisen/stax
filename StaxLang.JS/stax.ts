@@ -2862,11 +2862,12 @@ export class Runtime {
 
         let lastGenerated : StaxValue | null = null;
         let genComplete = false, cancelled = false;
+        let emptyGenBlock = genBlock.isEmpty();
         while (targetCount == null || result.length < targetCount) {
             this._ = this.peek();
 
             if (this.index.isPositive() || postPop) {
-                if (genBlock.contents !== "" && genBlock.contents !== "{") {
+                if (!emptyGenBlock) {
                     for (let s of this.runSteps(genBlock)) {
                         if (s.cancel && stopOnCancel) genComplete = cancelled = true;
                         if (s.cancel) { 

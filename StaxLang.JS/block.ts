@@ -14,6 +14,18 @@ export class Block {
         this.explicitlyTerminated = explicitlyTerminated;
         this.offset = programOffset;
     }
+
+    isEmpty(): boolean {
+        for (let token of this.tokens) {
+            if (typeof token === 'string') {
+                if (/^\S/.exec(token[0])) return false;
+            }
+            else {
+                if (!token.isEmpty()) return false;
+            }
+        }
+        return true;
+    }
 }
 
 export class Program extends Block {

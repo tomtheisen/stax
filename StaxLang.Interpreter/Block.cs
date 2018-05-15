@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public enum InstructionType { Normal = 0, Value, Block, Comparison, }
@@ -40,6 +41,18 @@ namespace StaxLang {
 
             // -1 means use last
             for (int i = 0; i < program.Length; i++) InstrDescLine[i] = -1;
+        }
+
+        public bool IsEmpty() {
+            for (int i = 0; i < this.Contents.Length; i++) {
+                char ch = this.Contents[i];
+                if (!char.IsWhiteSpace(ch)) return false;
+                if (ch == '\t') {
+                    i = this.Contents.IndexOf('\n', i);
+                    if (i < 0) i = this.Contents.Length;
+                }
+            }
+            return true;
         }
 
         public string[] Annotate() {

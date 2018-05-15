@@ -533,3 +533,10 @@ foo bar
 Foo Bar
 	stax
 "\b."{^}R
+	name:DefaultGeneratorSuccessor
+	out
+0
+1
+2
+	stax
+03gn 

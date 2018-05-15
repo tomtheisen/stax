@@ -2297,11 +2297,12 @@ namespace StaxLang {
             var result = new List<object>();
 
             object lastGenerated = null;
+            bool emptyGenBlock = genblock.IsEmpty();
             while (targetCount == null || result.Count < targetCount) {
                 _ = Peek();
 
                 if (Index > 0 || postPop) {
-                    if (genblock.Contents != "") {
+                    if (!emptyGenBlock) {
                         foreach (var s in RunSteps(genblock)) {
                             if (s.Cancel && stopOnCancel) goto GenComplete;
                             if (s.Cancel) goto Cancelled;
