@@ -1856,6 +1856,7 @@ export class Runtime {
         let list = this.pop();
 
         function readAt(arr: StaxArray, idx: StaxNumber) {
+            if (arr.length === 0) fail("Can't index into empty array");
             idx = Math.floor(idx.valueOf()) % arr.length;
             if (idx < 0) idx += arr.length;
             return arr[idx];
