@@ -109,6 +109,7 @@ namespace StaxLang {
                 ('B', "aa", "s{]ni@*mzs+{+ksd", "repeat elements respective number of times"),
                 ('c', "iii", "a|m|M", "clamp integer to bounds"),
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
+                ('c', "ai", "svc^?", "set case of string based on truthiness of integer"),
                 ('c', "a", "{[?k", "get first truthy element"),
                 ('C', "a", "VaVA\\{cr+m$|t", "invert case of letters"),
                 ('C', "i", "~;H;|C,^/", "nth catalan number"),

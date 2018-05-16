@@ -610,3 +610,14 @@ asdfg
 🍹
 	stax
 '🍹
+	name:SetCase
+	in
+"fOo" 0
+	out
+FOO
+	in
+"fOo" 1
+	out
+foo
+	stax
+:c
