@@ -399,6 +399,7 @@ op                  	|Types        	|Name               	|Description
 `m`                 	|arr          	|map-short          	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`                 	|int          	|map-range-short    	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
 `M`                 	|any block    	|maybe              	|Execute block if value is truthy.  Does not terminate a block.
+`N`                 	|block        	|repeat-from-input  	|Pop integer from input stack, and repeats block that many times. `{...}N` is functionally equivalent to `{...},*`
 `o`                 	|arr block    	|order              	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
 `t`                 	|arr block    	|trim-start-block   	|Remove elements from the start of the array that are matched the block predicate.  Does not terminate a block.
 `T`                 	|arr block    	|trim-end-block     	|Remove elements from the end of the array that are matched the block predicate.  Does not terminate a block.

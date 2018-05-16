@@ -740,6 +740,10 @@ namespace StaxLang {
                             block.AddDesc("uncons-right; remove last element from array and push both");
                             RunMacro("c1TsH");
                         }
+                        else if (Peek() is Block) {
+                            block.AddDesc("Execute block repeatedly; number of times popped from input stack");
+                            RunMacro(",*");
+                        }
                         else throw new StaxException("Bad type for N");
                         break;
                     case 'o': // order

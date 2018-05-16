@@ -662,6 +662,7 @@ export class Runtime {
                     case 'N':
                         if (isNumber(this.peek())) this.runMacro("U*");
                         else if (isArray(this.peek())) this.runMacro("c1TsH");
+                        else if (this.peek() instanceof Block) this.runMacro(",*");
                         break;
                     case 'o':
                         for (let s of this.doOrder()) yield s;
