@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.1.0 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.1.1 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
