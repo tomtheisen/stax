@@ -191,7 +191,7 @@ op                       	|Types          	|Name              	|Description
 <code>&#124;q</code>     	|arr arr        	|regex-indices     	|Get all indices of regex matches.
 <code>&#124;Q</code>     	|arr arr        	|regex-is-match    	|Regex matches entire string?
 <code>&#124;s</code>     	|arr arr        	|regex-split       	|Split by ECMA regex. Captured groups will be included in result.
-<code>&#124;S</code>     	|arr arr        	|surround          	|Prepend and append string/array.
+<code>&#124;S</code>     	|arr arr        	|surround          	|Prepend and append string/array.  Wraps the first array between copies of the second.
 <code>&#124;t</code>     	|arr arr        	|translate         	|Translate first string using pairs of elements in the second array.  Instances of the first in a pair will be replaced by the second.
 <code>&#124;z</code>     	|arr int        	|zero-fill         	|Fill on the left with "0" to specified length.
 `:~`                     	|arr            	|toggle-case       	|Toggle case of letters in string.
