@@ -3576,8 +3576,15 @@ namespace StaxLang {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "split into groups of " + e);
                 else block.AddDesc("split into groups");
                 var result = new List<object>();
-                for (int i = 0; i < a.Count; i += (int)b) {
-                    result.Add(((IEnumerable<object>)a).Skip(i).Take((int)b).ToList());
+                if (b < 0) {
+                    a = new List<object>(a);
+                    a.Reverse();
+                    b = -b;
+                }
+                if (b > 0) {
+                    for (int i = 0; i < a.Count; i += (int)b) {
+                        result.Add(((IEnumerable<object>)a).Skip(i).Take((int)b).ToList());
+                    }
                 }
                 Push(result);
             }

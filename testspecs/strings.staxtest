@@ -125,6 +125,12 @@ abcdefgh
 abc,def,gh
 	stax
 3/ ',*
+	in
+abcdefgh
+	out
+hgf,edc,ba
+	stax
+3N/ ',*
 	name:MultichunkString
 	in
 abcdefgh

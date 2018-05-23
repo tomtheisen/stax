@@ -1701,8 +1701,14 @@ export class Runtime {
         }
         else if (isArray(a) && isInt(b)) {
             let result = [];
-            for (let i = 0; i < a.length; i += b.valueOf()) {
-                result.push(a.slice(i, i + b.valueOf()));
+            if (b.isNegative()) {
+                a = [...a].reverse();
+                b = b.negate();
+            }
+            if (b.isPositive()) {
+                for (let i = 0; i < a.length; i += b.valueOf()) {
+                    result.push(a.slice(i, i + b.valueOf()));
+                }
             }
             this.push(result);
         }
