@@ -662,7 +662,17 @@ export class Runtime {
                     case 'N':
                         if (isNumber(this.peek())) this.runMacro("U*");
                         else if (isArray(this.peek())) this.runMacro("c1TsH");
-                        else if (this.peek() instanceof Block) this.runMacro(",*");
+                        else if (this.peek() instanceof Block) {
+                            let block = this.pop() as Block, n = this.inputStack.pop();
+                            if (isInt(n)) {
+                                for (this.pushStackFrame(); this.index.lt(n); this.index = this.index.add(one)) {
+                                    for (let s of this.runSteps(block)) {
+                                        if (!s.cancel) yield s;
+                                    }
+                                }
+                                this.popStackFrame();
+                            }
+                        }
                         break;
                     case 'o':
                         for (let s of this.doOrder()) yield s;

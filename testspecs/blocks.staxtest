@@ -273,5 +273,6 @@ foo
 hello 0
 hello 1
 hello 2
+last
 	stax
-{"hello "piP}N
+{"hello "piP}N"last"P
