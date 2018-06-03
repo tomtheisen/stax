@@ -38,6 +38,10 @@ namespace StaxLang {
         }
 
         public static byte[] PackBytes(string stax) {
+            // rotate trailing spaces to start
+            string trimmed = stax.TrimEnd(' ');
+            stax = new string(' ', stax.Length - trimmed.Length) + trimmed;
+
             BigInteger big = 0;
             var result = new List<byte>();
             for (int i = stax.Length - 1; i >= 0; i--) big = big * 95 + stax[i] - ' ';
@@ -72,6 +76,10 @@ namespace StaxLang {
                 result += (char)((int)(big % 95) + ' ');
                 big /= 95;
             }
+
+            // rotate leading spaces to end
+            string trimmed = result.TrimStart(' ');
+            result += new string(' ', result.Length - trimmed.Length);
             return result;
         }
 

@@ -540,3 +540,8 @@ Foo Bar
 2
 	stax
 03gn 
+	name:PackedTrailingSpace
+	out
+foo bar
+	stax
+æx«⌡√Ç^ô◘╓╬¼'

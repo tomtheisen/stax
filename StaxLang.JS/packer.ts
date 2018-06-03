@@ -12,6 +12,9 @@ export function pack(asciiStax: string): string {
 }
 
 export function packBytes(asciiStax: string): number[] {
+    // move trailing spaces to front
+    asciiStax = asciiStax.replace(/^(.+?)( +)$/, "$2$1");
+
     let big = bigInt.zero;
     let result: number[] = [];
     for (let i = asciiStax.length - 1; i >= 0; i--) {
@@ -66,6 +69,9 @@ export function unpackBytes(bytes: number[] | Uint8Array): string {
         result += String.fromCharCode(big.mod(bigInt[95]).valueOf() + 32);
         big = big.divide(bigInt[95]);
     }
+
+    // move leading spaces to end
+    result = result.replace(/^( +)(.+)$/, "$2$1");
     return result;
 }
 
