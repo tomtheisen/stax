@@ -582,13 +582,13 @@ document.addEventListener("keydown", ev => {
             ev.preventDefault();
             toggleQuickRef();
             break;
-        case "F2":
-            ev.preventDefault();
-            codeArea.focus();
-            break;
-        case "F3":
+        case "F6":
             ev.preventDefault();
             inputArea.focus();
+            break;
+        case "F7":
+            ev.preventDefault();
+            codeArea.focus();
             break;
         case "F8":
             ev.preventDefault();
