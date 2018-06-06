@@ -276,3 +276,16 @@ hello 2
 last
 	stax
 {"hello "piP}N"last"P
+	name:DoubleExecute
+	out
+foo
+foo
+	stax
+{"foo"P}D
+	name:TripleExecute
+	out
+foo
+foo
+foo
+	stax
+{"foo"P}B

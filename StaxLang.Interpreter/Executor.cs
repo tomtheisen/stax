@@ -474,6 +474,12 @@ namespace StaxLang {
                             block.AddDesc("properize fraction; push integer floor and remainder of fraction separately");
                             RunMacro("c@s1%");
                         }
+                        else if (IsBlock(Peek())) {
+                            Block b = Pop();
+                            for (int i = 0; i < 3; i++) {
+                                foreach (var s in RunSteps(b)) yield return s;
+                            }
+                        }
                         else throw new StaxException("Bad type for B");
                         break;
                     case 'c':
@@ -522,6 +528,12 @@ namespace StaxLang {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "fractional part of " + e);
                             block.AddDesc("get fractional part");
                             this.RunMacro("1%");
+                        }
+                        else if (IsBlock(Peek())) {
+                            Block b = Pop();
+                            for (int i = 0; i < 2; i++) {
+                                foreach (var s in RunSteps(b)) yield return s;
+                            }
                         }
                         break;
                     case 'e': 

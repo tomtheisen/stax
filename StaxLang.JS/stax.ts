@@ -451,6 +451,12 @@ export class Runtime {
                         if (isInt(this.peek())) this.doOverlappingBatch();
                         else if (isArray(this.peek())) this.runMacro("c1tsh"); // uncons
                         else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
+                        else if (this.peek() instanceof Block) {
+                            let b = this.pop() as Block;
+                            for (let i = 0; i < 3; i++) {
+                                for (let s of this.runSteps(b)) yield s;
+                            }
+                        }
                         else fail("bad type for B");
                         break;
                     case 'c':
@@ -488,6 +494,12 @@ export class Runtime {
                         }
                         else if (isNumber(this.peek())) {
                             this.runMacro("1%"); // get fractional part
+                        }
+                        else if (this.peek() instanceof Block) {
+                            let b = this.pop() as Block;
+                            for (let i = 0; i < 2; i++) {
+                                for (let s of this.runSteps(b)) yield s;
+                            }
                         }
                         break;
                     case 'e':
