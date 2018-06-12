@@ -578,6 +578,13 @@ for (let id of ["quickref-close", "quickref-link"]) {
 
 document.addEventListener("keydown", ev => {
     switch (ev.key) {
+        case "S":
+        case "s":
+            if (ev.ctrlKey) {
+                window.location.href = saveLink.href;
+                ev.preventDefault();
+            }
+            break;
         case "F1":
             ev.preventDefault();
             toggleQuickRef();
