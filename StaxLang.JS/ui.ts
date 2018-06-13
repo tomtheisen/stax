@@ -409,7 +409,10 @@ function doCompressor() {
     let input = compressorInputEl.value;
     let result: string;
     if (input === "") result = "z";
-    else if (compressorForceEl.checked) result = '`' + compress(input) + '`'
+    else if (compressorForceEl.checked) {
+        let compressed = compress(input);
+        result = compressed ? '`' + compressed + '`' : "";
+    }
     else if (input.length === 1) result = "'" + input;
     else if (input.length === 2) result = "." + input;
     else {
