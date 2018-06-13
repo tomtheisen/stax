@@ -418,7 +418,7 @@ function doCompressor() {
     else {
         let compressed = compress(input);
         if (compressed && compressed.length < input.length) result = '`' + compressed + '`';
-        else result = '"' + input.replace('"', '`"') + '"'
+        else result = '"' + input.replace(/"/g, '`"') + '"'
     }
     compressorOutputEl.value = result;
     (document.getElementById("compressorInfo") as HTMLDivElement).textContent = `${ compressorOutputEl.value.length } bytes`;
