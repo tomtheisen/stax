@@ -117,6 +117,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:!`                     	|int int    	|coprime       	|iscoprime(a, b)    	|Are a and b coprime?
 `:#`                     	|num        	|floatify      	|float(a)           	|Convert to float.
 `:-`                     	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
+`:@`                     	|int int    	|get-bit       	|(a >> b) & 1       	|Extract a single bit from an integer.
 `:/`                     	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
 `:+`                     	|num        	|sign          	|sign(a)            	|Sign; 1 for positive, -1 for negative.
 `:_`                     	|num num    	|float-div     	|1.0 * a / b        	|Float division.

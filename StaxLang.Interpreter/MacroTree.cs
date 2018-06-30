@@ -56,6 +56,7 @@ namespace StaxLang {
                 ('~', "a", @"VaVA\{+kcr+|t", "toggle case"),
                 ('~', "i", "|B%|2v", "set all interior bits"),
                 ('@', "a", "{f%", "count truthy elements"),
+                ('@', "ii", "|>2%", "get the nth bit of an integer"),
                 (':', "ai", "/{hm", "get every nth element"),
                 ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
                 ('/', "ai", "n%NcN:cc0<{n%+}Mb(aat", "split array at index; push both"),

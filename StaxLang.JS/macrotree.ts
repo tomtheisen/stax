@@ -58,6 +58,7 @@ function setup() {
         { alias: "~", types: "a", code: "VaVA\\{+kcr+|t"},
         { alias: "~", types: "i", code: "|B%|2v"},
         { alias: "@", types: "a", code: "{f%"},
+        { alias: "@", types: "ii", code: "|>2%"},
         { alias: ":", types: "ai", code: "/{hm"},
         { alias: "/", types: "ii", code: "0~{b%Csn/s,^~Wdd"},
         { alias: "/", types: "ai", code: "n%NcN:cc0<{n%+}Mb(aat"},

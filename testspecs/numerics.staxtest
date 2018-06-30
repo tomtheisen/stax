@@ -1016,3 +1016,14 @@ Lr mj
 1 2 5 14 42 132 429 1430 4862 16796
 	stax
 A{:CmJ
+	name:ExtractBit
+	in
+20 2
+	out
+1
+	in
+20 3
+	out
+0
+	stax
+:@
