@@ -58,7 +58,7 @@ namespace StaxLang {
                 ('@', "a", "{f%", "count truthy elements"),
                 ('@', "ii", "|>2%", "get the nth bit of an integer"),
                 (':', "ai", "/{hm", "get every nth element"),
-                ('/', "ii", "0~{b%Csn/s,^~Wdd", "how many times will b divide a?"),
+                ('/', "ii", "ss0~{b%Csn/s,^~Wdd,", "how many times will b divide a?"),
                 ('/', "ai", "n%NcN:cc0<{n%+}Mb(aat", "split array at index; push both"),
                 ('/', "ia", "sn%NcN:cc0<{n%+}Mb(aat", "split array at index; push both"),
                 ('/', "aa", "b[Is%^%~n,(~%t;%t,s", "split on first substring occurrence, and push both sides"),

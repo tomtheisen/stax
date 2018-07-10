@@ -545,3 +545,15 @@ Foo Bar
 foo bar
 	stax
 æx«⌡√Ç^ô◘╓╬¼'
+	name:MultiplicityStack
+	in
+	out
+3
+	stax
+"under"8 2:/
+	in
+"foo" 8 2
+	out
+3
+	stax
+:/
