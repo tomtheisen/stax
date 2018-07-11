@@ -1556,8 +1556,21 @@ namespace StaxLang {
                                 if (IsNumber(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "log base " + e);
                                     else block.AddDesc("log with base");
-                                    double b = (double)Pop(), a = (double)Pop();
-                                    Push(Math.Log(a, b));
+                                    dynamic b = Pop(), a = Pop();
+                                    if (b is BigInteger && a is BigInteger) {
+                                        BigInteger num = a;
+                                        double multiplicity = 0;
+                                        while (num % b == 0 && num > 1) {
+                                            num /= b;
+                                            multiplicity += 1;
+                                        }
+                                        if (num == 1) {
+                                            Push(multiplicity);
+                                            break;
+                                        }
+                                    }
+
+                                    Push(Math.Log((double)a, (double)b));
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("combine elements from a and b, with each occurring the max of its occurrences from a and b");

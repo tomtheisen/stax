@@ -1332,6 +1332,18 @@ export class Runtime {
                     case '|L': {
                         let b = this.pop(), a = this.pop();
                         if (isNumber(b)) { // log with base
+                            if (isInt(a) && isInt(b)) {
+                                // check for exact power
+                                let num = a, multiplicity = 0;
+                                while (num.isDivisibleBy(b) && num.gt(one)) {
+                                    num = num.divide(b);
+                                    multiplicity += 1;
+                                }
+                                if (num.eq(one)) {
+                                    this.push(multiplicity);
+                                    break;
+                                }
+                            }
                             let result = Math.log(a.valueOf() as number) / Math.log(b.valueOf());
                             this.push(result);
                         }

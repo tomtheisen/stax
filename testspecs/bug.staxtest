@@ -557,3 +557,16 @@ foo bar
 3
 	stax
 :/
+	name:AccurateLog
+	in
+100 10
+1000 10
+10000 10
+1000000 1000
+	out
+2
+3
+4
+2
+	stax
+me|L@
