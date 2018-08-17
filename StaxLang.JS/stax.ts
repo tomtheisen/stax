@@ -607,7 +607,7 @@ export class Runtime {
                         if (isArray(this.peek())) this.runMacro("' /");
                         else if (isInt(this.peek())) {
                             let digits = this.pop() as BigInteger, num = this.pop();
-                            num = isNumber(num) && floatify(num) || fail("can't round a non-number");
+                            num = isNumber(num) ? floatify(num) : fail("can't round a non-number");
                             this.push(S2A(num.toFixed(digits.valueOf())));
                         }
                         else if (isNumber(this.peek())) {

@@ -570,3 +570,10 @@ foo bar
 2
 	stax
 me|L@
+	name:RoundZero
+	in
+0.0
+	out
+0.00
+	stax
+2j
