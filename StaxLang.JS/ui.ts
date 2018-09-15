@@ -24,6 +24,7 @@ const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
 const statusEl = document.getElementById("status") as HTMLElement;
 const propsEl = document.getElementById("properties") as HTMLElement;
 const outputEl = document.getElementById("output") as HTMLPreElement;
+const copyOutputButton = document.getElementById("outputCopy") as HTMLButtonElement;
 const warningsEl = document.getElementById("warnings") as HTMLUListElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
@@ -70,6 +71,7 @@ function resetRuntime() {
     codeArea.disabled = inputArea.disabled = true;
     debugContainer.hidden = true;
     stopButton.disabled = false;
+    copyOutputButton.hidden = true;
 
     if (blankSplitEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
     else if (lineSplitEl.checked) pendingInputs = inputArea.value.split(/\r?\n/);
@@ -86,7 +88,10 @@ function startNextInput() {
 
     let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
-        line => outputEl.textContent += line + "\n",
+        line => {
+            outputEl.textContent += line + "\n";
+            copyOutputButton.hidden = false;
+        },
         warning => warningsEl.innerHTML += `<li>${ warning }`
     );
     activeStateIterator = activeRuntime.runProgram(code, stdin);
@@ -151,7 +156,6 @@ function run() {
     if (!isActive()) resetRuntime();
     runProgramTimeSlice();
 }
-
 runButton.addEventListener("click", run);
 
 // gets instruction pointer if still running
@@ -182,8 +186,15 @@ function step() : number | null {
         return null;
     }
 }
-
 stepButton.addEventListener("click", step);
+
+copyOutputButton.addEventListener("click", ev => {
+    const range = document.createRange();
+    range.selectNodeContents(outputEl);
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+    document.execCommand("copy")
+});
 
 function showDebugInfo(ip: number, steps: number) {
     function stripComments(stax: string): string {
@@ -225,8 +236,10 @@ function showDebugInfo(ip: number, steps: number) {
     });
 }
 
-function sizeTextArea(el: HTMLTextAreaElement) {
-    el.rows = Math.max(el.rows, 2, el.value.split("\n").length);
+function sizeTextArea(el: HTMLTextAreaElement, maxAutoRows = 30) {
+    let newRows = Math.max(el.rows, 2, el.value.split("\n").length);
+    newRows = Math.min(newRows, maxAutoRows);
+    el.rows = newRows;
 }
 
 function encodePacked(packed: string): string | null {
@@ -375,6 +388,7 @@ function pendUpdate() {
 codeArea.addEventListener("input", pendUpdate);
 codeArea.addEventListener("keydown", ev => {
     if (ev.key === "i" && ev.ctrlKey) {
+        // Ctrl + I to insert tab, which is a line comment in ascii stax
         ev.preventDefault();
         let s = codeArea.selectionStart;
         codeArea.value = codeArea.value.substr(0, s)
