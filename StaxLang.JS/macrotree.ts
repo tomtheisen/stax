@@ -124,7 +124,7 @@ function setup() {
         { alias: "f", types: "a", code: "zs{+F"},
         { alias: "f", types: "i", code: "|f|R"},
         { alias: "F", types: "i", code: "|fu"},
-        { alias: "F", types: "a", code: "{Cim"},
+        { alias: "F", types: "a", code: "{Cim", deprecation: "<code>:F</code> for falsy indices is deprecated.  Use <code>:0</code> instead."},
         { alias: "g", types: "a", code: "|R{hm"},
         { alias: "g", types: "i", code: "c{2:/|2}M"},
         { alias: "G", types: "a", code: "|R{Hm"},

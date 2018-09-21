@@ -8,7 +8,7 @@ op                  	|Description
 `q`                 	|Peek and print with no newline.
 `Q`                 	|Peek and print with a newline.
 <code>&#124;_</code>	|(space, not underscore) Print a single space character.
-<code>&#124;`</code>            	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
+<code>&#124;`</code>	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
 <code>&#124;P</code>	|~~Print newline.~~  Deprecated.  Use `zP` instead.  *Deprecations don't happen often in stax, and when they do, they'll usually be accompanied by an equivalent way of accomplishing the same thing.*
 <code>&#124;u</code>	|Un-eval.  Produce string representation of array. e.g. `"[1, 2, 3, [4, 5]]"`
 <code>&#124;V</code>	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
@@ -340,7 +340,7 @@ op                  	|Types              	|Name              	|Description
 `:c`                	|arr                	|coalesce          	|Get first truthy element of array.
 `:d`                	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`
-`:F`                	|arr                	|falsy-indices     	|Get all indices of falsy elements.
+`:F`                	|arr                	|falsy-indices     	|~~Get all indices of falsy elements.~~ Deprecated.  Use `:0` instead.
 `:g`                	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
 `:G`                	|arr                	|run-lengths       	|Get the lengths of runs of duplicate elements.
 `:I`                	|arr arr            	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
