@@ -94,8 +94,8 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;A</code>     	|int        	|10-power      	|10 ** a            	|Power of ten.
 <code>&#124;b</code>     	|int int    	|convert-base  	|                   	|Convert to base, up to 36.
 <code>&#124;b</code>     	|arr int    	|convert-base  	|                   	|Convert from base, up to 36.
-<code>&#124;B</code>     	|int        	|convert-binary	|                   	|Convert to base 2.
-<code>&#124;B</code>     	|arr        	|convert-binary	|                   	|Convert from base 2.
+<code>&#124;B</code>     	|int        	|convert-binary	|                   	|Convert to binary. (base 2)
+<code>&#124;B</code>     	|arr        	|convert-binary	|                   	|Convert from binary. (base 2)
 <code>&#124;C</code>     	|int int    	|choose        	|choose(a, b)       	|Binomial coefficient - calculate a choose b.
 <code>&#124;e</code>     	|int        	|is-even       	|(a + 1) % 2        	|Is even?
 <code>&#124;E</code>     	|int int    	|digits        	|                   	|Generate array of digit values in base.  Absolute value is used in case of negative number.
@@ -103,8 +103,8 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;f</code>     	|int        	|factorize     	|                   	|Prime factorization array. 
 <code>&#124;F</code>     	|int        	|factorial     	|a!                 	|Factorial.
 <code>&#124;g</code>     	|int int    	|gcd           	|                   	|Greatest common denominator.
-<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to base 16.
-<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from base 16.
+<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexidecimal. (base 16)  
+<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16) 
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 <code>&#124;m</code>     	|num num    	|min           	|min(a, b)          	|Lower of two values.
