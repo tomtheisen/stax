@@ -624,8 +624,8 @@ document.addEventListener("keydown", ev => {
             break;
         case "Escape":
             ev.preventDefault();
-            if (isQuickRef()) toggleQuickRef();
-            else if (isActive()) stop();
+            if (isActive()) stop();
+            else if (isQuickRef()) toggleQuickRef();
             break;
     }
 });
