@@ -2508,10 +2508,20 @@ namespace StaxLang {
                         NewValue(S2A(str));
                         i = finishPos;
                         break;
+                    case '∞':
+                        NewValue(double.PositiveInfinity);
+                        break;
                     case '-':
                     case '0': case '1': case '2': case '3': case '4':
                     case '5': case '6': case '7': case '8': case '9':
                         var substring = arg.Substring(i);
+
+                        if (substring.StartsWith("-∞")) {
+                            NewValue(double.NegativeInfinity);
+                            i += 1;
+                            break;
+                        }
+                        
                         var match = Regex.Match(substring, @"^-?\d+\.\d+");
                         if (match.Success) {
                             NewValue(double.Parse(match.Value));

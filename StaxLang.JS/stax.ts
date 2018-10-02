@@ -191,10 +191,19 @@ export class Runtime {
                     newValue(S2A(str));
                     i = finishPos;
                     break;
+                case '\u221E':
+                    newValue(Number.POSITIVE_INFINITY);
+                    break;
                 case '-':
                 case '0': case '1': case '2': case '3': case '4':
                 case '5': case '6': case '7': case '8': case '9':
                     let substring = arg.substr(i);
+                    if (substring.substr(0, 2) === "-\u221E") {
+                        newValue(Number.NEGATIVE_INFINITY);
+                        i += 1;
+                        break;
+                    }
+
                     let match = substring.match(/^-?\d+\.\d+/);
                     if (match) {
                         newValue(parseFloat(match[0]));
