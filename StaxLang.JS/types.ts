@@ -135,6 +135,12 @@ export function compare(a: StaxValue, b: StaxValue): number {
     return a.toString() > b.toString() ? 1 : -1;
 }
 
+export function stringFormatFloat(arg: number) {
+    let result = arg.toPrecision(15).replace("Infinity", "∞");
+    if (result.indexOf('.') >= 0) result = result.replace(/\.?0+$/, '');
+    return result;
+}
+
 export function stringFormat(arg: StaxValue): StaxArray {
     function flatten(arr: StaxArray): StaxNumber[] {
         let result: StaxNumber[] = [];
@@ -145,6 +151,7 @@ export function stringFormat(arg: StaxValue): StaxArray {
         return result;
     }
     
+    if (isFloat(arg)) return S2A(stringFormatFloat(arg));
     if (isNumber(arg)) return S2A(arg.toString());
     if (isArray(arg)) {
         let result: StaxArray = [];

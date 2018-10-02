@@ -1,7 +1,7 @@
 import { StaxArray, StaxNumber, StaxValue, 
     isArray, isFloat, isInt, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength, 
-    areEqual, indexOf, compare, stringFormat, unEval } from './types';
+    areEqual, indexOf, compare, stringFormat, unEval, stringFormatFloat } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, unpackBytes, isPacked } from './packer';
 import * as bigInt from 'big-integer';
@@ -136,18 +136,13 @@ export class Runtime {
         if (!popped) throw new Error("tried to pop a stack frame; wasn't one");
         this._ = popped._;
         this.indexOuter = popped.indexOuter;
-    }    
+    }
 
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
 
-        if (isFloat(val)) {
-            val = val.toPrecision(15).replace("Infinity", "∞");
-            if (val.indexOf('.') >= 0) val = val.replace(/\.?0+$/, '');
-        }
-        if (isInt(val)) {
-            val = val.toString();
-        }
+        if (isFloat(val)) val = stringFormatFloat(val);
+        if (isInt(val)) val = val.toString();
         if (val instanceof Block) val = `Block: ${val.contents}`;
         if (isArray(val)) val = A2S(val);
         if (val instanceof Rational) val = val.toString();
