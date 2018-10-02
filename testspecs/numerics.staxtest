@@ -644,6 +644,34 @@ not equal
 5 9
 	out
 4
+	in
+5.0 9
+	out
+4
+	in
+5 9.0
+	out
+4
+	in
+9.0 5.0
+	out
+4
+	in
+5/1 9
+	out
+4/1
+	in
+5 9/1
+	out
+4/1
+	in
+5.0 9/1
+	out
+4
+	in
+5/1 9.0
+	out
+4
 	stax
 :-
 	name:CeilingFraction
