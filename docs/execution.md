@@ -21,7 +21,7 @@ Some instruction characters have special meaning when in the first position of a
 ## Implicit Eval
 When the standard input consists of exactly one line, then stax will attempt to automatically parse it and push the resulting values onto the stack.  For example, consider this standard input.
 
-    "abc" [1 [2.3 4/5]]
+    "abc" [1 ∞ [-2.3 4/5]]
 
 The input stack will contain two arrays.  One represents the string, and the other will be the nested array structure of numbers.  Commas are optional.  Unrecognized characters cause the eval to fail.  If the eval fails, then the stack just keeps the string representation of standard input.
 
