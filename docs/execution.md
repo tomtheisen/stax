@@ -23,7 +23,7 @@ When the standard input consists of exactly one line, then stax will attempt to 
 
     "abc" [1 ∞ [-2.3 4/5]]
 
-The input stack will contain two arrays.  One represents the string, and the other will be the nested array structure of numbers.  Commas are optional.  Unrecognized characters cause the eval to fail.  If the eval fails, then the stack just keeps the string representation of standard input.
+The input stack will contain two arrays.  One represents the string, and the other will be the nested array structure of numbers.  Commas are optional.  Unrecognized characters cause the eval to fail.  If the eval fails, then the stack just keeps the string representation of standard input.  Integers, fractions, and floats are all interpreted successfully.  The infinity symbols `∞` and `-∞` are interpreted as the corresponding floating point values.
 
 ## Perform Instructions
 This is where all the stuff happens.  After executing the program, if the top of the stack is a block, the block is executed.  This is repeated until the top of the stack is not a block.  This is mostly useful for recursion.

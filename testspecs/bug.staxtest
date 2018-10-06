@@ -577,3 +577,11 @@ me|L@
 0.00
 	stax
 2j
+	name:NegativeArrayMultiplicationMutation
+	in
+-2 "foo"
+	out
+oofoof
+foo
+	stax
+b*PP

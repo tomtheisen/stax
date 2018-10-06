@@ -1656,15 +1656,17 @@ export class Runtime {
         else if (isInt(a) && isArray(b)) {
             let result: StaxArray = [];
             let count = a.valueOf();
-            if (count < 0) [b, count] = [b.reverse(), -count];
-            for (let i = 0; i < count; i++) result = result.concat(b);
+            if (count < 0) [b, count] = [[...b].reverse(), -count];
+            if (count === 1) result = b;
+            else for (let i = 0; i < count; i++) result = result.concat(b);
             this.push(result);
         }
         else if (isArray(a) && isInt(b)) {
             let result: StaxArray = [];
             let count = b.valueOf();
-            if (count < 0) [a, count] = [a.reverse(), -count];
-            for (let i = 0; i < count; i++) result = result.concat(a);
+            if (count < 0) [a, count] = [[...a].reverse(), -count];
+            if (count === 1) result = a;
+            else for (let i = 0; i < count; i++) result = result.concat(a);
             this.push(result);
         }
         else if (isArray(a) && isArray(b)) {

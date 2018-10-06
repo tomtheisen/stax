@@ -3703,14 +3703,16 @@ namespace StaxLang {
             if (IsInt(b)) {
                 if (IsArray(a)) {
                     if (b < 0) {
+                        a = new List<object>(a);
                         a.Reverse();
-                        b *= -1;
+                        b = -b;
                         block.AddDesc("repeat array - negative number reverses");
                     }
                     else if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "repeat array " + e + " times");
                     else block.AddDesc("repeat array");
                     var result = new List<object>();
-                    for (int i = 0; i < b; i++) result.AddRange(a);
+                    if (b == 1) result = a;
+                    else for (int i = 0; i < b; i++) result.AddRange(a);
                     Push(result);
                     yield break;
                 }
