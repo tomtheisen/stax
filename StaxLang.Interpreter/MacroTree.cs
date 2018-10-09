@@ -124,7 +124,7 @@ namespace StaxLang {
                 ('d', "a", "oc%vh~;t,Tc|+s%u*", "median"),
                 ('D', "ai", "~;|w,|W", "trim element from both ends of string"),
                 ('D', "aa", "~;|w,|W", "trim all characters from both ends of string"),
-                ('e', "a", "|]{|[m{+k", "get all contiguous excerpts"),
+                ('e', "a", "|]{|[mc{{+k}M", "get all contiguous excerpts"),
                 ('f', "a", "zs{+F", "flatten array"),
                 ('f', "i", "|f|R", "prime factorization pairs: [factor exponent]"),
                 ('F', "i", "|fu", "distinct prime factors"),

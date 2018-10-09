@@ -585,3 +585,8 @@ oofoof
 foo
 	stax
 b*PP
+	name:EmptyExcerpts
+	out
+
+	stax
+z:e

@@ -126,7 +126,7 @@ function setup() {
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},
         { alias: "D", types: "ai", code: "~;|w,|W"},
         { alias: "D", types: "aa", code: "~;|w,|W"},
-        { alias: "e", types: "a", code: "|]{|[m{+k"},
+        { alias: "e", types: "a", code: "|]{|[mc{{+k}M"},
         { alias: "f", types: "a", code: "zs{+F"},
         { alias: "f", types: "i", code: "|f|R"},
         { alias: "F", types: "i", code: "|fu"},
