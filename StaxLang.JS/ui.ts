@@ -1,5 +1,5 @@
 import { Runtime, ExecutionState } from './stax';
-import { parseProgram, Block } from './block';
+import { parseProgram, Block, getCodeType, CodeType } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import { compress } from './huffmancompression';
@@ -51,7 +51,6 @@ let steps = 0, start = 0, input = 0;
 let pendingBreak = false;
 let pendingInputs: string[] = [];
 
-enum CodeType { ASCII, Packed, UnpackedWithExtended }
 let codeType: CodeType;
 let codeBytes: number;
 let codeChars: number;
@@ -282,39 +281,31 @@ function updateStats() {
 
     packButton.hidden = false;
     golfButton.disabled = packButton.disabled = isActive();
-    if (isPacked(codeArea.value)) {
+    codeType = getCodeType(codeArea.value);
+    if (codeType === CodeType.Packed) {
         golfButton.hidden = true;
-        codeType = CodeType.Packed;
         codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
     }
     else {
         packButton.textContent = "Pack";
-        let unknown = false, extraWhitespace = false;
+
         let pairs = 0;
         for (let i = 0; i < codeArea.value.length; i++) {
             let charCode = codeArea.value.charCodeAt(i);
             let codePoint = codeArea.value.codePointAt(i);
             if (charCode !== codePoint) pairs += 1;
-            if (charCode < 32 || charCode > 127) {
-                packButton.hidden = true;
-
-                // could be calculated better by parsing
-                extraWhitespace = extraWhitespace || (charCode === 9 || charCode === 10 || charCode === 13);
-                unknown = unknown || !extraWhitespace; 
-            }
         }
-        golfButton.hidden = !extraWhitespace;
+        packButton.hidden = codeType != CodeType.TightAscii;
+        golfButton.hidden = codeType != CodeType.LooseAscii;
 
-        if (unknown) {
+        if (codeType === CodeType.UnpackedNonascii) {
             codeChars = codeArea.value.length - pairs;
-            codeType = CodeType.UnpackedWithExtended;
             codeBytes = countUtf8Bytes(codeArea.value);
             propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes UTF-8`;
         }
         else {
-            codeType = CodeType.ASCII;
             codeChars = codeBytes = codeArea.value.length;
             propsEl.textContent = `${ codeArea.value.length } bytes, ASCII`;
         }
@@ -402,13 +393,14 @@ inputArea.addEventListener("input", pendUpdate);
 postLink.addEventListener("click", ev => {
     let template = "# [Stax](https://github.com/tomtheisen/stax), ";
     switch (codeType) {
-        case CodeType.ASCII:
+        case CodeType.LooseAscii:
+        case CodeType.TightAscii:
             template += `${ codeBytes } bytes`;
             break;
         case CodeType.Packed:
             template += `${ codeBytes } [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)`;
             break;
-        case CodeType.UnpackedWithExtended:
+        case CodeType.UnpackedNonascii:
             template += `${ codeBytes } bytes, (${ codeChars } chars, UTF-8)`;
             break;
     }

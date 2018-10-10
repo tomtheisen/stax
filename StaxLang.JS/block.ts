@@ -1,4 +1,5 @@
 import { last } from './types';
+import { isPacked } from './packer';
 
 export class Block {
     contents: string;
@@ -43,6 +44,48 @@ export class Program extends Block {
     getGotoTargetCount(): number {
         return this.gotoTargets.length;
     }
+}
+
+export enum CodeType {
+    LooseAscii,         // all ascii with extra whitespace or comments
+    TightAscii,         // minified ascii, could be packed
+    Packed,             // PackedStax, tightest representation known
+    UnpackedNonascii,   // Unpackable, due to emojis or something
+}
+
+export function getCodeType(program: string) : CodeType {
+    if (isPacked(program)) return CodeType.Packed;
+
+    for (let pos = 0; pos < program.length; pos++) {
+        if (program.codePointAt(pos)! >= 0x80) return CodeType.UnpackedNonascii;
+    }
+
+    let extraWhitespace = false;
+    for (let pos = 0; pos < program.length; pos++) {
+        switch (program[pos]) {
+            case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
+                extraWhitespace = true;
+                break;
+            case ':':
+            case '|':
+            case "'": 
+                pos += 1;
+                break;
+            case '.':
+                pos +=2 ;
+                break;
+            case '"':
+                pos += parseString(program, pos).length - 1;
+                break;
+            case '`':
+                pos += parseCompressedString(program, pos).length - 1;
+                break;
+        }
+    }
+    return extraWhitespace ? CodeType.LooseAscii : CodeType.TightAscii;
 }
 
 export function parseProgram(program: string): Program {
