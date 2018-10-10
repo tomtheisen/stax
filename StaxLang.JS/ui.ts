@@ -579,10 +579,10 @@ function setupQuickRef() {
 setupQuickRef();
 
 function isQuickRef(): boolean {
-    return document.documentElement.classList.contains("show-quickref"); 
+    return !!document.documentElement && document.documentElement.classList.contains("show-quickref"); 
 }
 function toggleQuickRef() {
-    document.documentElement.classList.toggle("show-quickref");
+    document.documentElement && document.documentElement.classList.toggle("show-quickref");
     if (isQuickRef()) {
         quickrefFilter.focus();
         quickrefFilter.setSelectionRange(0, quickrefFilter.value.length);
