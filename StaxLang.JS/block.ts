@@ -48,6 +48,7 @@ export class Program extends Block {
 
 export enum CodeType {
     LooseAscii,         // all ascii with extra whitespace or comments
+    LowAscii,           // ascii with no extra whitespace, but can't be packed, e.g. newline in string literal
     TightAscii,         // minified ascii, could be packed
     Packed,             // PackedStax, tightest representation known
     UnpackedNonascii,   // Unpackable, due to emojis or something
@@ -56,8 +57,10 @@ export enum CodeType {
 export function getCodeType(program: string) : CodeType {
     if (isPacked(program)) return CodeType.Packed;
 
+    let lowAscii = false;
     for (let pos = 0; pos < program.length; pos++) {
         if (program.codePointAt(pos)! >= 0x80) return CodeType.UnpackedNonascii;
+        if (program.codePointAt(pos)! < 0x20) lowAscii = true;
     }
 
     let extraWhitespace = false;
@@ -85,7 +88,8 @@ export function getCodeType(program: string) : CodeType {
                 break;
         }
     }
-    return extraWhitespace ? CodeType.LooseAscii : CodeType.TightAscii;
+    if (extraWhitespace) return CodeType.LooseAscii;
+    return lowAscii ? CodeType.LowAscii : CodeType.TightAscii;
 }
 
 export function parseProgram(program: string): Program {
