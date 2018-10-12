@@ -612,6 +612,7 @@ document.addEventListener("keydown", ev => {
             break;
         case "F11":
             ev.preventDefault();
+            stepButton.focus(); // ensure document's active element is not disabled
             step();
             break;
         case "Escape":
