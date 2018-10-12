@@ -43,7 +43,7 @@ interface Macro {
 function setup() {
     const macros: Macro[] = [
         { alias: "!", types: "ii", code: "|g1="},
-        { alias: "!", types: "a", code: "c%{[|!m {+k sd"},
+        { alias: "!", types: "a", code: "c%{[|!m s{{+k}M"},
         { alias: "#", types: "i", code: "1!*"},
         { alias: "#", types: "f", code: "1!*"},
         { alias: "#", types: "r", code: ""},

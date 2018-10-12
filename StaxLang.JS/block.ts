@@ -7,7 +7,7 @@ export class Block {
     offset: number;
     explicitlyTerminated = false;
     get length(): number { return this.contents.length; }
-    
+
     constructor(contents: string | null, tokens: (string | Block)[], programOffset: number, explicitlyTerminated = false) {
         if (contents == null) contents = tokens.map(t => t instanceof Block ? t.contents : t).join("");
         this.contents = contents;
@@ -31,7 +31,7 @@ export class Block {
 
 export class Program extends Block {
     private gotoTargets: Block[];
-    
+
     constructor(contents: string, tokens: (string | Block)[], gotoTargets: Block[]) {
         super(contents, tokens, 0);
         this.gotoTargets = gotoTargets;
@@ -74,7 +74,7 @@ export function getCodeType(program: string) : CodeType {
                 break;
             case ':':
             case '|':
-            case "'": 
+            case "'":
                 pos += 1;
                 break;
             case '.':
@@ -125,7 +125,7 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
 
             case "'": {
                 // test for surrogate pair
-                let length = (program.charCodeAt(pos + 1) !== program.codePointAt(pos + 1)) ? 3 : 2; 
+                let length = (program.charCodeAt(pos + 1) !== program.codePointAt(pos + 1)) ? 3 : 2;
                 pushToken(program.substr(pos, length));
                 pos += length;
                 break;
@@ -155,9 +155,9 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                 pos = lineEnd + 1;
                 break;
             }
-            
-            case '0': case '1': case '2': case '3': case '4': 
-            case '5': case '6': case '7': case '8': case '9': 
+
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
                 let n = parseNum(program, pos);
                 pos += n.length;
                 pushToken(n);
