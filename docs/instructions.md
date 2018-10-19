@@ -235,8 +235,8 @@ op                  	|Types              	|Name              	|Description
 `@`                 	|arr int            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
 `@`                 	|arr int int ...    	|element-at        	|Get element in multi-dimensional array using all integer indices.
 `@`                 	|arr arr            	|elements-at       	|Get elements at all indices.
-`&`                 	|arr int any        	|assign-index      	|Assign element at index.  Negatives index backwards.  OOB extends the array.
-`&`                 	|arr int ... int any	|assign-index      	|Assign element in multidimensional array of arrays located at specified coordinates.  Negative coordinates are not allowed.  OOB extends the array(s);
+`&`                 	|arr int any        	|assign-index      	|Assign non-block element at index.  Negatives index backwards.  OOB extends the array.
+`&`                 	|arr int ... int any	|assign-index      	|Assign non-block element in multidimensional array of arrays located at specified coordinates.  Negative coordinates are not allowed.  OOB extends the array(s);
 `&`                 	|arr arr any        	|assign-indices    	|Assign element at all indices.  If indices array is an array of arrays, then treat them as a path to navigate a multidimensional array of arrays.
 `&`                 	|arr int block      	|mutate-element    	|Mutate element at index using block.
 `&`                 	|arr arr block      	|mutate-element    	|Mutate element at indices using block. If indices array is an array of arrays, then treat them as a path to navigate a multidimensional array of arrays.
