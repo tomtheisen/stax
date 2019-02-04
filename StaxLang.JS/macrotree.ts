@@ -162,7 +162,7 @@ function setup() {
         { alias: "s", types: "a", code: "c|Ms|m-"},
         { alias: "S", types: "aa", code: "s-!"},
         { alias: "t", types: "aa", code: "2|*|(|t"},
-        { alias: "t", types: "i", code: "c|fu{u1-N*F@"},
+        { alias: "t", types: "i", code: "c|fu{u1-N*FuR"},
         { alias: "T", types: "a", code: "{!Cim"},
         { alias: "T", types: "i", code: "c^*h", deprecation: "<code>:T</code> for triangular numbers is deprecated.  Use <code>|+</code> instead."},
         { alias: "u", types: "a", code: "u%1="},

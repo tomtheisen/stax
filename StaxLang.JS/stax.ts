@@ -1158,7 +1158,8 @@ export class Runtime {
                         break;
                     case '|5': { // 0-indexed fibonacci number
                         let n = this.popInt().valueOf(), a = one, b = one;
-                        for (let i = 0; i < n; i++) [a, b] = [b, a.plus(b)];
+                        if (n >= 0) for (let i = 0; i < n; i++) [a, b] = [b, a.plus(b)];
+                        else for (let i = 0; i > n; i--) [a, b] = [b.subtract(a), a];
                         this.push(a);
                         break;
                     }

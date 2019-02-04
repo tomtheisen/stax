@@ -907,6 +907,10 @@ u
 24
 	out
 8
+	in
+1
+	out
+1
 	stax
 :t
 	name:AllDivisors
@@ -932,6 +936,22 @@ u
 5
 	out
 8
+	in
+-1
+	out
+0
+	in
+-2
+	out
+1
+	in
+-3
+	out
+-1
+	in
+-4
+	out
+2
 	stax
 |5
 	name:SquareTwo

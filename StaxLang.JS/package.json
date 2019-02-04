@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "test": "tsc && node js/test.js ../testspecs"
+    "test": "tsc && node js/test.js ../testspecs",
+    "ui": "start dist/index.html"
   },
   "author": "Tom Theisen",
   "contributors": [

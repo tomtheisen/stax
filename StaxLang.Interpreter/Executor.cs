@@ -1357,7 +1357,8 @@ namespace StaxLang {
                                 block.AddDesc("0-indexed fibonacci number"); 
                                 {
                                     BigInteger n = Pop(), a = 1, b = 1;
-                                    for (int i = 0; i < n; i++) (a, b) = (b, a + b);
+                                    if (n >= 0) for (int i = 0; i < n; i++) (a, b) = (b, a + b);
+                                    else for (int i = 0; i > n; i--) (a, b) = (b - a, a);
                                     Push(a);
                                 }
                                 break;
