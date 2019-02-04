@@ -420,6 +420,12 @@ orld
 2 4 6 10
 	stax
 3 |@ J
+	in
+[2 4 6 8 10]
+	out
+2 4 8 10
+	stax
+3N |@ J
 	name:InsertAt
 	in
 [2 4 6 8 10]

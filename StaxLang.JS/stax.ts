@@ -2006,8 +2006,8 @@ export class Runtime {
         if (isArray(a)) { // remove at index
             if (!isInt(b)) fail("need integer index for remove");
             let b_ = b.valueOf() as number, result = [...a];
-            if (b < 0) b_ += result.length;
-            if (b >= 0 && b < result.length) result.splice(b_, 1);
+            if (b_ < 0) b_ += result.length;
+            if (b_ >= 0 && b_ < result.length) result.splice(b_, 1);
             this.push(result);
         }
         else { // insert element at index
