@@ -199,7 +199,7 @@ op                       	|Types          	|Name              	|Description
 `:.`                     	|arr            	|title-case        	|Convert string to title case.
 `:/`                     	|arr arr        	|split-once        	|Split on the first occurrence of a substring.  Push both parts separately.
 `:[`                     	|arr arr        	|starts-with       	|String starts with?
-`:]`                     	|arr arr        	|starts-with       	|String ends with?
+`:]`                     	|arr arr        	|ends-with         	|String ends with?
 `:{`                     	|any            	|parenthesize      	|Embed value in parentheses as string.
 `:}`                     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`                     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
