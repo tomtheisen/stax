@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "lib": ["dom", "es2016"],
+        "lib": ["dom", "es2016", "esnext.bigint"],
         "module": "commonjs",
         "moduleResolution": "node",
         "target": "es2015",

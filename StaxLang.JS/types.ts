@@ -1,10 +1,10 @@
-import * as bigInt from 'big-integer';
-import { Rational } from './rational';
 import { Block } from './block';
-import { zero } from 'big-integer';
-type BigInteger = bigInt.BigInteger;
+import { StaxInt, isInt } from './integer';
+import * as int from './integer'
+import { Rational } from './rational';
+import * as rat from './rational';
 
-export type StaxNumber = number | BigInteger | Rational;
+export type StaxNumber = number | Rational | StaxInt;
 export type StaxValue = StaxNumber | Block | StaxArray;
 export interface StaxArray extends Array<StaxValue> { }
 
@@ -12,7 +12,7 @@ export function S2A(s: string): StaxArray {
     let result: StaxArray = [];
     for (let i = 0; i < s.length; i++) {
         let code = s.codePointAt(i)!;
-        result.push(bigInt(code));
+        result.push(int.make(code));
         if (code > 0x10000) i++;
     }
     return result;
@@ -21,7 +21,7 @@ export function S2A(s: string): StaxArray {
 export function A2S(a: StaxArray): string {
     let result = "";
     for (let e of a) {
-        if (isInt(e)) result += e.isZero() ? ' ' : String.fromCodePoint(e.valueOf());
+        if (isInt(e)) result += e.valueOf() == 0 ? ' ' : String.fromCodePoint(Number(e.valueOf()));
         else if (isArray(e)) result += A2S(e);
         else throw new Error(`can't convert ${e} to string`);
     }
@@ -29,9 +29,7 @@ export function A2S(a: StaxArray): string {
 }
 
 export function floatify(num: StaxNumber): number {
-    if (isInt(num)) return num.valueOf();
-    if (num instanceof Rational) return num.valueOf();
-    return num;
+    return Number(num.valueOf());
 }
 
 export function isTruthy(a: StaxValue): boolean {
@@ -41,9 +39,6 @@ export function isTruthy(a: StaxValue): boolean {
 
 export function isFloat(n: any): n is number {
     return typeof n === "number";
-}
-export function isInt(n: any): n is BigInteger {
-    return bigInt.isInstance(n);
 }
 export function isArray(n: StaxValue | string): n is StaxArray {
     return Array.isArray(n);
@@ -64,7 +59,7 @@ export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
         return nums.map(floatify);
     }
     if (nums.some(n => n instanceof Rational)) {
-        return nums.map(n => n instanceof Rational ? n : new Rational(n as BigInteger, bigInt.one));
+        return nums.map(n => n instanceof Rational ? n : new Rational(n as StaxInt, int.one));
     }
     return nums;
 }
@@ -77,11 +72,11 @@ export function runLength(arr: StaxArray): StaxArray {
             run += 1;
         }
         else {
-            if (run > 0) result.push([last!, bigInt(run)]);
+            if (run > 0) result.push([last!, int.make(run)]);
             [last, run] = [e, 1];
         }
     }
-    result.push([last!, bigInt(run)]);
+    result.push([last!, int.make(run)]);
     return result;
 }
 
@@ -97,8 +92,8 @@ export function areEqual(a: StaxValue, b: StaxValue) {
     if (isArray(b)) b = b[0];
     if (isNumber(a) && isNumber(b)) {
         [a, b] = widenNumbers(a, b);
+        if (isInt(a)) return int.eq(a, b as StaxInt);
         if (typeof a === "number") return a === b;
-        if (isInt(a)) return a.equals(b as BigInteger);
         if (a instanceof Rational) return a.equals(b as Rational);
     }
     return false;
@@ -113,7 +108,16 @@ export function indexOf(arr: StaxArray, val: StaxValue): number {
 
 export function compare(a: StaxValue, b: StaxValue): number {
     if (isNumber(a)) {
-        if (isNumber(b)) return floatify(a) - floatify(b);
+        if (isNumber(b)) {
+            if (typeof a === "number" || typeof b === "number") return floatify(a) - floatify(b);
+            if (a instanceof Rational || b instanceof Rational) {
+                if (isInt(a)) a = new Rational(a, int.one);
+                if (isInt(b)) b = new Rational(b, int.one);
+                return (a instanceof Rational ? a : new Rational(a, int.one))
+                    .subtract(b instanceof Rational ? b : new Rational(b, int.one)).valueOf();
+            }
+            return compare(a, b);
+        }
         if (isArray(b)) {
             if (b.length === 0) return 1;
             return compare(a, b[0]);
@@ -173,7 +177,7 @@ const versionInfo = "Stax 1.1.3 - Tom Theisen - https://github.com/tomtheisen/st
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
-    '%': [zero, zero],
+    '%': [int.zero, int.zero],
 	'!': S2A("[a-z]"),
 	'@': S2A("[A-Z]"),
 	'#': S2A("[a-zA-Z]"),
@@ -185,14 +189,14 @@ export const constants: {[key: string]: StaxValue} = {
 	'(': S2A("[a-zA-Z]*"),
 	':': S2A("http://"),
     ';': S2A("https://"),
-    '0': new Rational(bigInt.zero, bigInt.one),
+    '0': rat.zero,
     '2': 0.5,
     '3': Math.pow(2, 1.0 / 12),
     '/': Math.PI / 3,
     'a': S2A("abcdefghijklmnopqrstuvwxyz"),
     'A': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     'b': S2A("()[]{}<>"),
-    'B': bigInt[256],
+    'B': int.make(256),
     'c': S2A("bcdfghjklmnpqrstvwxyz"),
     'C': S2A("BCDFGHJKLMNPQRSTVWXYZ"),
     'd': S2A("0123456789"),
@@ -203,11 +207,11 @@ export const constants: {[key: string]: StaxValue} = {
     'H': S2A("0123456789ABCDEF"),
     'i': Number.NEGATIVE_INFINITY,
     'I': Number.POSITIVE_INFINITY,
-    'k': bigInt(1000),
+    'k': int.make(1000),
     'l': S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     'L': S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-    'm': bigInt(0x7fffffff),
-    'M': bigInt(1000000),
+    'm': int.make(0x7fffffff),
+    'M': int.make(1000000),
     'n': S2A("\n"),
     'p': S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"),
     'P': Math.PI,
@@ -216,7 +220,7 @@ export const constants: {[key: string]: StaxValue} = {
     'S': Math.PI * 4 / 3,
     't': Math.PI * 2,
     'T': 10.0,
-    'u': bigInt(4294967296),
+    'u': int.make(4294967296),
     'v': S2A("aeiou"),
     'V': S2A("AEIOU"),
     'w': S2A("0123456789abcdefghijklmnopqrstuvwxyz"),

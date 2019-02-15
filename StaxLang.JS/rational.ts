@@ -1,18 +1,19 @@
-import * as bigInt from 'big-integer';    
+import { StaxInt } from './integer'
+import * as int from './integer'
 
 export class Rational {
-    public numerator: bigInt.BigInteger;
-    public denominator: bigInt.BigInteger;
+    public numerator: StaxInt;
+    public denominator: StaxInt;
 
     public valueOf(): number {
-        return this.numerator.valueOf() / this.denominator.valueOf();
+        return Number(this.numerator.valueOf()) / Number(this.denominator.valueOf());
     }
 
     public toString(): string {
         return `${this.numerator}/${this.denominator}`;
     }
 
-    constructor(num: bigInt.BigInteger, den: bigInt.BigInteger) {
+    constructor(num: StaxInt, den: StaxInt) {
         this.numerator = num;
         this.denominator = den;
         this.reduce();
@@ -24,66 +25,68 @@ export class Rational {
 
     add(other: Rational): Rational {
         return new Rational(
-            this.numerator.multiply(other.denominator).add(other.numerator.multiply(this.denominator)),
-            this.denominator.multiply(other.denominator));
+            int.add(int.mul(this.numerator, other.denominator), int.mul(other.numerator, this.denominator)),
+            int.mul(this.denominator, other.denominator));
     }
 
     subtract(other: Rational) {
         return new Rational(
-            this.numerator.multiply(other.denominator).subtract(other.numerator.multiply(this.denominator)),
-            this.denominator.multiply(other.denominator));
+            int.sub(int.mul(this.numerator, other.denominator), int.mul(other.numerator, this.denominator)),
+            int.mul(this.denominator, other.denominator));
     }
 
     multiply(other: Rational): Rational {
         return new Rational (
-            this.numerator.multiply(other.numerator),
-            this.denominator.multiply(other.denominator));
+            int.mul(this.numerator, other.numerator),
+            int.mul(this.denominator, other.denominator));
     }
 
     divide(other: Rational) {
         return new Rational (
-            this.numerator.multiply(other.denominator),
-            this.denominator.multiply(other.numerator));
+            int.mul(this.numerator, other.denominator),
+            int.mul(this.denominator, other.numerator));
     }
 
     negate() {
-        return new Rational(this.numerator.negate(), this.denominator);
+        return new Rational(int.negate(this.numerator), this.denominator);
     }
 
     abs() {
-        return new Rational(this.numerator.abs(), this.denominator.abs());
+        return new Rational(int.abs(this.numerator), int.abs(this.denominator));
     }
 
     floor() {
-        if (this.numerator.isNegative()) return this.numerator.subtract(this.denominator).add(bigInt.one).divide(this.denominator);
-        return this.numerator.divide(this.denominator);
+        if (int.compare(this.numerator, int.zero) < 0) {
+            return int.div(int.add(int.sub(this.numerator, this.denominator), int.one), this.denominator);
+        }
+        return int.div(this.numerator, this.denominator);
     }
 
     ceiling() {
-        return this.negate().floor().negate();
+        return int.negate(this.negate().floor());
     }
 
     mod(other: Rational) {
         other = other.abs();
         let intPart = this.divide(other).floor();
-        return this.subtract(other.multiply(new Rational(intPart, bigInt.one)));
+        return this.subtract(other.multiply(new Rational(intPart, int.one)));
     }
 
     equals(other: Rational) {
-        return this.numerator.eq(other.numerator) && this.denominator.eq(other.denominator);
+        return int.eq(this.numerator, other.numerator) && int.eq(this.denominator, other.denominator);
     }
 
     private reduce() {
-        if (this.denominator.isZero()) throw new Error("rational divide by zero");
-        let gcd = bigInt.gcd(this.numerator, this.denominator);
-        this.numerator = this.numerator.divide(gcd);
-        this.denominator = this.denominator.divide(gcd);
-        if (this.denominator.isNegative()) {
-            this.numerator = this.numerator.negate();
-            this.denominator = this.denominator.negate();
+        if (int.eq(this.denominator, int.zero)) throw new Error("rational divide by zero");
+        let gcd = int.gcd(this.numerator, this.denominator);
+        this.numerator = int.div(this.numerator, gcd);
+        this.denominator = int.div(this.denominator, gcd);
+        if (int.compare(this.denominator, int.zero) < 0) {
+            this.numerator = int.negate(this.numerator);
+            this.denominator = int.negate(this.denominator);
         }
     }
 }
 
-export const zero = new Rational(bigInt.zero, bigInt.one);
-export const one = new Rational(bigInt.one, bigInt.one);
+export const zero = new Rational(int.zero, int.one);
+export const one = new Rational(int.one, int.one);

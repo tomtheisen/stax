@@ -595,3 +595,8 @@ z:e
 
 	stax
 z:!
+	name:IntCompareAccuracy
+	out
+1
+	stax
+12345678901234567890 12345678901234567891 <

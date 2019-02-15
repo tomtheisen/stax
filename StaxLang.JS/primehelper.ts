@@ -1,21 +1,20 @@
-import * as bigInt from 'big-integer';
+import * as int from './integer';
+import { StaxInt, zero, one} from './integer';
 import { last } from './types';
+const two = int.make(2), three = int.make(3);
 
-type BigInteger = bigInt.BigInteger;
-const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
+export function primeFactors(n: StaxInt): StaxInt[] {
+    let result: StaxInt[] = [];
 
-export function primeFactors(n: BigInteger): BigInteger[] {
-    let result: BigInteger[] = [];
-
-    n = n.abs();
-    if (n.leq(one)) return result;
+    n = int.abs(n);
+    if (n.valueOf() <= 1) return result;
     for (let d of allPrimes()) {
-        while (n.isDivisibleBy(d)) {
+        while (int.mod(n, d).valueOf() == 0) {
             result.push(d);
-            n = n.divide(d);
+            n = int.div(n, d);
         }
-        if (n.equals(one)) return result;
-        if (d.square().gt(n)) {
+        if (n.valueOf() == 1) return result;
+        if (int.compare(int.pow(d, two), n) > 0) {
             result.push(n);
             return result;
         }
@@ -23,18 +22,18 @@ export function primeFactors(n: BigInteger): BigInteger[] {
     throw new Error("Ran out of primes...?");
 }
 
-let primes: BigInteger[] = [bigInt[2], bigInt[3]];
+let primes: StaxInt[] = [two, three];
 
 export function *allPrimes() {
     for (let p of primes) yield p;
     while (true) yield addPrime();
 }
 
-function addPrime(): BigInteger {
-    for (let c = last(primes)!.add(bigInt[2]);; c = c.add(bigInt[2])) {
+function addPrime(): StaxInt {
+    for (let c = int.add(last(primes)!, two);; c = int.add(c, two)) {
         for (let p of allPrimes()) {
-            if (c.isDivisibleBy(p)) break;
-            if (p.square().greater(c)) {
+            if (int.mod(c, p). valueOf() == 0) break;
+            if (int.compare(int.pow(p, two), c) > 0) {
                 primes.push(c);
                 return c;
             }
