@@ -2,12 +2,11 @@ import { Runtime, ExecutionState } from './stax';
 import { parseProgram, Block, getCodeType, CodeType } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
+import * as int from './integer';
 import { compress } from './huffmancompression';
 import { cram } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode, unpackBytes } from './packer';
-import * as bigInt from 'big-integer';
 import 'url-search-params-polyfill';
-type BigInteger = bigInt.BigInteger;
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
@@ -441,7 +440,7 @@ document.getElementById("compressorOpen")!.addEventListener("click", () => {
 function doCrammer() {
     let matches = crammerInputEl.value.match(/-?\d+/g);
     if (matches) {
-        let crammed = cram(matches.map(e => bigInt(e)));
+        let crammed = cram(matches.map(e => int.make(e)));
         crammerOutputEl.value = `"${ crammed }"!`;
     }
     else crammerOutputEl.value = "z";

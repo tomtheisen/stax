@@ -2,7 +2,7 @@ import * as npm_bigInt from 'big-integer';
 
 export type StaxInt = npm_bigInt.BigInteger | bigint;
 
-const AllowNativeBigInt = false; // Chrome's bigint is *slower* than big-integer
+const AllowNativeBigInt = true; // Chrome's bigint is *slower* than big-integer
 function detect() {
     try {
         BigInt(1);

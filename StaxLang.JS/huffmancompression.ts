@@ -1,9 +1,7 @@
-import * as bigInt from 'big-integer';
 import englishData from './englishhuffman';
-import { last } from './types';
+import * as int from './integer';
 
-type BigInteger = bigInt.BigInteger;
-const one = bigInt.one, zero = bigInt.zero, minusOne = bigInt.minusOne;
+const _2 = int.make(2);
 
 class HuffmanNode {
     left: HuffmanNode;
@@ -78,14 +76,14 @@ export function compress(input: string): string | null {
         path += cpath;
     }
 
-    let big = one, result = "", symlen = bigInt(symbols.length);
+    let big = int.one, result = "", symlen = int.make(symbols.length);
     for (let i = 0; i < path.length; i++) {
-        big = big.shiftLeft(1);
-        big = big.add(path[i] === '1' ? one : zero);
+        big = int.div(big, _2);
+        big = int.add(big, path[i] === '1' ? int.one : int.zero);
     }
-    while (big.isPositive()) {
-        let { quotient, remainder } = big.divmod(symlen);
-        result += symbols[remainder.valueOf()];
+    while (int.floatify(big) > 0) {
+        let [quotient, remainder] = [int.div(big, symlen), int.mod(big, symlen)];
+        result += symbols[int.floatify(remainder)];
         big = quotient;
     }
     return result;
@@ -95,15 +93,15 @@ let memoizedDecompress: {[key: string]: string} = {};
 export function decompress(compressed: string): string {
     if (compressed in memoizedDecompress) return memoizedDecompress[compressed];
 
-    let big = zero;
+    let big = int.zero;
     for (let ch of compressed.split("").reverse()) {
-        big = big.multiply(symbols.length).add(symbols.indexOf(ch));
+        big = int.add(int.mul(big, int.make(symbols.length)), int.make(symbols.indexOf(ch)));
     }
 
     let path = '', result = '. ', pathIdx = 1;
-    while (!big.isZero()) {
-        path = (big.isOdd() ? '1' : '0') + path;
-        big = big.divide(bigInt[2]);
+    while (int.floatify(big)) {
+        path = int.bitand(big, int.one).toString() + path;
+        big = int.div(big, _2);
     }
 
     while (pathIdx < path.length) {
