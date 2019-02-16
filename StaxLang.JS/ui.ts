@@ -10,7 +10,10 @@ import 'url-search-params-polyfill';
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
-document.getElementById("buildInfo")!.textContent = `${__COMMIT_HASH__} built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")}`;
+document.getElementById("buildInfo")!.textContent = `
+    ${__COMMIT_HASH__}
+    built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")}
+    integers: ${ int.usingNativeBigInt ? 'ES bigint' : 'npm big-integer' }`;
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 40;
