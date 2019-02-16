@@ -21,7 +21,7 @@ export function S2A(s: string): StaxArray {
 export function A2S(a: StaxArray): string {
     let result = "";
     for (let e of a) {
-        if (isInt(e)) result += e.valueOf() == 0 ? ' ' : String.fromCodePoint(Number(e.valueOf()));
+        if (isInt(e)) result += e.valueOf() == 0 ? ' ' : String.fromCodePoint(int.floatify(e));
         else if (isArray(e)) result += A2S(e);
         else throw new Error(`can't convert ${e} to string`);
     }

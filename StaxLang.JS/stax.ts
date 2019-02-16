@@ -615,7 +615,7 @@ export class Runtime {
                         else if (isInt(this.peek())) {
                             let digits = this.popInt(), num = this.pop();
                             num = isNumber(num) ? floatify(num) : fail("can't round a non-number");
-                            this.push(S2A(num.toFixed(Number(digits.valueOf()))));
+                            this.push(S2A(num.toFixed(int.floatify(digits))));
                         }
                         else if (isNumber(this.peek())) {
                             this.runMacro("2u+@");
@@ -884,7 +884,7 @@ export class Runtime {
                         else if (isArray(this.peek())) {
                             // embed grid at coords
                             let payload = this.popArray();
-                            let col = Number(this.popInt().valueOf()), row = Number(this.popInt().valueOf());
+                            let col = int.floatify(this.popInt()), row = int.floatify(this.popInt());
                             let result = this.popArray().slice();
 
                             for (let r = 0; r < payload.length; r++) {
@@ -1028,11 +1028,11 @@ export class Runtime {
                             }
                             else if (isArray(a)) {
                                 let result = [];
-                                for (let e of a) result.push(...Array(Math.abs(Number(b.valueOf()))).fill(e));
+                                for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
                                 this.push(result);
                             }
                             else {
-                                this.push(Math.pow(a.valueOf() as number, Number(b.valueOf())));
+                                this.push(Math.pow(a.valueOf() as number, int.floatify(b)));
                             }
                         }
                         else if (isNumber(b)) {
@@ -1739,7 +1739,7 @@ export class Runtime {
                 a = [...a].reverse();
                 b = int.negate(b);
             }
-            let _b = Number(b.valueOf());
+            let _b = int.floatify(b);
             if (b.valueOf() > 0) {
                 for (let i = 0; i < a.length; i += _b) {
                     result.push(a.slice(i, i + _b));
@@ -1846,8 +1846,8 @@ export class Runtime {
     private doPowerset() {
         let b = this.pop();
         if (isInt(b)) {
-            let len = Number(b.valueOf()), arr = this.popArray(), result: StaxArray = []; 
-            let idxs = range(0, b).map(i => Number((i as StaxInt).valueOf()));
+            let len = int.floatify(b), arr = this.popArray(), result: StaxArray = []; 
+            let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
             while (len <= arr.length) {
                 result.push(idxs.map(idx => arr[idx]));
                 let i: number;
@@ -1869,7 +1869,7 @@ export class Runtime {
     }
 
     private doPermutations() {
-        let targetSize = isInt(this.peek()) ? Number(this.popInt().valueOf()) : Number.MAX_SAFE_INTEGER;
+        let targetSize = isInt(this.peek()) ? int.floatify(this.popInt()) : Number.MAX_SAFE_INTEGER;
         let els = this.popArray(), result: StaxArray = [];
         targetSize = Math.min(els.length, targetSize);
 
@@ -1881,7 +1881,7 @@ export class Runtime {
         for (let pi = zero; int.compare(pi, totalPerms) < 0; pi = int.add(pi, stride)) {
             let n = pi;
             for (let i = 1; i <= els.length; n = int.div(n, int.make(i++))) {
-                idxs[els.length - i] = Number(int.mod(n, int.make(i)).valueOf());
+                idxs[els.length - i] = int.floatify(int.mod(n, int.make(i)));
             }
             let dupe = [...els];
             result.push(idxs.slice(0, targetSize).map(i => {
@@ -1991,7 +1991,7 @@ export class Runtime {
             }
             else if (isInt(arg)) {
                 // multiple top indices to assign
-                let index = Number(arg.valueOf());
+                let index = int.floatify(arg);
                 if (index < 0) {
                     index += result.length;
                     if (index < 0) {
@@ -2041,7 +2041,7 @@ export class Runtime {
             else do {
                 let digit = int.mod(number, base);
                 if (stringRepresentation) {
-                    let d = "0123456789abcdefghijklmnopqrstuvwxyz".charCodeAt(Number(digit.valueOf()));
+                    let d = "0123456789abcdefghijklmnopqrstuvwxyz".charCodeAt(int.floatify(digit));
                     result.unshift(int.make(d));
                 }
                 else { // digit mode
@@ -2104,7 +2104,7 @@ export class Runtime {
 
         if (isArray(a) && isInt(b)) {
             a = [...a];
-            let bval = Number(b.valueOf());
+            let bval = int.floatify(b);
             if (bval < 0) bval += a.length;
             if (a.length < bval) a.unshift(...Array(bval - a.length).fill(zero));
             if (a.length > bval) a.splice(0, a.length - bval);
@@ -2157,7 +2157,7 @@ export class Runtime {
 
         if (isArray(a) && isInt(b)) {
             a = [...a];
-            let bval = Number(b.valueOf());
+            let bval = int.floatify(b);
             if (bval < 0) bval += a.length;
             if (a.length < bval) a.push(...Array(bval - a.length).fill(zero));
             if (a.length > bval) a.splice(bval);
@@ -2205,9 +2205,9 @@ export class Runtime {
         if (isInt(top)) {
             let data = this.pop();
             if (isArray(data)) {
-                let result = Array((Number(top.valueOf()) - data.length) >> 1).fill(zero);
+                let result = Array((int.floatify(top) - data.length) >> 1).fill(zero);
                 result = result.concat(data);
-                result = result.concat(Array(Number(top.valueOf()) - result.length).fill(zero));
+                result = result.concat(Array(int.floatify(top) - result.length).fill(zero));
                 this.push(result);
             }
             else if (isInt(data)) { // binomial coefficient
@@ -2255,10 +2255,8 @@ export class Runtime {
     }
 
     private doOverlappingBatch() {
-        let b = this.pop(), a = this.pop(), result = [];
-        if (!isInt(b) || !isArray(a)) throw new Error("bad types for overlapping-batch");
-
-        let bv = Number(b.valueOf()), end = a.length - bv + 1;
+        let b = this.popInt(), a = this.popArray(), result = [];
+        let bv = int.floatify(b), end = a.length - bv + 1;
         for (let i = 0; i < end; i++) result.push(a.slice(i, i + bv));
         this.push(result);
     }
@@ -2296,7 +2294,7 @@ export class Runtime {
     }
 
     private doPartition() {
-        let n = Number(this.popInt().valueOf()), arg = this.pop();
+        let n = int.floatify(this.popInt()), arg = this.pop();
         let total = isArray(arg) ? arg.length : arg.valueOf() as number;
 
         let result: StaxArray = [];
@@ -2359,7 +2357,7 @@ export class Runtime {
 
         distance = int.mod(distance, int.make(arr.length));
         if (distance.valueOf() < 0) distance = int.add(distance, int.make(arr.length));
-        let cutpoint = direction < 0 ? Number(distance.valueOf()) : (arr.length - Number(distance.valueOf()));
+        let cutpoint = direction < 0 ? int.floatify(distance) : (arr.length - int.floatify(distance));
         let result = arr.slice(cutpoint).concat(arr.slice(0, cutpoint));
         this.push(result);
     }
@@ -2450,7 +2448,7 @@ export class Runtime {
             return;
         }
         else if (isInt(top)) { // split array into number of equalish-sized chunks
-            let chunks = Number(top.valueOf()), consumed = 0, arr = this.popArray(), result: StaxArray = [];
+            let chunks = int.floatify(top), consumed = 0, arr = this.popArray(), result: StaxArray = [];
 
             for (; chunks > 0; chunks--) {
                 let toTake = Math.ceil((arr.length - consumed) / chunks);
@@ -2888,8 +2886,8 @@ export class Runtime {
         if (stopOnTargetVal) targetVal = this.pop();
 
         let hardCodedTargetCount = false;
-        if (lowerSpec === 'n') targetCount = Number(this.popInt().valueOf());
-        else if (lowerSpec === 'e') targetCount = Number(this.popInt().valueOf()) + 1;
+        if (lowerSpec === 'n') targetCount = int.floatify(this.popInt());
+        else if (lowerSpec === 'e') targetCount = int.floatify(this.popInt()) + 1;
         else if (lowerSpec === 's') [targetCount, hardCodedTargetCount] = [1, true];
         else {
             let idx = "1234567890!@#$%^&*()".indexOf(spec);

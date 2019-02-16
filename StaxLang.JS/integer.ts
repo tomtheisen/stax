@@ -70,4 +70,6 @@ export const bitxor: (a: StaxInt, b: StaxInt) => StaxInt = nativeBigIntSupport
 export const bitnot: (n: StaxInt) => StaxInt = nativeBigIntSupport
     ? (n: bigint) => ~n
     : (n: npm_bigInt.BigInteger) => n.not();
-
+export const floatify: (n: StaxInt) => number = nativeBigIntSupport
+    ? Number
+    : (n: npm_bigInt.BigInteger) => n.valueOf();

@@ -6,7 +6,7 @@ export class Rational {
     public denominator: StaxInt;
 
     public valueOf(): number {
-        return Number(this.numerator.valueOf()) / Number(this.denominator.valueOf());
+        return Number(int.floatify(this.numerator) / int.floatify(this.denominator));
     }
 
     public toString(): string {
