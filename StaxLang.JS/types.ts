@@ -116,7 +116,7 @@ export function compare(a: StaxValue, b: StaxValue): number {
                 return (a instanceof Rational ? a : new Rational(a, int.one))
                     .subtract(b instanceof Rational ? b : new Rational(b, int.one)).valueOf();
             }
-            return compare(a, b);
+            return int.compare(a, b);
         }
         if (isArray(b)) {
             if (b.length === 0) return 1;

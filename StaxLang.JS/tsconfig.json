@@ -3,7 +3,7 @@
         "lib": ["dom", "es2016", "esnext.bigint"],
         "module": "commonjs",
         "moduleResolution": "node",
-        "target": "es2015",
+        "target": "es2016",
         "noImplicitAny": true,
         "sourceMap": false,
         "alwaysStrict": true,

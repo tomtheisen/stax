@@ -883,8 +883,9 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             // embed grid at coords
+                            let payload = this.popArray();
                             let col = Number(this.popInt().valueOf()), row = Number(this.popInt().valueOf());
-                            let payload = this.popArray(), result = this.popArray().slice();
+                            let result = this.popArray().slice();
 
                             for (let r = 0; r < payload.length; r++) {
                                 let payline = payload[r];
@@ -1733,12 +1734,13 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(a) && isInt(b)) {
-            let result = [], _b = Number(b.valueOf());
-            if (_b < 0) {
+            let result = [];
+            if (b.valueOf() < 0) {
                 a = [...a].reverse();
                 b = int.negate(b);
             }
-            if (_b > 0) {
+            let _b = Number(b.valueOf());
+            if (b.valueOf() > 0) {
                 for (let i = 0; i < a.length; i += _b) {
                     result.push(a.slice(i, i + _b));
                 }

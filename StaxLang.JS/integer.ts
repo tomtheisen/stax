@@ -1,7 +1,19 @@
 import * as npm_bigInt from 'big-integer';
 
 export type StaxInt = npm_bigInt.BigInteger | bigint;
-const nativeBigIntSupport = "BigInt" in window;
+
+const AllowNativeBigInt = false; // Chrome's bigint is *slower* than big-integer
+function detect() {
+    try {
+        BigInt(1);
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+
+const nativeBigIntSupport = AllowNativeBigInt && detect();
 export const make: (n: number | string) => StaxInt = nativeBigIntSupport ? BigInt : npm_bigInt;
 export const zero = make(0), one = make(1), minusOne = make(-1);
 export const isInt: (n: any) => n is StaxInt = nativeBigIntSupport 
