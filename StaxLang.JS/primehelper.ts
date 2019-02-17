@@ -14,7 +14,7 @@ export function primeFactors(n: StaxInt): StaxInt[] {
             n = int.div(n, d);
         }
         if (n.valueOf() == 1) return result;
-        if (int.compare(int.pow(d, two), n) > 0) {
+        if (int.cmp(int.pow(d, two), n) > 0) {
             result.push(n);
             return result;
         }
@@ -33,7 +33,7 @@ function addPrime(): StaxInt {
     for (let c = int.add(last(primes)!, two);; c = int.add(c, two)) {
         for (let p of allPrimes()) {
             if (int.mod(c, p). valueOf() == 0) break;
-            if (int.compare(int.pow(p, two), c) > 0) {
+            if (int.cmp(int.pow(p, two), c) > 0) {
                 primes.push(c);
                 return c;
             }

@@ -78,7 +78,7 @@ export function compress(input: string): string | null {
 
     let big = int.one, result = "", symlen = int.make(symbols.length);
     for (let i = 0; i < path.length; i++) {
-        big = int.div(big, _2);
+        big = int.mul(big, _2);
         big = int.add(big, path[i] === '1' ? int.one : int.zero);
     }
     while (int.floatify(big) > 0) {

@@ -2,24 +2,16 @@ import * as npm_bigInt from 'big-integer';
 
 export type StaxInt = npm_bigInt.BigInteger | bigint;
 
-const AllowNativeBigInt = true; // Chrome's bigint is *slower* than big-integer
-function detect() {
-    try {
-        BigInt(1);
-        return true;
-    }
-    catch {
-        return false;
-    }
-}
-export const usingNativeBigInt = AllowNativeBigInt && detect();
+// Chrome's bigint is *slower* than big-integer
+// set this to false if you want to use npm big-integer everywhere
+export const usingNativeBigInt = typeof BigInt === "function";
 
 export const make: (n: number | string) => StaxInt = usingNativeBigInt ? BigInt : npm_bigInt;
 export const zero = make(0), one = make(1), minusOne = make(-1);
 export const isInt: (n: any) => n is StaxInt = usingNativeBigInt 
     ? (n => typeof n === "bigint") as (n: any) => n is StaxInt
     : npm_bigInt.isInstance as (n: any) => n is StaxInt;
-export const compare: (a: StaxInt, b: StaxInt) => number = usingNativeBigInt 
+export const cmp: (a: StaxInt, b: StaxInt) => number = usingNativeBigInt 
     ? (a: bigint, b: bigint) => Number(a - b)
     : (a: npm_bigInt.BigInteger, b: npm_bigInt.BigInteger) => a.minus(b).valueOf();
 export const eq: (a: StaxInt, b: StaxInt) => boolean = usingNativeBigInt

@@ -56,7 +56,7 @@ export class Rational {
     }
 
     floor() {
-        if (int.compare(this.numerator, int.zero) < 0) {
+        if (int.cmp(this.numerator, int.zero) < 0) {
             return int.div(int.add(int.sub(this.numerator, this.denominator), int.one), this.denominator);
         }
         return int.div(this.numerator, this.denominator);
@@ -81,7 +81,7 @@ export class Rational {
         let gcd = int.gcd(this.numerator, this.denominator);
         this.numerator = int.div(this.numerator, gcd);
         this.denominator = int.div(this.denominator, gcd);
-        if (int.compare(this.denominator, int.zero) < 0) {
+        if (int.cmp(this.denominator, int.zero) < 0) {
             this.numerator = int.negate(this.numerator);
             this.denominator = int.negate(this.denominator);
         }

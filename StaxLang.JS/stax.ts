@@ -79,7 +79,7 @@ export class Runtime {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
         if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) || 
-            int.compare(e, _32) >= 0 && int.compare(e, _127) < 0))) {
+            int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
             return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt))))
                 .replace(/\\u0000/g, "\\0");
         }
@@ -492,7 +492,7 @@ export class Runtime {
                         else if (isInt(this.peek())) { // n times do
                             let n = this.popInt();
                             this.pushStackFrame();
-                            for (this.index = zero; int.compare(this.index, n) < 0; this.index = int.add(this.index, one)) {
+                            for (this.index = zero; int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
                                 this._ = int.add(this.index, one);
                                 for (let s of this.runSteps(getRest())) yield s;
                             }
@@ -684,7 +684,7 @@ export class Runtime {
                         else if (this.peek() instanceof Block) {
                             let block = this.pop() as Block, n = this.inputStack.pop();
                             if (isInt(n)) {
-                                for (this.pushStackFrame(); int.compare(this.index, n) < 0; this.index = int.add(this.index, one)) {
+                                for (this.pushStackFrame(); int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
                                     for (let s of this.runSteps(block)) {
                                         if (!s.cancel) yield s;
                                     }
@@ -1516,7 +1516,7 @@ export class Runtime {
                             let stride = this.popInt(), end = this.popInt(), start = this.popInt();
                             let result = range(0, int.sub(end, start))
                                 .map((n: StaxInt) => int.add(int.mul(n, stride), start))
-                                .filter(n => int.compare(n, end) < 0);
+                                .filter(n => int.cmp(n, end) < 0);
                             this.push(result);
                         }
                         else if (isArray(this.peek())) { // RLE
@@ -1878,7 +1878,7 @@ export class Runtime {
         for (let i = 1; i <= els.length; i++) totalPerms = int.mul(totalPerms, int.make(i));
         for (let i = 1; i <= els.length - targetSize; i++) stride = int.mul(stride, int.make(i));
         let idxs = els.map(_ => 0);
-        for (let pi = zero; int.compare(pi, totalPerms) < 0; pi = int.add(pi, stride)) {
+        for (let pi = zero; int.cmp(pi, totalPerms) < 0; pi = int.add(pi, stride)) {
             let n = pi;
             for (let i = 1; i <= els.length; n = int.div(n, int.make(i++))) {
                 idxs[els.length - i] = int.floatify(int.mod(n, int.make(i)));
@@ -2212,8 +2212,8 @@ export class Runtime {
             }
             else if (isInt(data)) { // binomial coefficient
                 let r = top, n = data, result = one;
-                if (n.valueOf() < 0 || int.compare(r, n) > 0) result = zero;
-                for (let i = one; int.compare(i, r) <= 0; i = int.add(i, one)) {
+                if (n.valueOf() < 0 || int.cmp(r, n) > 0) result = zero;
+                for (let i = one; int.cmp(i, r) <= 0; i = int.add(i, one)) {
                     result = int.div(int.mul(result, int.add(int.sub(n, i), one)), i);
                 }
                 this.push(result);
