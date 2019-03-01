@@ -566,18 +566,24 @@ E {Hm J
 1
 	stax
 3 5|&
+	stax
+1|&
 	name:BitwiseOr
 	in
 	out
 7
 	stax
 3 5||
+	stax
+7||
 	name:BitwiseXor
 	in
 	out
 6
 	stax
 3 5|^
+	stax
+6|^
 	name:ShiftLeft
 	in
 	out

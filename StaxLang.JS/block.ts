@@ -21,9 +21,7 @@ export class Block {
             if (typeof token === 'string') {
                 if (/^\S/.exec(token[0])) return false;
             }
-            else {
-                if (!token.isEmpty()) return false;
-            }
+            else if (!token.isEmpty()) return false;
         }
         return true;
     }

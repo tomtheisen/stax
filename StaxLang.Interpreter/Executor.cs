@@ -1047,6 +1047,7 @@ namespace StaxLang {
                                 }
                                 else {
                                     block.AddDesc("bitwise and");
+                                    if (TotalStackSize < 2) break;
                                     Push(Pop() & Pop()); 
                                 }
                                 break;
@@ -1059,8 +1060,9 @@ namespace StaxLang {
                                 }
                                 break;
                             case '|': 
-                                block.AddDesc("bitwise or");
                                 if (IsInt(Peek())) {
+                                    block.AddDesc("bitwise or");
+                                    if (TotalStackSize < 2) break;
                                     Push(Pop() | Pop());
                                 }
                                 else if (IsArray(Peek())) {
@@ -1092,7 +1094,15 @@ namespace StaxLang {
                                 }
                                 else if (IsInt(Peek())) {
                                     dynamic b = Pop();
-                                    if (IsArray(Peek())) {
+                                    if (TotalStackSize == 0) {
+                                        block.AddDesc("bitwise xor");
+                                        Push(b);
+                                    }
+                                    else if (IsInt(Peek())) {
+                                        block.AddDesc("bitwise xor");
+                                        Push(Pop() ^ b);
+                                    }
+                                    else if (IsArray(Peek())) {
                                         block.AddDesc("tuples of specified size from array elements");
                                         List<object> els = Pop();
 
@@ -1104,10 +1114,6 @@ namespace StaxLang {
                                                 .ToList();
                                         }
                                         Push(result);
-                                    }
-                                    else if (IsInt(Peek())) {
-                                        block.AddDesc("bitwise xor");
-                                        Push(Pop() ^ b);
                                     }
                                 }
                                 break;

@@ -868,6 +868,7 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
+                            if (this.totalSize() < 2) break;
                             this.push(int.bitand(this.popInt(), this.popInt()));
                         }
                         break;
@@ -879,6 +880,7 @@ export class Runtime {
                         break;
                     case '||':
                         if (isInt(this.peek())) {
+                            if (this.totalSize() < 2) break;
                             this.push(int.bitor(this.popInt(), this.popInt()));
                         }
                         else if (isArray(this.peek())) {
@@ -916,23 +918,12 @@ export class Runtime {
                     case '|]':
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
                         break;
-                    case '||':
-                        if (isArray(this.peek())) {
-                            this.push(int.bitor(this.popInt(), this.popInt()));
-                        }
-                        else if (isArray(this.peek())) {
-                            let payload = this.popArray(), col = this.popInt(), row = this.popInt();
-                            let result = this.popArray().slice();
-
-                            for (let r = 0; r < payload.length; r++) {
-                                throw Error('nie');
-                            }
-                        }
                     case '|^':
                         if (isArray(this.peek())) {
                             this.runMacro("s b-~ s-, +"); // symmetric array difference
                         }
                         else if (isInt(this.peek())) { // tuples of specified size from array elements
+                            if (this.totalSize() < 2) break;
                             let b = this.popInt(), a = this.pop();
                             if (isArray(a)) {
                                 let result: StaxArray = [[]], els = a, _b = b.valueOf();
@@ -1031,12 +1022,12 @@ export class Runtime {
                                 for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
                                 this.push(result);
                             }
-                            else {
-                                this.push(Math.pow(a.valueOf() as number, int.floatify(b)));
+                            else if (typeof a === "number") {
+                                this.push(Math.pow(a, int.floatify(b)));
                             }
                         }
-                        else if (isNumber(b)) {
-                            this.push(Math.pow(a.valueOf() as number, b.valueOf()));
+                        else if (isNumber(a) && isNumber(b)) {
+                            this.push(Math.pow(floatify(a), floatify(b)));
                         }
                         else if (isArray(b)) {
                             if (!isArray(a)) throw new Error('tried to cross-product non-array');
@@ -1088,8 +1079,8 @@ export class Runtime {
                         else if (isArray(this.peek())) { // embed sub-array
                             let c = this.pop(), b = this.pop(), a = this.popArray();
                             let result = a.slice(), loc: number, payload: StaxArray;
-                            if (isArray(c)) [payload, loc] = [c, b.valueOf() as number];
-                            else [payload, loc] = [b as StaxArray, c.valueOf() as number];
+                            if (isArray(c)) [payload, loc] = [c, floatify(b as StaxNumber)];
+                            else [payload, loc] = [b as StaxArray, floatify(c as StaxNumber)];
 
                             if (loc < 0) {
                                 loc += result.length;
@@ -1168,7 +1159,7 @@ export class Runtime {
                         break;
                     }
                     case '|6': { // 0-indexed nth prime
-                        let i = 0, n = this.popInt().valueOf();
+                        let i = 0, n = floatify(this.popInt());
                         for (let p of allPrimes()) {
                             if (i++ === n) {
                                 this.push(p);
@@ -1340,7 +1331,7 @@ export class Runtime {
                         break;
                     case '|L': {
                         let b = this.pop(), a = this.pop();
-                        if (isNumber(b)) { // log with base
+                        if (isNumber(b) && isNumber(a)) { // log with base
                             if (isInt(a) && isInt(b)) {
                                 // check for exact power
                                 let num = a, multiplicity = 0;
@@ -1353,7 +1344,7 @@ export class Runtime {
                                     break;
                                 }
                             }
-                            let result = Math.log(a.valueOf() as number) / Math.log(Number(b.valueOf()));
+                            let result = Math.log(floatify(a)) / Math.log(floatify(b));
                             this.push(result);
                         }
                         else if (isArray(b) && isArray(a)) { 
@@ -1454,8 +1445,8 @@ export class Runtime {
                         break;
                     case '|o': { // get indices of elements when ordered
                         let a = this.popArray(), result: StaxArray = [], i = 0;
-                        let idxs = range(0, a.length).sort((x, y) => compare(a[x.valueOf() as number], a[y.valueOf()  as number]));
-                        for (let t of idxs) result[t.valueOf() as number] = int.make(i++);
+                        let idxs = range(0, a.length).sort((x: StaxInt, y: StaxInt) => compare(a[floatify(x)], a[floatify(y)]));
+                        for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
                         this.push(result);
                         break;
                     }
@@ -1718,8 +1709,8 @@ export class Runtime {
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
             [a, b] = widenNumbers(a, b);
-            if (isInt(b) && b.valueOf() == 0 || b instanceof Rational && b.numerator.valueOf() == 0) {
-                [a, b] = [a.valueOf(), b.valueOf()];
+            if (isInt(b) && int.eq(b, zero) || b instanceof Rational && int.eq(b.numerator, zero)) {
+                [a, b] = [floatify(a), 0];
             }
             if (isFloat(a) && isFloat(b)) result = a / b;
             else if (a instanceof Rational && b instanceof Rational) result = a.divide(b);
@@ -1977,7 +1968,7 @@ export class Runtime {
                 // path to deep target element 
                 let idxPath = arg, target = result, idx: number;
                 for (let i = 0; i < idxPath.length - 1; i++) {
-                    idx = idxPath[i].valueOf() as number;
+                    idx = floatify(idxPath[i] as StaxInt);
                     while (target.length <= idx) target.push([]);
                     if (isArray(target[idx])) {
                         target = target[idx] = (target[idx] as StaxArray).slice();
@@ -1986,7 +1977,7 @@ export class Runtime {
                         target = target[idx] = [ target[idx] ];
                     }
                 }
-                idx = last(idxPath)!.valueOf() as number;
+                idx = floatify(last(idxPath) as StaxInt);
                 for (let s of doFinalAssign(target, idx)) yield s;
             }
             else if (isInt(arg)) {
@@ -2008,24 +1999,20 @@ export class Runtime {
     private doRemoveOrInsert() {
         let b = this.pop(), a = this.pop();
         if (isArray(a)) { // remove at index
-            if (!isInt(b)) fail("need integer index for remove");
-            let b_ = b.valueOf() as number, result = [...a];
-            if (b_ < 0) b_ += result.length;
-            if (b_ >= 0 && b_ < result.length) result.splice(b_, 1);
-            this.push(result);
+            if (isInt(b)) {
+                let b_ = int.floatify(b), result = [...a];
+                if (b_ < 0) b_ += result.length;
+                if (b_ >= 0 && b_ < result.length) result.splice(b_, 1);
+                this.push(result);
+            }
+            else fail("need integer index for remove");
         }
-        else { // insert element at index
-            let arr = this.popArray(), result = [...arr], a_ = a.valueOf() as number;
+        else if (isInt(a)) { // insert element at index
+            let arr = this.popArray(), result = [...arr], a_ = int.floatify(a);
             if (a_ < 0) a_ += result.length;
-            if (a_ < 0) {
-                result.unshift(b, ...new Array(-a_).fill(zero));
-            }
-            else if (a > result.length) {
-                result.push(...new Array(a_ - result.length).fill(zero), b);
-            }
-            else {
-                result.splice(a_, 0, b);
-            }
+            if (a_ < 0) result.unshift(b, ...new Array(-a_).fill(zero));
+            else if (a_ > result.length) result.push(...new Array(a_ - result.length).fill(zero), b);
+            else result.splice(a_, 0, b);
             this.push(result);
         }
     }
@@ -2295,7 +2282,7 @@ export class Runtime {
 
     private doPartition() {
         let n = int.floatify(this.popInt()), arg = this.pop();
-        let total = isArray(arg) ? arg.length : arg.valueOf() as number;
+        let total = isArray(arg) ? arg.length : floatify(arg as StaxNumber);
 
         let result: StaxArray = [];
         if (n > total) {
