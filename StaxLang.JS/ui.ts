@@ -5,7 +5,7 @@ import { setClipboard } from './clipboard';
 import * as int from './integer';
 import { compress } from './huffmancompression';
 import { cram } from './crammer';
-import { isPacked, unpack, pack, staxDecode, staxEncode, unpackBytes } from './packer';
+import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 
 declare var __COMMIT_HASH__: string;
@@ -516,7 +516,7 @@ fileInputEl.addEventListener("change", ev => {
 function setVersion() {
     let out: string;
     let rt = new Runtime(o => { out = o; });
-    for (let s of rt.runProgram("V?", [])) ;
+    for (let _ of rt.runProgram("V?", [])) ;
     let version = out!.match(/[0-9.]+/)![0]
     document.getElementById("version")!.textContent = `v${ version }`;
 }

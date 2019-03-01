@@ -1,5 +1,5 @@
 import * as int from './integer';
-import { StaxInt, zero, one} from './integer';
+import { StaxInt } from './integer';
 import { last } from './types';
 const two = int.make(2), three = int.make(3);
 

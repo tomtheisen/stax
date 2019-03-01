@@ -1,5 +1,5 @@
 import { isInt } from './integer';
-import { StaxArray, StaxNumber, StaxValue, last, isArray, isFloat, isNumber } from './types';
+import { StaxValue, isArray } from './types';
 import { Block } from './block';
 import { Rational } from './rational';
 

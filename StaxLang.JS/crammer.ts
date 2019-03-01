@@ -1,4 +1,4 @@
-import { StaxArray, StaxNumber, StaxValue, last } from './types';
+import { last } from './types';
 import * as int from './integer';
 import { StaxInt } from './integer';
 
