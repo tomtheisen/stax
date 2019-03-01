@@ -12,5 +12,7 @@ echo.
 echo ========================
 echo Node test
 echo ========================
-npm run --silent test
-cd ..
+REM call is needed here.  without it the script terminates after this line
+call npm run --silent test
+echo.
+call npm run --silent test -- --nobigint

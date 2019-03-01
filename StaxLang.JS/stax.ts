@@ -4,7 +4,7 @@ import { StaxArray, StaxNumber, StaxValue,
     areEqual, indexOf, compare, 
     stringFormat, unEval, stringFormatFloat } from './types';
 import { Block, Program, parseProgram } from './block';
-import { unpack, unpackBytes, isPacked } from './packer';
+import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
 import { Rational } from './rational';
@@ -14,7 +14,6 @@ import { primeFactors, allPrimes } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
-import { isBoolean, error } from 'util';
 
 export class ExecutionState {
     public ip: number;
@@ -275,7 +274,7 @@ export class Runtime {
         try {
             for (let s of this.runSteps(block)) yield s;
             while (this.totalSize() && this.peek() instanceof Block) {
-                for (let s of this.runSteps(this.pop() as Block)) { }
+                for (let _ of this.runSteps(this.pop() as Block)) { }
             }
         }
         catch (e) {
@@ -1589,7 +1588,7 @@ export class Runtime {
     }
 
     private runMacro(macro: string) {
-        for (let s of this.runSteps(parseProgram(macro))) { }
+        for (let _ of this.runSteps(parseProgram(macro))) { }
     }
 
     private doPlus() {
@@ -2872,16 +2871,14 @@ export class Runtime {
 
         if (stopOnTargetVal) targetVal = this.pop();
 
-        let hardCodedTargetCount = false;
         if (lowerSpec === 'n') targetCount = int.floatify(this.popInt());
         else if (lowerSpec === 'e') targetCount = int.floatify(this.popInt()) + 1;
-        else if (lowerSpec === 's') [targetCount, hardCodedTargetCount] = [1, true];
+        else if (lowerSpec === 's') targetCount = 1;
         else {
             let idx = "1234567890!@#$%^&*()".indexOf(spec);
             if (idx >= 0) {
                 targetCount = idx % 10 + 1;
                 postPop = idx >= 10;
-                hardCodedTargetCount = true;
             }
         }
 

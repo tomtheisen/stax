@@ -8,6 +8,7 @@
         "sourceMap": false,
         "alwaysStrict": true,
         "strictNullChecks": true,
+        "noUnusedLocals": true,
         "outDir": "js"
     }
 }

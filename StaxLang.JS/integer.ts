@@ -2,9 +2,10 @@ import * as npm_bigInt from 'big-integer';
 
 export type StaxInt = npm_bigInt.BigInteger | bigint;
 
+const disableNativeBigInt = typeof process !== "undefined" && process.argv.includes("--nobigint");
 // Chrome's bigint is *slower* than big-integer
 // set this to false if you want to use npm big-integer everywhere
-export const usingNativeBigInt = typeof BigInt === "function";
+export const usingNativeBigInt = !disableNativeBigInt && typeof BigInt === "function";
 
 export const make: (n: number | string) => StaxInt = usingNativeBigInt ? BigInt : npm_bigInt;
 export const zero = make(0), one = make(1), minusOne = make(-1);

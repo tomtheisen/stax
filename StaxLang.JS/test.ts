@@ -1,5 +1,5 @@
-import { Block, parseProgram } from './block';
-import { Runtime, ExecutionState } from './stax';
+import { Runtime } from './stax';
+import { usingNativeBigInt } from './integer';
 import { last } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -102,7 +102,7 @@ class TestFiles{
 
                     try {
                         let i = 0, start = (new Date).valueOf();
-                        for (let s of rt.runProgram(prog.code, io.in)) {
+                        for (let _ of rt.runProgram(prog.code, io.in)) {
                             if (++i % 1000 === 0 && ((new Date).valueOf() - start) > TimeoutMs) {
                                 throw new Error(`Timeout in ${ i } steps`);
                             }
@@ -157,10 +157,11 @@ function allFiles(dir: string): string[] {
     return result;
 }
 
-let testFiles: File[] = [];
 let argpath = process.argv[2];
 let tests = allFiles(argpath).map(file => new TestFiles(file));
 let start = new Date;
+console.log("Integers: " + (usingNativeBigInt ? "native bigint" : "npm big-integer"));
+
 tests.forEach((test, i) => test.runCases(i, tests.length));
 
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
