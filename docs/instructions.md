@@ -72,7 +72,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `u`                      	|frac       	|invert-frac   	|1 / a              	|Turn fraction upside down; invert.
 `u`                      	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`                      	|           	|              	|-1                 	|Negative unit.
-<code>&#124;%</code>     	|int int    	|divmod        	|a / b, a % b       	|Perform division and modulus.
+<code>&#124;%</code>     	|num num    	|divmod        	|a / b, a % b       	|Perform division and modulus.
 <code>&#124;&</code>     	|int int    	|bit-and       	|a & b              	|Bitwise and.
 <code>&#124;&#124;</code>	|int int    	|bit-or        	|a &#124; b         	|Bitwise or.
 <code>&#124;^</code>     	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
