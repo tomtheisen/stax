@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 
-const TimeoutMs = 2000;
+const TimeoutMs = 5000;
 
 class TestCase {
     name: string;

@@ -54,7 +54,7 @@ namespace StaxLang {
                 ('2', "a", "c|*", "self cross-product"),
                 ('3', "a", @"Vac13|)\:fc^+|t", "rot13"),
                 ('~', "a", @"VaVA\{+kcr+|t", "toggle case"),
-                ('~', "i", "|B%|2v", "set all interior bits"),
+                ('~', "i", "c0>{|B%|2v}{U|M}?", "set all interior bits"),
                 ('@', "a", "{f%", "count truthy elements"),
                 ('@', "ii", "|>2%", "get the nth bit of an integer"),
                 (':', "ai", "/{hm", "get every nth element"),

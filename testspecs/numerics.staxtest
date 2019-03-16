@@ -1052,6 +1052,14 @@ Lr mj
 12
 	out
 15
+	in
+0
+	out
+0
+	in
+-2
+	out
+-1
 	stax
 :~
 	name:Coprime
