@@ -164,7 +164,7 @@ function setup() {
         { alias: "S", types: "aa", code: "s-!"},
         { alias: "t", types: "aa", code: "2|*|(|t"},
         { alias: "t", types: "i", code: "c|fu{u1-N*FuR"},
-        { alias: "T", types: "a", code: "{!Cim"},
+        { alias: "T", types: "a", code: "{!Cim", deprecation: "<code>:T</code> for truthy indices is deprecated.  Use <code>:1</code> instead."},
         { alias: "T", types: "i", code: "c^*h", deprecation: "<code>:T</code> for triangular numbers is deprecated.  Use <code>|+</code> instead."},
         { alias: "u", types: "a", code: "u%1="},
         { alias: "v", types: "a", code: "cor="},

@@ -355,7 +355,7 @@ op                  	|Types              	|Name              	|Description
 `:r`                	|int                	|centered-range    	|Make range [-n .. n] centered around 0.
 `:s`                	|arr                	|span              	|Get the span of an array. (maximum minus minimum)
 `:S`                	|arr arr            	|is-superset-of    	|Is a a (non-strict) superset of b?
-`:T`                	|arr                	|truthy-indices    	|Get all indices of truthy elements.
+`:T`                	|arr                	|truthy-indices    	|~~Get all indices of truthy elements.~~ Deprecated.  Use `:1` instead.
 `:u`                	|arr                	|multi-single      	|Array contains exactly 1 distinct element?
 `:V`                	|arr                	|mean              	|Mean of array. (rational or float)
 
