@@ -282,8 +282,8 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;/</code>	|arr arr            	|multi-group       	|Partition a into differently sized groups from b.
 <code>&#124;-</code>	|arr arr            	|multiset-subtract 	|Remove elements in b individually from a, if they're present.
 <code>&#124;-</code>	|arr num            	|remove-first      	|Remove first instance of b from a.
-<code>&#124;\</code>	|arr arr            	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
-<code>&#124;\</code>	|arr arr num        	|zip-fill          	|Zip arrays producing pairs.  The shorter array is extended using the fill element.
+<code>&#124;\\</code>	|arr arr            	|zip-short         	|Zip arrays producing pairs.  The longer array is truncated.
+<code>&#124;\\</code>	|arr arr num        	|zip-fill          	|Zip arrays producing pairs.  The shorter array is extended using the fill element.
 <code>&#124;)</code>	|arr                	|rotate-right      	|Move the last element of an array to the front.
 <code>&#124;)</code>	|arr int            	|rotate-right-n    	|Shift array n places to the right, rotating the end to the front.
 <code>&#124;(</code>	|arr                	|rotate-left       	|Move the first element of an array to the end.
