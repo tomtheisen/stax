@@ -192,9 +192,12 @@ stepButton.addEventListener("click", step);
 copyOutputButton.addEventListener("click", ev => {
     const range = document.createRange();
     range.selectNodeContents(outputEl);
-    getSelection().removeAllRanges();
-    getSelection().addRange(range);
-    document.execCommand("copy")
+    let selection = getSelection();
+    if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("copy")
+    }
 });
 
 function showDebugInfo(ip: number, steps: number) {

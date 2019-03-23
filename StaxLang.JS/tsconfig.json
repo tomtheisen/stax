@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "lib": ["dom", "es2016", "esnext.bigint"],
+        // "incremental": true, // TODO: figure out why this is giving stale errors
         "module": "commonjs",
         "moduleResolution": "node",
         "target": "es2016",
