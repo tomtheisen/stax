@@ -118,6 +118,12 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:#`                     	|num        	|floatify      	|float(a)           	|Convert to float.
 `:-`                     	|num num    	|abs-diff      	|abs(a - b)         	|Absolute difference.
 `:@`                     	|int int    	|get-bit       	|(a >> b) & 1       	|Extract a single bit from an integer.
+`:[`                     	|int int    	|unset-bit     	|a & ~(1 << b)       	|Unset bit at the specified index.
+`:[`                     	|int arr    	|unset-bits    	|                   	|Unset bits at all specified indices.
+`:]`                     	|int int    	|set-bit       	|a | (1 << b)       	|Set bit at the specified index.
+`:]`                     	|int arr    	|set-bits      	|                   	|Set bits at all specified indices.
+`::`                     	|int int    	|toggle-bit    	|a ^ (1 << b)       	|Toggle bit at the specified index.
+`::`                     	|int arr    	|toggle-bits   	|                   	|Toggle bits at all specified indices.
 `:/`                     	|int int    	|multiplicity  	|                   	|Number of times b will evenly divide a.
 `:+`                     	|num        	|sign          	|sign(a)            	|Sign; 1 for positive, -1 for negative.
 `:_`                     	|num num    	|float-div     	|1.0 * a / b        	|Float division.

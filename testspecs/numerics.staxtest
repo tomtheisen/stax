@@ -1089,3 +1089,40 @@ A{:CmJ
 0
 	stax
 :@
+	name:SetBit
+	in
+20 1
+	out
+22
+	in
+20 [1 2 3]
+	out
+30
+	stax
+:]
+	name:UnsetBit
+	in
+20 2
+	out
+16
+	in
+22 [1 2 3]
+	out
+16
+	stax
+:[
+	name:ToggleBit
+	in
+20 2
+	out
+16
+	in
+20 1
+	out
+22
+	in
+20 [1 2 3]
+	out
+26
+	stax
+::
