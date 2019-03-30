@@ -64,6 +64,7 @@ namespace StaxLang {
             ['m'] = (new BigInteger(0x7fffffff), "0x7fffffff"),
             ['M'] = (new BigInteger(1000000), "one million"),
             ['n'] = (S2A("\n"), "newline"),  // also just A]
+            ['N'] = (double.NaN, "NaN"),
             ['p'] = (S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"), "all printable ascii characters"),
             ['P'] = (Math.PI, "pi"),
             ['q'] = (Math.PI / 2, "pi/2"),

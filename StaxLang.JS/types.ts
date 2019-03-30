@@ -213,6 +213,7 @@ export const constants: {[key: string]: StaxValue} = {
     'm': int.make(0x7fffffff),
     'M': int.make(1000000),
     'n': S2A("\n"),
+    'N': Number.NaN,
     'p': S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"),
     'P': Math.PI,
     'q': Math.PI / 2,
