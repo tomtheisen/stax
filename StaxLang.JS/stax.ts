@@ -247,7 +247,7 @@ export class Runtime {
         this.implicitEval = false;
 
         // starting 'i' suppresses eval
-        if (stdin.length === 1 && !program.startsWith('i')) {
+        if (stdin.length === 1 && !program.match(/^( |\t.*\n)*i/)) {
             if (!this.doEval()) {
                 this.mainStack = [];
                 this.inputStack = stdin.reverse().map(S2A);

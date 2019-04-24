@@ -178,7 +178,7 @@ namespace StaxLang {
             MainStack = new Stack<dynamic>();
             InputStack = new Stack<dynamic>(transformedInput);
 
-            if (programBlock.Contents.StartsWith("i")) {
+            if (Regex.IsMatch(programBlock.Contents, "^( |\t.*\n)*i")) {
                 programBlock.AddDesc("suppress single line eval; treat input as raw string");
             }
             else if (transformedInput.Length == 1) {
