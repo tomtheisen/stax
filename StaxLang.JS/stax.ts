@@ -607,7 +607,7 @@ export class Runtime {
                         if (this.callStackFrames.length) this.push(this.index);
                         break;
                     case 'I':
-                        for (let s of this.doIndexOf()) yield s;
+                        for (let s of this.doIndexOfOrAnd()) yield s;
                         break;
                     case 'j':
                         if (isArray(this.peek())) this.runMacro("' /");
@@ -726,7 +726,7 @@ export class Runtime {
                         this.push(this.pop(), this.pop());
                         break;
                     case 'S':
-                        this.doPowerset();
+                        this.doPowersetOrXor();
                         break;
                     case 't':
                         if (isArray(this.peek())) {
@@ -867,6 +867,7 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
+                            throw new Error('deprecated');
                             if (this.totalSize() < 2) break;
                             this.push(int.bitand(this.popInt(), this.popInt()));
                         }
@@ -879,6 +880,7 @@ export class Runtime {
                         break;
                     case '||':
                         if (isInt(this.peek())) {
+                            throw new Error('deprecated');
                             if (this.totalSize() < 2) break;
                             this.push(int.bitor(this.popInt(), this.popInt()));
                         }
@@ -933,7 +935,8 @@ export class Runtime {
                                 this.push(result);
                             }
                             else if (isInt(a)) { // xor
-                                this.push(int.bitxor(a, b));
+                                throw new Error('deprecated');
+                                //this.push(int.bitxor(a, b));
                             }
                         }
                         break;
@@ -1833,20 +1836,28 @@ export class Runtime {
         }
     }
 
-    private doPowerset() {
+    private doPowersetOrXor() {
         let b = this.pop();
         if (isInt(b)) {
-            let len = int.floatify(b), arr = this.popArray(), result: StaxArray = []; 
-            let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
-            while (len <= arr.length) {
-                result.push(idxs.map(idx => arr[idx]));
-                let i: number;
-                for (i = len - 1; i >= 0 && idxs[i] == i + (arr.length - len); i--) ;
-                if (i < 0) break;
-                idxs[i] += 1;
-                for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+            if (this.totalSize() === 0) {
+                this.push(b);
             }
-            this.push(result);
+            else if (isInt(this.peek())) {
+                this.push(int.bitxor(b, this.popInt()));
+            }
+            else {
+                let len = int.floatify(b), arr = this.popArray(), result: StaxArray = []; 
+                let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
+                while (len <= arr.length) {
+                    result.push(idxs.map(idx => arr[idx]));
+                    let i: number;
+                    for (i = len - 1; i >= 0 && idxs[i] == i + (arr.length - len); i--) ;
+                    if (i < 0) break;
+                    idxs[i] += 1;
+                    for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+                }
+                this.push(result);
+            }
         }
         else if (isArray(b)) {
             let result: StaxArray = [];
@@ -2359,8 +2370,13 @@ export class Runtime {
         this.push(minusOne);
     }
 
-    private *doIndexOf() {
+    private *doIndexOfOrAnd() {
+        if (this.totalSize() === 1) return;
         let target = this.pop(), arr = this.pop();
+        if (isInt(target) && isInt(arr)) {
+            this.push(int.bitand(target, arr));
+            return;
+        }
         if (!isArray(arr)) [arr, target] = [target, arr];
         if (!isArray(arr)) throw new Error("bad types for index-of");
 
@@ -2434,15 +2450,23 @@ export class Runtime {
             return;
         }
         else if (isInt(top)) { // split array into number of equalish-sized chunks
-            let chunks = int.floatify(top), consumed = 0, arr = this.popArray(), result: StaxArray = [];
-
-            for (; chunks > 0; chunks--) {
-                let toTake = Math.ceil((arr.length - consumed) / chunks);
-                result.push(arr.slice(consumed, consumed + toTake));
-                consumed += toTake;
+            if (this.totalSize() === 0) {
+                this.push(top);
             }
+            if (isInt(this.peek())) {
+                this.push(int.bitor(top, this.popInt()));
+            }
+            else {
+                let chunks = int.floatify(top), consumed = 0, arr = this.popArray(), result: StaxArray = [];
 
-            this.push(result);
+                for (; chunks > 0; chunks--) {
+                    let toTake = Math.ceil((arr.length - consumed) / chunks);
+                    result.push(arr.slice(consumed, consumed + toTake));
+                    consumed += toTake;
+                }
+    
+                this.push(result);
+            }
         }
         else if (isArray(top)) {
             if (top.length > 0 && !isArray(top[0])) top = [top];

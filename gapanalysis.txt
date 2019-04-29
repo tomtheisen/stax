@@ -1,8 +1,20 @@
+ii (6 for scalars; 8 for integers)
+	t min
+	T max
+	I binary and
+	M binary or
+	S binary xor
+	# logical or
+
+ai (3)
+ia (4)
+aa (1)
+
    	ii                 	ai             	ia             	aa	
    	nop                	nop            	nop            	nop
 !  	not                	not            	not            	not
 "  	lit                	lit            	lit            	lit
-#  	---                	count          	count          	substring-count
+#  	---.               	count          	count          	substring-count
 $  	tostring           	tostring       	concat         	concat
 %  	mod                	---            	len            	len
 &  	index-assign       	index-assign   	index-assign   	index-assign
@@ -24,18 +36,18 @@ $  	tostring           	tostring       	concat         	concat
 ?  	if                 	if             	if             	if
 @  	get-at             	get-at         	get-at (undoc) 	get-all
 A  	lit                	lit            	lit            	lit
-B  	---                	overlap-batch  	uncons-left    	uncons-left
+B  	---!               	overlap-batch  	uncons-left    	uncons-left
 C  	cancel             	cancel         	cancel         	cancel
 D  	do-times           	do-times       	drop-first     	drop-first
 E  	dec-digits         	dec-digits     	explode        	explode
 F  	foreach            	foreach        	foreach        	foreach
 G  	gosub              	gosub          	gosub          	gosub
 H  	double             	double         	last           	last
-I  	---                	index-of       	index-of       	substr-index-of
+I  	---.               	index-of       	index-of       	substr-index-of
 J  	square             	square         	space-join     	space-join
 K  	cross-map          	cross-map      	cross-map      	cross-map
 L  	listify-all        	listify-all    	listify-all    	listify-all
-M  	---                	chunkify       	transpose      	transpose
+M  	---.               	chunkify       	transpose      	transpose
 N  	negate             	negate         	uncons-right   	uncons-right
 O  	tuck-one           	tuck-one       	tuck-one       	tuck-one
 P  	print              	print          	print          	print
@@ -43,8 +55,8 @@ Q  	peek-print         	peek-print     	peek-print     	peek-print
    	                   	               	               	
    	ii                 	ai             	ia             	aa	
 R  	one-range          	one-range      	---            	regex-replace
-S  	---                	combinations   	powerset       	powerset
-T  	---                	remove-right   	trim-right     	trim-right
+S  	---.               	combinations   	powerset       	powerset
+T  	---.               	remove-right   	trim-right     	trim-right
 U  	lit                	lit            	lit            	lit
 V  	constant           	constant       	constant       	constant
 W  	loop               	loop           	loop           	loop
@@ -61,7 +73,7 @@ a  	rotate-stack       	rotate-stack   	rotate-stack   	rotate-stack
 b  	copy-both          	copy-both      	copy-both      	copy-both
 c  	copy               	copy           	copy           	copy
 d  	drop               	drop           	drop           	drop
-e  	---                	---            	eval           	eval
+e  	---!               	---            	eval           	eval
 f  	filter             	filter         	filter         	filter
 g  	generator          	generator      	generator      	generator
 h  	half               	half           	first          	first
@@ -76,7 +88,7 @@ p  	print              	print          	print          	print
 q  	print              	print          	print          	print
 r  	zero-range         	zero-range     	reverse        	reverse
 s  	swap               	swap           	swap           	swap
-t  	---                	trim-n         	trim-left      	trim-left
+t  	---.               	trim-n         	trim-left      	trim-left
 u  	reciprocate        	reciprocate    	unique         	unique
 v  	decrement          	decrement      	lowcase        	lowcase
 w  	while              	while          	while          	while

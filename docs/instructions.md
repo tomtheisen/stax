@@ -60,6 +60,9 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `h`                      	|int        	|halve         	|a / 2              	|Floor divide by 2.
 `h`                      	|num        	|halve         	|a / 2              	|Divide by 2.
 `H`                      	|num        	|un-halve      	|a * 2              	|Double.
+`I`                      	|int int    	|bit-and       	|a & b              	|Bitwise and.
+`M`                      	|int int    	|bit-or        	|a &#124; b         	|Bitwise or.
+`S`                      	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
 `j`                      	|float int  	|float-round   	|round(a, b)        	|Round float to n decimal places.  Format as string.
 `j`                      	|float      	|round         	|round(a)           	|Round to nearest integer.
 `j`                      	|frac       	|round         	|round(a)           	|Round to nearest integer.
@@ -73,9 +76,6 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `u`                      	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`                      	|           	|              	|-1                 	|Negative unit.
 <code>&#124;%</code>     	|num num    	|divmod        	|a / b, a % b       	|Perform division and modulus.
-<code>&#124;&</code>     	|int int    	|bit-and       	|a & b              	|Bitwise and.
-<code>&#124;&#124;</code>	|int int    	|bit-or        	|a &#124; b         	|Bitwise or.
-<code>&#124;^</code>     	|int int    	|bit-xor       	|a ^ b              	|Bitwise xor.
 <code>&#124;*</code>     	|int int    	|pow           	|a ** b             	|Exponent.	
 <code>&#124;*</code>     	|frac int   	|pow           	|a ** b             	|Exponent.	
 <code>&#124;/</code>     	|int int    	|div-all       	|                   	|Divide a by b as many times as it will go evenly.

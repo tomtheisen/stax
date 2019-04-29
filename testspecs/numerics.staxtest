@@ -565,13 +565,21 @@ E {Hm J
 	out
 1
 	stax
+3 5I
+	stax
 3 5|&
+	stax
+1I
 	stax
 1|&
 	name:BitwiseOr
 	in
 	out
 7
+	stax
+3 5M
+	stax
+7M
 	stax
 3 5||
 	stax
@@ -580,6 +588,10 @@ E {Hm J
 	in
 	out
 6
+	stax
+3 5S
+	stax
+6S
 	stax
 3 5|^
 	stax
