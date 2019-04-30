@@ -867,7 +867,7 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
-                            throw new Error('deprecated');
+                            if (this.infoOut) this.infoOut("<code>|&</code> is deprecated for bitwise and.  Use <code>I</code> instead.");
                             if (this.totalSize() < 2) break;
                             this.push(int.bitand(this.popInt(), this.popInt()));
                         }
@@ -880,7 +880,7 @@ export class Runtime {
                         break;
                     case '||':
                         if (isInt(this.peek())) {
-                            throw new Error('deprecated');
+                            if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");
                             if (this.totalSize() < 2) break;
                             this.push(int.bitor(this.popInt(), this.popInt()));
                         }
@@ -935,8 +935,8 @@ export class Runtime {
                                 this.push(result);
                             }
                             else if (isInt(a)) { // xor
-                                throw new Error('deprecated');
-                                //this.push(int.bitxor(a, b));
+                                if (this.infoOut) this.infoOut("<code>|^</code> is deprecated for bitwise xor.  Use <code>S</code> instead.");
+                                this.push(int.bitxor(a, b));
                             }
                         }
                         break;

@@ -665,11 +665,21 @@ namespace StaxLang {
                             Push(Index);
                         }
                         break;
-                    case 'I':
-                        if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "find first index of " + e);
-                        else block.AddDesc("find first index");
-                        foreach (var s in DoFindIndex()) yield return s;
+                    case 'I': {
+                        if (TotalStackSize == 1) break;
+                        dynamic b = Pop(), a = Pop();
+                        if (IsInt(a) && IsInt(b)) {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "bitwise and with " + e);
+                            else block.AddDesc("bitwise and");
+                            Push(a & b);
+                        }
+                        else {
+                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "find first index of " + e);
+                            else block.AddDesc("find first index");
+                            foreach (var s in DoFindIndexOrAnd(b, a)) yield return s;
+                        }
                         break;
+                    }
                     case 'j':
                         if (IsArray(Peek())) {
                             block.AddDesc("un-join (split) by spaces");
@@ -829,7 +839,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'S':
-                        DoPowerset(block);
+                        DoPowersetOrXor(block);
                         break;
                     case 't': 
                         if (IsArray(Peek())) {
@@ -2087,23 +2097,33 @@ namespace StaxLang {
             Push(result);
         }
 
-        private void DoPowerset(Block block) {
+        private void DoPowersetOrXor(Block block) {
             if (IsInt(Peek())) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Combinations of length " + e);
-                else block.AddDesc("Get all combinations of specified length");
-                var len = (int)Pop();
-                List<object> arr = Pop();
-                var result = new List<object>();
-                var idxs = Enumerable.Range(0, len).ToArray();
-                while (len <= arr.Count) {
-                    result.Add(idxs.Select(idx => arr[idx]).ToList());
-                    int i;
-                    for (i = len - 1; i >= 0 && idxs[i] == i + (arr.Count - len); i--) ;
-                    if (i < 0) break;
-                    idxs[i] += 1;
-                    for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+                if (TotalStackSize == 1) return;
+                BigInteger b = Pop();
+                if (IsInt(Peek())) {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Xor with " + e);
+                    else block.AddDesc("Xor");
+                    Push(b ^ Pop());
                 }
-                Push(result);
+                else {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Combinations of length " + e);
+                    else block.AddDesc("Get all combinations of specified length");
+                    var len = (int)b;
+                    List<object> arr = Pop();
+                    var result = new List<object>();
+                    var idxs = Enumerable.Range(0, len).ToArray();
+                    while (len <= arr.Count)
+                    {
+                        result.Add(idxs.Select(idx => arr[idx]).ToList());
+                        int i;
+                        for (i = len - 1; i >= 0 && idxs[i] == i + (arr.Count - len); i--) ;
+                        if (i < 0) break;
+                        idxs[i] += 1;
+                        for (i++; i < len; i++) idxs[i] = idxs[i - 1] + 1;
+                    }
+                    Push(result);
+                }
             }
             else if (IsArray(Peek())) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "All combinations of " + e);
@@ -2839,9 +2859,7 @@ namespace StaxLang {
             Push(BigInteger.MinusOne);
         }
 
-        private IEnumerable<ExecutionState> DoFindIndex() {
-            dynamic target = Pop(), list = Pop();
-
+        private IEnumerable<ExecutionState> DoFindIndexOrAnd(dynamic target, dynamic list) {
             if (!IsArray(list)) (list, target) = (target, list);
 
             if (IsArray(list)) {
@@ -3382,18 +3400,28 @@ namespace StaxLang {
                 }
             }
             else if (IsInt(Peek())) {
-                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "split array into " + e + " equlalish-sized chunks");
-                block.AddDesc("split array into number of equalish-sized chunks");
-                int chunks = (int)Pop(), consumed = 0;
-                List<object> arr = Pop(), result = new List<object>();
-
-                for (; chunks > 0; chunks--) {
-                    int toTake = (int)Math.Ceiling((arr.Count - consumed) / (chunks * 1.0));
-                    result.Add(arr.Skip(consumed).Take(toTake).ToList());
-                    consumed += toTake;
+                if (TotalStackSize == 1) yield break;
+                BigInteger b = Pop();
+                dynamic a = Pop();
+                if (IsInt(a)) {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "bitwise or with " + e);
+                    block.AddDesc("bitwise or");
+                    Push(a | b);
                 }
+                if (IsArray(a)) {
+                    if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "split array into " + e + " equlalish-sized chunks");
+                    block.AddDesc("split array into number of equalish-sized chunks");
+                    int chunks = (int)b, consumed = 0;
+                    List<object> arr = a, result = new List<object>();
 
-                Push(result);
+                    for (; chunks > 0; chunks--) {
+                        int toTake = (int)Math.Ceiling((arr.Count - consumed) / (chunks * 1.0));
+                        result.Add(arr.Skip(consumed).Take(toTake).ToList());
+                        consumed += toTake;
+                    }
+
+                    Push(result);
+                }
             }
             else {
                 block.AddDesc("transpose 2-d array; treats scalars as singletons and fills missing elements with 0");
