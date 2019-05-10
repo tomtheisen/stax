@@ -373,6 +373,8 @@ ff
 4
 	stax
 |m
+	stax
+t
 	name:Maximum
 	in
 3 7
@@ -384,6 +386,8 @@ ff
 4
 	stax
 |M
+	stax
+T
 	name:AbsoluteValue
 	in
 	out

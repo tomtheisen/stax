@@ -71,6 +71,8 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `N`                      	|number     	|negate        	|-a                 	|Negate a number.
 `r`                      	|frac       	|numerator     	|numerator(a)       	|Get the numerator.
 `R`                      	|frac       	|denom         	|denom(a)           	|Get the denominator.
+`t`                      	|num num    	|min           	|min(a, b)          	|Lower of two values.
+`T`                      	|num num    	|max           	|max(a, b)          	|Higher of two values.
 `u`                      	|int        	|fractionalize 	|1 / a              	|Turn integer upside down; into fraction.
 `u`                      	|frac       	|invert-frac   	|1 / a              	|Turn fraction upside down; invert.
 `u`                      	|float      	|invert-float  	|1 / a              	|Floating point inversion.
@@ -107,8 +109,6 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16) 
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
-<code>&#124;m</code>     	|num num    	|min           	|min(a, b)          	|Lower of two values.
-<code>&#124;M</code>     	|num num    	|max           	|max(a, b)          	|Higher of two values.
 <code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (eg. 20 -> [2 0 1])
 <code>&#124;p</code>     	|int        	|is-prime      	|                   	|Is prime?
 <code>&#124;q</code>     	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.

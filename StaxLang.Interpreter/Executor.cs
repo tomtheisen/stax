@@ -846,11 +846,6 @@ namespace StaxLang {
                             block.AddDesc("trim whitespace from left");
                             Push(S2A(A2S(Pop()).TrimStart()));
                         }
-                        else if (IsInt(Peek())) {
-                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "trim (remove) " + e + " from the left");
-                            else block.AddDesc("trim (remove) n elements from the left");
-                            RunMacro("ss~ c%,-0|M)");
-                        }
                         else if (IsBlock(Peek())) {
                             Block pred = Pop();
                             List<object> result = new List<object>(Pop());
@@ -870,19 +865,30 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else throw new StaxException("Bad types for trimleft");
+                        else if (TotalStackSize == 1) { /* minimum of single scalar is no-op */ }
+                        else {
+                            dynamic b = Pop(), a = Pop();
+                            if (IsNumber(b) && IsNumber(a)) {
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);
+                                else block.AddDesc("minimum of two numbers");
+                                Push(Comparer.Instance.Compare(a, b) < 0 ? a : b);
+                            }
+                            else {
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "trim (remove) " + e + " from the left");
+                                else block.AddDesc("trim (remove) n elements from the left");
+                                InputStack.Push(b);
+                                Push(a);
+                                RunMacro("c%,-0T)");
+                            }
+                        }
                         break;
                     case 'T':
                         if (IsArray(Peek())) {
                             block.AddDesc("trim whitespace from right");
                             Push(S2A(A2S(Pop()).TrimEnd()));
                         }
-                        else if (IsInt(Peek())) {
-                            if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "trim (remove) " + e + " from the right");
-                            else block.AddDesc("trim (remove) n elements from the right");
-                            RunMacro("ss~ c%,-0|M(");
-                        }
-                        else if (IsBlock(Peek())) {
+                        else if (IsBlock(Peek()))
+                        {
                             Block pred = Pop();
                             List<object> result = new List<object>(Pop());
                             block.AddDesc("remove matching elements from end of array");
@@ -901,7 +907,24 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else throw new StaxException("Bad types for trimright");
+                        else if (TotalStackSize == 1) { /* maximum of single scalar is no-op */ }
+                        else {
+                            dynamic b = Pop(), a = Pop();
+                            if (IsNumber(b) && IsNumber(a))
+                            {
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "maximum of n and " + e);
+                                else block.AddDesc("maximum of two numbers");
+                                Push(Comparer.Instance.Compare(a, b) > 0 ? a : b);
+                            }
+                            else
+                            {
+                                if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "trim (remove) " + e + " from the right");
+                                else block.AddDesc("trim (remove) n elements from the right");
+                                InputStack.Push(b);
+                                Push(a);
+                                RunMacro("c%,-0T(");
+                            }
+                        }
                         break;
                     case 'u': // unique
                         DoUnique(block);
@@ -1608,7 +1631,7 @@ namespace StaxLang {
                                 break;
                             case 'm':
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "minimum of n and " + e);
-                                else block.AddDesc("minimum of");
+                                else block.AddDesc("minimum of two numbers");
                                 if (IsNumber(Peek())) {
                                     if (TotalStackSize < 2) break;
                                     dynamic b = Pop(), a = Pop();
@@ -1626,7 +1649,7 @@ namespace StaxLang {
                                 break;
                             case 'M': // max
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "maximum of n and " + e);
-                                else block.AddDesc("maximum of");
+                                else block.AddDesc("maximum of two numbers");
                                 if (IsNumber(Peek())) {
                                     if (TotalStackSize < 2) break;
                                     dynamic b = Pop(), a = Pop();

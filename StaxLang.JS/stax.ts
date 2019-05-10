@@ -732,9 +732,6 @@ export class Runtime {
                         if (isArray(this.peek())) {
                             this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
                         }
-                        else if (isInt(this.peek())) {
-                            this.runMacro("ss~ c%,-0|M)");
-                        }
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result = this.pop(), cancelled = false;
                             if (!isArray(result)) throw new Error("bad types for trim");
@@ -754,13 +751,22 @@ export class Runtime {
                             this.popStackFrame();
                             this.push(result);
                         }
+                        else {
+                            if (this.totalSize() < 2) break;
+                            let top = this.pop(), next = this.pop();
+                            if (isNumber(top) && isNumber(next)) {
+                                this.push(compare(next, top) < 0 ? next : top);
+                            }
+                            else {
+                                this.inputStack.push(top);
+                                this.push(next);
+                                this.runMacro("c%,-0|M)");
+                            }
+                        }
                         break;
                     case 'T':
                         if (isArray(this.peek())) {
                             this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
-                        }
-                        else if (isInt(this.peek())) {
-                            this.runMacro("ss~ c%,-0|M(");
                         }
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result = this.pop(), cancelled = false;
@@ -780,6 +786,18 @@ export class Runtime {
                             }
                             this.popStackFrame();
                             this.push(result);
+                        }
+                        else {
+                            if (this.totalSize() < 2) break;
+                            let top = this.pop(), next = this.pop();
+                            if (isNumber(top) && isNumber(next)) {
+                                this.push(compare(next, top) > 0 ? next : top);
+                            }
+                            else {
+                                this.inputStack.push(top);
+                                this.push(next);
+                                this.runMacro("c%,-0|M(");
+                            }
                         }
                         break;
                     case 'u': {
@@ -1368,6 +1386,10 @@ export class Runtime {
                     }
                     case '|m': {
                         if (isNumber(this.peek())) {
+                            if (this.warnedInstructions.indexOf(token) < 0) {
+                                this.warnedInstructions.push(token);
+                                if (this.infoOut) this.infoOut("<code>|m</code> for minimum of scalars is deprecated.  Use <code>t</code> instead.");
+                            }
                             if (this.totalSize() < 2) break;
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) < 0 ? next : top);
@@ -1384,6 +1406,10 @@ export class Runtime {
                     }
                     case '|M': {
                         if (isNumber(this.peek())) {
+                            if (this.warnedInstructions.indexOf(token) < 0) {
+                                this.warnedInstructions.push(token);
+                                if (this.infoOut) this.infoOut("<code>|m</code> for maximum of scalars is deprecated.  Use <code>T</code> instead.");
+                            }
                             if (this.totalSize() < 2) break;
                             let top = this.pop(), next = this.pop();
                             this.push(compare(next, top) > 0 ? next : top);
