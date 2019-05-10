@@ -3000,13 +3000,13 @@ export class Runtime {
     }
 
     private doMacroAlias(alias: string) {
-        let typeTree = macroTrees[alias] || fail(`macro not found for types in ${ alias }`);
+        let typeTree = macroTrees[alias] || fail(`macro not found for types in :${ alias }`);
         let resPopped: StaxArray = [];
         // follow type tree as far as necessary
         while (typeTree.hasChildren()) {
             resPopped.push(this.pop());
             let type = getTypeChar(last(resPopped)!);
-            typeTree = typeTree.children![type] || fail(`macro not found for types in ${ alias }`);
+            typeTree = typeTree.children![type] || fail(`macro not found for types in :${ alias }`);
         }
         // return inspected values to stack
         this.push(...resPopped.reverse());
