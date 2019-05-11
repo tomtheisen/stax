@@ -1070,7 +1070,7 @@ export class Runtime {
                     }
                     case '|\\':
                         if (isArray(this.peek())) {
-                            this.runMacro("b%s% |m~ ;(s,(s \\"); // zip; truncate to shorter
+                            this.runMacro("b%s% t~ ;(s,(s \\"); // zip; truncate to shorter
                         }
                         else { // zip arrays using fill element
                             let fill = this.pop(), b = this.popArray(), a = this.popArray(), result = [];
