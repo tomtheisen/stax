@@ -1,7 +1,7 @@
 import { Block } from './block';
 import { StaxInt, isInt } from './integer';
 import * as int from './integer'
-import { Rational } from './rational';
+import { Rational, one as rationalOne } from './rational';
 import * as rat from './rational';
 
 export type StaxNumber = number | Rational | StaxInt;
@@ -75,7 +75,7 @@ export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
                 b = int.negate(b);
                 a = a.invert();
             }
-            let result = new Rational(int.one, int.one);
+            let result = rationalOne;
             for (let i = 0; i < b.valueOf(); i++) result = result.multiply(a);
             return result;
         }
