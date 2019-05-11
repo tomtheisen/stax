@@ -9,7 +9,6 @@ op                  	|Description
 `Q`                 	|Peek and print with a newline.
 <code>&#124;_</code>	|(space, not underscore) Print a single space character.
 <code>&#124;`</code>	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
-<code>&#124;P</code>	|~~Print newline.~~  Deprecated.  Use `zP` instead.  *Deprecations don't happen often in stax, and when they do, they'll usually be accompanied by an equivalent way of accomplishing the same thing.*
 <code>&#124;u</code>	|Un-eval.  Produce string representation of array. e.g. `"[1, 2, 3, [4, 5]]"`
 <code>&#124;V</code>	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
 
@@ -146,7 +145,6 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:p`                     	|int        	|last-prime    	|                   	|Last prime < n.
 `:P`                     	|int        	|next-prime    	|                   	|Next prime >= n.
 `:t`                     	|int        	|totient       	|totient(a)         	|Euler's totient of n.
-`:T`                     	|int        	|triangular-num	|a * (a+1) / 2      	|~~Get a triangular number.~~ Deprecated. Use <code>&#124;+</code> instead. 
 
 ## Logic
 op                  	|Name        	|Description
@@ -210,7 +208,6 @@ op                       	|Types          	|Name              	|Description
 `:}`                     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`                     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
 `:c`                     	|arr int        	|set-case          	|Set case of string. If integer is zero, use upper case.  Otherwise, lower.
-`:C`                     	|arr            	|invert-case       	|~~Invert case of letters a-z.~~ Deprecated.  Use `:~` instead.
 `:D`                     	|arr int        	|trim-both         	|Trim element from both ends of string.
 `:D`                     	|arr arr        	|trim-both         	|Trim all characters from both ends of string.
 `:e`                     	|arr            	|excerpts          	|Get all contiguous subarrays.
