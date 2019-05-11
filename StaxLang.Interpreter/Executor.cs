@@ -267,6 +267,12 @@ namespace StaxLang {
                         {
                             // make sure number is on top
                             dynamic b = Pop(), a = Pop();
+                            if (IsNumber(a) && IsNumber(b)) {
+                                Push(a);
+                                Push(b);
+                                RunMacro("|*");
+                                break;
+                            }
                             if (IsNumber(a)) (a, b) = (b, a);
                             Push(a);
                             Push(b);

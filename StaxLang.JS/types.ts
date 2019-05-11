@@ -64,6 +64,25 @@ export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     return nums;
 }
 
+export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
+    if (isInt(b)) {
+        if (isInt(a)) {
+            if (b.valueOf() < 0) return new Rational(int.one, int.pow(a, int.negate(b)));
+            else return int.pow(a, b);
+        }
+        else if (a instanceof Rational) {
+            if (b.valueOf() < 0) {
+                b = int.negate(b);
+                a = a.invert();
+            }
+            let result = new Rational(int.one, int.one);
+            for (let i = 0; i < b.valueOf(); i++) result = result.multiply(a);
+            return result;
+        }
+    }
+    return Math.pow(floatify(a), floatify(b));
+}
+
 export function runLength(arr: StaxArray): StaxArray {
     if (arr.length === 0) return arr;
     let result: StaxArray = [], last: StaxValue | null = null, run = 0;

@@ -48,6 +48,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `%`                      	|int int    	|mod           	|a % b              	|Modulus.
 `@`                      	|frac       	|floor         	|floor(a)           	|Integer floor of fraction.
 `@`                      	|float      	|floor         	|floor(a)           	|Integer floor of float.
+`#`                      	|num num    	|pow           	|a ** b             	|Exponent. Can produce an integer, rational or float depending on inputs.
 `v`                      	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`                      	|num        	|inc           	|a + 1              	|Increment by 1.
 `B`                      	|frac       	|properize     	|floor(a), a%1      	|Properize fraction.  Push integer floor, and proper remainder separately.
@@ -77,8 +78,6 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `u`                      	|float      	|invert-float  	|1 / a              	|Floating point inversion.
 `U`                      	|           	|              	|-1                 	|Negative unit.
 <code>&#124;%</code>     	|num num    	|divmod        	|a / b, a % b       	|Perform division and modulus.
-<code>&#124;*</code>     	|int int    	|pow           	|a ** b             	|Exponent.	
-<code>&#124;*</code>     	|frac int   	|pow           	|a ** b             	|Exponent.	
 <code>&#124;/</code>     	|int int    	|div-all       	|                   	|Divide a by b as many times as it will go evenly.
 <code>&#124;<</code>     	|int int    	|shift-left    	|a << b             	|Bitshift left.
 <code>&#124;></code>     	|int int    	|shift-right   	|a >> b             	|Bitshift right.

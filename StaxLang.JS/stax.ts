@@ -2,7 +2,7 @@ import { StaxArray, StaxNumber, StaxValue,
     isArray, isFloat, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength, 
     areEqual, indexOf, compare, 
-    stringFormat, unEval, stringFormatFloat } from './types';
+    stringFormat, unEval, stringFormatFloat, pow } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
@@ -352,11 +352,15 @@ export class Runtime {
                         break;
                     case '#': {
                         let b = this.pop(), a = this.pop();
-                        if (isNumber(a)) [a, b] = [b, a];
-                        this.push(a, b);
-                        
-                        if (isArray(this.peek())) this.runMacro("/%v");
-                        else if (isNumber(this.peek())) this.runMacro("]|&%");
+                        if (isNumber(a) && isNumber(b)) { 
+                            this.push(pow(a, b));
+                        }
+                        else {
+                            if (isNumber(a)) [a, b] = [b, a];
+                            this.push(a, b);
+                            if (isArray(this.peek())) this.runMacro("/%v");
+                            else if (isNumber(this.peek())) this.runMacro("]|&%");
+                        }
                         break;
                     }
                     case '_':
@@ -1023,31 +1027,17 @@ export class Runtime {
                     }
                     case '|*': {
                         let b = this.pop(), a = this.pop();
-                        if (isInt(b)) {
-                            if (isInt(a)) {
-                                if (b.valueOf() < 0) this.push(new Rational(one, int.pow(a, int.negate(b))));
-                                else this.push(int.pow(a, b));
+                        if (isNumber(a) && isNumber(b)) {
+                            if (this.warnedInstructions.indexOf(token) < 0) {
+                                this.warnedInstructions.push(token);
+                                if (this.infoOut) this.infoOut("<code>|*</code> for exponent is deprecated.  Use <code>#</code> instead.");
                             }
-                            else if (a instanceof Rational) {
-                                if (b.valueOf() < 0) {
-                                    b = int.negate(b);
-                                    a = a.invert();
-                                }
-                                let result = new Rational(one, one);
-                                for (let i = 0; i < b.valueOf(); i++) result = result.multiply(a);
-                                this.push(result);
-                            }
-                            else if (isArray(a)) {
-                                let result = [];
-                                for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
-                                this.push(result);
-                            }
-                            else if (typeof a === "number") {
-                                this.push(Math.pow(a, int.floatify(b)));
-                            }
+                            this.push(pow(a, b));
                         }
-                        else if (isNumber(a) && isNumber(b)) {
-                            this.push(Math.pow(floatify(a), floatify(b)));
+                        else if (isInt(b) && isArray(a)) {
+                            let result = [];
+                            for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
+                            this.push(result);
                         }
                         else if (isArray(b)) {
                             if (!isArray(a)) throw new Error('tried to cross-product non-array');
