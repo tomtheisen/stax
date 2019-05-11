@@ -1,11 +1,4 @@
-ii (6 for scalars; 8 for integers)
-	t min
-	T max
-	I binary and
-	M binary or
-	S binary xor
-	# logical or
-
+ii (2 for integers)
 ai (3)
 ia (4)
 aa (1)
@@ -14,7 +7,7 @@ aa (1)
    	nop                	nop            	nop            	nop
 !  	not                	not            	not            	not
 "  	lit                	lit            	lit            	lit
-#  	---.               	count          	count          	substring-count
+#  	pow                	count          	count          	substring-count
 $  	tostring           	tostring       	concat         	concat
 %  	mod                	---            	len            	len
 &  	index-assign       	index-assign   	index-assign   	index-assign
@@ -43,11 +36,11 @@ E  	dec-digits         	dec-digits     	explode        	explode
 F  	foreach            	foreach        	foreach        	foreach
 G  	gosub              	gosub          	gosub          	gosub
 H  	double             	double         	last           	last
-I  	---.               	index-of       	index-of       	substr-index-of
+I  	bit-and            	index-of       	index-of       	substr-index-of
 J  	square             	square         	space-join     	space-join
 K  	cross-map          	cross-map      	cross-map      	cross-map
 L  	listify-all        	listify-all    	listify-all    	listify-all
-M  	---.               	chunkify       	transpose      	transpose
+M  	bit-or             	chunkify       	transpose      	transpose
 N  	negate             	negate         	uncons-right   	uncons-right
 O  	tuck-one           	tuck-one       	tuck-one       	tuck-one
 P  	print              	print          	print          	print
@@ -55,8 +48,8 @@ Q  	peek-print         	peek-print     	peek-print     	peek-print
    	                   	               	               	
    	ii                 	ai             	ia             	aa	
 R  	one-range          	one-range      	---            	regex-replace
-S  	---.               	combinations   	powerset       	powerset
-T  	---.               	remove-right   	trim-right     	trim-right
+S  	bit-xor            	combinations   	powerset       	powerset
+T  	max                	remove-right   	trim-right     	trim-right
 U  	lit                	lit            	lit            	lit
 V  	constant           	constant       	constant       	constant
 W  	loop               	loop           	loop           	loop
@@ -88,7 +81,7 @@ p  	print              	print          	print          	print
 q  	print              	print          	print          	print
 r  	zero-range         	zero-range     	reverse        	reverse
 s  	swap               	swap           	swap           	swap
-t  	---.               	trim-n         	trim-left      	trim-left
+t  	min                	trim-n         	trim-left      	trim-left
 u  	reciprocate        	reciprocate    	unique         	unique
 v  	decrement          	decrement      	lowcase        	lowcase
 w  	while              	while          	while          	while
