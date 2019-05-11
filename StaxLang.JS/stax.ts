@@ -764,7 +764,7 @@ export class Runtime {
                             else {
                                 this.inputStack.push(top);
                                 this.push(next);
-                                this.runMacro("c%,-0|M)");
+                                this.runMacro("c%,-0T)");
                             }
                         }
                         break;
@@ -800,7 +800,7 @@ export class Runtime {
                             else {
                                 this.inputStack.push(top);
                                 this.push(next);
-                                this.runMacro("c%,-0|M(");
+                                this.runMacro("c%,-0T(");
                             }
                         }
                         break;
@@ -1398,7 +1398,7 @@ export class Runtime {
                         if (isNumber(this.peek())) {
                             if (this.warnedInstructions.indexOf(token) < 0) {
                                 this.warnedInstructions.push(token);
-                                if (this.infoOut) this.infoOut("<code>|m</code> for maximum of scalars is deprecated.  Use <code>T</code> instead.");
+                                if (this.infoOut) this.infoOut("<code>|M</code> for maximum of scalars is deprecated.  Use <code>T</code> instead.");
                             }
                             if (this.totalSize() < 2) break;
                             let top = this.pop(), next = this.pop();
