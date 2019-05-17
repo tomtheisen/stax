@@ -31,6 +31,10 @@ function fail(msg: string): never {
     throw new Error(msg);
 }
 
+function *lazyCountTo(end: StaxInt) {
+    for (let n = one; int.cmp(n, end) <= 0; n = int.add(n, one)) yield n;
+}
+
 function range(start: number | StaxInt, end: number | StaxInt): StaxArray {
     let result: StaxArray = [];
     const _end = Number(end.valueOf());
@@ -672,7 +676,7 @@ export class Runtime {
                     case 'm': {
                         let shorthand = !(this.peek() instanceof Block);
                         for (let s of this.doMap(getRest())) yield s;
-                       if (shorthand) return;
+                        if (shorthand) return;
                         break;
                     }
                     case 'M':
@@ -2641,10 +2645,6 @@ export class Runtime {
     }
 
     private *doFor(rest: Block) {
-        if (isInt(this.peek())) {
-            this.push(range(1, int.add(this.popInt(), one)));
-        }
-
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop();
             if (isInt(data)) data = range(1, int.add(data, one));
@@ -2661,11 +2661,11 @@ export class Runtime {
             }
             this.popStackFrame();
         }
-        else if (isArray(this.peek())) {
-            let data = this.pop() as StaxArray;
-
+        else if (isArray(this.peek()) || isInt(this.peek())) {
+            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : lazyCountTo(data);
+    
             this.pushStackFrame();
-            for (let e of data) {
+            for (let e of arr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(rest)) {
                     if (s.cancel) break;
@@ -2788,11 +2788,13 @@ export class Runtime {
     private *doFilter(rest: Block) {
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
-            if (isInt(data)) data = range(1, int.add(data, one));
-            if (!isArray(data)) throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
+            let arr: Iterable<StaxValue>;
+            if (isArray(data)) arr = data; 
+            else if (isInt(data)) arr = lazyCountTo(data);
+            else throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
             
             this.pushStackFrame();
-            for (let e of data) {
+            for (let e of arr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(block)) {
                     if (cancelled = s.cancel) break;
@@ -2845,7 +2847,7 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(top) || isInt(top)) {
-            let data = isArray(top) ? top : range(one, int.add(top, one)), cancelled = false;
+            let data = isArray(top) ? top : lazyCountTo(top), cancelled = false;
 
             this.pushStackFrame();
             for (let e of data) {
