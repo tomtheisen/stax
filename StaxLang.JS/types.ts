@@ -192,7 +192,7 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
-const versionInfo = "Stax 1.1.4 - Tom Theisen - https://github.com/tomtheisen/stax"
+const versionInfo = "Stax 1.1.5 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
