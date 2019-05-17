@@ -607,3 +607,14 @@ z:!
 "foo"
 	stax
  iP
+	name:RotateEmpty
+	out
+0
+	stax
+z|(%
+	stax
+z2|(%
+	stax
+z|)%
+	stax
+z2|)%

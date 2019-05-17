@@ -2462,11 +2462,13 @@ namespace StaxLang {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "rotate " + e +" position " + dir.ToString().ToLower());
                 else block.AddDesc("rotate n positions " + dir.ToString().ToLower());
                 var result = new List<object>();
-                distance = distance % arr.Count;
-                if (distance < 0) distance += arr.Count;
-                int cutPoint = dir == RotateDirection.Left ? (int)distance : arr.Count - (int)distance;
-                for (int i = 0; i < arr.Count; i++) {
-                    result.Add(arr[(i + cutPoint) % arr.Count]);
+                if (arr.Count > 0) {
+                    distance = distance % arr.Count;
+                    if (distance < 0) distance += arr.Count;
+                    int cutPoint = dir == RotateDirection.Left ? (int)distance : arr.Count - (int)distance;
+                    for (int i = 0; i < arr.Count; i++) {
+                        result.Add(arr[(i + cutPoint) % arr.Count]);
+                    }
                 }
                 Push(result);
             }

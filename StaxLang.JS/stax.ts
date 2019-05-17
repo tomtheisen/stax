@@ -2372,11 +2372,14 @@ export class Runtime {
 
         if (!isInt(distance)) throw new Error("bad rotation distance");
 
-        distance = int.mod(distance, int.make(arr.length));
-        if (distance.valueOf() < 0) distance = int.add(distance, int.make(arr.length));
-        let cutpoint = direction < 0 ? int.floatify(distance) : (arr.length - int.floatify(distance));
-        let result = arr.slice(cutpoint).concat(arr.slice(0, cutpoint));
-        this.push(result);
+        if (arr.length) {
+            distance = int.mod(distance, int.make(arr.length));
+            if (distance.valueOf() < 0) distance = int.add(distance, int.make(arr.length));
+            let cutpoint = direction < 0 ? int.floatify(distance) : (arr.length - int.floatify(distance));
+            let result = arr.slice(cutpoint).concat(arr.slice(0, cutpoint));
+            this.push(result);
+        }
+        else this.push(arr);
     }
 
     private doLastIndexOf() {
