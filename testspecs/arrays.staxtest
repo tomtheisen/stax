@@ -1100,3 +1100,11 @@ tions
 world
 	stax
 L :p m
+	name:PopAt
+	in
+"abc" 4
+	out
+98
+ac
+	stax
+:@PP

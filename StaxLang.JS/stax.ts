@@ -904,6 +904,13 @@ export class Runtime {
                             this.push(int.make(a.filter(e => areEqual(e, b)).length));
                         }
                         break;
+                    case '|$': {
+                        let b = this.pop(), a = this.pop(), cmp = compare(a, b);
+                        if (cmp > 0) this.push(one);
+                        else if (cmp < 0) this.push(minusOne);
+                        else this.push(zero);
+                        break;
+                    }
                     case '||':
                         if (isInt(this.peek())) {
                             if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");

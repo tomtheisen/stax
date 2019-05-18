@@ -152,6 +152,7 @@ op                  	|Name        	|Description
 `<`                 	|less        	|Is less than.  Arrays use string-style lexicographic ordering.
 `>`                 	|greater     	|Is greater than.  Arrays use string-style lexicographic ordering.
 `=`                 	|equal       	|Equals.  Numberic types are coerced as necessary.  Arrays are equal to scalars if their first element is equal.
+<code>&#124;$</code>	|cmp         	|Compare.  Produces -1, 0, or 1 depending on comparison of two values.
 `?`                 	|if-then-else	|If the first value, then yield the second, else the third.  If the result is a block, execute it.
 <code>&#124;4</code>	|is-array    	|Tests if a value is an array or not.  Produces 0 or 1.
 
@@ -331,6 +332,7 @@ op                  	|Types              	|Name              	|Description
 `:!`                	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
 <code>:&#124;</code>	|arr                	|column-align      	|Right pad each column to equal length.
 `:@`                	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
+`:@`                	|arr int            	|pop-at            	|Remove element at specified index from array.  Push what's left of the array, and the element removed separately.
 `:,`                	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
 `:(`                	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)`                	|arr                	|right-rotations   	|All right rotations, starting from original.

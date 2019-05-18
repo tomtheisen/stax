@@ -1099,6 +1099,15 @@ namespace StaxLang {
                                     Push(new BigInteger(a.Count(e => AreEqual(e, b))));
                                 }
                                 break;
+                            case '$': {
+                                    block.AddDesc("Compare two values; push -1, 0, or 1");
+                                    dynamic b = Pop(), a = Pop();
+                                    int cmp = Comparer.Instance.Compare(a, b);
+                                    if (cmp > 0) Push(BigInteger.One);
+                                    else if (cmp < 0) Push(BigInteger.MinusOne);
+                                    else Push(BigInteger.Zero);
+                                }
+                                break;
                             case '|': 
                                 if (IsInt(Peek())) {
                                     block.AddDesc("bitwise or");

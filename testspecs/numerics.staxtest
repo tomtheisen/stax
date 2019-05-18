@@ -1144,3 +1144,30 @@ A{:CmJ
 26
 	stax
 ::
+	name:Cmp
+	in
+1 2
+	out
+-1
+	in
+"abc" "abcd"
+	out
+-1
+	in
+2 2
+	out
+0
+	in
+"foo" "foo"
+	out
+0
+	in
+3 2
+	out
+1
+	in
+"goo" "foo"
+	out
+1
+	stax
+|$
