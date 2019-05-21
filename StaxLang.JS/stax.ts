@@ -51,7 +51,6 @@ class EarlyTerminate extends Error {
 export class Runtime {
     private standardOut: (line: string) => void;
     private infoOut?: (line: string) => void;
-    private outBuffer = ""; // unterminated line output
     private program: Program;
     private mainStack: StaxArray = [];
     private inputStack: StaxArray = [];
@@ -67,8 +66,8 @@ export class Runtime {
     private y: StaxValue;
     private implicitEval = false;
 
-    constructor(output: (line: string) => void, info?: (line: string) => void) {
-        this.standardOut = output;
+    constructor(partialOutput: (line: string) => void, info?: (line: string) => void) {
+        this.standardOut = partialOutput;
         this.infoOut = info;
     }
 
@@ -144,6 +143,7 @@ export class Runtime {
         this.indexOuter = popped.indexOuter;
     }
 
+    private lastNewline = false;
     private print(val: StaxValue | string, newline = true) {
         this.producedOutput = true;
 
@@ -153,13 +153,8 @@ export class Runtime {
         if (isArray(val)) val = A2S(val);
         if (val instanceof Rational) val = val.toString();
 
-        if (newline) {
-            (this.outBuffer + val).split("\n").forEach(l => this.standardOut(l));
-            this.outBuffer = "";
-        }
-        else {
-            this.outBuffer += val;
-        }
+        this.standardOut(val + (newline ? "\n" : ""));
+        this.lastNewline = newline;
     }
 
     private doEval(): boolean {
@@ -286,8 +281,8 @@ export class Runtime {
             else throw e;
         }
 
-        if (this.outBuffer) this.print("");
         if (!this.producedOutput && this.totalSize()) this.print(this.pop());
+        if (!this.lastNewline) this.print("");
     }
 
     private *runSteps(block: Block): IterableIterator<ExecutionState> {

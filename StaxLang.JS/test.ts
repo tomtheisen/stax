@@ -36,7 +36,7 @@ class TestFiles{
 
     private parse(lines: string[]): TestCase[] {
         let mode = TestFileState.Name;
-        let currentCase = new TestCase();
+        let currentCase = new TestCase;
         let cases: TestCase[] = [];
 
         lines.forEach((fin, i) => {
@@ -97,8 +97,8 @@ class TestFiles{
             for (let prog of c.programs) {
                 for (let io of c.io) {
                     ++this.attempts;
-                    let output: string[] = [];
-                    var rt = new Runtime(output.push.bind(output));
+                    let outputFlat = "";
+                    var rt = new Runtime(o => outputFlat += o);
 
                     try {
                         let i = 0, start = (new Date).valueOf();
@@ -119,7 +119,7 @@ class TestFiles{
                     }
 
                     let expectedFlat = io.expected.join("\n").replace(/[\r\n]+$/, "");
-                    let outputFlat = output.join("\n").replace(/[\r\n]+$/, "");
+                    outputFlat = outputFlat.replace(/[\r\n]+$/, "");
                     if (expectedFlat === outputFlat) {
                         ++this.passed;
                     } else {
@@ -128,9 +128,9 @@ class TestFiles{
                         process.stdout.write("\x1b[31m");
                         console.error(`Error in ${this.name} ${ c.name || "" }:${ prog.line }`);
                         console.error("Expected:");
-                        for (let e of io.expected) console.error(e);
+                        console.error(expectedFlat);
                         console.error("Actual:");
-                        for (let o of output) console.error(o);
+                        console.error(outputFlat);
                         console.error();
                         console.error();
                         process.stdout.write("\x1b[0m");

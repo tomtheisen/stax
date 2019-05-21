@@ -90,7 +90,7 @@ function startNextInput() {
     let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
         line => {
-            outputEl.textContent += line + "\n";
+            outputEl.textContent += line;
             copyOutputButton.hidden = false;
         },
         warning => warningsEl.innerHTML += `<li>${ warning }`
