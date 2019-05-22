@@ -3747,7 +3747,16 @@ namespace StaxLang {
             }
 
             var a = Pop();
-            if (IsNumber(a) && IsNumber(b)) {
+            if (IsArray(a) && IsInt(b)) {
+                block.AddDesc("split array at index; push both parts");
+                b = (int)b;
+                if (b < -a.Count) b = -a.Count;
+                if (b > a.Count) b = a.Count;
+                if (b < 0) b += a.Count;
+                Push(((IEnumerable<object>)a).Take((int)b).ToList());
+                Push(((IEnumerable<object>)a).Skip((int)b).ToList());
+            }
+            else if (IsNumber(a) && IsNumber(b)) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "modulo " + e);
                 else block.AddDesc("modulus");
                 if (IsFloat(a) || IsFloat(b)) {

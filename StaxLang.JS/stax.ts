@@ -1822,7 +1822,14 @@ export class Runtime {
             return;
         }
         let a = this.pop();
-        if (isNumber(a) && isNumber(b)) {
+        if (isArray(a) && isInt(b)) {
+            let b_ = int.floatify(b);
+            if (b_ < -a.length) b_ = -a.length;
+            if (b_ > a.length) b_ = a.length;
+            if (b_ < 0) b_ += a.length;
+            this.push(a.slice(0, b_), a.slice(b_));
+        }
+        else if (isNumber(a) && isNumber(b)) {
             [a, b] = widenNumbers(a, b);
             let result: StaxNumber;
             if (typeof a === "number" && typeof b === "number") {

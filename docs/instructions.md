@@ -231,6 +231,7 @@ op                  	|Types              	|Name              	|Description
 `*`                 	|matrix matrix      	|matrix-mul        	|Matrix multiplication. A matrix is any array that contains at least one array, and no non-arrays.
 `/`                 	|arr int            	|array-group       	|Split array into groups of specified size.  The last group will be smaller if it's not a multiple.  If the divisor is zero, the result will be an empty array.  If the divisor is negative, the array will be reversed first.
 `%`                 	|arr                	|length            	|Array length
+`%`                 	|arr int            	|split-at          	|Split array at index; push both parts.
 `\`                 	|num num            	|pair              	|Make a 2 length array.
 `\`                 	|arr num            	|array-pair        	|Make array of pairs, all having identical second element.
 `\`                 	|num arr            	|array-pair        	|Make array of pairs, all having identical first element.
@@ -324,8 +325,6 @@ op                  	|Types              	|Name              	|Description
 `:*`                	|arr                	|product           	|Product of numbers in array.
 `:-`                	|arr                	|deltas            	|Pairwise difference of array.
 `:+`                	|arr                	|prefix-sums       	|Get the sums of all prefixes.
-`:/`                	|arr int            	|split-at          	|Split array at index; push both parts.
-`:/`                	|int arr            	|split-at          	|Split array at index; push both parts.
 `:\`                	|arr arr            	|diff-indices      	|Get indices of unequal elements between arrays.
 `:_`                	|arr                	|reduce-array      	|Divide all integers in array by their collective gcd.
 `:=`                	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
