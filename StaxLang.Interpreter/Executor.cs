@@ -1654,8 +1654,8 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     List<object> arr = Pop();
-                                    var result = arr[0];
-                                    foreach (var e in arr.Skip(1)) {
+                                    dynamic result = double.PositiveInfinity;
+                                    foreach (var e in arr) {
                                         if (Comparer.Instance.Compare(e, result) < 0) result = e;
                                     }
                                     this.Push(result);
@@ -1672,8 +1672,8 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     List<object> arr = Pop();
-                                    var result = arr[0];
-                                    foreach (var e in arr.Skip(1)) {
+                                    dynamic result = double.NegativeInfinity;
+                                    foreach (var e in arr) {
                                         if (Comparer.Instance.Compare(e, result) > 0) result = e;
                                     }
                                     this.Push(result);

@@ -1392,8 +1392,8 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             let arr = this.popArray();
-                            let result = arr[0];
-                            for (let e of arr.slice(1)) {
+                            let result: StaxValue = Number.POSITIVE_INFINITY;
+                            for (let e of arr) {
                                 if (compare(e, result) < 0) result = e; 
                             }
                             this.push(result);
@@ -1412,8 +1412,8 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             let arr = this.popArray();
-                            let result = arr[0];
-                            for (let e of arr.slice(1)) {
+                            let result: StaxValue = Number.NEGATIVE_INFINITY;
+                            for (let e of arr) {
                                 if (compare(e, result) > 0) result = e; 
                             }
                             this.push(result);
