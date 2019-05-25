@@ -383,9 +383,14 @@ namespace StaxLang {
                     case '@': // read index
                         DoAt(block);
                         break;
-                    case '&': // assign index
-                        DoAssignIndex(block);
+                    case '&': { // assign index
+                        bool cancelled = DoAssignIndex(block);
+                        if (cancelled) {
+                            yield return ExecutionState.CancelState;
+                            yield break;
+                        }
                         break;
+                    }
                     case '$':
                         if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "convert " + e + " to string");
                         else block.AddDesc("convert to string");
@@ -2972,7 +2977,9 @@ namespace StaxLang {
             }
         }
 
-        private void DoAssignIndex(Block block) {
+        /// <param name="block"></param>
+        /// <returns>if assignment was cancelled</returns>
+        private bool DoAssignIndex(Block block) {
             dynamic element = Pop(), indexes = Pop(), list;
 
             if (IsInt(indexes)) {
@@ -2992,7 +2999,7 @@ namespace StaxLang {
             }
             list = Pop();
 
-            void DoFinalAssign(List<object> flatArr, int index) {
+            bool DoFinalAssign(List<object> flatArr, int index) {
                 if (index + 1 > flatArr.Count) {
                     flatArr.AddRange(Enumerable.Repeat((object)BigInteger.Zero, index + 1 - flatArr.Count));
                 }
@@ -3005,9 +3012,11 @@ namespace StaxLang {
                     foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
                     if (!cancelled) flatArr[index] = Pop();
                     PopStackFrame();
+                    return cancelled;
                 }
                 else {
                     flatArr[index] = element;
+                    return false;
                 }
             }
 
@@ -3029,7 +3038,8 @@ namespace StaxLang {
                             target = (List<object>)target[idx];
                         }
                         idx = (int)(BigInteger)idxPath[idxPath.Count - 1];
-                        DoFinalAssign(target, idx);
+                        bool cancelled = DoFinalAssign(target, idx);
+                        if (cancelled) return true;
                     }
                     else if (IsInt(arg)) {
                         int index = (int)arg;
@@ -3041,15 +3051,16 @@ namespace StaxLang {
                             }
                         }
 
-                        DoFinalAssign(result, index);
+                        bool cancelled = DoFinalAssign(result, index);
+                        if (cancelled) return true;
                     }
                 }
                 Push(result);
+                return false;
             }
             else {
                 throw new StaxException("Bad type for index assign");
             }
-
         }
 
         private void DoAt(Block block) {
