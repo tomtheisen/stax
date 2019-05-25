@@ -2998,10 +2998,13 @@ namespace StaxLang {
                 }
 
                 if (IsBlock(element)) {
-                    Push(flatArr[index]);
+                    PushStackFrame();
+                    Index = new BigInteger(index);
+                    Push(_ = flatArr[index]);
                     bool cancelled = false;
                     foreach (var s in RunSteps((Block)element)) cancelled = s.Cancel;
                     if (!cancelled) flatArr[index] = Pop();
+                    PopStackFrame();
                 }
                 else {
                     flatArr[index] = element;
