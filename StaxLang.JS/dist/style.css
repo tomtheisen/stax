@@ -73,7 +73,7 @@ ol {
     visibility: hidden;
     position: absolute;
     background: #ddd;
-    top: 0;
+    top: 1.8em;
     right: 0;
     padding: 0.7em;
     border: solid #666 1px;
@@ -81,10 +81,16 @@ ol {
     min-width: 300px;
     width: 60vw;
     max-width: 800px;
+    transition-duration: 500ms;
+    transition-property: visibility;
 }
-button:hover + #drop, #drop:hover, #drop:focus-within {
+button:hover + #drop, #drop:hover {
     visibility: visible;
 }
+#drop:focus-within {
+    visibility: visible;
+}
+
 
 #warnings {
     padding: 0.5em 1.5em;
@@ -104,7 +110,6 @@ input.wide {
 
 .linkIcons {
     line-height: 1em;
-    float: right;
 }
 
 #generatepost {

@@ -10,10 +10,9 @@
     <body>
         <div id="aboutInfo">
             <a href="https://github.com/tomtheisen/stax/releases" id="version" title="Version history"></a>
+            <button id="quickref-link">Help/About…<span class="shortcut"> (F1)</span></button>
             <button>Tools ▼</button>
             <div id=drop>
-                <button id="quickref-link">Help/About…<span class="shortcut"> (F1)</span></button>
-
                 <details>
                     <summary><span class="btn">String Literal Compressor</span></summary>
                     <div id="compressorDialog" class="well">
@@ -59,6 +58,12 @@
                         </ul>
                     </div>
                 </details>
+
+                <div class="linkIcons">
+                    StackExchange: <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
+                    Direct Link: <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
+                    <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
+                </div>
             </div>
         </div>
         <h1><a href="https://github.com/tomtheisen/stax">Stax</a></h1>
@@ -92,11 +97,6 @@
         </div>
         <textarea id="stdin" spellcheck="false"></textarea>
 
-        <div class="linkIcons">
-            <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
-            <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
-            <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
-        </div>
         <button id="run" disabled>&#x25b6; Run<span class="shortcut"> (F8)</span></button>
         <button id="step" disabled>Step<span class="shortcut"> (F11)</span></button>
         <button id="stop" disabled>Stop<span class="shortcut"> (Esc)</span></button>
