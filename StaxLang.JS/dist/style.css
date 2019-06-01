@@ -55,7 +55,7 @@ h2 {
 
 h3 {
     margin: 0.5em 0 0 0;
-    font-size: 11pt;    
+    font-size: 11pt;
 }
 
 ol {
@@ -67,6 +67,23 @@ ol {
     max-width: calc(100vw - 9em);
     text-align: right;
     position: relative;
+}
+
+#drop {
+    visibility: hidden;
+    position: absolute;
+    background: #ddd;
+    top: 0;
+    right: 0;
+    padding: 0.7em;
+    border: solid #666 1px;
+    z-index: 1;
+    min-width: 300px;
+    width: 60vw;
+    max-width: 800px;
+}
+button:hover + #drop, #drop:hover, #drop:focus-within {
+    visibility: visible;
 }
 
 #warnings {
@@ -181,7 +198,6 @@ summary {
     cursor: pointer;
 }
 summary:hover .btn {
-    /* background-color: #fff9; */
     background-color: #55f;
 }
 
