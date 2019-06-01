@@ -438,11 +438,6 @@ doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
 compressorForceEl.addEventListener("change", doCompressor);
 
-const compressorDialog = document.getElementById("compressorDialog") as HTMLDivElement;
-document.getElementById("compressorOpen")!.addEventListener("click", () => {
-    compressorDialog.hidden = !compressorDialog.hidden;
-});
-
 function doCrammer() {
     let matches = crammerInputEl.value.match(/-?\d+/g);
     if (matches) {
@@ -454,11 +449,6 @@ function doCrammer() {
 }
 doCrammer();
 crammerInputEl.addEventListener("input", doCrammer);
-
-const crammerDialog = document.getElementById("crammerDialog") as HTMLDivElement;
-document.getElementById("crammerOpen")!.addEventListener("click", () => {
-    crammerDialog.hidden = !crammerDialog.hidden;
-});
 
 packButton.addEventListener("click", ev => {
     let code = codeArea.value, packed = isPacked(code);
