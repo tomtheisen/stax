@@ -81,8 +81,12 @@ ol {
     min-width: 300px;
     width: 60vw;
     max-width: 800px;
+    box-shadow: 0em 0em 0.5em 0em #0008;    
     transition-duration: 500ms;
     transition-property: visibility;
+}
+html.show-quickref #drop {
+    width: 30vw;
 }
 button:hover + #drop, #drop:hover {
     visibility: visible;
@@ -90,7 +94,6 @@ button:hover + #drop, #drop:hover {
 #drop:focus-within {
     visibility: visible;
 }
-
 
 #warnings {
     padding: 0.5em 1.5em;
