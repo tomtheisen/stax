@@ -270,7 +270,7 @@ namespace StaxLang {
                             if (IsNumber(a) && IsNumber(b)) {
                                 Push(a);
                                 Push(b);
-                                RunMacro("|*");
+                                RunMacro("|*"); // todo: do exponent here
                                 break;
                             }
                             if (IsNumber(a)) (a, b) = (b, a);
@@ -1402,7 +1402,7 @@ namespace StaxLang {
                                 else if (IsNumber(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "2 to the " + e);
                                     else block.AddDesc("power of 2");
-                                    RunMacro("2s|*");
+                                    RunMacro("2s#");
                                 }
                                 break;
                             case '3': 

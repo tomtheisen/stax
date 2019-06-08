@@ -1158,7 +1158,7 @@ export class Runtime {
                             this.push(result);
                         }
                         else if (isNumber(this.peek())) {
-                            this.runMacro("2s|*"); // power of 2
+                            this.runMacro("2s#"); // power of 2
                         }
                         break;
                     case '|3':
