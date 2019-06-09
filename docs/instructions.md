@@ -329,7 +329,6 @@ op                  	|Types              	|Name              	|Description
 `:_`                	|arr                	|reduce-array      	|Divide all integers in array by their collective gcd.
 `:=`                	|arr arr            	|equal-indices     	|Get indices of equal elements between arrays.
 `:!`                	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
-<code>:&#124;</code>	|arr                	|column-align      	|Right pad each column to equal length.
 `:@`                	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:@`                	|arr int            	|pop-at            	|Remove element at specified index from array.  Push what's left of the array, and the element removed separately.
 `:,`                	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
