@@ -14,6 +14,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ArrayCrammer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Block.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DirectEncoding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutionState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Executor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HuffmanCompressor.cs" />

@@ -160,6 +160,15 @@ bx cy dz
 1 2 3 -4 5
 	stax
 3{N}&J
+	name:AssignIndexMutateRegisters
+	in
+[11 22 33 44]
+	out
+i 2
+_ 33
+11 22 66 44
+	stax
+2 {.i piP._ p_P H}& JP
 	name:AssignIndexAll
 	in
 	out

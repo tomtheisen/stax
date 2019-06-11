@@ -1,0 +1,21 @@
+	#https://codegolf.stackexchange.com/questions/108804/is-this-sequence-graphic
+	in
+[]
+[3 3 3 2 2 2 1 1 1]
+[3 3 2 2 1 1]
+[3 3 2]
+[8 1 1 1 1 1 1 1 1]
+[1 1 1 1]
+[1 1 1]
+[9 5 4]
+	out
+1
+1
+1
+0
+1
+1
+0
+0
+	stax
+meWorO|cZBr{|cv}&

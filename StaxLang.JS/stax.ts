@@ -1158,7 +1158,7 @@ export class Runtime {
                             this.push(result);
                         }
                         else if (isNumber(this.peek())) {
-                            this.runMacro("2s|*"); // power of 2
+                            this.runMacro("2s#"); // power of 2
                         }
                         break;
                     case '|3':
@@ -1988,13 +1988,16 @@ export class Runtime {
             }
 
             if (element instanceof Block) {
-                self.push(flatArr[index]);
+                self.pushStackFrame();
+                self.index = int.make(index);
+                self.push(self._ = flatArr[index]);
                 let cancelled = false;
                 for (let s of self.runSteps(element)) {
                     yield s;
                     cancelled = s.cancel;
                 }
                 if (!cancelled) flatArr[index] = self.pop();
+                self.popStackFrame();
             }
             else {
                 flatArr[index] = element;
