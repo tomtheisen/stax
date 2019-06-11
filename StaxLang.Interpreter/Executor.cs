@@ -108,7 +108,7 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps the program ran</returns>
         public int Run(byte[] programBytes, string[] input, TimeSpan? timeout = null) {
-            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : Encoding.ASCII;
+            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : DirectEncoding.Instance;
             return Run(e.GetString(programBytes), input, timeout);
         }
 
