@@ -677,7 +677,10 @@ namespace StaxLang {
                         }
                         break;
                     case 'I': {
-                        if (TotalStackSize == 1) break;
+                        if (TotalStackSize == 1) {
+                            Push(Pop());
+                            break;
+                        }
                         dynamic b = Pop(), a = Pop();
                         if (IsInt(a) && IsInt(b)) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "bitwise and with " + e);
@@ -876,7 +879,10 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else if (TotalStackSize == 1) { /* minimum of single scalar is no-op */ }
+                        else if (TotalStackSize == 1) { 
+                            // minimum of single scalar is no-op
+                            Push(Pop());
+                        }
                         else {
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(b) && IsNumber(a)) {
@@ -918,7 +924,10 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else if (TotalStackSize == 1) { /* maximum of single scalar is no-op */ }
+                        else if (TotalStackSize == 1) { 
+                            // maximum of single scalar is no-op
+                            Push(Pop());
+                        }
                         else {
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(b) && IsNumber(a))
@@ -2142,7 +2151,10 @@ namespace StaxLang {
 
         private void DoPowersetOrXor(Block block) {
             if (IsInt(Peek())) {
-                if (TotalStackSize == 1) return;
+                if (TotalStackSize == 1) {
+                    Push(Pop());
+                    return;
+                }
                 BigInteger b = Pop();
                 if (IsInt(Peek())) {
                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Xor with " + e);
@@ -3454,7 +3466,10 @@ namespace StaxLang {
                 }
             }
             else if (IsInt(Peek())) {
-                if (TotalStackSize == 1) yield break;
+                if (TotalStackSize == 1) {
+                    Push(Pop());
+                    yield break;
+                }
                 BigInteger b = Pop();
                 dynamic a = Pop();
                 if (IsInt(a)) {
@@ -3613,7 +3628,10 @@ namespace StaxLang {
         }
 
         private void DoPlus(Block block) {
-            if (TotalStackSize < 2) return;
+            if (TotalStackSize < 2) {
+                Push(Pop());
+                return;
+            }
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -3794,7 +3812,10 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoStar(Block block) {
-            if (TotalStackSize < 2) yield break;
+            if (TotalStackSize < 2) {
+                Push(Pop());
+                yield break;
+            }
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a)) (a, b) = (b, a);

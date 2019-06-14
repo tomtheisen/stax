@@ -612,9 +612,19 @@ z:!
 0
 	stax
 z|(%
-	stax
 z2|(%
-	stax
 z|)%
-	stax
 z2|)%
+	name:NoOpReallyPushesToMain
+	in
+7
+	out
+7
+	stax
++ 13~
+* 13~
+t 13~
+T 13~
+S 13~
+I 13~
+M 13~
