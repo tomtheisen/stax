@@ -755,7 +755,10 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
-                            if (this.totalSize() < 2) break;
+                            if (this.totalSize() < 2) {
+                                this.push(this.pop());
+                                break;
+                            }
                             let top = this.pop(), next = this.pop();
                             if (isNumber(top) && isNumber(next)) {
                                 this.push(compare(next, top) < 0 ? next : top);
@@ -791,7 +794,10 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
-                            if (this.totalSize() < 2) break;
+                            if (this.totalSize() < 2) {
+                                this.push(this.pop());
+                                break;
+                            }
                             let top = this.pop(), next = this.pop();
                             if (isNumber(top) && isNumber(next)) {
                                 this.push(compare(next, top) > 0 ? next : top);
@@ -1617,7 +1623,10 @@ export class Runtime {
     }
 
     private doPlus() {
-        if (this.totalSize() < 2) return; 
+        if (this.totalSize() < 2) {
+            this.push(this.pop());
+            return;
+        }
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -1662,7 +1671,10 @@ export class Runtime {
     }
 
     private *doStar() {
-        if (this.totalSize() < 2) return;
+        if (this.totalSize() < 2) {
+            this.push(this.pop());
+            return;
+        }
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -2406,7 +2418,10 @@ export class Runtime {
     }
 
     private *doIndexOfOrAnd() {
-        if (this.totalSize() === 1) return;
+        if (this.totalSize() === 1) {
+            this.push(this.pop());
+            return;
+        }
         let target = this.pop(), arr = this.pop();
         if (isInt(target) && isInt(arr)) {
             this.push(int.bitand(target, arr));
