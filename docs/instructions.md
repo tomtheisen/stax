@@ -341,6 +341,7 @@ op                  	|Types              	|Name              	|Description
 `:B`                	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
 `:c`                	|arr                	|coalesce          	|Get first truthy element of array.
 `:d`                	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
+`:E`                	|arr                	|first-last         |Get the first and last element of an array. e.g. `[1,2,3,4]` -> `[1, 4]`
 `:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`
 `:F`                	|arr                	|falsy-indices     	|~~Get all indices of falsy elements.~~ Deprecated.  Use `:0` instead.
 `:g`                	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
