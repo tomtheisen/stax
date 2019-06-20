@@ -1137,3 +1137,27 @@ as
 aa
 	stax
 m:E
+	name:CartesianPower
+	in
+"abc" 3
+	out
+aaa aab aac aba abb abc aca acb acc baa bab bac bba bbb bbc bca bcb bcc caa cab cac cba cbb cbc cca ccb ccc
+	stax
+:$ J
+	name:EmptyCartesianPower
+	out
+1
+	stax
+"abc" 0 :$ %
+	name:CartesianProduct
+	in
+["ab" "xyz" "."]
+	out
+ax. ay. az. bx. by. bz.
+	stax
+:$ J
+	name:EmptyCartesianProduct
+	out
+1
+	stax
+z :$ %

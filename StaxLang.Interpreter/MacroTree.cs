@@ -58,6 +58,8 @@ namespace StaxLang {
                 ('@', "a", "{f%", "count truthy elements"),
                 ('@', "ii", "|>2%", "get the nth bit of an integer"),
                 ('@', "ai", "n%%b|@aa@", "remove element at specified index; push remaining array and removed element separately"),
+                ('$', "ai", "c{s]*{|*k}{dz]}?", "cartesian power of array"),
+                ('$', "a", "c{{|*k}z]?", "cartesian product of arrays in array"),
                 (':', "ai", "/{hm", "get every nth element"),
                 (':', "ii", "|2|^", "toggle bit"),
                 (':', "ia", "{|2|^F", "toggle bits"),
