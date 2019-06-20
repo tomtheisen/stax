@@ -61,6 +61,8 @@ function setup() {
         { alias: "@", types: "a", code: "{f%"},
         { alias: "@", types: "ii", code: "|>2%"},
         { alias: "@", types: "ai", code: "n%%b|@aa@"},
+        { alias: "$", types: "ai", code: "c{s]*{|*k}{dz]}?"},
+        { alias: "$", types: "a", code: "c{{|*k}z]?"},
         { alias: ":", types: "ai", code: "/{hm"},
         { alias: ":", types: "ii", code: "|2S"},
         { alias: ":", types: "ia", code: "{|2SF"},
