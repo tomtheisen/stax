@@ -1239,7 +1239,7 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             // keep elements of a, no more than their occurrences in b
-                            let b = this.popArray(), a = this.popArray(), result = [];
+                            let b = this.popArray().slice(), a = this.popArray(), result = [];
                             for (let e of a) {
                                 for (let i = 0; i < b.length; i++) {
                                     if (areEqual(b[i], e)) {
