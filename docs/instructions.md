@@ -332,7 +332,7 @@ op                  	|Types              	|Name              	|Description
 `:@`                	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:@`                	|arr int            	|pop-at            	|Remove element at specified index from array.  Push what's left of the array, and the element removed separately.
 `:$`                	|arr int            	|cartesian-power   	|Cartesian power of array. e.g. `"ab"`, `3` -> `["aaa","aab","aba","abb","baa","bab","bba","bbb"]`
-`:$`                	|arr                	|cartesian-product 	|Cartesian power of array. e.g. `["ab", "xy"]` -> `["ax","ay","bx","by"]`
+`:$`                	|arr                	|cartesian-product 	|Cartesian product of subarray. e.g. `["ab", "xy"]` -> `["ax","ay","bx","by"]`
 `:,`                	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
 `:(`                	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)`                	|arr                	|right-rotations   	|All right rotations, starting from original.
