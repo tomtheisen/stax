@@ -58,12 +58,6 @@
                         </ul>
                     </div>
                 </details>
-
-                <div class="linkIcons">
-                    StackExchange: <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
-                    Direct Link: <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
-                    <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
-                </div>
             </div>
         </div>
         <h1><a href="https://github.com/tomtheisen/stax">Stax</a></h1>
@@ -96,6 +90,11 @@
             </label>
         </div>
         <textarea id="stdin" spellcheck="false"></textarea>
+        <div class="linkIcons">
+            <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
+            <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
+            <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
+        </div>
 
         <button id="run" disabled>&#x25b6; Run<span class="shortcut"> (F8)</span></button>
         <button id="step" disabled>Step<span class="shortcut"> (F11)</span></button>

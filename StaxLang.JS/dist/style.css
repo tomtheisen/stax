@@ -113,6 +113,7 @@ input.wide {
 
 .linkIcons {
     line-height: 1em;
+    float:right;
 }
 
 #generatepost {
