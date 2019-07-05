@@ -13,6 +13,22 @@
             <button id="quickref-link">Help/About…<span class="shortcut"> (F1)</span></button>
             <button>Tools ▼</button>
             <div id=drop>
+                <div id=layout>
+                    <h2 style="display: inline;">Layout:</h2>
+                    <label>
+                        <input type=radio name=layout value="vertical" checked>
+                        Vertical
+                    </label>
+                    <label>
+                        <input type=radio name=layout value="debug-right">
+                        Debug on right
+                    </label>
+                    <label>
+                        <input type=radio name=layout value="input-right">
+                        Input on right
+                    </label>
+                </div>
+
                 <details>
                     <summary><span class="btn">String Literal Compressor</span></summary>
                     <div id="compressorDialog" class="well">
@@ -69,55 +85,65 @@
             <button id="upload" title="Upload">&#11121;</button>
             <input type="file" id="uploadFile" accept=".stax" hidden="true">
         </div>
-        <h2>Code (F2)</h2>
-        <ul id="warnings"></ul>
-        <textarea id="code" spellcheck="false"></textarea>
-        
-        <h2>Input (F4)</h2>
-        <div class="upperRight">
-            <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
-            <label>
-                <input type="radio" name="splitMode" id="blankSplit">
-                \n\n+
-            </label>
-            <label>
-                <input type="radio" name="splitMode" id="lineSplit">
-                \n
-            </label>
-            <label>
-                <input type="radio" name="splitMode" id="noSplit">
-                None
-            </label>
-        </div>
-        <textarea id="stdin" spellcheck="false"></textarea>
-        <div class="linkIcons">
-            <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
-            <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
-            <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
-        </div>
 
-        <button id="run" disabled>&#x25b6; Run<span class="shortcut"> (F8)</span></button>
-        <button id="step" disabled>Step<span class="shortcut"> (F11)</span></button>
-        <button id="stop" disabled>Stop<span class="shortcut"> (Esc)</span></button>
-        <span id="status"></span>
-        
-        <div id="debugState" class="well" hidden>
-            <h2>State</h2>
-            <div id="debugCode">
-                <span id="debugCodePre"></span><span id="debugCodePost"></span>
+        <div id="layout-grid">
+            <div id=grid-code>
+                <h2>Code (F2)</h2>
+                <ul id="warnings"></ul>
+                <textarea id="code" spellcheck="false"></textarea>
             </div>
-            <dl>
-                <dt>X</dt><dd id="watchX"></dd>
-                <dt>Y</dt><dd id="watchY"></dd>
-                <dt>i</dt><dd id="watchi"></dd>
-                <dt>_</dt><dd id="watch_"></dd>
-            </dl>
-            <h3>Main stack</h3>
-            <ol id="watchMain"></ol>
-            <h3>Input stack</h3>
-            <ol id="watchInput"></ol>
-        </div>
 
+            <div id=grid-input>
+                <h2>Input (F4)</h2>
+                <div class="upperRight">
+                    <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
+                    <label>
+                        <input type="radio" name="splitMode" id="blankSplit">
+                        \n\n+
+                    </label>
+                    <label>
+                        <input type="radio" name="splitMode" id="lineSplit">
+                        \n
+                    </label>
+                    <label>
+                        <input type="radio" name="splitMode" id="noSplit">
+                        None
+                    </label>
+                </div>
+                <textarea id="stdin" spellcheck="false"></textarea>
+            </div>
+
+            <div id=grid-controls>
+                <div class="linkIcons">
+                    <a id="generatepost" href="javascript:void(0);" title="Copy stack exchange post template">&#128203;</a>
+                    <a id="savelink" href="javascript:void(0);" title="Perma-link (Ctrl+S to save program in url fragment)">&#128279;</a>
+                    <label><input type="checkbox" id="autoRunPermalink"> Auto-run</label>
+                </div>
+        
+                <button id="run" disabled>&#x25b6; Run<span class="shortcut"> (F8)</span></button>
+                <button id="step" disabled>Step<span class="shortcut"> (F11)</span></button>
+                <button id="stop" disabled>Stop<span class="shortcut"> (Esc)</span></button>
+                <span id="status"></span>
+            </div>
+
+            <div id="debugState" class="well" hidden>
+                <h2>State</h2>
+                <div id="debugCode">
+                    <span id="debugCodePre"></span><span id="debugCodePost"></span>
+                </div>
+                <dl>
+                    <dt>X</dt><dd id="watchX"></dd>
+                    <dt>Y</dt><dd id="watchY"></dd>
+                    <dt>i</dt><dd id="watchi"></dd>
+                    <dt>_</dt><dd id="watch_"></dd>
+                </dl>
+                <h3>Main stack</h3>
+                <ol id="watchMain"></ol>
+                <h3>Input stack</h3>
+                <ol id="watchInput"></ol>
+            </div>
+        </div>
+        
         <h2>Output <button id="outputCopy" hidden="hidden">Copy</button></h2>
         <pre id="output"></pre>
 

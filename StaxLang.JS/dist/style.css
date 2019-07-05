@@ -224,6 +224,37 @@ summary:hover .btn {
     top: -1.2em;
 }
 
+#layout-grid {
+    display: grid;
+    clear: both;
+    grid-template-areas: 
+        "code"
+        "in"
+        "ctrl"
+        "dbg";
+    grid-auto-columns: 1fr;
+    grid-column-gap: 1em;
+}
+
+html[data-layout=vertical] #layout-grid { }
+html[data-layout=input-right] #layout-grid {
+    grid-template-areas: 
+        "code in"
+        "ctrl ctrl"
+        "dbg  dbg";
+}
+html[data-layout=debug-right] #layout-grid {
+    grid-template-areas: 
+        "code dbg"
+        "in   dbg"
+        "ctrl dbg";
+}
+
+#grid-code { grid-area: code; }
+#grid-input { grid-area: in; }
+#grid-controls { grid-area: ctrl; }
+#debugState { grid-area: dbg; }
+
 @media (max-width: 600px) {
     .shortcut {
         display: none;

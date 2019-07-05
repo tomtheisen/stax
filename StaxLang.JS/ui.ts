@@ -580,6 +580,15 @@ for (let id of ["quickref-close", "quickref-link"]) {
     (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
 }
 
+function setLayout() {
+    let checkedEl = document.getElementById("layout")!.querySelector(":checked");
+    if (checkedEl instanceof HTMLInputElement) {
+        document.querySelector("html")!.setAttribute("data-layout", checkedEl.value);
+    }
+}
+setLayout();
+document.getElementById("layout")!.addEventListener("change", setLayout);
+
 document.addEventListener("keydown", ev => {
     switch (ev.key) {
         case "S":
