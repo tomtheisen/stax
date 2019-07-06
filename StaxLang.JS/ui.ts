@@ -18,6 +18,7 @@ document.getElementById("buildInfo")!.textContent = `
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 40;
 
+const root = document.firstElementChild as HTMLHtmlElement;
 const runButton = document.getElementById("run") as HTMLButtonElement;
 const stepButton = document.getElementById("step") as HTMLButtonElement;
 const stopButton = document.getElementById("stop") as HTMLButtonElement;
@@ -41,7 +42,6 @@ const compressorOutputEl = document.getElementById("compressorOutput") as HTMLIn
 const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
 const crammerInputEl = document.getElementById("crammerInput") as HTMLInputElement;
 const crammerOutputEl = document.getElementById("crammerOutput") as HTMLInputElement;
-const debugContainer = document.getElementById("debugState") as HTMLElement;
 const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
 const blankSplitEl = document.getElementById("blankSplit") as HTMLInputElement;
 const lineSplitEl = document.getElementById("lineSplit") as HTMLInputElement;
@@ -70,7 +70,7 @@ function resetRuntime() {
 
     golfButton.disabled = packButton.disabled = upButton.disabled = true;
     codeArea.disabled = inputArea.disabled = true;
-    debugContainer.hidden = true;
+    root.classList.remove("debugging");
     stopButton.disabled = false;
     copyOutputButton.hidden = true;
 
@@ -103,7 +103,8 @@ function startNextInput() {
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
     upButton.disabled = codeArea.disabled = inputArea.disabled = false;
-    stopButton.disabled = debugContainer.hidden = true;
+    stopButton.disabled = true;
+    root.classList.remove("debugging");
     updateStats();
 }
 
@@ -127,7 +128,7 @@ function runProgramTimeSlice() {
         return;
     }
 
-    debugContainer.hidden = true;
+    root.classList.remove("debugging");
 
     let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
     try {
@@ -163,7 +164,7 @@ runButton.addEventListener("click", run);
 function step() : number | null {
     function caseComplete() {
         startNextInput();
-        debugContainer.hidden = true;
+        root.classList.remove("debugging");
         if (isActive()) statusEl.textContent = `${ steps } steps, program ended`
         else statusEl.textContent = `${ steps } steps, complete`;
     }
@@ -205,7 +206,7 @@ function showDebugInfo(ip: number, steps: number) {
         return stax.split(/\n/g).map(line => line.replace(/\t.*/, "")).join("\n");
     }
     if (!activeRuntime) return;
-    debugContainer.hidden = false;
+    root.classList.add("debugging");
 
     stopButton.disabled = false;
     statusEl.textContent = `${ steps } steps, paused`;
@@ -362,7 +363,6 @@ function load() {
 
     if (params.get('a')) {
         autoCheckEl.checked = true;
-        debugger;
         run();
     }
 }
@@ -581,10 +581,8 @@ for (let id of ["quickref-close", "quickref-link"]) {
 }
 
 function setLayout() {
-    let checkedEl = document.getElementById("layout")!.querySelector(":checked");
-    if (checkedEl instanceof HTMLInputElement) {
-        document.querySelector("html")!.setAttribute("data-layout", checkedEl.value);
-    }
+    let checkedEl = document.querySelector("#layout :checked");
+    if (checkedEl instanceof HTMLInputElement) root.setAttribute("data-layout", checkedEl.value);
 }
 setLayout();
 document.getElementById("layout")!.addEventListener("change", setLayout);

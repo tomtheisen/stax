@@ -136,8 +136,12 @@ input.wide {
     white-space: pre-wrap;
 }
 #debugState {
+    display: none;
     margin-left: 0;
     margin-right: 0;
+}
+html.debugging #debugState {
+    display: block;
 }
 
 #compressorInfo, #crammerInfo {
@@ -221,11 +225,11 @@ summary:hover .btn {
     padding: 0.5em;
 }
 
-.upperRight {
-    float: right;
-    height: 0;
-    position: relative;
-    top: -1.2em;
+#input-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: flex-end;
 }
 
 #layout-grid {
@@ -249,9 +253,15 @@ html[data-layout=input-right] #layout-grid {
 }
 html[data-layout=debug-right] #layout-grid {
     grid-template-areas: 
+        "ctrl"
+        "code"
+        "in  ";
+}
+html[data-layout=debug-right].debugging #layout-grid {
+    grid-template-areas: 
+        "ctrl ctrl"
         "code dbg"
-        "in   dbg"
-        "ctrl dbg";
+        "in   dbg";
 }
 
 #grid-code { grid-area: code; }

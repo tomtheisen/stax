@@ -94,21 +94,23 @@
             </div>
 
             <div id=grid-input>
-                <h2>Input (F4)</h2>
-                <div class="upperRight">
-                    <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
-                    <label>
-                        <input type="radio" name="splitMode" id="blankSplit">
-                        \n\n+
-                    </label>
-                    <label>
-                        <input type="radio" name="splitMode" id="lineSplit">
-                        \n
-                    </label>
-                    <label>
-                        <input type="radio" name="splitMode" id="noSplit">
-                        None
-                    </label>
+                <div id=input-header>
+                    <h2>Input (F4)</h2>
+                    <div>
+                        <strong title="This option creates multiple inputs that are each evaluated by a fresh invocation of the program.">Separator:</strong>
+                        <label>
+                            <input type="radio" name="splitMode" id="blankSplit">
+                            \n\n+
+                        </label>
+                        <label>
+                            <input type="radio" name="splitMode" id="lineSplit">
+                            \n
+                        </label>
+                        <label>
+                            <input type="radio" name="splitMode" id="noSplit">
+                            None
+                        </label>
+                    </div>
                 </div>
                 <textarea id="stdin" spellcheck="false"></textarea>
             </div>
@@ -126,7 +128,7 @@
                 <span id="status"></span>
             </div>
 
-            <div id="debugState" class="well" hidden>
+            <div id="debugState" class="well">
                 <div id="debugCode">
                     <span id="debugCodePre"></span><span id="debugCodePost"></span>
                 </div>
