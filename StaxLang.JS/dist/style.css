@@ -67,9 +67,10 @@ ol {
     max-width: calc(100vw - 9em);
     text-align: right;
     position: relative;
+    white-space: nowrap;
 }
-
 #drop {
+    white-space: normal;
     visibility: hidden;
     position: absolute;
     background: #ddd;
@@ -109,11 +110,6 @@ button:hover + #drop, #drop:hover {
 
 input.wide {
     width: 100%;
-}
-
-.linkIcons {
-    line-height: 1em;
-    float:right;
 }
 
 #generatepost {
@@ -225,11 +221,25 @@ summary:hover .btn {
     padding: 0.5em;
 }
 
-#input-header {
+.section-header {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: flex-end;
+}
+
+#control-header {
+    display: flex;
+    justify-content: space-between;
+}
+#control-header > *:nth-child(n+2) {
+    margin-left: 0.5em;
+}
+#control-header #size-info {
+    flex-shrink: 0;
+}
+#control-header #controls {
+    min-width: 160px;
 }
 
 #layout-grid {
@@ -238,7 +248,6 @@ summary:hover .btn {
     grid-template-areas: 
         "code"
         "in"
-        "ctrl"
         "dbg";
     grid-auto-columns: 1fr;
     grid-column-gap: 1em;
@@ -248,25 +257,21 @@ html[data-layout=vertical] #layout-grid { }
 html[data-layout=input-right] #layout-grid {
     grid-template-areas: 
         "code in"
-        "ctrl ctrl"
         "dbg  dbg";
 }
 html[data-layout=debug-right] #layout-grid {
     grid-template-areas: 
-        "ctrl"
         "code"
         "in  ";
 }
 html[data-layout=debug-right].debugging #layout-grid {
     grid-template-areas: 
-        "ctrl ctrl"
         "code dbg"
         "in   dbg";
 }
 
 #grid-code { grid-area: code; }
 #grid-input { grid-area: in; }
-#grid-controls { grid-area: ctrl; }
 #debugState { grid-area: dbg; }
 
 @media (max-width: 600px) {
