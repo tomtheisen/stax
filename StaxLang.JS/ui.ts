@@ -427,6 +427,7 @@ newLink.addEventListener("click", ev => {
     }
     outputEl.textContent = "";
     copyOutputButton.hidden = true;
+    warningsEl.textContent = "";
     stop();
 });
 
