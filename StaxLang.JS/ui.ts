@@ -31,6 +31,7 @@ const copyOutputButton = document.getElementById("outputCopy") as HTMLButtonElem
 const warningsEl = document.getElementById("warnings") as HTMLUListElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
+const newLink = document.getElementById("newfile") as HTMLAnchorElement;
 const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const golfButton = document.getElementById("golf") as HTMLButtonElement;
@@ -414,6 +415,19 @@ postLink.addEventListener("click", ev => {
     template += `\n[Run and debug it](${ saveLink.href })`
 
     setClipboard(template);
+});
+
+newLink.addEventListener("click", ev => {
+    if (!confirm("Reset program and input?")) return;
+
+    for (let area of [codeArea, inputArea]) {
+        area.value = "";
+        area.style.height = null;
+        area.rows = 2;
+    }
+    outputEl.textContent = "";
+    copyOutputButton.hidden = true;
+    stop();
 });
 
 function doCompressor() {
