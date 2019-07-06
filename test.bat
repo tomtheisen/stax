@@ -1,13 +1,14 @@
 @echo off
+for /f "usebackq tokens=*" %%i in (`vswhere -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe`) do (
+  "%%i" /nologo /verbosity:m /p:Configuration=Release
+)
 
-REM msbuild /nologo /verbosity:m
-REM msbuild only works in VS prompt because of PATH :(
 echo ========================
 echo .NET test
 echo ========================
-StaxLang.CLI\bin\Debug\stax.exe -tests testspecs
+StaxLang.CLI\bin\Release\stax.exe -tests testspecs
 
-cd StaxLang.JS
+pushd StaxLang.JS
 echo.
 echo ========================
 echo Node test
@@ -16,3 +17,4 @@ REM call is needed here.  without it the script terminates after this line
 call npm run --silent test
 echo.
 call npm run --silent test -- --nobigint
+popd
