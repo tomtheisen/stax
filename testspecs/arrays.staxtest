@@ -1161,3 +1161,33 @@ ax. ay. az. bx. by. bz.
 1
 	stax
 z :$ %
+	name:SetwiseEqual
+	in
+[3,4,3] [3,4]
+	out
+1
+	in
+[3,4,3,5] [3,4]
+	out
+0
+	in
+[3,4,3] [3,4,5]
+	out
+0
+	stax
+|{
+	name:MultisetEqual
+	in
+[3,4,3] [3,4]
+	out
+0
+	in
+[3,4,3] [3,3,4]
+	out
+1
+	in
+[3,4,3] [3,3,4,4]
+	out
+0
+	stax
+|}

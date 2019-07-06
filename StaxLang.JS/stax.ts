@@ -953,6 +953,12 @@ export class Runtime {
                     case '|]':
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
                         break;
+                    case '|{':
+                        this.runMacro("o|RMhso|RMh="); // setwise equal
+                        break;
+                    case '|}':
+                        this.runMacro("oso="); // multiset equal
+                        break;
                     case '|^':
                         if (isArray(this.peek())) {
                             this.runMacro("s b-~ s-, +"); // symmetric array difference

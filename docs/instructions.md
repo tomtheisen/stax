@@ -294,6 +294,8 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;(</code>	|arr int            	|rotate-left-n     	|Shift array n places to the right, rotating the front to the end.
 <code>&#124;[</code>	|arr                	|prefixes          	|All prefixes of array.
 <code>&#124;]</code>	|arr                	|suffixes          	|All suffixes of array.
+<code>&#124;{</code>	|arr arr            	|setwise-equal     	|Arrays are setwise equal? e.g. `[1,2,2]`, `[2,1]` -> `1`
+<code>&#124;}</code>	|arr arr            	|multiset-equal    	|Arrays are different orderings of same elements? e.g. `[1,2,2]`, `[2,1,2]` -> `1`
 <code>&#124;a</code>	|arr                	|any               	|Any elements of array are truthy?
 <code>&#124;A</code>	|arr                	|all               	|All elements of array are truthy?
 <code>&#124;b</code>	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.

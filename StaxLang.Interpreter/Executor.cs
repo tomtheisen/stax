@@ -108,7 +108,7 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps the program ran</returns>
         public int Run(byte[] programBytes, string[] input, TimeSpan? timeout = null) {
-            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : DirectEncoding.Instance;
+            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : Encoding.ASCII /* DirectEncoding.Instance  */;
             return Run(e.GetString(programBytes), input, timeout);
         }
 
@@ -1305,6 +1305,14 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "all suffixes of " + e);
                                 else block.AddDesc("generate all suffixes");
                                 RunMacro("~;%R{;s)mr,d");
+                                break;
+                            case '{':
+                                block.AddDesc("setwise equal?");
+                                RunMacro("o|RMhso|RMh=");
+                                break;
+                            case '}':
+                                block.AddDesc("multi-set equal?");
+                                RunMacro("oso=");
                                 break;
                             case '<':
                                 if (IsInt(Peek())) {
