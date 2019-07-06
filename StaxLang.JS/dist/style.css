@@ -131,9 +131,13 @@ input.wide {
 #compressorOutput, #debugCode, #debugState dl {
     font-family: monospace;
 }
-#debugState dd, #debugState li{
+#debugState dd, #debugState li {
     font-family: monospace;
     white-space: pre-wrap;
+}
+#debugState {
+    margin-left: 0;
+    margin-right: 0;
 }
 
 #compressorInfo, #crammerInfo {
