@@ -237,6 +237,7 @@ op                  	|Types              	|Name              	|Description
 `\`                 	|num arr            	|array-pair        	|Make array of pairs, all having identical first element.
 `\`                 	|arr arr            	|zip-repeat        	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
 `@`                 	|arr int            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
+`@`                 	|int arr            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
 `@`                 	|arr int int ...    	|element-at        	|Get element in multi-dimensional array using all integer indices.
 `@`                 	|arr arr            	|elements-at       	|Get elements at all indices.
 `&`                 	|arr int any        	|assign-index      	|Assign non-block element at index.  Negatives index backwards.  OOB extends the array.
