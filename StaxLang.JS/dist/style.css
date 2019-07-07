@@ -244,7 +244,7 @@ summary:hover .btn {
 
 #layout-grid {
     display: grid;
-    clear: both;
+    grid-template-rows: max-content 1fr;
     grid-template-areas: 
         "code"
         "in"

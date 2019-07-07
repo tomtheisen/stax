@@ -1144,6 +1144,12 @@ m:E
 aaa aab aac aba abb abc aca acb acc baa bab bac bba bbb bbc bca bcb bcc caa cab cac cba cbb cbc cca ccb ccc
 	stax
 :$ J
+	in
+[1, 2] 3
+	out
+3
+	stax
+:$ h %
 	name:EmptyCartesianPower
 	out
 1
@@ -1156,6 +1162,12 @@ aaa aab aac aba abb abc aca acb acc baa bab bac bba bbb bbc bca bcb bcc caa cab 
 ax. ay. az. bx. by. bz.
 	stax
 :$ J
+	in
+["a" "b" "c"]
+	out
+97 98 99
+	stax
+:$ h J
 	name:EmptyCartesianProduct
 	out
 1
