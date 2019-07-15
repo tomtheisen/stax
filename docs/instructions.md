@@ -261,8 +261,8 @@ op                  	|Types              	|Name              	|Description
 `r`                 	|int                	|0-range           	|Make range [0 .. n-1].
 `r`                 	|arr                	|reverse           	|Reverse array.
 `R`                 	|int                	|1-range           	|Make range [1 .. n].
-`t`                 	|arr int            	|remove-left       	|Trim n elements from left of array.
-`T`                 	|arr int            	|remove-right      	|Trim n elements from right of array.
+`t`                 	|arr int            	|remove-left       	|Trim n elements from left of array.  Negative numbers prepend that many zeroes.
+`T`                 	|arr int            	|remove-right      	|Trim n elements from right of array.  Negative number append that many zeroes.
 `S`                 	|arr                	|powerset          	|Get all combinations of elements in array.  If the array was ordered, all combinations will be in lexicographic order.
 `S`                 	|arr int            	|combinations      	|Get all combinations of specified size from array.  If the array was ordered, all combinations will be in lexicographic order.
 `u`                 	|arr                	|unique            	|Keep only unique elements in array, maintaining first order of appearance.
