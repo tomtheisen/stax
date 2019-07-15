@@ -63,7 +63,7 @@ namespace StaxLang {
                 (':', "ai", "/{hm", "get every nth element"),
                 (':', "ii", "|2|^", "toggle bit"),
                 (':', "ia", "{|2|^F", "toggle bits"),
-                ('/', "ii", "ss0~{b%Csn/s,^~Wdd,", "how many times will b divide a?"),
+                ('/', "ii", "ssn{0~{b%Csn/s,^~Wdd,}{ddVI}?", "how many times will b divide a?"),
                 ('/', "ai", "n%NcN:cc0<{n%+}Mb(aat", "split array at index; push both"),
                 ('/', "ia", "sn%NcN:cc0<{n%+}Mb(aat", "split array at index; push both"),
                 ('/', "aa", "b[Is%^%~n,(~%t;%t,s", "split on first substring occurrence, and push both sides"),

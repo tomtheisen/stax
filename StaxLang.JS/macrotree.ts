@@ -66,7 +66,7 @@ function setup() {
         { alias: ":", types: "ai", code: "/{hm"},
         { alias: ":", types: "ii", code: "|2S"},
         { alias: ":", types: "ia", code: "{|2SF"},
-        { alias: "/", types: "ii", code: "ss0~{b%Csn/s,^~Wdd,"},
+        { alias: "/", types: "ii", code: "ssn{0~{b%Csn/s,^~Wdd,}{ddVI}?"},
         { alias: "/", types: "ai", code: "n%NcN:cc0<{n%+}Mb(aat", deprecation: "<code>:/</code> for split-at is deprecated.  Use <code>%</code> instead."},
         { alias: "/", types: "ia", code: "sn%NcN:cc0<{n%+}Mb(aat", deprecation: "<code>:/</code> for split-at is deprecated.  Use <code>s%</code> instead."},
         { alias: "/", types: "aa", code: "b[Is%^%~n,(~%t;%t,s"},
