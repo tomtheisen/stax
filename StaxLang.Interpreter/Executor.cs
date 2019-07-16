@@ -3802,7 +3802,7 @@ namespace StaxLang {
                     a = (Rational)a;
                     b = (Rational)b;
                 }
-                var result = a % b;
+                var result = b == 0 ? a : a % b;
                 if (result < 0) {
                     if (b < 0) b = -b;
                     result += b;

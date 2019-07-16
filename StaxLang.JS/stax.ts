@@ -7,7 +7,7 @@ import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
-import { Rational } from './rational';
+import { Rational, zero as ratZero } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
@@ -1851,14 +1851,22 @@ export class Runtime {
             [a, b] = widenNumbers(a, b);
             let result: StaxNumber;
             if (typeof a === "number" && typeof b === "number") {
-                result = a % b;
-                if (result < 0) result += Math.abs(b);
+                if (b === 0) result = a;
+                else {
+                    result = a % b;
+                    if (result < 0) result += Math.abs(b);
+                }
             }
             else if (isInt(a) && isInt(b)) {
-                result = int.mod(a, b);
-                if (result.valueOf() < 0) result = int.add(result, b);
+                if (int.eq(b, zero)) result = a;
+                else {
+                    result = int.mod(a, b);
+                    if (result.valueOf() < 0) result = int.add(result, b);
+                }
             }
-            else if (a instanceof Rational && b instanceof Rational) result = a.mod(b);
+            else if (a instanceof Rational && b instanceof Rational) {
+                result = b.equals(ratZero) ? a : a.mod(b);
+            }
             else throw new Error("bad types for %");
             this.push(result);
         }
