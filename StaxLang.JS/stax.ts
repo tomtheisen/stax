@@ -1553,7 +1553,7 @@ export class Runtime {
                     }
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
-                        this.push(text.split(new RegExp(search)).map(S2A));
+                        this.push(text.split(new RegExp(search)).filter(p => typeof p === "string").map(S2A));
                         break;
                     }
                     case '|S': { // surround

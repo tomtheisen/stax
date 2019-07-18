@@ -638,3 +638,10 @@ ab
 ∞
 	stax
 01:/
+	name:UnmatchedRegexSplitCaptureGroup
+	in
+as-dxf-xgh
+	out
+as dxf x gh
+	stax
+"-(x)?"|sJ
