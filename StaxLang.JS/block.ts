@@ -19,7 +19,7 @@ export class Block {
     isEmpty(): boolean {
         for (let token of this.tokens) {
             if (typeof token === 'string') {
-                if (/^\S/.exec(token[0])) return false;
+                if (/^\S/.exec(token[0])) return token[0] === '}';
             }
             else if (!token.isEmpty()) return false;
         }

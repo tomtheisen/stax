@@ -645,3 +645,10 @@ as-dxf-xgh
 as dxf x gh
 	stax
 "-(x)?"|sJ
+	name:ImplicitGeneratorSuccessorWithCallTarget
+	out
+0
+1
+2
+	stax
+0g3}L

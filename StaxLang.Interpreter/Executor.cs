@@ -2401,7 +2401,7 @@ namespace StaxLang {
                 + (stopOnTargetVal ? "until specified target value, " : "")
                 + targetCountClause
                 + (postPop ? "popping each value" : "including the initial value"));
-            if (genblock.Contents == "") block.AddAmbient("generator block is empty; using increment");
+            if (genblock.IsEmpty()) block.AddAmbient("generator block is empty; using increment");
 
             if (targetCount == 0) { // 0 elements requested ??
                 Push(new List<object>()); 
