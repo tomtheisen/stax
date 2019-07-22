@@ -1,5 +1,5 @@
 import { Runtime, ExecutionState } from './stax';
-import { parseProgram, Block, getCodeType, CodeType } from './block';
+import { parseProgram, Block, getCodeType, CodeType, StringLiteralTypes, compressLiterals, decompressLiterals } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
@@ -35,6 +35,8 @@ const newLink = document.getElementById("newfile") as HTMLAnchorElement;
 const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const golfButton = document.getElementById("golf") as HTMLButtonElement;
+const compressButton = document.getElementById("compress") as HTMLButtonElement;
+const uncompressButton = document.getElementById("uncompress") as HTMLButtonElement;
 const downLink = document.getElementById("download") as HTMLAnchorElement;
 const upButton = document.getElementById("upload") as HTMLButtonElement;
 const fileInputEl = document.getElementById("uploadFile") as HTMLInputElement;
@@ -71,6 +73,7 @@ function resetRuntime() {
 
     golfButton.disabled = packButton.disabled = upButton.disabled = true;
     codeArea.disabled = inputArea.disabled = true;
+    compressButton.disabled = uncompressButton.disabled = true;
     root.classList.remove("debugging");
     stopButton.disabled = false;
     copyOutputButton.hidden = true;
@@ -287,10 +290,11 @@ function updateStats() {
         .replace(/%5D/g, "]");
 
     packButton.hidden = false;
-    golfButton.disabled = packButton.disabled = isActive();
-    codeType = getCodeType(codeArea.value);
+    compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
+    let literalTypes: StringLiteralTypes;
+    [codeType, literalTypes] = getCodeType(codeArea.value);
     if (codeType === CodeType.Packed) {
-        golfButton.hidden = true;
+        compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
         codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
@@ -306,6 +310,8 @@ function updateStats() {
         }
         packButton.hidden = codeType != CodeType.TightAscii;
         golfButton.hidden = codeType != CodeType.LooseAscii;
+        compressButton.hidden = !(literalTypes & StringLiteralTypes.Compressable);
+        uncompressButton.hidden = !(literalTypes & StringLiteralTypes.Compressed);
 
         if (codeType === CodeType.UnpackedNonascii) {
             codeChars = codeArea.value.length - pairs;
@@ -487,6 +493,16 @@ golfButton.addEventListener("click", ev => {
     }
     codeArea.value = golfed;
     sizeTextArea(codeArea);
+    updateStats();
+});
+
+compressButton.addEventListener("click", ev => {
+    codeArea.value = compressLiterals(codeArea.value);
+    updateStats();
+});
+
+uncompressButton.addEventListener("click", ev => {
+    codeArea.value = decompressLiterals(codeArea.value);
     updateStats();
 });
 
