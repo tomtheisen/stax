@@ -612,9 +612,43 @@ z:!
 0
 	stax
 z|(%
-	stax
 z2|(%
-	stax
 z|)%
-	stax
 z2|)%
+	name:NoOpReallyPushesToMain
+	in
+7
+	out
+7
+	stax
++ 13~
+* 13~
+t 13~
+T 13~
+S 13~
+I 13~
+M 13~
+	name:MultiSetIntersectMutation
+	out
+ab
+	stax
+.ab .bc n|bd
+	name:InfiniteMultiplicity
+	out
+∞
+	stax
+01:/
+	name:UnmatchedRegexSplitCaptureGroup
+	in
+as-dxf-xgh
+	out
+as dxf x gh
+	stax
+"-(x)?"|sJ
+	name:ImplicitGeneratorSuccessorWithCallTarget
+	out
+0
+1
+2
+	stax
+0g3}L

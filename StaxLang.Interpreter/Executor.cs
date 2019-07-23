@@ -8,14 +8,9 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-/* To add:
- *     flood rle contiguous grid coordinates
- *     repeated regex cascade
- */
-
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.1.5 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.1.6 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -108,7 +103,7 @@ namespace StaxLang {
         /// <param name="input"></param>
         /// <returns>number of steps the program ran</returns>
         public int Run(byte[] programBytes, string[] input, TimeSpan? timeout = null) {
-            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : DirectEncoding.Instance;
+            Encoding e = StaxPacker.IsPacked(programBytes) ? StaxPacker.Encoding : Encoding.ASCII /* DirectEncoding.Instance  */;
             return Run(e.GetString(programBytes), input, timeout);
         }
 
@@ -677,7 +672,10 @@ namespace StaxLang {
                         }
                         break;
                     case 'I': {
-                        if (TotalStackSize == 1) break;
+                        if (TotalStackSize == 1) {
+                            Push(Pop());
+                            break;
+                        }
                         dynamic b = Pop(), a = Pop();
                         if (IsInt(a) && IsInt(b)) {
                             if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "bitwise and with " + e);
@@ -876,7 +874,10 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else if (TotalStackSize == 1) { /* minimum of single scalar is no-op */ }
+                        else if (TotalStackSize == 1) { 
+                            // minimum of single scalar is no-op
+                            Push(Pop());
+                        }
                         else {
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(b) && IsNumber(a)) {
@@ -918,7 +919,10 @@ namespace StaxLang {
                             PopStackFrame();
                             Push(result);
                         }
-                        else if (TotalStackSize == 1) { /* maximum of single scalar is no-op */ }
+                        else if (TotalStackSize == 1) { 
+                            // maximum of single scalar is no-op
+                            Push(Pop());
+                        }
                         else {
                             dynamic b = Pop(), a = Pop();
                             if (IsNumber(b) && IsNumber(a))
@@ -1296,6 +1300,14 @@ namespace StaxLang {
                                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "all suffixes of " + e);
                                 else block.AddDesc("generate all suffixes");
                                 RunMacro("~;%R{;s)mr,d");
+                                break;
+                            case '{':
+                                block.AddDesc("setwise equal?");
+                                RunMacro("o|RMhso|RMh=");
+                                break;
+                            case '}':
+                                block.AddDesc("multi-set equal?");
+                                RunMacro("oso=");
                                 break;
                             case '<':
                                 if (IsInt(Peek())) {
@@ -2142,7 +2154,10 @@ namespace StaxLang {
 
         private void DoPowersetOrXor(Block block) {
             if (IsInt(Peek())) {
-                if (TotalStackSize == 1) return;
+                if (TotalStackSize == 1) {
+                    Push(Pop());
+                    return;
+                }
                 BigInteger b = Pop();
                 if (IsInt(Peek())) {
                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "Xor with " + e);
@@ -2386,7 +2401,7 @@ namespace StaxLang {
                 + (stopOnTargetVal ? "until specified target value, " : "")
                 + targetCountClause
                 + (postPop ? "popping each value" : "including the initial value"));
-            if (genblock.Contents == "") block.AddAmbient("generator block is empty; using increment");
+            if (genblock.IsEmpty()) block.AddAmbient("generator block is empty; using increment");
 
             if (targetCount == 0) { // 0 elements requested ??
                 Push(new List<object>()); 
@@ -3454,7 +3469,10 @@ namespace StaxLang {
                 }
             }
             else if (IsInt(Peek())) {
-                if (TotalStackSize == 1) yield break;
+                if (TotalStackSize == 1) {
+                    Push(Pop());
+                    yield break;
+                }
                 BigInteger b = Pop();
                 dynamic a = Pop();
                 if (IsInt(a)) {
@@ -3613,7 +3631,10 @@ namespace StaxLang {
         }
 
         private void DoPlus(Block block) {
-            if (TotalStackSize < 2) return;
+            if (TotalStackSize < 2) {
+                Push(Pop());
+                return;
+            }
             dynamic b = Pop(), a = Pop();
 
             if (IsNumber(a) && IsNumber(b)) {
@@ -3781,7 +3802,7 @@ namespace StaxLang {
                     a = (Rational)a;
                     b = (Rational)b;
                 }
-                var result = a % b;
+                var result = b == 0 ? a : a % b;
                 if (result < 0) {
                     if (b < 0) b = -b;
                     result += b;
@@ -3794,7 +3815,10 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoStar(Block block) {
-            if (TotalStackSize < 2) yield break;
+            if (TotalStackSize < 2) {
+                Push(Pop());
+                yield break;
+            }
             dynamic b = Pop(), a = Pop();
 
             if (IsInt(a)) (a, b) = (b, a);

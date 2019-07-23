@@ -1,5 +1,6 @@
 import { last } from './types';
 import { isPacked } from './packer';
+import { compress, decompress } from './huffmancompression';
 
 export class Block {
     contents: string;
@@ -19,7 +20,7 @@ export class Block {
     isEmpty(): boolean {
         for (let token of this.tokens) {
             if (typeof token === 'string') {
-                if (/^\S/.exec(token[0])) return false;
+                if (/^\S/.exec(token[0])) return token[0] === '}';
             }
             else if (!token.isEmpty()) return false;
         }
@@ -52,12 +53,19 @@ export enum CodeType {
     UnpackedNonascii,   // Unpackable, due to emojis or something
 }
 
-export function getCodeType(program: string) : CodeType {
-    if (isPacked(program)) return CodeType.Packed;
+export enum StringLiteralTypes {
+    None           = 0b0000,
+    Compressed     = 0b0001,
+    Compressable   = 0b0010,
+    Uncompressable = 0b0100,
+}
 
-    let lowAscii = false;
+export function getCodeType(program: string) : [CodeType, StringLiteralTypes] {
+    if (isPacked(program)) return [CodeType.Packed, StringLiteralTypes.None];
+
+    let lowAscii = false, highCodepoint = false, literals = StringLiteralTypes.None;
     for (let pos = 0; pos < program.length; pos++) {
-        if (program.codePointAt(pos)! >= 0x80) return CodeType.UnpackedNonascii;
+        if (program.codePointAt(pos)! >= 0x7f) highCodepoint = true;
         if (program.codePointAt(pos)! < 0x20) lowAscii = true;
     }
 
@@ -70,6 +78,7 @@ export function getCodeType(program: string) : CodeType {
             case '\n':
                 extraWhitespace = true;
                 break;
+            case 'V':
             case ':':
             case '|':
             case "'":
@@ -79,15 +88,111 @@ export function getCodeType(program: string) : CodeType {
                 pos +=2 ;
                 break;
             case '"':
-                pos += parseString(program, pos).length - 1;
+                let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
+                let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
+                if (compressable) {
+                    let compressed = compress(contents);
+                    if (!compressed || compressed.length >= contents.length) compressable = false;
+                }
+                literals |= compressable 
+                    ? StringLiteralTypes.Compressable 
+                    : StringLiteralTypes.Uncompressable;
+                pos += literal.length - 1;
                 break;
             case '`':
                 pos += parseCompressedString(program, pos).length - 1;
+                literals |= StringLiteralTypes.Compressed;
                 break;
         }
     }
-    if (extraWhitespace) return CodeType.LooseAscii;
-    return lowAscii ? CodeType.LowAscii : CodeType.TightAscii;
+    if (highCodepoint) return [CodeType.UnpackedNonascii, literals];
+    if (extraWhitespace) return [CodeType.LooseAscii, literals];
+    if (lowAscii) return [CodeType.LowAscii, literals];
+    return [CodeType.TightAscii, literals];
+}
+
+export function compressLiterals(program: string): string {
+    if (isPacked(program)) throw "not implemented for packed programs";
+
+    let result = "";
+    for (let pos = 0; pos < program.length; pos++) {
+        switch (program[pos]) {
+            case 'V':
+            case ':':
+            case '|':
+            case "'":
+                result += program.substr(pos, 2);
+                pos += 1;
+                break;
+            case '.':
+                result += program.substr(pos, 3);
+                pos += 2;
+                break;
+            case '"': {
+                let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
+                let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
+                if (compressable) {
+                    let compressed = compress(contents);
+                    if (!compressed || compressed.length >= contents.length) compressable = false;
+                    else {
+                        result += '`' + compressed;
+                        if (literal.endsWith('"')) result += '`';
+                    }
+                }
+                if (!compressable) result += literal;
+                pos += literal.length - 1;
+                break;
+            }
+            case '`': {
+                let compressed = parseCompressedString(program, pos);
+                result += compressed;
+                pos += compressed.length - 1;
+                break;
+            }
+            default:
+                result += program[pos];
+                break;
+        }
+    }
+    return result;
+}
+
+export function decompressLiterals(program: string): string {
+    if (isPacked(program)) throw "not implemented for packed programs";
+
+    let result = "";
+    for (let pos = 0; pos < program.length; pos++) {
+        switch (program[pos]) {
+            case 'V':
+            case ':':
+            case '|':
+            case "'":
+                result += program.substr(pos, 2);
+                pos += 1;
+                break;
+            case '.':
+                result += program.substr(pos, 3);
+                pos += 2;
+                break;
+            case '"': {
+                let literal = parseString(program, pos);
+                result += literal;
+                pos += literal.length - 1;
+                break;
+            }
+            case '`': {
+                let compressed = parseCompressedString(program, pos), contents = compressed.replace(/^`|`$/g, "");
+                result += '"' + decompress(contents);
+                if (compressed.endsWith('`')) result += '"';
+                pos += compressed.length - 1;
+                break;
+            }
+            default:
+                result += program[pos];
+                break;
+        }
+    }
+    return result;
 }
 
 export function parseProgram(program: string): Program {

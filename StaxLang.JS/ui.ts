@@ -1,5 +1,5 @@
 import { Runtime, ExecutionState } from './stax';
-import { parseProgram, Block, getCodeType, CodeType } from './block';
+import { parseProgram, Block, getCodeType, CodeType, StringLiteralTypes, compressLiterals, decompressLiterals } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
@@ -18,6 +18,7 @@ document.getElementById("buildInfo")!.textContent = `
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 40;
 
+const root = document.firstElementChild as HTMLHtmlElement;
 const runButton = document.getElementById("run") as HTMLButtonElement;
 const stepButton = document.getElementById("step") as HTMLButtonElement;
 const stopButton = document.getElementById("stop") as HTMLButtonElement;
@@ -30,9 +31,12 @@ const copyOutputButton = document.getElementById("outputCopy") as HTMLButtonElem
 const warningsEl = document.getElementById("warnings") as HTMLUListElement;
 const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
 const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
+const newLink = document.getElementById("newfile") as HTMLAnchorElement;
 const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
 const packButton = document.getElementById("pack") as HTMLButtonElement;
 const golfButton = document.getElementById("golf") as HTMLButtonElement;
+const compressButton = document.getElementById("compress") as HTMLButtonElement;
+const uncompressButton = document.getElementById("uncompress") as HTMLButtonElement;
 const downLink = document.getElementById("download") as HTMLAnchorElement;
 const upButton = document.getElementById("upload") as HTMLButtonElement;
 const fileInputEl = document.getElementById("uploadFile") as HTMLInputElement;
@@ -41,7 +45,6 @@ const compressorOutputEl = document.getElementById("compressorOutput") as HTMLIn
 const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
 const crammerInputEl = document.getElementById("crammerInput") as HTMLInputElement;
 const crammerOutputEl = document.getElementById("crammerOutput") as HTMLInputElement;
-const debugContainer = document.getElementById("debugState") as HTMLElement;
 const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
 const blankSplitEl = document.getElementById("blankSplit") as HTMLInputElement;
 const lineSplitEl = document.getElementById("lineSplit") as HTMLInputElement;
@@ -70,7 +73,8 @@ function resetRuntime() {
 
     golfButton.disabled = packButton.disabled = upButton.disabled = true;
     codeArea.disabled = inputArea.disabled = true;
-    debugContainer.hidden = true;
+    compressButton.disabled = uncompressButton.disabled = true;
+    root.classList.remove("debugging");
     stopButton.disabled = false;
     copyOutputButton.hidden = true;
 
@@ -103,7 +107,8 @@ function startNextInput() {
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
     upButton.disabled = codeArea.disabled = inputArea.disabled = false;
-    stopButton.disabled = debugContainer.hidden = true;
+    stopButton.disabled = true;
+    root.classList.remove("debugging");
     updateStats();
 }
 
@@ -127,7 +132,7 @@ function runProgramTimeSlice() {
         return;
     }
 
-    debugContainer.hidden = true;
+    root.classList.remove("debugging");
 
     let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
     try {
@@ -163,7 +168,7 @@ runButton.addEventListener("click", run);
 function step() : number | null {
     function caseComplete() {
         startNextInput();
-        debugContainer.hidden = true;
+        root.classList.remove("debugging");
         if (isActive()) statusEl.textContent = `${ steps } steps, program ended`
         else statusEl.textContent = `${ steps } steps, complete`;
     }
@@ -205,7 +210,7 @@ function showDebugInfo(ip: number, steps: number) {
         return stax.split(/\n/g).map(line => line.replace(/\t.*/, "")).join("\n");
     }
     if (!activeRuntime) return;
-    debugContainer.hidden = false;
+    root.classList.add("debugging");
 
     stopButton.disabled = false;
     statusEl.textContent = `${ steps } steps, paused`;
@@ -285,10 +290,11 @@ function updateStats() {
         .replace(/%5D/g, "]");
 
     packButton.hidden = false;
-    golfButton.disabled = packButton.disabled = isActive();
-    codeType = getCodeType(codeArea.value);
+    compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
+    let literalTypes: StringLiteralTypes;
+    [codeType, literalTypes] = getCodeType(codeArea.value);
     if (codeType === CodeType.Packed) {
-        golfButton.hidden = true;
+        compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
         codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
@@ -304,6 +310,8 @@ function updateStats() {
         }
         packButton.hidden = codeType != CodeType.TightAscii;
         golfButton.hidden = codeType != CodeType.LooseAscii;
+        compressButton.hidden = !(literalTypes & StringLiteralTypes.Compressable);
+        uncompressButton.hidden = !(literalTypes & StringLiteralTypes.Compressed);
 
         if (codeType === CodeType.UnpackedNonascii) {
             codeChars = codeArea.value.length - pairs;
@@ -362,7 +370,6 @@ function load() {
 
     if (params.get('a')) {
         autoCheckEl.checked = true;
-        debugger;
         run();
     }
 }
@@ -416,6 +423,20 @@ postLink.addEventListener("click", ev => {
     setClipboard(template);
 });
 
+newLink.addEventListener("click", ev => {
+    if (!confirm("Reset program and input?")) return;
+
+    for (let area of [codeArea, inputArea]) {
+        area.value = "";
+        area.style.height = null;
+        area.rows = 2;
+    }
+    outputEl.textContent = "";
+    copyOutputButton.hidden = true;
+    warningsEl.textContent = "";
+    stop();
+});
+
 function doCompressor() {
     let input = compressorInputEl.value;
     let result: string;
@@ -438,11 +459,6 @@ doCompressor();
 compressorInputEl.addEventListener("input", doCompressor);
 compressorForceEl.addEventListener("change", doCompressor);
 
-const compressorDialog = document.getElementById("compressorDialog") as HTMLDivElement;
-document.getElementById("compressorOpen")!.addEventListener("click", () => {
-    compressorDialog.hidden = !compressorDialog.hidden;
-});
-
 function doCrammer() {
     let matches = crammerInputEl.value.match(/-?\d+/g);
     if (matches) {
@@ -454,11 +470,6 @@ function doCrammer() {
 }
 doCrammer();
 crammerInputEl.addEventListener("input", doCrammer);
-
-const crammerDialog = document.getElementById("crammerDialog") as HTMLDivElement;
-document.getElementById("crammerOpen")!.addEventListener("click", () => {
-    crammerDialog.hidden = !crammerDialog.hidden;
-});
 
 packButton.addEventListener("click", ev => {
     let code = codeArea.value, packed = isPacked(code);
@@ -482,6 +493,16 @@ golfButton.addEventListener("click", ev => {
     }
     codeArea.value = golfed;
     sizeTextArea(codeArea);
+    updateStats();
+});
+
+compressButton.addEventListener("click", ev => {
+    codeArea.value = compressLiterals(codeArea.value);
+    updateStats();
+});
+
+uncompressButton.addEventListener("click", ev => {
+    codeArea.value = decompressLiterals(codeArea.value);
     updateStats();
 });
 
@@ -589,6 +610,13 @@ function toggleQuickRef() {
 for (let id of ["quickref-close", "quickref-link"]) {
     (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
 }
+
+function setLayout() {
+    let checkedEl = document.querySelector("#layout :checked");
+    if (checkedEl instanceof HTMLInputElement) root.setAttribute("data-layout", checkedEl.value);
+}
+setLayout();
+document.getElementById("layout")!.addEventListener("change", setLayout);
 
 document.addEventListener("keydown", ev => {
     switch (ev.key) {

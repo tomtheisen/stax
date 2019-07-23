@@ -237,6 +237,7 @@ op                  	|Types              	|Name              	|Description
 `\`                 	|num arr            	|array-pair        	|Make array of pairs, all having identical first element.
 `\`                 	|arr arr            	|zip-repeat        	|Make array of pairs, zipped from two arrays.  The shorter is repeated as necessary.
 `@`                 	|arr int            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
+`@`                 	|int arr            	|element-at        	|Get element at 0-based modular index.  (-1 is the last element)
 `@`                 	|arr int int ...    	|element-at        	|Get element in multi-dimensional array using all integer indices.
 `@`                 	|arr arr            	|elements-at       	|Get elements at all indices.
 `&`                 	|arr int any        	|assign-index      	|Assign non-block element at index.  Negatives index backwards.  OOB extends the array.
@@ -294,6 +295,8 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;(</code>	|arr int            	|rotate-left-n     	|Shift array n places to the right, rotating the front to the end.
 <code>&#124;[</code>	|arr                	|prefixes          	|All prefixes of array.
 <code>&#124;]</code>	|arr                	|suffixes          	|All suffixes of array.
+<code>&#124;{</code>	|arr arr            	|setwise-equal     	|Arrays are setwise equal? e.g. `[1,2,2]`, `[2,1]` -> `1`
+<code>&#124;}</code>	|arr arr            	|multiset-equal    	|Arrays are different orderings of same elements? e.g. `[1,2,2]`, `[2,1,2]` -> `1`
 <code>&#124;a</code>	|arr                	|any               	|Any elements of array are truthy?
 <code>&#124;A</code>	|arr                	|all               	|All elements of array are truthy?
 <code>&#124;b</code>	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.
@@ -331,6 +334,8 @@ op                  	|Types              	|Name              	|Description
 `:!`                	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
 `:@`                	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:@`                	|arr int            	|pop-at            	|Remove element at specified index from array.  Push what's left of the array, and the element removed separately.
+`:$`                	|arr int            	|cartesian-power   	|Cartesian power of array. e.g. `"ab"`, `3` -> `["aaa","aab","aba","abb","baa","bab","bba","bbb"]`
+`:$`                	|arr                	|cartesian-product 	|Cartesian product of subarray. e.g. `["ab", "xy"]` -> `["ax","ay","bx","by"]`
 `:,`                	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
 `:(`                	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)`                	|arr                	|right-rotations   	|All right rotations, starting from original.
@@ -341,6 +346,7 @@ op                  	|Types              	|Name              	|Description
 `:B`                	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
 `:c`                	|arr                	|coalesce          	|Get first truthy element of array.
 `:d`                	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
+`:E`                	|arr                	|first-last         |Get the first and last element of an array. e.g. `[1,2,3,4]` -> `[1, 4]`
 `:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`
 `:F`                	|arr                	|falsy-indices     	|~~Get all indices of falsy elements.~~ Deprecated.  Use `:0` instead.
 `:g`                	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.

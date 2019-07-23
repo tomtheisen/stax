@@ -1126,3 +1126,80 @@ L :p m
 ac
 	stax
 :@PP
+	name:ArrayEnds
+	in
+asdf
+as
+a
+	out
+af
+as
+aa
+	stax
+m:E
+	name:CartesianPower
+	in
+"abc" 3
+	out
+aaa aab aac aba abb abc aca acb acc baa bab bac bba bbb bbc bca bcb bcc caa cab cac cba cbb cbc cca ccb ccc
+	stax
+:$ J
+	in
+[1, 2] 3
+	out
+3
+	stax
+:$ h %
+	name:EmptyCartesianPower
+	out
+1
+	stax
+"abc" 0 :$ %
+	name:CartesianProduct
+	in
+["ab" "xyz" "."]
+	out
+ax. ay. az. bx. by. bz.
+	stax
+:$ J
+	in
+["a" "b" "c"]
+	out
+97 98 99
+	stax
+:$ h J
+	name:EmptyCartesianProduct
+	out
+1
+	stax
+z :$ %
+	name:SetwiseEqual
+	in
+[3,4,3] [3,4]
+	out
+1
+	in
+[3,4,3,5] [3,4]
+	out
+0
+	in
+[3,4,3] [3,4,5]
+	out
+0
+	stax
+|{
+	name:MultisetEqual
+	in
+[3,4,3] [3,4]
+	out
+0
+	in
+[3,4,3] [3,3,4]
+	out
+1
+	in
+[3,4,3] [3,3,4,4]
+	out
+0
+	stax
+|}

@@ -7,7 +7,7 @@ import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
-import { Rational } from './rational';
+import { Rational, zero as ratZero } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
@@ -755,7 +755,10 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
-                            if (this.totalSize() < 2) break;
+                            if (this.totalSize() < 2) {
+                                this.push(this.pop());
+                                break;
+                            }
                             let top = this.pop(), next = this.pop();
                             if (isNumber(top) && isNumber(next)) {
                                 this.push(compare(next, top) < 0 ? next : top);
@@ -791,7 +794,10 @@ export class Runtime {
                             this.push(result);
                         }
                         else {
-                            if (this.totalSize() < 2) break;
+                            if (this.totalSize() < 2) {
+                                this.push(this.pop());
+                                break;
+                            }
                             let top = this.pop(), next = this.pop();
                             if (isNumber(top) && isNumber(next)) {
                                 this.push(compare(next, top) > 0 ? next : top);
@@ -946,6 +952,12 @@ export class Runtime {
                         break;
                     case '|]':
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
+                        break;
+                    case '|{':
+                        this.runMacro("o|RMhso|RMh="); // setwise equal
+                        break;
+                    case '|}':
+                        this.runMacro("oso="); // multiset equal
                         break;
                     case '|^':
                         if (isArray(this.peek())) {
@@ -1233,7 +1245,7 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             // keep elements of a, no more than their occurrences in b
-                            let b = this.popArray(), a = this.popArray(), result = [];
+                            let b = this.popArray().slice(), a = this.popArray(), result = [];
                             for (let e of a) {
                                 for (let i = 0; i < b.length; i++) {
                                     if (areEqual(b[i], e)) {
@@ -1541,7 +1553,7 @@ export class Runtime {
                     }
                     case '|s': {
                         let search = A2S(this.popArray()), text = A2S(this.popArray());
-                        this.push(text.split(new RegExp(search)).map(S2A));
+                        this.push(text.split(new RegExp(search)).filter(p => typeof p === "string").map(S2A));
                         break;
                     }
                     case '|S': { // surround
@@ -1617,7 +1629,10 @@ export class Runtime {
     }
 
     private doPlus() {
-        if (this.totalSize() < 2) return; 
+        if (this.totalSize() < 2) {
+            this.push(this.pop());
+            return;
+        }
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -1662,7 +1677,10 @@ export class Runtime {
     }
 
     private *doStar() {
-        if (this.totalSize() < 2) return;
+        if (this.totalSize() < 2) {
+            this.push(this.pop());
+            return;
+        }
         let b = this.pop(), a = this.pop();
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
@@ -1833,14 +1851,22 @@ export class Runtime {
             [a, b] = widenNumbers(a, b);
             let result: StaxNumber;
             if (typeof a === "number" && typeof b === "number") {
-                result = a % b;
-                if (result < 0) result += Math.abs(b);
+                if (b === 0) result = a;
+                else {
+                    result = a % b;
+                    if (result < 0) result += Math.abs(b);
+                }
             }
             else if (isInt(a) && isInt(b)) {
-                result = int.mod(a, b);
-                if (result.valueOf() < 0) result = int.add(result, b);
+                if (int.eq(b, zero)) result = a;
+                else {
+                    result = int.mod(a, b);
+                    if (result.valueOf() < 0) result = int.add(result, b);
+                }
             }
-            else if (a instanceof Rational && b instanceof Rational) result = a.mod(b);
+            else if (a instanceof Rational && b instanceof Rational) {
+                result = b.equals(ratZero) ? a : a.mod(b);
+            }
             else throw new Error("bad types for %");
             this.push(result);
         }
@@ -2406,7 +2432,10 @@ export class Runtime {
     }
 
     private *doIndexOfOrAnd() {
-        if (this.totalSize() === 1) return;
+        if (this.totalSize() === 1) {
+            this.push(this.pop());
+            return;
+        }
         let target = this.pop(), arr = this.pop();
         if (isInt(target) && isInt(arr)) {
             this.push(int.bitand(target, arr));

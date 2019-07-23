@@ -46,7 +46,7 @@ namespace StaxLang {
         public bool IsEmpty() {
             for (int i = 0; i < this.Contents.Length; i++) {
                 char ch = this.Contents[i];
-                if (!char.IsWhiteSpace(ch)) return false;
+                if (!char.IsWhiteSpace(ch)) return ch == '}';
                 if (ch == '\t') {
                     i = this.Contents.IndexOf('\n', i);
                     if (i < 0) i = this.Contents.Length;
