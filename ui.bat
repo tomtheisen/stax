@@ -1,4 +1,4 @@
 @pushd StaxLang.JS
-call webpack
+npm run build
 start .\dist\index.html
 @popd
