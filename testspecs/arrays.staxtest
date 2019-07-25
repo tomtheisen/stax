@@ -569,6 +569,10 @@ BC
 [7, 6, 6, 7]
 	out
 6
+	in
+["a","a","b"]
+	out
+a
 	stax
 :M
 	name:FalsyIndices
