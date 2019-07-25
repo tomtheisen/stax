@@ -1179,3 +1179,17 @@ A{:CmJ
 1
 	stax
 |$
+	name:FixedBinary
+	in
+11 6
+	out
+001011
+	stax
+:a
+	name:FixedHex
+	in
+258 4
+	out
+0102
+	stax
+:h

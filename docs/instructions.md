@@ -107,7 +107,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16) 
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
-<code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (eg. 20 -> [2 0 1])
+<code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` -> `[2 0 1]`)
 <code>&#124;p</code>     	|int        	|is-prime      	|                   	|Is prime?
 <code>&#124;q</code>     	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 <code>&#124;Q</code>     	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
@@ -127,6 +127,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:_`                     	|num num    	|float-div     	|1.0 * a / b        	|Float division.
 `:1`                     	|int        	|popcount      	|                   	|Count of set bits.
 `:2`                     	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
+`:a`                     	|int int    	|fixed-binary  	|zfill(bin(a), b)   	|Binary representation of a zero-padded to b digits. (e.g. `11`, `6` -> `"001011"`)
 `:A`                     	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
 `:b`                     	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:b`                     	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits.
@@ -139,6 +140,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:F`                     	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:g`                     	|int        	|low-bit       	|                   	|Unset all but the low set bit.
 `:G`                     	|int        	|high-bit      	|                   	|Unset all but the high set bit.
+`:h`                     	|int int    	|fixed-hex     	|zfill(hex(a), b)   	|Hexadecimal representation of a zero-padded to b digits. (e.g. `258`, `4` -> `"0102"`)
 `:J`                     	|num num    	|square-two    	|a\*\*2, b\*\*2     	|Square top two elements; useful for hypotenuse and things.
 `:m`                     	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b.
 `:p`                     	|int        	|last-prime    	|                   	|Last prime < n.
