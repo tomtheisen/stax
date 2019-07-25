@@ -127,39 +127,42 @@ function showError(err: Error) {
 }
 
 function runProgramTimeSlice() {
-    if (!activeStateIterator || pendingBreak) {
-        pendingBreak = false;
-        return;
-    }
-
-    root.classList.remove("debugging");
-
-    let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
-    try {
-        while (!(result = activeStateIterator.next()).done) {
-            steps += 1;
-            if (result.value.break) {
-                showDebugInfo(result.value.ip, steps);
-                return;
-            }
-            if(performance.now() - sliceStart > workMilliseconds) break;
+    pendWork(() => {
+        if (!activeStateIterator || pendingBreak) {
+            pendingBreak = false;
+            return;
         }
-        if (result.done) startNextInput();
-        pendWork(runProgramTimeSlice);
-    }
-    catch (e) {
-        if (e instanceof Error) showError(e);
-        startNextInput();
-        pendWork(runProgramTimeSlice);
-    }
-    
-    let elapsed = (performance.now() - start) / 1000;
-    statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
+
+        root.classList.remove("debugging");
+
+        let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
+        try {
+            while (!(result = activeStateIterator.next()).done) {
+                steps += 1;
+                if (result.value.break) {
+                    showDebugInfo(result.value.ip, steps);
+                    return;
+                }
+                if(performance.now() - sliceStart > workMilliseconds) break;
+            }
+            if (result.done) startNextInput();
+            runProgramTimeSlice();
+        }
+        catch (e) {
+            if (e instanceof Error) showError(e);
+            startNextInput();
+            runProgramTimeSlice();
+        }
+        
+        let elapsed = (performance.now() - start) / 1000;
+        statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
+    });
 }
 
 function run() {
     pendingBreak = false;
     if (!isActive()) resetRuntime();
+    statusEl.innerText = "Starting";
     runProgramTimeSlice();
 }
 runButton.addEventListener("click", run);
