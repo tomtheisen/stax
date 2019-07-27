@@ -17,6 +17,7 @@ document.getElementById("buildInfo")!.textContent = `
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 40;
+const saveKey = "saved-state";
 
 const root = document.firstElementChild as HTMLHtmlElement;
 const runButton = document.getElementById("run") as HTMLButtonElement;
@@ -287,10 +288,10 @@ function updateStats() {
     if (blankSplitEl.checked) params.set('m', '1');
     if (lineSplitEl.checked) params.set('m', '2');
     
-    saveLink.href = '#' + params.toString()
+    sessionStorage.setItem(saveKey, saveLink.href = '#' + params.toString()
         .replace(/%2C/g, ",")
         .replace(/%5B/g, "[")
-        .replace(/%5D/g, "]");
+        .replace(/%5D/g, "]"));
 
     packButton.hidden = false;
     compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
@@ -344,7 +345,7 @@ function updateStats() {
 }
 
 function load() {
-    let params = new URLSearchParams(location.hash.substr(1));
+    let params = new URLSearchParams((sessionStorage.getItem(saveKey) || location.hash).substr(1));
     if (params.has('p')) {
         codeArea.value = decodePacked(params.get('p')!);
         sizeTextArea(codeArea);
@@ -374,6 +375,15 @@ function load() {
     if (params.get('a')) {
         autoCheckEl.checked = true;
         run();
+    }
+
+    if (sessionStorage.getItem(saveKey) && location.hash) {
+        warningsEl.innerHTML += "<li>Restored unsaved program state from session.  <a id=load-from-url href='javascript:void(0)'>Load from URL instead.</a>";
+        document.getElementById("load-from-url")!.addEventListener("click", ev => {
+            sessionStorage.removeItem(saveKey);
+            load();
+            warningsEl.innerHTML = "";
+        });
     }
 }
 load();
@@ -539,6 +549,10 @@ fileInputEl.addEventListener("change", ev => {
     });
     reader.readAsArrayBuffer(file);
 })
+
+warningsEl.addEventListener("click", ev => {
+    if (ev.target === warningsEl) warningsEl.innerHTML = "";
+});
 
 function setVersion() {
     let out: string;

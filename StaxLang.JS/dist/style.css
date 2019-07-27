@@ -99,6 +99,16 @@ button:hover + #drop, #drop:hover {
 #warnings {
     padding: 0.5em 1.5em;
     background-color: #ee7;
+    position: relative;
+    pointer-events: all;
+}
+#warnings::before{
+    content: '✖';
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    top: 0.3em;
+    right: 1em;
 }
 #warnings:empty {
     display: none;
