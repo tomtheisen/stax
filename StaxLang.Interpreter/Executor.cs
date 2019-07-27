@@ -2581,21 +2581,20 @@ namespace StaxLang {
                         if (activeArrays.Count == 0) return false;
                         NewValue(activeArrays.Pop());
                         break;
-                    case '"':
-                        int finishPos = arg.IndexOf('"', i+1);
-                        while (finishPos > 0 && arg[finishPos - 1] == '\\') {
-                            finishPos = arg.IndexOf('"', finishPos + 1);
-                        }
-                        if (finishPos < 0) return false;
+                    case '"': {
+                        var match = Regex.Match(arg.Substring(i), @"^""([^\\""]|\\.)*""");
+                        if (!match.Success) return false;
+                        int finishPos = i + match.Value.Length - 1;
                         var str = arg.Substring(i + 1, finishPos - i - 1);
                         str = str.Replace("\\n", "\n");
                         str = str.Replace("\\\"", "\"");
                         str = str.Replace(@"\\", @"\");
-                        str = Regex.Replace(str, @"\\x[0-9a-fA-F]{2}", 
+                        str = Regex.Replace(str, @"\\x[0-9a-fA-F]{2}",
                             m => "" + (char)int.Parse(m.Value.Substring(2), NumberStyles.AllowHexSpecifier));
                         NewValue(S2A(str));
                         i = finishPos;
                         break;
+                    }
                     case '∞':
                         NewValue(double.PositiveInfinity);
                         break;
@@ -2608,30 +2607,32 @@ namespace StaxLang {
                             NewValue(double.NegativeInfinity);
                             i += 1;
                             break;
-                        }
+                        } 
                         
-                        var match = Regex.Match(substring, @"^-?\d+\.\d+");
-                        if (match.Success) {
-                            NewValue(double.Parse(match.Value));
-                            i += match.Value.Length - 1;
-                            break;
-                        }
+                        {
+                            var match = Regex.Match(substring, @"^-?\d+\.\d+");
+                            if (match.Success) {
+                                NewValue(double.Parse(match.Value));
+                                i += match.Value.Length - 1;
+                                break;
+                            }
 
-                        match = Regex.Match(substring, @"^(-?\d+)/(-?\d+)");
-                        if (match.Success) {
-                            var frac = new Rational(
-                                BigInteger.Parse(match.Groups[1].Value),
-                                BigInteger.Parse(match.Groups[2].Value));
-                            NewValue(frac);
-                            i += match.Value.Length - 1;
-                            break;
-                        }
+                            match = Regex.Match(substring, @"^(-?\d+)/(-?\d+)");
+                            if (match.Success) {
+                                var frac = new Rational(
+                                    BigInteger.Parse(match.Groups[1].Value),
+                                    BigInteger.Parse(match.Groups[2].Value));
+                                NewValue(frac);
+                                i += match.Value.Length - 1;
+                                break;
+                            }
 
-                        match = Regex.Match(substring, @"^-?\d+");
-                        if (match.Success) {
-                            NewValue(BigInteger.Parse(match.Value));
-                            i += match.Value.Length - 1;
-                            break;
+                            match = Regex.Match(substring, @"^-?\d+");
+                            if (match.Success) {
+                                NewValue(BigInteger.Parse(match.Value));
+                                i += match.Value.Length - 1;
+                                break;
+                            }
                         }
                         return false;
 

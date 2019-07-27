@@ -178,11 +178,9 @@ export class Runtime {
                     newValue(activeArrays.pop()!);
                     break;
                 case '"':
-                    let finishPos = arg.indexOf('"', i + 1);
-                    while (arg[finishPos - 1] === '\\') {
-                        finishPos = arg.indexOf('"', finishPos + 1);
-                    }
-                    if (finishPos < 0) return false;
+                    let strliteral = /^"([^\\"]|\\.)*"/.exec(arg.substr(i));
+                    if (!strliteral) return false;
+                    let finishPos = i + strliteral[0].length - 1;
                     let str = arg.substring(i + 1, finishPos);
                     str = str.replace(/\\n/g, "\n");
                     str = str.replace(/\\"/g, '"');

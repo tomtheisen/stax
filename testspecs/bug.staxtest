@@ -652,3 +652,18 @@ as dxf x gh
 2
 	stax
 0g3}L
+	name:LiteralBackslashSuffix
+	in
+"back\\slash" 
+	out
+back\slash
+	in
+"back\\slash\\" 
+	out
+back\slash\
+	in
+"\\/\\" 
+	out
+\/\
+	stax
+,
