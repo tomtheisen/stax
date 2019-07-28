@@ -80,7 +80,7 @@ ol {
     border: solid #666 1px;
     z-index: 1;
     min-width: 300px;
-    width: 60vw;
+    width: 75vw;
     max-width: 800px;
     box-shadow: 0em 0em 0.5em 0em #0008;    
     transition-duration: 300ms;
@@ -89,7 +89,7 @@ ol {
 html.show-quickref #drop {
     width: 30vw;
 }
-button:hover + #drop, #drop:hover {
+button:focus + #drop, button:hover + #drop, #drop:hover {
     visibility: visible;
 }
 #drop:focus-within {

@@ -288,10 +288,14 @@ function updateStats() {
     if (blankSplitEl.checked) params.set('m', '1');
     if (lineSplitEl.checked) params.set('m', '2');
     
-    sessionStorage.setItem(saveKey, saveLink.href = '#' + params.toString()
+    const saved: string = '#' + params.toString()
         .replace(/%2C/g, ",")
         .replace(/%5B/g, "[")
-        .replace(/%5D/g, "]"));
+        .replace(/%5D/g, "]");
+    
+    saveLink.href = saved;
+    try { sessionStorage.setItem(saveKey, saved); } 
+    catch (ex) { /* sessionStorage throws on file system in chrome */ }
 
     packButton.hidden = false;
     compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
@@ -345,7 +349,23 @@ function updateStats() {
 }
 
 function load() {
-    let params = new URLSearchParams((sessionStorage.getItem(saveKey) || location.hash).substr(1));
+    let saved: string | null = null, conflicted = false;
+    try { 
+        saved = sessionStorage.getItem(saveKey);
+        if (saved && location.hash && saved !== location.hash) {
+            conflicted = true;
+            warningsEl.innerHTML += "<li>Restored unsaved program state from session.  <a id=load-from-url href='javascript:void(0)'>Load from URL instead.</a>";
+            document.getElementById("load-from-url")!.addEventListener("click", ev => {
+                sessionStorage.removeItem(saveKey);
+                load();
+                warningsEl.innerHTML = "";
+            });
+        }
+    } 
+    catch (ex) { /* sessionStorage throws on file system in chrome */ }
+    if (!saved) saved = location.hash;
+    let params = new URLSearchParams(saved.substr(1));
+    
     if (params.has('p')) {
         codeArea.value = decodePacked(params.get('p')!);
         sizeTextArea(codeArea);
@@ -374,16 +394,7 @@ function load() {
 
     if (params.get('a')) {
         autoCheckEl.checked = true;
-        run();
-    }
-
-    if (sessionStorage.getItem(saveKey) && location.hash) {
-        warningsEl.innerHTML += "<li>Restored unsaved program state from session.  <a id=load-from-url href='javascript:void(0)'>Load from URL instead.</a>";
-        document.getElementById("load-from-url")!.addEventListener("click", ev => {
-            sessionStorage.removeItem(saveKey);
-            load();
-            warningsEl.innerHTML = "";
-        });
+        if (!conflicted) run();
     }
 }
 load();
