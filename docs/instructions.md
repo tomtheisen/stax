@@ -100,11 +100,12 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;e</code>     	|int        	|is-even       	|(a + 1) % 2        	|Is even?
 <code>&#124;E</code>     	|int int    	|digits        	|                   	|Generate array of digit values in base.  Absolute value is used in case of negative number.
 <code>&#124;E</code>     	|arr int    	|un-digit      	|                   	|Produce the number represented by the array of digits in the given base.
-<code>&#124;f</code>     	|int        	|factorize     	|                   	|Prime factorization array. 
+<code>&#124;f</code>     	|int        	|factorize     	|                   	|Prime factorization array.
 <code>&#124;F</code>     	|int        	|factorial     	|a!                 	|Factorial.
 <code>&#124;g</code>     	|int int    	|gcd           	|                   	|Greatest common denominator.
-<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexidecimal. (base 16)  
-<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16) 
+<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexidecimal. (base 16)
+<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16)
+<code>&#124;j</code>     	|num        	|rationalize   	|                   	|Convert any number to a rational with no loss of precision.  Stax attempts to minimize the denominator.
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 <code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` -> `[2 0 1]`)

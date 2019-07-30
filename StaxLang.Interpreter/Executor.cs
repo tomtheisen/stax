@@ -1612,8 +1612,17 @@ namespace StaxLang {
                                 foreach (var s in DoFindIndexAll()) yield return s;
                                 break;
                             case 'j':
-                                block.AddDesc("split on newlines");
-                                RunMacro("Vn/");
+                                if (IsNumber(Peek())) {
+                                    block.AddDesc("Rationalize");
+                                    dynamic num = Pop();
+                                    if (IsInt(num)) num = new Rational(num, 1);
+                                    else if (num is double) num = Rational.Rationalize(num);
+                                    Push(num);
+                                }
+                                else if (IsArray(Peek())) {
+                                    block.AddDesc("split on newlines");
+                                    RunMacro("Vn/");
+                                }
                                 break;
                             case 'J':
                                 block.AddDesc("join with newlines");
@@ -2582,7 +2591,7 @@ namespace StaxLang {
                         NewValue(activeArrays.Pop());
                         break;
                     case '"': {
-                        var match = Regex.Match(arg.Substring(i), @"^""([^\\""]|\\.)*""");
+                        var match = Regex.Match(arg.Substring(i), @"^""([^\""]|\.)*""");
                         if (!match.Success) return false;
                         int finishPos = i + match.Value.Length - 1;
                         var str = arg.Substring(i + 1, finishPos - i - 1);

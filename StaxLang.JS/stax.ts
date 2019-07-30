@@ -7,7 +7,7 @@ import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
-import { Rational, zero as ratZero } from './rational';
+import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
@@ -1345,7 +1345,15 @@ export class Runtime {
                         for (let s of this.doFindIndexAll()) yield s;
                         break;
                     case '|j':
-                        this.runMacro("Vn/"); // split on newlines
+                        if (isArray(this.peek())) {
+                            this.runMacro("Vn/"); // split on newlines
+                        }
+                        else if (isInt(this.peek())) {
+                            this.runMacro("1u*");
+                        }
+                        else if (isFloat(this.peek())) {
+                            this.push(rationalize(this.pop() as number));
+                        }
                         break;
                     case '|J':
                         this.runMacro("Vn*"); // join with newlines

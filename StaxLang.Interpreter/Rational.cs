@@ -72,5 +72,82 @@ namespace StaxLang {
             if (this == r) return 0;
             throw new Exception("Rational compare sanity failed");
         }
+
+        private struct BoundedDouble {
+            public double Value { get; private set; }
+            public double Error { get; private set; }
+            public double Min => Value - Error;
+            public double Max => Value + Error;
+
+            public static readonly BoundedDouble CatastrophicLoss = new BoundedDouble(double.NaN, double.PositiveInfinity);
+
+            public override string ToString() => $"{ Value } ± { Error }";
+
+            public bool Sound {
+                get {
+                    if (double.IsNaN(Value)) return false;
+                    if (double.IsInfinity(Error)) return false;
+                    if (Error < 0) return false;
+                    if (Error == 0) return true;
+                    if (Error >= Math.Abs(Value)) return false;
+                    return true;
+                }
+            }
+
+            public BoundedDouble(double value, double error) {
+                if (error < 0) throw new ArgumentOutOfRangeException("error");
+                this.Value = value;
+                this.Error = error;
+            }
+
+            public static BoundedDouble Estimate(double arg, int sigbits) => new BoundedDouble(arg, arg * Math.Pow(0.5, sigbits));
+
+            public static BoundedDouble operator +(BoundedDouble a, BoundedDouble b) => new BoundedDouble(a.Value + b.Value, a.Error + b.Error);
+            public static BoundedDouble operator +(BoundedDouble a, double b) => new BoundedDouble(a.Value + b, a.Error);
+            public static BoundedDouble operator +(double a, BoundedDouble b) => new BoundedDouble(a + b.Value, b.Error);
+            public static BoundedDouble operator -(BoundedDouble a, BoundedDouble b) => new BoundedDouble(a.Value - b.Value, a.Error + b.Error);
+            public static BoundedDouble operator -(BoundedDouble a, double b) => new BoundedDouble(a.Value - b, a.Error);
+            public static BoundedDouble operator -(double a, BoundedDouble b) => new BoundedDouble(a - b.Value, b.Error);
+            public static BoundedDouble operator *(BoundedDouble a, BoundedDouble b) => new BoundedDouble(a.Value * b.Value, Math.Abs(a.Value) * b.Error + Math.Abs(b.Value) * a.Error);
+            public static BoundedDouble operator *(BoundedDouble a, double b) => new BoundedDouble(a.Value * b, Math.Abs(b) * a.Error);
+            public static BoundedDouble operator *(double a, BoundedDouble b) => b * a;
+            public static BoundedDouble operator /(BoundedDouble a, BoundedDouble b) => new BoundedDouble(
+                    a.Value / b.Value,
+                    (Math.Abs(a.Value) * b.Error + Math.Abs(b.Value) * a.Error) / (b.Value * b.Min));
+            public static BoundedDouble operator %(BoundedDouble a, BoundedDouble b) {
+                var div = a / b;
+                if (Math.Floor(div.Max) != Math.Floor(div.Min)) return CatastrophicLoss;
+                return a - b * Math.Floor(div.Value);
+            }
+        }
+        public static Rational Rationalize(double arg) {
+            double Round(double d) => Math.Floor(d + 0.5);
+
+            if (arg == 0) return new Rational(0, 1);
+            if (arg < 0) return -Rationalize(-arg);
+
+            BoundedDouble a = new BoundedDouble(1, 0), b = BoundedDouble.Estimate(arg, 56);
+            double bestn = 0, bestd = 1, besterr = double.PositiveInfinity;
+            do {
+                var oldb = b;
+                (a, b) = (b % a, a);
+                double denlo = Round(1 / b.Max), denhi = Round(1 / b.Min);
+                for (double den = denlo; den <= denhi; den++) {
+                    double num = Round(arg * den), err = Math.Abs(arg - num / den);
+                    if (err < besterr) {
+                        (besterr, bestn, bestd) = (err, num, den);
+                        if (err == 0) goto done;
+                        double newError = 1 / den - 1 / (den + 1);
+                        if (newError < b.Error) {
+                            b = new BoundedDouble(1 / den, newError);
+                            a = oldb % b;
+                        }
+                    }
+                }
+            } while (a.Sound);
+
+        done: 
+            return new Rational(new BigInteger(bestn), new BigInteger(bestd));
+        }
     }
 }
