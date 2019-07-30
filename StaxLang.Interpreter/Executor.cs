@@ -2591,7 +2591,7 @@ namespace StaxLang {
                         NewValue(activeArrays.Pop());
                         break;
                     case '"': {
-                        var match = Regex.Match(arg.Substring(i), @"^""([^\""]|\.)*""");
+                        var match = Regex.Match(arg.Substring(i), @"^""([^\\""]|\\.)*""");
                         if (!match.Success) return false;
                         int finishPos = i + match.Value.Length - 1;
                         var str = arg.Substring(i + 1, finishPos - i - 1);
