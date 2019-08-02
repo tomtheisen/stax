@@ -1,5 +1,6 @@
 import { StaxInt } from './integer'
 import * as int from './integer'
+import { floatify } from './types';
 
 export class Rational {
     public numerator: StaxInt;
@@ -88,75 +89,50 @@ export class Rational {
     }
 }
 
-class BoundedFloat {
-    value: number;
-    error: number;
-    get min() { return this.value - this.error; }
-    get max() { return this.value + this.error; }
-    get sound() {
-        if (isNaN(this.value)) return false;
-        if (!Number.isFinite(this.error)) return false;
-        if (this.error < 0) return false;
-        if (this.error === 0) return true;
-        if (this.error >= Math.abs(this.value)) return false;
-        return true;
-    }
-
-    static readonly catastrophicLoss = new BoundedFloat(Number.NaN, Number.POSITIVE_INFINITY);
-
-    constructor(value: number, error: number) {
-        if (error < 0) throw new Error("invalid negative error bound");
-        this.value = value;
-        this.error = error;
-    }
-
-    public static estimate(arg: number, sigbits: number) {
-        return new BoundedFloat(arg, arg * Math.pow(0.5, sigbits));
-    }
-    
-    sub(other: BoundedFloat) {
-        return new BoundedFloat(this.value - other.value, this.error + other.error);
-    }
-    mul(num: number) {
-        return new BoundedFloat(this.value * num, Math.abs(num) * this.error);
-    }
-    div(other: BoundedFloat) {
-        return new BoundedFloat(this.value/other.value,
-            (Math.abs(this.value) * other.error + Math.abs(other.value) * this.error) / (other.value * other.min));
-    }
-    mod(other: BoundedFloat) {
-        const div = this.div(other);
-        if (Math.floor(div.max) != Math.floor(div.min)) return BoundedFloat.catastrophicLoss;
-        return this.sub(other.mul(Math.floor(div.value)));
-    }
-}
-
 export function rationalize(arg: number): Rational {
-    const round = (d: number) => Math.floor(d + 0.5);
+    const significantBits = 50, two = int.make(2), epsilon = arg / 2 ** significantBits;;
 
-    if (arg == 0) return zero;
     if (arg < 0) return rationalize(-arg).negate();
+    if (arg % 1 == 0) return new Rational(int.make(arg), int.one);
 
-    let a = new BoundedFloat(1, 0), b = BoundedFloat.estimate(arg, 56);
-    let bestn = 0, bestd = 1, besterr = Number.POSITIVE_INFINITY;
-    do {
-        var oldb = b;
-        [a, b] = [b.mod(a), a];
-        let denlo = round(1 / b.max), denhi = round(1 / b.min);
-        for (let den = denlo; den <= denhi; den++) {
-            let num = round(arg * den), err = Math.abs(arg - num / den);
-            if (err < besterr) {
-                [besterr, bestn, bestd] = [err, num, den];
-                if (err == 0) return new Rational(int.make(bestn), int.make(bestd));
-                let newError = 1 / den - 1 / (den + 1);
-                if (newError < b.error) {
-                    b = new BoundedFloat(1 / den, newError);
-                    a = oldb.mod(b);
-                }
+    type rat = [StaxInt, StaxInt];
+    let
+        left: rat = [int.make(Math.floor(arg)), int.one],
+        right: rat = [int.make(Math.ceil(arg)), int.one],
+        best: rat = [int.zero, int.one], mediant: rat;
+    let bestError = Number.POSITIVE_INFINITY, lastMove = int.one;
+
+    do { // Stern-Brocot binary search
+        mediant = int.cmp(lastMove, int.zero) < 0
+            ? [int.sub(right[0], int.mul(lastMove, left[0])), int.sub(right[1], int.mul(lastMove, left[1]))]
+            : [int.add(left[0], int.mul(lastMove, right[0])), int.add(left[1], int.mul(lastMove, right[1]))];
+
+        let error = floatify(mediant[0]) / floatify(mediant[1]) - arg;
+        if (isNaN(error)) error = 0;
+
+        if (error > 0) {
+            if (int.cmp(lastMove, int.zero) < 0) {
+                right = mediant;
+                lastMove = int.mul(lastMove, two)
+            }
+            else {
+                lastMove = int.div(lastMove, two);
+                if (int.eq(lastMove, int.zero)) lastMove = int.minusOne;
             }
         }
-    } while (a.sound);
-    return new Rational(int.make(bestn), int.make(bestd));
+        else {
+            if (int.cmp(lastMove, int.zero) > 0) {
+                left = mediant;
+                lastMove = int.mul(lastMove, two)
+            }
+            else {
+                lastMove = int.div(lastMove, two);
+                if (int.eq(lastMove, int.zero)) lastMove = int.one;
+            }
+        }
+        if (Math.abs(error) < bestError) [best, bestError] = [mediant, Math.abs(error)];
+    } while (bestError > epsilon);
+    return new Rational(best[0], best[1]);
 }
 
 export const zero = new Rational(int.zero, int.one);
