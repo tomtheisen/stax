@@ -1,9 +1,11 @@
-import { last } from './types';
+import { last, floatify } from './types';
 import * as int from './integer';
 import { StaxInt } from './integer';
 
-const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}";
+const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+
 const _46 = int.make(46);
+const _93 = int.make(93);
 
 export function uncram(str: string): StaxInt[] {
     let result: StaxInt[] = [];
@@ -49,4 +51,20 @@ function encode(a: StaxInt[], offsetMode: boolean) {
 export function cram(arr: StaxInt[]): string {
     let flat = encode(arr, false), offset = encode(arr, true);
     return offset.length < flat.length ? offset : flat;
+}
+
+export function cramSingle(n: StaxInt): string {
+    for (var result = ""; int.cmp(n, int.zero) > 0; n = int.div(n, _93)) {
+        n = int.sub(n, int.one);
+        result = Symbols[floatify(int.mod(n, _93))] + result;
+    }
+    return result;
+}
+
+export function uncramSingle(s: string): StaxInt {
+    let result = int.zero;
+    for (let c of s) {
+        result = int.add(int.mul(result, _93), int.make(Symbols.indexOf(c) + 1));
+    }
+    return result;
 }

@@ -1,4 +1,4 @@
 @pushd StaxLang.JS
-npm run build
+call npm run build
 start .\dist\index.html
 @popd

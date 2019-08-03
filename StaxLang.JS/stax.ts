@@ -12,7 +12,7 @@ import IteratorPair from './iteratorpair';
 import Multiset from './multiset';
 import { primeFactors, allPrimes } from './primehelper';
 import { decompress } from './huffmancompression';
-import { uncram } from './crammer';
+import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
 
 export class ExecutionState {
@@ -3112,8 +3112,14 @@ export class Runtime {
             }
             else if (token[i] == '"') {
                 terminated = true;
-                if (token[++i] === '!') { // uncram integer array
+                ++i;
+                if (token[i] === '!') { // uncram integer array
                     let uncrammed = uncram(unescaped);
+                    this.push(uncrammed);
+                    return;
+                }
+                if (token[i] === '%') { // uncram scalar integer
+                    let uncrammed = uncramSingle(unescaped);
                     this.push(uncrammed);
                     return;
                 }

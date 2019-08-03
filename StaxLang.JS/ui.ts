@@ -4,7 +4,7 @@ import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
 import { compress } from './huffmancompression';
-import { cram } from './crammer';
+import { cram, cramSingle } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 
@@ -484,13 +484,22 @@ compressorInputEl.addEventListener("input", doCompressor);
 compressorForceEl.addEventListener("change", doCompressor);
 
 function doCrammer() {
+    const info = document.getElementById("crammerInfo") as HTMLDivElement;
     let matches = crammerInputEl.value.match(/-?\d+/g);
     if (matches) {
-        let crammed = cram(matches.map(e => int.make(e)));
-        crammerOutputEl.value = `"${ crammed }"!`;
+        let ints = matches.map(e => int.make(e));
+        if (ints.length === 1) {
+            let crammed = cramSingle(ints[0]);
+            crammerOutputEl.value = `"${ crammed }"%`;
+            info.textContent = `${ crammerOutputEl.value.length } bytes (scalar)`;
+        }
+        else {
+            let crammed = cram(ints);
+            crammerOutputEl.value = `"${ crammed }"!`;
+            info.textContent = `${ crammerOutputEl.value.length } bytes (array)`;
+        }
     }
-    else crammerOutputEl.value = "z";
-    (document.getElementById("crammerInfo") as HTMLDivElement).textContent = `${ crammerOutputEl.value.length } bytes`;
+    else info.textContent = crammerOutputEl.value = "";
 }
 doCrammer();
 crammerInputEl.addEventListener("input", doCrammer);
