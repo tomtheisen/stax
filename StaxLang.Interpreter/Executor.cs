@@ -286,7 +286,7 @@ namespace StaxLang {
                         break;
                     case '"': 
                         {
-                            Push(ParseString(program, true, ref ip, out var stringType));
+                            Push(ParseQuotedLiteral(program, true, ref ip, out var stringType));
                             type = InstructionType.Value;
                             switch (stringType) {
                                 case StringLiteralType.Normal:
@@ -4077,7 +4077,7 @@ namespace StaxLang {
             return S2A(decompressed);
         }
 
-        enum StringLiteralType { Normal, ImplicitEnd, CrammedIntegers }
+        enum StringLiteralType { Normal, ImplicitEnd, CrammedIntegers, CrammedSingleInteger }
         /// <summary>
         /// parse a string literal or packed integer array
         /// </summary>
@@ -4089,7 +4089,7 @@ namespace StaxLang {
         /// </param>
         /// <param name="type"></param>
         /// <returns></returns>
-        private List<object> ParseString(string program, bool doTemplates, ref int ip, out StringLiteralType type) {
+        private dynamic ParseQuotedLiteral(string program, bool doTemplates, ref int ip, out StringLiteralType type) {
             string result = "";
             while (ip < program.Length - 1 && program[++ip] != '"') {
                 if (program[ip] == '`') {
@@ -4132,6 +4132,11 @@ namespace StaxLang {
                 type = StringLiteralType.CrammedIntegers;
                 return ArrayCrammer.Uncram(result);
             }
+            else if (ip + 1 < program.Length  && program[ip + 1] == '%') {
+                ++ip;
+                type = StringLiteralType.CrammedSingleInteger;
+                return ArrayCrammer.UncramSingle(result);
+            } 
             return S2A(result);
         }
 
@@ -4167,7 +4172,7 @@ namespace StaxLang {
                 }
 
                 if (contents[ip] == '"') {
-                    ParseString(contents, false, ref ip, out var type);
+                    ParseQuotedLiteral(contents, false, ref ip, out var type);
                     continue;
                 }
 

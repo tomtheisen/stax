@@ -5,7 +5,16 @@ using System.Linq;
 
 namespace StaxLang {
     public static class ArrayCrammer {
-        private const string Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}";
+        private const string Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+
+        public static BigInteger UncramSingle(string str) {
+			BigInteger result = 0;
+			foreach (var c in str) {
+				result *= Symbols.Length;
+				result += Symbols.IndexOf(c) + 1;
+			}
+			return result;
+		}
 
         public static List<object> Uncram(string str) {
 	        var result = new List<BigInteger>();
