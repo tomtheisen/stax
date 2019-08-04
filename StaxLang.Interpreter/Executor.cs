@@ -1766,7 +1766,7 @@ namespace StaxLang {
                             case 'q':
                                 if (IsNumber(Peek())) {
                                     block.AddDesc("floor square root");
-                                    if (IsInt(Peek())) RunMacro("|ac{1{b/+hgl|msd}M");
+                                    if (IsInt(Peek())) RunMacro("|ac{c2|Lh|2@{b/+hgl|msd}M");
                                     else Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
                                 }
                                 else if (IsArray(Peek())) {
