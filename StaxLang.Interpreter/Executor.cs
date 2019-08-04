@@ -2619,7 +2619,7 @@ namespace StaxLang {
                         } 
                         
                         {
-                            var match = Regex.Match(substring, @"^-?\d+\.\d+");
+                            var match = Regex.Match(substring, @"^-?\d+(\.\d+([eE]-?\d+)?|[eE]-?\d+)");
                             if (match.Success) {
                                 NewValue(double.Parse(match.Value));
                                 i += match.Value.Length - 1;

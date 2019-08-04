@@ -10,6 +10,7 @@ import { compress } from './huffmancompression';
 import { cram, cramSingle, baseArrayCrammed } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
+import { S2A } from './types';
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
@@ -478,9 +479,15 @@ function doStringCoder() {
     else if (input.length === 1) result = "'" + input;
     else if (input.length === 2) result = "." + input;
     else {
-        let compressed = compress(input);
-        if (compressed && compressed.length < input.length) result = '`' + compressed + '`';
-        else result = '"' + input.replace(/"/g, '`"') + '"'
+        const compressed = compress(input);
+        if (compressed && compressed.length < input.length) {
+            result = '`' + compressed + '`';
+        }
+        else {
+            result = [...input].some(c => c < ' ' || c > '~')
+                ? cram(S2A(input))
+                : '"' + input.replace(/([`"])/g, '`$1') + '"';
+        }
     }
     stringOutputEl.value = result;
     stringInfoEl.textContent = `${ stringOutputEl.value.length } bytes`;
@@ -497,7 +504,7 @@ function doIntegerCoder() {
             integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (scalar)`;
         }
         else {
-            let crammedBest = `"${ cram(ints) }"!`;
+            let crammedBest = cram(ints);
             let baseCrammed = baseArrayCrammed(ints);
             if (baseCrammed && baseCrammed.length < crammedBest.length) crammedBest = baseCrammed;
             integerOutputEl.value = crammedBest;

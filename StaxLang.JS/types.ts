@@ -8,8 +8,8 @@ export type StaxNumber = number | Rational | StaxInt;
 export type StaxValue = StaxNumber | Block | StaxArray;
 export interface StaxArray extends Array<StaxValue> { }
 
-export function S2A(s: string): StaxArray {
-    let result: StaxArray = [];
+export function S2A(s: string): StaxInt[] {
+    let result: StaxInt[] = [];
     for (let i = 0; i < s.length; i++) {
         let code = s.codePointAt(i)!;
         result.push(int.make(code));

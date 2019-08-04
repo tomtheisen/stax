@@ -130,3 +130,10 @@ m
 3
 	stax
 "∞ 3"e|m
+	name:ExponentialEval
+	in
+[2e3, 4e-1,5.6e1]
+	out
+2056.4
+	stax
+|+

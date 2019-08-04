@@ -203,7 +203,7 @@ export class Runtime {
                         break;
                     }
 
-                    let match = substring.match(/^-?\d+\.\d+/);
+                    let match = substring.match(/^-?\d+(\.\d+([eE]-?\d+)?|[eE]-?\d+)/);
                     if (match) {
                         newValue(parseFloat(match[0]));
                         i += match[0].length - 1;

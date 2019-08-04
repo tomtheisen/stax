@@ -50,7 +50,7 @@ function encode(a: StaxInt[], offsetMode: boolean) {
 
 export function cram(arr: StaxInt[]): string {
     let flat = encode(arr.slice(), false), offset = encode(arr.slice(), true);
-    return offset.length < flat.length ? offset : flat;
+    return `"${offset.length < flat.length ? offset : flat}"!`;
 }
 
 export function cramSingle(n: StaxInt): string {
