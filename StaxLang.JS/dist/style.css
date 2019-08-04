@@ -134,7 +134,7 @@ input.wide {
     letter-spacing: -5px;
 }
 
-#compressorOutput, #debugCode, #debugState dl {
+#stringOutput, #debugCode, #debugState dl {
     font-family: monospace;
 }
 #debugState dd, #debugState li {
@@ -150,7 +150,7 @@ html.debugging #debugState {
     display: block;
 }
 
-#compressorInfo, #crammerInfo {
+#stringInfo, #integerInfo {
     float: right;
 }
 

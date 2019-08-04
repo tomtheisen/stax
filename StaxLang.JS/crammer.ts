@@ -49,7 +49,7 @@ function encode(a: StaxInt[], offsetMode: boolean) {
 }
 
 export function cram(arr: StaxInt[]): string {
-    let flat = encode(arr, false), offset = encode(arr, true);
+    let flat = encode(arr.slice(), false), offset = encode(arr.slice(), true);
     return offset.length < flat.length ? offset : flat;
 }
 
@@ -67,4 +67,15 @@ export function uncramSingle(s: string): StaxInt {
         result = int.add(int.mul(result, _93), int.make(Symbols.indexOf(c) + 1));
     }
     return result;
+}
+
+export function baseArrayCrammed(arr: StaxInt[]): string | null {
+    if (arr.some(e => int.cmp(e, int.zero) < 0)) return null;
+    const base = int.add(arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a), int.one);
+    const all = arr.reduce((a, b) => int.add(int.mul(a, base), b));
+    const baseEncoded = `"${ cramSingle(base) }"%`;
+    const baseShortest = baseEncoded.length < base.toString().length
+        ? baseEncoded
+        : base.toString();
+    return `"${ cramSingle(all) }"%${ baseShortest }|E`;
 }

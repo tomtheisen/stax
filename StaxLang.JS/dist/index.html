@@ -40,32 +40,31 @@
                 </div>
 
                 <details>
-                    <summary><span class="btn">String Literal Compressor</span></summary>
-                    <div id="compressorDialog" class="well">
+                    <summary><span class="btn">String Literals</span></summary>
+                    <div id="stringDialog" class="well">
                         <p>
                             Generates a short representation for a string.
                             The closing delimiter is optional at the end of a program.
                             <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#compressed-strings">More info</a>
                         </p>
-                        <label>Value <br><input id="compressorInput" value="Hello, world!" class="wide"></label>
+                        <label>Value <br><input id="stringInput" value="Hello, world!" class="wide"></label>
                         <br>
-                        <label for="compressorOutput">Stax literal</label> <label><input type="checkbox" id="compressorForce"> Force compressed literal</label><br>
-                        <div id="compressorInfo"></div>
-                        <input id="compressorOutput" readonly class="wide">
+                        <div id="stringInfo"></div>
+                        <label>Stax literal<br><input id="stringOutput" readonly class="wide"></label>
                     </div>
                 </details>
 
                 <details>
-                    <summary><span class="btn">Integer Crammer</span></summary>
-                    <div id=crammerDialog class="well">
+                    <summary><span class="btn">Integer/Array Literals</span></summary>
+                    <div id=integerDialog class="well">
                         <p>
                             This tool generates a short representation for arbitrary integers or integer arrays.
                             <a href="https://github.com/tomtheisen/stax/blob/master/docs/compressed.md#crammed-integer-arrays">More info</a>
                         </p>
-                        <label>Array <br><input id="crammerInput" value="123, -234, 456" class="wide"></label>
+                        <label>Array <br><input id="integerInput" value="123, -234, 456" class="wide"></label>
                         <br>
-                        <div id="crammerInfo"></div>
-                        <label>Stax crammed array <br><input id="crammerOutput" readonly class="wide"></label>
+                        <div id="integerInfo"></div>
+                        <label>Stax literal<br><input id="integerOutput" readonly class="wide"></label>
                     </div>
                 </details>
 

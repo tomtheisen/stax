@@ -4,7 +4,7 @@ import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
 import { compress } from './huffmancompression';
-import { cram, cramSingle } from './crammer';
+import { cram, cramSingle, baseArrayCrammed } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 
@@ -19,37 +19,44 @@ document.getElementById("buildInfo")!.textContent = `
 const workMilliseconds = 40;
 const saveKey = "saved-state";
 
+function el<T extends HTMLElement>(id: string): T {
+    const result = document.getElementById(id) as T;
+    if (!result) throw new Error(`could not find ${id}`);
+    return result;
+}
+
 const root = document.firstElementChild as HTMLHtmlElement;
-const runButton = document.getElementById("run") as HTMLButtonElement;
-const stepButton = document.getElementById("step") as HTMLButtonElement;
-const stopButton = document.getElementById("stop") as HTMLButtonElement;
-const codeArea = document.getElementById("code") as HTMLTextAreaElement;
-const inputArea = document.getElementById("stdin") as HTMLTextAreaElement;
-const statusEl = document.getElementById("status") as HTMLElement;
-const propsEl = document.getElementById("properties") as HTMLElement;
-const outputEl = document.getElementById("output") as HTMLPreElement;
-const copyOutputButton = document.getElementById("outputCopy") as HTMLButtonElement;
-const warningsEl = document.getElementById("warnings") as HTMLUListElement;
-const saveLink = document.getElementById("savelink") as HTMLAnchorElement;
-const postLink = document.getElementById("generatepost") as HTMLAnchorElement;
-const newLink = document.getElementById("newfile") as HTMLAnchorElement;
-const quickrefFilter = document.getElementById("quickref-filter") as HTMLInputElement;
-const packButton = document.getElementById("pack") as HTMLButtonElement;
-const golfButton = document.getElementById("golf") as HTMLButtonElement;
-const compressButton = document.getElementById("compress") as HTMLButtonElement;
-const uncompressButton = document.getElementById("uncompress") as HTMLButtonElement;
-const downLink = document.getElementById("download") as HTMLAnchorElement;
-const upButton = document.getElementById("upload") as HTMLButtonElement;
-const fileInputEl = document.getElementById("uploadFile") as HTMLInputElement;
-const compressorInputEl = document.getElementById("compressorInput") as HTMLInputElement;
-const compressorOutputEl = document.getElementById("compressorOutput") as HTMLInputElement;
-const compressorForceEl = document.getElementById("compressorForce") as HTMLInputElement;
-const crammerInputEl = document.getElementById("crammerInput") as HTMLInputElement;
-const crammerOutputEl = document.getElementById("crammerOutput") as HTMLInputElement;
-const autoCheckEl = document.getElementById("autoRunPermalink") as HTMLInputElement;
-const blankSplitEl = document.getElementById("blankSplit") as HTMLInputElement;
-const lineSplitEl = document.getElementById("lineSplit") as HTMLInputElement;
-const noSplitEl = document.getElementById("noSplit") as HTMLInputElement;
+const runButton = el<HTMLButtonElement>("run");
+const stepButton = el<HTMLButtonElement>("step");
+const stopButton = el<HTMLButtonElement>("stop");
+const codeArea = el<HTMLTextAreaElement>("code");
+const inputArea = el<HTMLTextAreaElement>("stdin");
+const statusEl = el<HTMLElement>("status");
+const propsEl = el<HTMLElement>("properties");
+const outputEl = el<HTMLPreElement>("output");
+const copyOutputButton = el<HTMLButtonElement>("outputCopy");
+const warningsEl = el<HTMLUListElement>("warnings");
+const saveLink = el<HTMLAnchorElement>("savelink");
+const postLink = el<HTMLAnchorElement>("generatepost");
+const newLink = el<HTMLAnchorElement>("newfile");
+const quickrefFilter = el<HTMLInputElement>("quickref-filter");
+const packButton = el<HTMLButtonElement>("pack");
+const golfButton = el<HTMLButtonElement>("golf");
+const compressButton = el<HTMLButtonElement>("compress");
+const uncompressButton = el<HTMLButtonElement>("uncompress");
+const downLink = el<HTMLAnchorElement>("download");
+const upButton = el<HTMLButtonElement>("upload");
+const fileInputEl = el<HTMLInputElement>("uploadFile");
+const stringInputEl = el<HTMLInputElement>("stringInput");
+const stringOutputEl = el<HTMLInputElement>("stringOutput");
+const stringInfoEl = el<HTMLDivElement>("stringInfo");
+const integerInputEl = el<HTMLInputElement>("integerInput");
+const integerOutputEl = el<HTMLInputElement>("integerOutput");
+const integerInfoEl = el<HTMLDivElement>("integerInfo");
+const autoCheckEl = el<HTMLInputElement>("autoRunPermalink");
+const blankSplitEl = el<HTMLInputElement>("blankSplit");
+const lineSplitEl = el<HTMLInputElement>("lineSplit");
+const noSplitEl = el<HTMLInputElement>("noSplit");
 
 let activeRuntime: Runtime | null = null;
 let activeStateIterator: Iterator<ExecutionState> | null = null;
@@ -461,14 +468,10 @@ newLink.addEventListener("click", ev => {
     stop();
 });
 
-function doCompressor() {
-    let input = compressorInputEl.value;
+function doStringCoder() {
+    let input = stringInputEl.value;
     let result: string;
     if (input === "") result = "z";
-    else if (compressorForceEl.checked) {
-        let compressed = compress(input);
-        result = compressed ? '`' + compressed + '`' : "";
-    }
     else if (input.length === 1) result = "'" + input;
     else if (input.length === 2) result = "." + input;
     else {
@@ -476,33 +479,33 @@ function doCompressor() {
         if (compressed && compressed.length < input.length) result = '`' + compressed + '`';
         else result = '"' + input.replace(/"/g, '`"') + '"'
     }
-    compressorOutputEl.value = result;
-    (document.getElementById("compressorInfo") as HTMLDivElement).textContent = `${ compressorOutputEl.value.length } bytes`;
+    stringOutputEl.value = result;
+    stringInfoEl.textContent = `${ stringOutputEl.value.length } bytes`;
 }
-doCompressor();
-compressorInputEl.addEventListener("input", doCompressor);
-compressorForceEl.addEventListener("change", doCompressor);
+doStringCoder();
+stringInputEl.addEventListener("input", doStringCoder);
 
-function doCrammer() {
-    const info = document.getElementById("crammerInfo") as HTMLDivElement;
-    let matches = crammerInputEl.value.match(/-?\d+/g);
+function doIntegerCoder() {
+    let matches = integerInputEl.value.match(/-?\d+/g);
     if (matches) {
         let ints = matches.map(e => int.make(e));
         if (ints.length === 1) {
             let crammed = cramSingle(ints[0]);
-            crammerOutputEl.value = `"${ crammed }"%`;
-            info.textContent = `${ crammerOutputEl.value.length } bytes (scalar)`;
+            integerOutputEl.value = `"${ crammed }"%`;
+            integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (scalar)`;
         }
         else {
-            let crammed = cram(ints);
-            crammerOutputEl.value = `"${ crammed }"!`;
-            info.textContent = `${ crammerOutputEl.value.length } bytes (array)`;
+            let crammedBest = `"${ cram(ints) }"!`;
+            let baseCrammed = baseArrayCrammed(ints);
+            if (baseCrammed && baseCrammed.length < crammedBest.length) crammedBest = baseCrammed;
+            integerOutputEl.value = crammedBest;
+            integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (array)`;
         }
     }
-    else info.textContent = crammerOutputEl.value = "";
+    else integerInfoEl.textContent = integerOutputEl.value = "";
 }
-doCrammer();
-crammerInputEl.addEventListener("input", doCrammer);
+doIntegerCoder();
+integerInputEl.addEventListener("input", doIntegerCoder);
 
 packButton.addEventListener("click", ev => {
     let code = codeArea.value, packed = isPacked(code);
