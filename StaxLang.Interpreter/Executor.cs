@@ -1766,7 +1766,8 @@ namespace StaxLang {
                             case 'q':
                                 if (IsNumber(Peek())) {
                                     block.AddDesc("floor square root");
-                                    Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
+                                    if (IsInt(Peek())) RunMacro("|ac{1{b/+hgl|msd}M");
+                                    else Push(new BigInteger(Math.Sqrt(Math.Abs((double)Pop()))));
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("get all indices of regex match");

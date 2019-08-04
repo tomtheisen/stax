@@ -667,3 +667,10 @@ back\slash\
 \/\
 	stax
 ,
+	name:ApproximateSqrt
+	in
+9999999999999999
+	out
+9999999999999999
+	stax
+J|q

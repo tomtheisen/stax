@@ -1509,7 +1509,11 @@ export class Runtime {
                         break;
                     case '|q': {
                         let b = this.pop();
-                        if (isNumber(b)) {
+                        if (isInt(b)) {
+                            this.push(b);
+                            this.runMacro("|ac{1{b/+hgl|msd}M");
+                        }
+                        else if (isNumber(b)) {
                             this.push(int.make(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
                         }
                         else if (isArray(b)) {
