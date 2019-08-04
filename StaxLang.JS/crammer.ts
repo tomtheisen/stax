@@ -54,11 +54,25 @@ export function cram(arr: StaxInt[]): string {
 }
 
 export function cramSingle(n: StaxInt): string {
-    for (var result = ""; int.cmp(n, int.zero) > 0; n = int.div(n, _93)) {
+    if (int.cmp(n, int.zero) < 0) return cramSingle(int.negate(n)) + "N";
+    if (int.eq(n, int.make(10))) return "A";
+    if (int.eq(n, int.make(100))) return "AJ";
+    if (int.eq(n, int.make(256))) return "VB";
+    if (int.eq(n, int.make(1000))) return "Vk";
+
+    const floated = floatify(n), sqrt = Math.floor(Math.sqrt(floated));
+    if (floated === sqrt * sqrt) return cramSingle(int.make(sqrt)) + "J";
+
+    let best = n.toString();
+    if (int.cmp(n, int.make(1e7)) < 0) return best;
+
+    for (var scalarCrammed = ""; int.cmp(n, int.zero) > 0; n = int.div(n, _93)) {
         n = int.sub(n, int.one);
-        result = Symbols[floatify(int.mod(n, _93))] + result;
+        scalarCrammed = Symbols[floatify(int.mod(n, _93))] + scalarCrammed;
     }
-    return result;
+    scalarCrammed = `"${scalarCrammed}"%`;
+    if (scalarCrammed.length < best.length) best = scalarCrammed;
+    return best;
 }
 
 export function uncramSingle(s: string): StaxInt {
@@ -73,9 +87,5 @@ export function baseArrayCrammed(arr: StaxInt[]): string | null {
     if (arr.some(e => int.cmp(e, int.zero) < 0)) return null;
     const base = int.add(arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a), int.one);
     const all = arr.reduce((a, b) => int.add(int.mul(a, base), b));
-    const baseEncoded = `"${ cramSingle(base) }"%`;
-    const baseShortest = baseEncoded.length < base.toString().length
-        ? baseEncoded
-        : base.toString();
-    return `"${ cramSingle(all) }"%${ baseShortest }|E`;
+    return cramSingle(all) + cramSingle(base) + "|E";
 }

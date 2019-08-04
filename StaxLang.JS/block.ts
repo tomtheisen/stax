@@ -1,6 +1,8 @@
 import { last } from './types';
 import { isPacked } from './packer';
 import { compress, decompress } from './huffmancompression';
+import { cramSingle, uncramSingle } from './crammer';
+import * as int from './integer';
 
 export class Block {
     contents: string;
@@ -53,17 +55,20 @@ export enum CodeType {
     UnpackedNonascii,   // Unpackable, due to emojis or something
 }
 
-export enum StringLiteralTypes {
-    None           = 0b0000,
-    Compressed     = 0b0001,
-    Compressable   = 0b0010,
-    Uncompressable = 0b0100,
+export enum LiteralTypes {
+    None                 = 0b000000,
+    CompressedString     = 0b000001,
+    CompressableString   = 0b000010,
+    UncompressableString = 0b000100,
+    CompressedInt        = 0b001000,    
+    CompressableInt      = 0b010000,
+    UncompressableInt    = 0b100000,
 }
 
-export function getCodeType(program: string) : [CodeType, StringLiteralTypes] {
-    if (isPacked(program)) return [CodeType.Packed, StringLiteralTypes.None];
+export function getCodeType(program: string) : [CodeType, LiteralTypes] {
+    if (isPacked(program)) return [CodeType.Packed, LiteralTypes.None];
 
-    let lowAscii = false, highCodepoint = false, literals = StringLiteralTypes.None;
+    let lowAscii = false, highCodepoint = false, literals = LiteralTypes.None;
     for (let pos = 0; pos < program.length; pos++) {
         if (program.codePointAt(pos)! >= 0x7f) highCodepoint = true;
         if (program.codePointAt(pos)! < 0x20) lowAscii = true;
@@ -87,21 +92,38 @@ export function getCodeType(program: string) : [CodeType, StringLiteralTypes] {
             case '.':
                 pos +=2 ;
                 break;
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                let n = parseNum(program, pos);
+                const crammed = cramSingle(int.make(n));
+                if (crammed.length < n.length) literals |= LiteralTypes.CompressableInt;
+                else literals |= LiteralTypes.UncompressableInt;
+                pos += n.length - 1;
+                break;
             case '"':
-                let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
-                let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
-                if (compressable) {
-                    let compressed = compress(contents);
-                    if (!compressed || compressed.length >= contents.length) compressable = false;
+                let literal = parseString(program, pos);
+                if (literal.endsWith("%")) {
+                    literals |= LiteralTypes.CompressedInt;
                 }
-                literals |= compressable 
-                    ? StringLiteralTypes.Compressable 
-                    : StringLiteralTypes.Uncompressable;
+                if (literal.endsWith("!")) {
+                    // can't do anything about crammed arrays
+                }
+                else {
+                    let contents = literal.replace(/^"|"$/g, "");
+                    let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
+                    if (compressable) {
+                        let compressed = compress(contents);
+                        if (!compressed || compressed.length >= contents.length) compressable = false;
+                    }
+                    literals |= compressable 
+                        ? LiteralTypes.CompressableString 
+                        : LiteralTypes.UncompressableString;
+                }
                 pos += literal.length - 1;
                 break;
             case '`':
                 pos += parseCompressedString(program, pos).length - 1;
-                literals |= StringLiteralTypes.Compressed;
+                literals |= LiteralTypes.CompressedString;
                 break;
         }
     }
@@ -127,6 +149,12 @@ export function compressLiterals(program: string): string {
             case '.':
                 result += program.substr(pos, 3);
                 pos += 2;
+                break;
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                let n = parseNum(program, pos);
+                result += cramSingle(int.make(n));
+                pos += n.length - 1;
                 break;
             case '"': {
                 let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
@@ -176,7 +204,10 @@ export function decompressLiterals(program: string): string {
                 break;
             case '"': {
                 let literal = parseString(program, pos);
-                result += literal;
+                if (literal.endsWith("%")) {
+                    result += uncramSingle(literal.replace(/^"|"%$/g, '')).toString();
+                }
+                else result += literal;
                 pos += literal.length - 1;
                 break;
             }

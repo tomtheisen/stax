@@ -1,5 +1,8 @@
 import { Runtime, ExecutionState } from './stax';
-import { parseProgram, Block, getCodeType, CodeType, StringLiteralTypes, compressLiterals, decompressLiterals } from './block';
+import { 
+    parseProgram, Block, getCodeType, CodeType, LiteralTypes, 
+    compressLiterals, decompressLiterals 
+} from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
@@ -306,7 +309,7 @@ function updateStats() {
 
     packButton.hidden = false;
     compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
-    let literalTypes: StringLiteralTypes;
+    let literalTypes: LiteralTypes;
     [codeType, literalTypes] = getCodeType(codeArea.value);
     if (codeType === CodeType.Packed) {
         compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
@@ -325,8 +328,8 @@ function updateStats() {
         }
         packButton.hidden = codeType != CodeType.TightAscii;
         golfButton.hidden = codeType != CodeType.LooseAscii;
-        compressButton.hidden = !(literalTypes & StringLiteralTypes.Compressable);
-        uncompressButton.hidden = !(literalTypes & StringLiteralTypes.Compressed);
+        compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
+        uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
 
         if (codeType === CodeType.UnpackedNonascii) {
             codeChars = codeArea.value.length - pairs;
@@ -490,8 +493,7 @@ function doIntegerCoder() {
     if (matches) {
         let ints = matches.map(e => int.make(e));
         if (ints.length === 1) {
-            let crammed = cramSingle(ints[0]);
-            integerOutputEl.value = `"${ crammed }"%`;
+            integerOutputEl.value = cramSingle(ints[0]);
             integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (scalar)`;
         }
         else {
