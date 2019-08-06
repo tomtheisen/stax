@@ -66,3 +66,27 @@ export const bitnot: (n: StaxInt) => StaxInt = usingNativeBigInt
 export const floatify: (n: StaxInt) => number = usingNativeBigInt
     ? Number
     : (n: npm_bigInt.BigInteger) => n.valueOf();
+export const floorSqrt: (n: StaxInt) => StaxInt = usingNativeBigInt
+    ? (n: bigint) => {
+        if (n < 0) throw Error("Can't sqrt negative");
+        if (n === zero) return zero;
+        const one = BigInt(1), two = BigInt(2), four = BigInt(4);
+        for (var next = one, start = n; start > one; start /= four) next *= two;
+        let last: bigint;
+        do {
+            [last, next] = [next, (next + n / next) / two];
+        } while (next !== last && next !== last - one || next * next > n);
+        return next;
+    }
+    : (n: npm_bigInt.BigInteger) => {
+        if (n.lt(0)) throw Error("Can't sqrt negative");
+        if (n.eq(0)) return zero;
+
+        for (var next = npm_bigInt[1], start = n; start.gt(1); start = start.divide(4)) next = next.multiply(2);
+        let last: npm_bigInt.BigInteger;
+        do {
+            last = next;
+            next = last.add(n.divide(last)).divide(2);
+        } while (next.neq(last) && next.neq(last.subtract(1)) || next.multiply(next).gt(n));
+        return next;
+    }

@@ -1510,8 +1510,7 @@ export class Runtime {
                     case '|q': {
                         let b = this.pop();
                         if (isInt(b)) {
-                            this.push(b);
-                            this.runMacro("|ac{c|B2Mh|B{b/+hgl|msd}M");
+                            this.push(int.floorSqrt(int.abs(b)));
                         }
                         else if (isNumber(b)) {
                             this.push(int.make(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));

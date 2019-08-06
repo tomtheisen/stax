@@ -56,12 +56,11 @@ export function cram(arr: StaxInt[]): string {
 export function cramSingle(n: StaxInt): string {
     if (int.cmp(n, int.zero) < 0) return cramSingle(int.negate(n)) + "N";
     if (int.eq(n, int.make(10))) return "A";
-    if (int.eq(n, int.make(100))) return "AJ";
     if (int.eq(n, int.make(256))) return "VB";
     if (int.eq(n, int.make(1000))) return "Vk";
 
-    const floated = floatify(n), sqrt = Math.floor(Math.sqrt(floated));
-    if (floated === sqrt * sqrt) return cramSingle(int.make(sqrt)) + "J";
+    const sqrt = int.floorSqrt(n), isSquare = int.eq(n, int.mul(sqrt, sqrt));
+    if (int.cmp(n, int.make(100)) >= 0 && isSquare) return cramSingle(sqrt) + "J";
 
     let best = n.toString();
     if (int.cmp(n, int.make(1e7)) < 0) return best;
