@@ -1229,12 +1229,14 @@ me|N
 	name:IsNthPower
 	in
 -8 3
+8 3
 -25 2
 100 2
 0 3
 16 4
 17 4
 	out
+1
 1
 0
 1

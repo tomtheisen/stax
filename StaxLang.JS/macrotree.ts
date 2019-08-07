@@ -164,7 +164,7 @@ function setup() {
         { alias: "m", types: "ii", code: "~;|%10?+,*"},
         { alias: "m", types: "a", code: "cr+"},
         { alias: "M", types: "a", code: "cu{[]|&%i_3lm|MHsd"},
-        { alias: "N", types: "ii", code: "b|Nn|1*s#="},
+        { alias: "N", types: "ii", code: "c2%{s|as}Mb|Ns#="},
         { alias: "o", types: "aa", code: "Vi|\\{|Mm"},
         { alias: "p", types: "i", code: "v{|p}{vgs"},
         { alias: "p", types: "a", code: "c{%mVI+|ms{[)msd"},

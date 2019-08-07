@@ -161,7 +161,7 @@ namespace StaxLang {
                 ('m', "ii", "~;|%10?+,*", "increase to multiple"),
                 ('m', "a", "cr+", "mirror (reverse and concatenate with self)"),
                 ('M', "a", "cu{[]|&%i_3lm|MHsd", "mode - last to appear wins tie"),
-                ('N', "ii", "b|Nn|1*s#=", "integer is nth power?"),
+                ('N', "ii", "c2%{s|as}Mb|Ns#=", "integer is nth power?"),
                 ('o', "aa", @"Vi|\{|Mm", "overlay; keep the maximum respective elements from two arrays"),
                 ('O', "a", "co=", "is array sorted?" ),
                 ('p', "i", "v{|p}{vgs", "last prime <n"),
