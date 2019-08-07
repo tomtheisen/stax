@@ -1745,6 +1745,11 @@ namespace StaxLang {
                                 if (IsArray(Peek())) {
                                     DoNextPerm(block);
                                 }
+                                else if (IsInt(Peek())) {
+                                    block.AddDesc("floored nth-root");
+                                    BigInteger b = Pop(), a = Pop();
+                                    Push(NthRoot(a, (int)b));
+                                }
                                 break;
                             case 'o':
                                 DoIndexWhenOrdered(block);
@@ -3928,6 +3933,16 @@ namespace StaxLang {
             }
 
             throw new StaxException("Bad types for GCD");
+        }
+
+        BigInteger NthRoot(BigInteger val, int n) {
+            val = BigInteger.Abs(val);
+            BigInteger x = 1;
+            for (var i = val; i > 0; i >>= n) x <<= 1;
+            do {
+                x = ((n - 1) * x + val / BigInteger.Pow(x, (n - 1))) / n;
+            } while (!(BigInteger.Pow(x, n) <= val && val < BigInteger.Pow(x + 1, n)));
+            return x;
         }
 
         #region support

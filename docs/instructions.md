@@ -109,6 +109,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 <code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` -> `[2 0 1]`)
+<code>&#124;N</code>     	|int int    	|int-nth-root  	|floor(pow(a, 1/b)) 	|Nth root of an integer, rounded down.  This doesn't use floats internally, and is accurate for large integers.
 <code>&#124;p</code>     	|int        	|is-prime      	|                   	|Is prime?
 <code>&#124;q</code>     	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
 <code>&#124;Q</code>     	|num        	|sqrt          	|sqrt(abs(a))       	|Float square root of absolute value.
@@ -144,6 +145,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:h`                     	|int int    	|fixed-hex     	|zfill(hex(a), b)   	|Hexadecimal representation of a zero-padded to b digits. (e.g. `258`, `4` -> `"0102"`)
 `:J`                     	|num num    	|square-two    	|a\*\*2, b\*\*2     	|Square top two elements; useful for hypotenuse and things.
 `:m`                     	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b.
+`:N`                     	|int int    	|is-power      	|                   	|Can a be expressed as some integer to the b power?
 `:p`                     	|int        	|last-prime    	|                   	|Last prime < n.
 `:P`                     	|int        	|next-prime    	|                   	|Next prime >= n.
 `:t`                     	|int        	|totient       	|totient(a)         	|Euler's totient of n.

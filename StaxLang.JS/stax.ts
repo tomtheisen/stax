@@ -1484,6 +1484,10 @@ export class Runtime {
                             result.push(...els.sort(compare));
                             this.push(result);
                         }
+                        else if (isInt(this.peek())) {
+                            let b = this.popInt(), a = this.popInt();
+                            this.push(int.nthRoot(a, b));
+                        }
                         break;
                     case '|o': { // get indices of elements when ordered
                         let a = this.popArray(), result: StaxArray = [], i = 0;

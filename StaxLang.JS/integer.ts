@@ -66,27 +66,17 @@ export const bitnot: (n: StaxInt) => StaxInt = usingNativeBigInt
 export const floatify: (n: StaxInt) => number = usingNativeBigInt
     ? Number
     : (n: npm_bigInt.BigInteger) => n.valueOf();
-export const floorSqrt: (n: StaxInt) => StaxInt = usingNativeBigInt
-    ? (n: bigint) => {
-        if (n < 0) throw Error("Can't sqrt negative");
-        if (n === zero) return zero;
-        const one = BigInt(1), two = BigInt(2), four = BigInt(4);
-        for (var next = one, start = n; start > one; start /= four) next *= two;
-        let last: bigint;
-        do {
-            [last, next] = [next, (next + n / next) / two];
-        } while (next !== last && next !== last - one || next * next > n);
-        return next;
-    }
-    : (n: npm_bigInt.BigInteger) => {
-        if (n.lt(0)) throw Error("Can't sqrt negative");
-        if (n.eq(0)) return zero;
+export function nthRoot(val: StaxInt, n: StaxInt): StaxInt {
+    val = abs(val);
+    let x = one;
+    const two = make(2), shift = pow(two, n), n_1 = sub(n, one);
+    for (let i = val; cmp(i, zero) > 0; i = div(i, shift)) x = mul(x, two);
 
-        for (var next = npm_bigInt[1], start = n; start.gt(1); start = start.divide(4)) next = next.multiply(2);
-        let last: npm_bigInt.BigInteger;
-        do {
-            last = next;
-            next = last.add(n.divide(last)).divide(2);
-        } while (next.neq(last) && next.neq(last.subtract(1)) || next.multiply(next).gt(n));
-        return next;
-    }
+    do {
+        x = div(add(mul(n_1, x), div(val, pow(x, n_1))), n);
+    } while (!(cmp(pow(x, n), val) <= 0 && cmp(val, pow(add(x, one), n)) < 0));
+    return x;
+}
+export function floorSqrt(n: StaxInt) {
+    return nthRoot(n, make(2));
+}
