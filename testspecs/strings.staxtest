@@ -193,6 +193,12 @@ Helo Wrd
 azbzczd
 	stax
 "axbxxcxxxd" "x+" 'z R
+	in
+x xxx asdf xxxx
+	out
+1 3 asdf 4
+	stax
+.x+ {%} R
 	name:Translate
 	in
 	out

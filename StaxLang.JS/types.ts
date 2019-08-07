@@ -173,7 +173,7 @@ export function stringFormat(arg: StaxValue): StaxArray {
         }
         return result;
     }
-    
+
     if (isFloat(arg)) return S2A(stringFormatFloat(arg));
     if (isNumber(arg)) return S2A(arg.toString());
     if (isArray(arg)) {

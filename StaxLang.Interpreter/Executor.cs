@@ -2702,7 +2702,8 @@ namespace StaxLang {
                     Push(_ = S2A(match.Value));
                     foreach (var s in RunSteps((Block)replace)) yield return s;
                     Index++;
-                    result += A2S(Pop());
+                    var replaced = Pop();
+                    result += A2S(IsArray(replaced) ? replaced : ToString(replaced));
                     consumed = match.Index + match.Length;
                 }
                 result += ts.Substring(consumed);

@@ -2688,7 +2688,8 @@ export class Runtime {
                 
                 this.push(this._ = S2A(match[0]));
                 for (let s of this.runSteps(replaceBlock)) yield s;
-                result += A2S(this.popArray());
+                const replaced = this.pop();
+                result += A2S(isArray(replaced) ? replaced : stringFormat(replaced));
                 lastEnd = match.index! + match[0].length;
                 
                 this.index = int.add(this.index, one);
