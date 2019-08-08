@@ -170,8 +170,11 @@ html.show-quickref #quickref {
     padding: 0 0.2em;
 }
 
+:root {
+    --tools-width: 400px;
+}
 html.show-tools body {
-    margin-right: calc(1em + 24rem);
+    margin-right: calc(1em + var(--tools-width));
 }
 html.show-tools #tools {
     display: block;
@@ -182,11 +185,17 @@ html.show-tools #tools {
     top: 0;
     right: 0;
     height: 100vh;
-    width: 24rem;
+    width: var(--tools-width);
     overflow-y: scroll;
     background: #eee;
     padding: 0.5em;
     box-shadow: 0em 0em 0.5em 0em black;
+}
+
+@media (max-width: 800px) {
+    :root {
+        --tools-width: 50vw;
+    }
 }
 
 dt {
