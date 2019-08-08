@@ -327,7 +327,7 @@ function updateStats() {
             let codePoint = codeArea.value.codePointAt(i);
             if (charCode !== codePoint) pairs += 1;
         }
-        packButton.hidden = codeType != CodeType.TightAscii;
+        packButton.hidden = codeType != CodeType.TightAscii || codeArea.value === "";
         golfButton.hidden = codeType != CodeType.LooseAscii;
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
         uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
@@ -649,6 +649,7 @@ function isQuickRef(): boolean {
     return !!document.documentElement && document.documentElement.classList.contains("show-quickref"); 
 }
 function toggleQuickRef() {
+    if (isTools()) toggleTools();
     document.documentElement && document.documentElement.classList.toggle("show-quickref");
     if (isQuickRef()) {
         quickrefFilter.focus();
@@ -659,6 +660,15 @@ function toggleQuickRef() {
 for (let id of ["quickref-close", "quickref-link"]) {
     (document.getElementById(id) as HTMLElement).addEventListener("click", toggleQuickRef);
 }
+
+function isTools(): boolean {
+    return !!document.documentElement && document.documentElement.classList.contains("show-tools"); 
+}
+function toggleTools() {
+    if (isQuickRef()) toggleQuickRef();
+    document.documentElement && document.documentElement.classList.toggle("show-tools");
+}
+document.getElementById("tools-link")!.addEventListener("click", toggleTools);
 
 function setLayout() {
     let checkedEl = document.querySelector("#layout :checked");
@@ -701,6 +711,7 @@ document.addEventListener("keydown", ev => {
             ev.preventDefault();
             if (isActive()) stop();
             else if (isQuickRef()) toggleQuickRef();
+            else if (isTools()) toggleTools();
             break;
     }
 });
