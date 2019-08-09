@@ -39,7 +39,7 @@ op                  	|Example           	|Name         	|Description
 op                       	|Types      	|Name          	|Pseudo-code        	|Description
 ---                      	|---        	|---           	|---                	|---
 `0123456789`             	|           	|              	|                   	|Integer literal.  Leading `0` is always separate number. Use `A` for 10. `10` is 1 and 0.
-`A`                      	|           	|              	|10                 	|Constant 10, as in hexidecimal.
+`A`                      	|           	|              	|10                 	|Constant 10, as in hexadecimal.
 `01234!56789`            	|           	|              	|                   	|Float literal.  `!` indicates a decimal point.  A trailing `0` after a `!` is always a separate int literal.
 `+`                      	|num num    	|add           	|a + b              	|Add. Integers widen to fractions.  Fractions widen to floats.
 `-`                      	|num num    	|sub           	|a - b              	|Subtract.
@@ -103,8 +103,8 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;f</code>     	|int        	|factorize     	|                   	|Prime factorization array.
 <code>&#124;F</code>     	|int        	|factorial     	|a!                 	|Factorial.
 <code>&#124;g</code>     	|int int    	|gcd           	|                   	|Greatest common denominator.
-<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexidecimal. (base 16)
-<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexidecimal. (base 16)
+<code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexadecimal. (base 16)
+<code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexadecimal. (base 16)
 <code>&#124;j</code>     	|num        	|rationalize   	|                   	|Convert any number to a rational with no loss of precision.  Stax attempts to minimize the denominator.
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
