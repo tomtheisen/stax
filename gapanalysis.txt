@@ -1,8 +1,3 @@
-ii (2 for integers)
-ai (3)
-ia (4)
-aa (1)
-
    	ii                 	ai             	ia             	aa	
    	nop                	nop            	nop            	nop
 !  	not                	not            	not            	not

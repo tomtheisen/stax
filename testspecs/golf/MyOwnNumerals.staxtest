@@ -1,0 +1,18 @@
+	#https://codegolf.stackexchange.com/questions/189537/look-mom-i-made-my-own-base-10-numeral-system/189560
+	in
+abcdefghij
+bcd + efg + hij
+	out
+bdgi
+	in
+qwertyuiop
+qwerty / uiop
+	out
+e
+	in
+%y83l;[=9|
+(83l * 9) + 8%
+	out
+y9|8
+	stax
+Vd\$Y|tj${.\+{+}G'-{-}G.\*{*}G'/{:_j}G"\(`x\)"{D1T}Rgpyr|t}~"\d+"X|S{x|F{eF;!$}R
