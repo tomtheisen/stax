@@ -95,7 +95,7 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 let n = parseNum(program, pos);
-                if (!n.includes("!")) {
+                if (/^\d+$/.test(n)) {
                     const crammed = cramSingle(int.make(n));
                     if (crammed.length < n.length) literals |= LiteralTypes.CompressableInt;
                     else literals |= LiteralTypes.UncompressableInt;
