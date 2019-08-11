@@ -212,6 +212,7 @@ a {
 pre {
     background-color: white;
     padding: 0.5em;
+    font-family: 'Courier New', Courier, monospace;
 }
 pre:empty {
     display: none;
