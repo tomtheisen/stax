@@ -6,7 +6,7 @@ import * as rat from './rational';
 
 export type StaxNumber = number | Rational | StaxInt;
 export type StaxValue = StaxNumber | Block | StaxArray;
-export interface StaxArray extends Array<StaxValue> { }
+export interface StaxArray extends ReadonlyArray<StaxValue> { }
 
 const hashMemo = new WeakMap<Exclude<Exclude<StaxValue, number>, BigInt>, number>();
 const buf = new ArrayBuffer(8), intView = new Int32Array(buf), floatView = new Float64Array(buf);
@@ -187,7 +187,7 @@ export function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
 }
 
-export function last<T>(arr: T[]): T | undefined {
+export function last<T>(arr: ReadonlyArray<T>): T | undefined {
     return arr[arr.length - 1];
 }
 
@@ -222,7 +222,7 @@ export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
 
 export function runLength(arr: StaxArray): StaxArray {
     if (arr.length === 0) return arr;
-    let result: StaxArray = [], last: StaxValue | null = null, run = 0;
+    let result: StaxValue[] = [], last: StaxValue | null = null, run = 0;
     for (let e of arr) {
         if (last != null && areEqual(e, last)) {
             run += 1;

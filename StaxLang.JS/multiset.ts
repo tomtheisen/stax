@@ -1,9 +1,9 @@
-import { StaxValue, StaxMap } from './types';
+import { StaxValue, StaxMap, StaxArray } from './types';
 
 export default class Multiset {
     private entries = new StaxMap<number>();
 
-    constructor(values: StaxValue[] | undefined = undefined) {
+    constructor(values?: StaxArray) {
         if (values) values.forEach(this.add.bind(this));
     }
 

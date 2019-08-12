@@ -1725,7 +1725,7 @@ namespace StaxLang {
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("combine elements from a and b, removing common elements as many times as they mutually occur");
-                                    List<object> b = Pop(), a = Pop(), result = new List<object>();
+                                    List<object> b = new List<object>(Pop()), a = Pop(), result = new List<object>();
                                     foreach (var e in a) {
                                         bool found = false;
                                         for (int i = 0; i < b.Count; i++) {

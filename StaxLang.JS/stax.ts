@@ -35,8 +35,8 @@ function *lazyCountTo(end: StaxInt) {
     for (let n = one; int.cmp(n, end) <= 0; n = int.add(n, one)) yield n;
 }
 
-function range(start: number | StaxInt, end: number | StaxInt): StaxArray {
-    let result: StaxArray = [];
+function range(start: number | StaxInt, end: number | StaxInt): StaxInt[] {
+    let result: StaxInt[] = [];
     const _end = Number(end.valueOf());
     for (let e = Number(start.valueOf()); e < _end; e++) result.push(int.make(e));
     return result;
@@ -52,8 +52,8 @@ export class Runtime {
     private standardOut: (line: string) => void;
     private infoOut?: (line: string) => void;
     private program: Program;
-    private mainStack: StaxArray = [];
-    private inputStack: StaxArray = [];
+    private mainStack: StaxValue[] = [];
+    private inputStack: StaxValue[] = [];
     private producedOutput = false;
     private warnedInstructions: string[] = [];
 
@@ -161,7 +161,7 @@ export class Runtime {
         let a = this.pop();
         if (!isArray(a)) throw new Error("tried to eval a non-array");
         let arg = A2S(a);
-        let activeArrays: StaxArray[] = [];
+        let activeArrays: StaxValue[][] = [];
 
         const newValue = (val: StaxValue) => {
             if (activeArrays.length) last(activeArrays)!.push(val);
@@ -558,7 +558,7 @@ export class Runtime {
                             this.push(arr[0]);
                         }
                         else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
+                            let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
 
                             this.pushStackFrame();
@@ -584,7 +584,7 @@ export class Runtime {
                             this.push(last(arr)!);
                         }
                         else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
+                            let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
                             arr = [...arr].reverse();
 
@@ -655,7 +655,7 @@ export class Runtime {
                             this.push([a.numerator, a.denominator]);
                         }
                         else if (isInt(a)) {
-                            let result: StaxArray = [];
+                            let result: StaxValue[] = [];
                             for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
                             this.push(result);
                         }
@@ -734,9 +734,9 @@ export class Runtime {
                             this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
                         }
                         else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result = this.pop(), cancelled = false;
-                            if (!isArray(result)) throw new Error("bad types for trim");
-                            result = [...result];
+                            let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
+                            if (!isArray(arr)) throw new Error("bad types for trim");
+                            let result = [...arr];
 
                             this.pushStackFrame();
                             while (result.length) {
@@ -773,9 +773,9 @@ export class Runtime {
                             this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
                         }
                         else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result = this.pop(), cancelled = false;
-                            if (!isArray(result)) throw new Error("bad types for trim");
-                            result = [...result];
+                            let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
+                            if (!isArray(arr)) throw new Error("bad types for trim");
+                            let result = [...arr];
 
                             this.pushStackFrame();
                             while (result.length) {
@@ -972,7 +972,7 @@ export class Runtime {
                             if (this.totalSize() < 2) break;
                             let b = this.popInt(), a = this.pop();
                             if (isArray(a)) {
-                                let result: StaxArray = [[]], els = a, _b = b.valueOf();
+                                let result: StaxValue[] = [[]], els = a, _b = b.valueOf();
                                 for (let i = 0; i < _b; i++) {
                                     result = ([] as StaxArray).concat(
                                         ...result.map((r: StaxArray) => els.map(e => [...r, e])))
@@ -1019,7 +1019,7 @@ export class Runtime {
                         break;
                     case '|=':
                         if (isArray(this.peek())) { // multi-mode
-                            let arr = this.popArray(), result: StaxArray = [];
+                            let arr = this.popArray(), result: StaxValue[] = [];
                             if (arr.length > 0) {
                                 let multi = new Multiset(arr), keys = multi.keys();
                                 let max = Math.max(...keys.map(k => multi.get(k)));
@@ -1079,7 +1079,7 @@ export class Runtime {
                             this.push(a);
                         }
                         else if (isArray(a) && isArray(b)) {
-                            let result: StaxArray = [];
+                            let result: StaxValue[] = [];
                             for (let i = 0, offset = 0; offset < a.length; i++) {
                                 let size = b[i % b.length];
                                 if (isNumber(size)) {
@@ -1331,7 +1331,7 @@ export class Runtime {
                         this.doGCD();
                         break;
                     case '|G': { // round-robin flatten
-                        let arr = this.popArray(), result: StaxArray = [];
+                        let arr = this.popArray(), result: StaxValue[] = [];
                         let maxlen = Math.max(...arr.map(e => (e as StaxArray).length));
                         for (let i = 0; i < maxlen; i++) {
                             for (let e of arr) {
@@ -1390,18 +1390,17 @@ export class Runtime {
                         }
                         else if (isArray(b) && isArray(a)) {
                             // combine elements from a and b, with each occurring the max of its occurrences from a and b
-                            let result: StaxArray = [];
-                            b = [...b];
+                            let result: StaxValue[] = [], b_ = [...b];
                             for (let e of a) {
                                 result.push(e);
-                                for (let i = 0; i < b.length; i++) {
-                                    if (areEqual(b[i], e)) {
-                                        b.splice(i, 1);
+                                for (let i = 0; i < b_.length; i++) {
+                                    if (areEqual(b_[i], e)) {
+                                        b_.splice(i, 1);
                                         break;
                                     }
                                 }
                             }
-                            this.push(result.concat(b));
+                            this.push(result.concat(b_));
                         }
                         break;
                     }
@@ -1447,7 +1446,7 @@ export class Runtime {
                     }
                     case '|n':
                         if (isInt(this.peek())) { // exponents of sequential primes in factorization
-                            let target = int.abs(this.popInt()), result: StaxArray = [];
+                            let target = int.abs(this.popInt()), result: StaxValue[] = [];
                             for (let p of allPrimes()) {
                                 if (target.valueOf() <= 1) break;
                                 let exp = zero;
@@ -1461,7 +1460,7 @@ export class Runtime {
                         }
                         else if (isArray(this.peek())) {
                             // combine elements from a and b, removing common elements as many times as they mutually occur
-                            let b = this.popArray(), a = this.popArray(), result: StaxArray = [];
+                            let b = this.popArray().slice(), a = this.popArray(), result: StaxValue[] = [];
                             for (let e of a) {
                                 let found = false;
                                 for (let i = 0; i < b.length; i++) {
@@ -1478,7 +1477,7 @@ export class Runtime {
                         break;
                     case '|N':
                         if (isArray(this.peek())) { // next permutation in lexicographic order
-                            let els = [...this.popArray()], result: StaxArray = [], i = els.length - 2;
+                            let els = [...this.popArray()], result: StaxValue[] = [], i = els.length - 2;
                             for (; i >= 0 &&compare(els[i], els[i + 1]) >= 0; i--) ;
                             if (i < 0) {
                                 this.push(els.reverse());
@@ -1497,7 +1496,7 @@ export class Runtime {
                         }
                         break;
                     case '|o': { // get indices of elements when ordered
-                        let a = this.popArray(), result: StaxArray = [], i = 0;
+                        let a = this.popArray(), result: StaxValue[] = [], i = 0;
                         let idxs = range(0, a.length).sort((x: StaxInt, y: StaxInt) => compare(a[floatify(x)], a[floatify(y)]));
                         for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
                         this.push(result);
@@ -1529,7 +1528,7 @@ export class Runtime {
                         else if (isArray(b)) {
                             let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
                             let match: RegExpExecArray | null;
-                            let result: StaxArray = [];
+                            let result: StaxValue[] = [];
                             while (match = pattern.exec(text)) {
                                 result.push(int.make(match.index));
                             }
@@ -1623,7 +1622,7 @@ export class Runtime {
                                 if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
                                 maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
                             }
-                            let result: StaxArray = [];
+                            let result: StaxValue[] = [];
                             for (let i = 0; i < arr.length; i++) {
                                 let orig = arr[i] as StaxArray;
                                 let line = new Array(maxlen - orig.length).fill([]);
@@ -1712,20 +1711,24 @@ export class Runtime {
             this.push(result);
         }
         else if (isInt(a) && isArray(b)) {
-            let result: StaxArray = [];
             let count = a.valueOf();
             if (count < 0) [b, count] = [[...b].reverse(), -count];
-            if (count === 1) result = b;
-            else for (let i = 0; i < count; i++) result = result.concat(b);
-            this.push(result);
+            if (count === 1) this.push(b);
+            else {
+                let result: StaxValue[] = [];
+                for (let i = 0; i < count; i++) result = result.concat(b);
+                this.push(result);
+            }
         }
         else if (isArray(a) && isInt(b)) {
-            let result: StaxArray = [];
             let count = b.valueOf();
             if (count < 0) [a, count] = [[...a].reverse(), -count];
-            if (count === 1) result = a;
-            else for (let i = 0; i < count; i++) result = result.concat(a);
-            this.push(result);
+            if (count === 1) this.push(a);
+            else {
+                let result: StaxValue[] = [];
+                for (let i = 0; i < count; i++) result = result.concat(a);
+                this.push(result);
+            }
         }
         else if (isArray(a) && isArray(b)) {
             if (isMatrix(a) && isMatrix(b)) {
@@ -1733,7 +1736,7 @@ export class Runtime {
                 this.runMacro("M~{;{n|\\{:*m|+msdm,d");
             }
             else {
-                let result: StaxArray = [];
+                let result: StaxValue[] = [];
                 a.forEach((e, i) => {
                     if (i) result = result.concat(b);
                     if (isArray(e)) result = result.concat(e);
@@ -1805,7 +1808,7 @@ export class Runtime {
             this.push(strings.map(s => S2A(s)));
         }
         else if (isArray(a) && b instanceof Block) {
-            let result: StaxArray = [], currentPart: StaxArray | null = null, last = null, cancelled = false;
+            let result: StaxValue[] = [], currentPart: StaxValue[] | null = null, last = null, cancelled = false;
 
             this.pushStackFrame();
             for (let e of a) {
@@ -1846,7 +1849,7 @@ export class Runtime {
         a = a as StaxArray;
         b = b as StaxArray;
 
-        let result: StaxArray = [], size = Math.max(a.length, b.length);
+        let result: StaxValue[] = [], size = Math.max(a.length, b.length);
         for (let i = 0 ; i < size; i++) {
             result.push([ a[i % a.length], b[i % b.length] ]);
         }
@@ -1921,7 +1924,7 @@ export class Runtime {
                 this.push(int.bitxor(b, this.popInt()));
             }
             else {
-                let len = int.floatify(b), arr = this.popArray(), result: StaxArray = [];
+                let len = int.floatify(b), arr = this.popArray(), result: StaxValue[] = [];
                 let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
                 while (len <= arr.length) {
                     result.push(idxs.map(idx => arr[idx]));
@@ -1935,7 +1938,7 @@ export class Runtime {
             }
         }
         else if (isArray(b)) {
-            let result: StaxArray = [];
+            let result: StaxValue[] = [];
             for (let e of b.slice().reverse()) {
                 result = result.concat(result.map(r => [e, ...r as StaxArray]));
                 result.push([e]);
@@ -1946,7 +1949,7 @@ export class Runtime {
 
     private doPermutations() {
         let targetSize = isInt(this.peek()) ? int.floatify(this.popInt()) : Number.MAX_SAFE_INTEGER;
-        let els = this.popArray(), result: StaxArray = [];
+        let els = this.popArray(), result: StaxValue[] = [];
         targetSize = Math.min(els.length, targetSize);
 
         // factoradic permutation decoder
@@ -2019,16 +2022,17 @@ export class Runtime {
         let element = this.pop(), indexes = this.pop();
 
         if (isInt(indexes)) {
-            indexes = [indexes];
+            let buildindexes: StaxValue[] = [indexes];
             if (isInt(this.peek())) {
-                while (isInt(this.peek())) indexes.unshift(this.popInt());
-                indexes = [indexes];
+                while (isInt(this.peek())) buildindexes.unshift(this.popInt());
+                buildindexes = [buildindexes];
             }
+            indexes = buildindexes;
         }
         if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
 
         const self = this;
-        function *doFinalAssign (flatArr: StaxArray, index: number) {
+        function *doFinalAssign (flatArr: StaxValue[], index: number) {
             if (index >= flatArr.length) {
                 flatArr.push(...Array(index + 1 - flatArr.length).fill(zero));
             }
@@ -2050,7 +2054,7 @@ export class Runtime {
             }
         }
 
-        let list = this.popArray(), result: StaxArray = [...list];
+        let list = this.popArray(), result: StaxValue[] = [...list];
         for (let arg of indexes) {
             if (isArray(arg)) {
                 // path to deep target element
@@ -2178,12 +2182,11 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            a = [...a];
-            let bval = int.floatify(b);
-            if (bval < 0) bval += a.length;
-            if (a.length < bval) a.unshift(...Array(bval - a.length).fill(zero));
-            if (a.length > bval) a.splice(0, a.length - bval);
-            this.push(a);
+            let a_ = [...a], bval = int.floatify(b);
+            if (bval < 0) bval += a_.length;
+            if (a_.length < bval) a_.unshift(...Array(bval - a_.length).fill(zero));
+            if (a_.length > bval) a_.splice(0, a_.length - bval);
+            this.push(a_);
         }
         else if (isArray(a) && isArray(b)) {
             let result = [];
@@ -2194,7 +2197,7 @@ export class Runtime {
         }
         else if (isArray(a) && b instanceof Block) {
             // partition where the block produces a truthy for the pair of values surrounding the boundary
-            let result: StaxArray = [], current = [];
+            let result: StaxValue[] = [], current = [];
             if (a.length > 0) current.push(a[0]);
 
             this.pushStackFrame();
@@ -2231,12 +2234,11 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            a = [...a];
-            let bval = int.floatify(b);
-            if (bval < 0) bval += a.length;
-            if (a.length < bval) a.push(...Array(bval - a.length).fill(zero));
-            if (a.length > bval) a.splice(bval);
-            this.push(a);
+            let a_ = [...a], bval = int.floatify(b);
+            if (bval < 0) bval += a_.length;
+            if (a_.length < bval) a_.push(...Array(bval - a_.length).fill(zero));
+            if (a_.length > bval) a_.splice(bval);
+            this.push(a_);
         }
         else if (isArray(a) && isArray(b)) {
             let result = [];
@@ -2246,7 +2248,7 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(a) && b instanceof Block) {
-            let result = [], current: StaxArray | null = null;
+            let result = [], current: StaxValue[] | null = null;
 
             this.pushStackFrame();
             for (let e of a) {
@@ -2371,7 +2373,7 @@ export class Runtime {
         let n = int.floatify(this.popInt()), arg = this.pop();
         let total = isArray(arg) ? arg.length : floatify(arg as StaxNumber);
 
-        let result: StaxArray = [];
+        let result: StaxValue[] = [];
         if (n > total) {
             this.push(result);
             return;
@@ -2405,7 +2407,7 @@ export class Runtime {
     }
 
     private doMultiAntiMode() {
-        let arr = this.popArray(), result: StaxArray = [];
+        let arr = this.popArray(), result: StaxValue[] = [];
         if (arr.length > 0) {
             let multi = new Multiset(arr), keys = multi.keys();
             let min = Math.min(...keys.map(k => multi.get(k)));
@@ -2540,7 +2542,7 @@ export class Runtime {
                 this.push(int.bitor(top, this.popInt()));
             }
             else {
-                let chunks = int.floatify(top), consumed = 0, arr = this.popArray(), result: StaxArray = [];
+                let chunks = int.floatify(top), consumed = 0, arr = this.popArray(), result: StaxValue[] = [];
 
                 for (; chunks > 0; chunks--) {
                     let toTake = Math.ceil((arr.length - consumed) / chunks);
@@ -2553,18 +2555,18 @@ export class Runtime {
         }
         else if (isArray(top)) {
             if (top.length > 0 && !isArray(top[0])) top = [top];
-            top = top.map((line) => [...line as StaxArray]); // prevent mutations
-            let result: StaxArray = [];
-            let maxlen = Math.max(...top.map(e => (e as StaxArray).length));
+            const copied = top.map((line) => [...line as StaxValue[]]); // prevent mutations
+            let result: StaxValue[] = [];
+            let maxlen = Math.max(...copied.map(e => (e as StaxArray).length));
 
-            for (let line of top) {
-                line = line as StaxArray;
+            for (let line of copied) {
+                line = line as StaxValue[];
                 line.push(...Array(maxlen - line.length).fill(zero));
             }
 
             for (let i = 0; i < maxlen; i++) {
-                let column: StaxArray = [];
-                for (let row of top) column.push((row as StaxArray)[i]);
+                let column: StaxValue[] = [];
+                for (let row of copied) column.push((row as StaxArray)[i]);
                 result.push(column);
             }
 
@@ -2605,7 +2607,7 @@ export class Runtime {
     }
 
     private *doExtremaBy(direction: number) {
-        let project = this.pop(), arr = this.pop(), result: StaxArray = [], extreme: StaxValue | null = null;
+        let project = this.pop(), arr = this.pop(), result: StaxValue[] = [], extreme: StaxValue | null = null;
         if (!(project instanceof Block) || !isArray(arr)) throw new Error("bad types for extrema");
 
         if (arr.length === 0) {
@@ -2779,19 +2781,20 @@ export class Runtime {
         if (top instanceof Block) [block, arr] = [top, this.pop()];
         else [block, arr] = [rest, top];
 
-        if (isInt(arr)) arr = range(one, int.add(arr, one));
-        else if (isArray(arr)) arr = [...arr];
+        let reduceArr: StaxValue[] | null = null;
+        if (isInt(arr)) reduceArr = range(one, int.add(arr, one));
+        else if (isArray(arr)) reduceArr = [...arr];
 
-        if (isArray(arr)) {
-            if (arr.length === 0) throw new Error("tried to reduce empty array");
-            if (arr.length === 1) {
-                this.push(arr[0]);
+        if (reduceArr) {
+            if (reduceArr.length === 0) throw new Error("tried to reduce empty array");
+            if (reduceArr.length === 1) {
+                this.push(reduceArr[0]);
                 return;
             }
 
             this.pushStackFrame();
-            this.push(arr.shift()!);
-            for (let e of arr) {
+            this.push(reduceArr.shift()!);
+            for (let e of reduceArr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(block)) {
                     if (s.cancel) {
@@ -2821,7 +2824,7 @@ export class Runtime {
         if (isInt(outer)) outer = range(one, int.add(outer, one));
         if (!isArray(outer) || !isArray(inner)) throw new Error("need arrays or integers for crossmap");
 
-        let result: StaxArray = [];
+        let result: StaxValue[] = [];
         this.pushStackFrame();
         for (let e of outer) {
             let row = [];
@@ -2851,7 +2854,7 @@ export class Runtime {
 
     private *doFilter(rest: Block) {
         if (this.peek() instanceof Block) {
-            let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
+            let block = this.pop() as Block, data = this.pop(), result: StaxValue[] = [], cancelled = false;
             let arr: Iterable<StaxValue>;
             if (isArray(data)) arr = data;
             else if (isInt(data)) arr = lazyCountTo(data);
@@ -2893,7 +2896,7 @@ export class Runtime {
     private *doMap(rest: Block) {
         let top = this.pop();
         if (top instanceof Block) {
-            let block = top, data = this.pop(), result: StaxArray = [], cancelled = false;
+            let block = top, data = this.pop(), result: StaxValue[] = [], cancelled = false;
             if (isInt(data)) data = range(1, int.add(data, one));
             if (!isArray(data)) throw Error("block-map operates on ints and arrays, not this garbage. get out of here.");
 
@@ -2998,7 +3001,7 @@ export class Runtime {
         }
 
         this.pushStackFrame();
-        var result: StaxArray = [];
+        var result: StaxValue[] = [];
 
         let lastGenerated : StaxValue | null = null;
         let genComplete = false, cancelled = false;
@@ -3083,7 +3086,7 @@ export class Runtime {
 
     private doMacroAlias(alias: string) {
         let typeTree = macroTrees[alias] || fail(`macro not found for types in :${ alias }`);
-        let resPopped: StaxArray = [];
+        let resPopped: StaxValue[] = [];
         // follow type tree as far as necessary
         while (typeTree.hasChildren()) {
             resPopped.push(this.pop());
