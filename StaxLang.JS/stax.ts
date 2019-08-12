@@ -1,8 +1,8 @@
-import { StaxArray, StaxNumber, StaxValue, 
+import { StaxArray, StaxNumber, StaxValue,
     isArray, isFloat, isNumber, isTruthy, isMatrix,
-    last, A2S, S2A, floatify, constants, widenNumbers, runLength, 
-    areEqual, indexOf, compare, 
-    stringFormat, unEval, stringFormatFloat, pow } from './types';
+    last, A2S, S2A, floatify, constants, widenNumbers, runLength,
+    areEqual, indexOf, compare,
+    stringFormat, unEval, stringFormatFloat, pow, StaxSet, StaxMap } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
@@ -72,33 +72,33 @@ export class Runtime {
     }
 
     private format: (arg: StaxValue | IteratorPair) => string = arg => {
-        const _10 = int.make(10), _32 = int.make(32), _127 = int.make(127) 
+        const _10 = int.make(10), _32 = int.make(32), _127 = int.make(127)
         if (arg instanceof IteratorPair) return `(${ this.format(arg.item1) }, ${ this.format(arg.item2) })`;
         if (isNumber(arg)) return arg.toString();
         if (arg instanceof Block) return `Block ${ arg.contents }`;
-    
+
         if (arg.every(e => isInt(e) && int.eq(e, zero))) {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
-        if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) || 
+        if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) ||
             int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
             return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt))))
                 .replace(/\\u0000/g, "\\0");
         }
-    
+
         return '[' + arg.map(this.format).join(", ") + ']';
     }
 
-    public getDebugState() {	
-        return {	
-            implicitEval: this.implicitEval,	
-            x: this.format(this.x),	
-            y: this.format(this.y),	
-            index: this.index.valueOf(),	
-            _: this.format(this._),	
-            main: this.mainStack.map(this.format).reverse(),	
-            input: this.inputStack.map(this.format).reverse(),	
-        };	
+    public getDebugState() {
+        return {
+            implicitEval: this.implicitEval,
+            x: this.format(this.x),
+            y: this.format(this.y),
+            index: this.index,
+            _: this.format(this._),
+            main: this.mainStack.map(this.format).reverse(),
+            input: this.inputStack.map(this.format).reverse(),
+        };
     }
 
     private push(...vals: StaxValue[]) {
@@ -185,7 +185,7 @@ export class Runtime {
                     str = str.replace(/\\n/g, "\n");
                     str = str.replace(/\\"/g, '"');
                     str = str.replace(/\\\\/g, "\\");
-                    str = str.replace(/\\x[0-9a-f]{2}/ig, 
+                    str = str.replace(/\\x[0-9a-f]{2}/ig,
                         s => String.fromCharCode(parseInt(s.substr(2), 16)));
                     newValue(S2A(str));
                     i = finishPos;
@@ -275,7 +275,7 @@ export class Runtime {
             }
         }
         catch (e) {
-            if (e instanceof EarlyTerminate) {} // proceed 
+            if (e instanceof EarlyTerminate) {} // proceed
             else throw e;
         }
 
@@ -289,9 +289,9 @@ export class Runtime {
         for (let token of block.tokens) {
             i += 1;
             const getRest = () => new Block(
-                block.contents.substr(ip + token.length), 
+                block.contents.substr(ip + token.length),
                 block.tokens.slice(i),
-                ip + token.length, 
+                ip + token.length,
                 false);
 
             if (token === '|`') {
@@ -324,7 +324,7 @@ export class Runtime {
                     //  no trailing block
                     //  OR trailing block with explicit close }, in which case it's a filter
                     let peeked = this.peek();
-                    let shorthand = !(peeked instanceof Block) 
+                    let shorthand = !(peeked instanceof Block)
                         || (block as Block).contents[ip - 1] == '}';
                     for (let s of this.doGenerator(shorthand, token[1], getRest())) {
                         yield s;
@@ -349,7 +349,7 @@ export class Runtime {
                         break;
                     case '#': {
                         let b = this.pop(), a = this.pop();
-                        if (isNumber(a) && isNumber(b)) { 
+                        if (isNumber(a) && isNumber(b)) {
                             this.push(pow(a, b));
                         }
                         else {
@@ -560,7 +560,7 @@ export class Runtime {
                         else if (this.peek() instanceof Block) {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
-                            
+
                             this.pushStackFrame();
                             for (let e of arr) {
                                 this.push(this._ = e);
@@ -587,7 +587,7 @@ export class Runtime {
                             let pred = this.pop() as Block, result: StaxArray = [], arr = this.pop(), cancelled = false;
                             if (!isArray(arr)) throw new Error("bad types for take-while");
                             arr = [...arr].reverse();
-                            
+
                             this.pushStackFrame();
                             for (let e of arr) {
                                 this.push(this._ = e);
@@ -718,7 +718,7 @@ export class Runtime {
                         else if (top instanceof Rational) this.push(top.numerator);
                         break;
                     }
-                    case 'R': 
+                    case 'R':
                         if (isInt(this.peek())) this.push(range(1, int.add(this.popInt(), one)));
                         else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
                         else for (let s of this.doRegexReplace()) yield s;
@@ -809,7 +809,15 @@ export class Runtime {
                         break;
                     case 'u': {
                             let arg = this.pop();
-                            if (isArray(arg)) this.push(new Multiset(arg).keys());
+                            if (isArray(arg)) {
+                                let set = new StaxSet, result: StaxValue[] = [];
+                                for (let el of arg) {
+                                    if (set.has(el)) continue;
+                                    result.push(el);
+                                    set.add(el);
+                                }
+                                this.push(result);
+                            }
                             else if (isInt(arg)) this.push(new Rational(one, arg));
                             else if (arg instanceof Rational) this.push(arg.invert());
                             else if (typeof arg === "number") this.push(1 / arg);
@@ -885,10 +893,9 @@ export class Runtime {
                         if (isArray(this.peek())) { // set intersection
                             let b = this.popArray(), a = this.pop();
                             if (!isArray(a)) a = [a];
-                            let result: StaxArray = [];
-                            for (let e of a) {
-                                if (indexOf(b, e) >= 0) result.push(e);
-                            }
+                            let result: StaxValue[] = [];
+                            const bSet = new StaxSet(b);
+                            for (let e of a) if (bSet.has(e)) result.push(e);
                             this.push(result);
                         }
                         else {
@@ -1113,7 +1120,7 @@ export class Runtime {
                                 if (loc < 0) {
                                     result.unshift(...new Array(-loc).fill(zero));
                                     loc = 0;
-                                } 
+                                }
                             }
 
                             for (let i = 0; i < payload.length; i++) {
@@ -1381,7 +1388,7 @@ export class Runtime {
                             let result = Math.log(floatify(a)) / Math.log(floatify(b));
                             this.push(result);
                         }
-                        else if (isArray(b) && isArray(a)) { 
+                        else if (isArray(b) && isArray(a)) {
                             // combine elements from a and b, with each occurring the max of its occurrences from a and b
                             let result: StaxArray = [];
                             b = [...b];
@@ -1412,7 +1419,7 @@ export class Runtime {
                             let arr = this.popArray();
                             let result: StaxValue = Number.POSITIVE_INFINITY;
                             for (let e of arr) {
-                                if (compare(e, result) < 0) result = e; 
+                                if (compare(e, result) < 0) result = e;
                             }
                             this.push(result);
                         }
@@ -1432,13 +1439,13 @@ export class Runtime {
                             let arr = this.popArray();
                             let result: StaxValue = Number.NEGATIVE_INFINITY;
                             for (let e of arr) {
-                                if (compare(e, result) > 0) result = e; 
+                                if (compare(e, result) > 0) result = e;
                             }
                             this.push(result);
                         }
                         break;
                     }
-                    case '|n': 
+                    case '|n':
                         if (isInt(this.peek())) { // exponents of sequential primes in factorization
                             let target = int.abs(this.popInt()), result: StaxArray = [];
                             for (let p of allPrimes()) {
@@ -1469,7 +1476,7 @@ export class Runtime {
                             this.push(result.concat(b));
                         }
                         break;
-                    case '|N': 
+                    case '|N':
                         if (isArray(this.peek())) { // next permutation in lexicographic order
                             let els = [...this.popArray()], result: StaxArray = [], i = els.length - 2;
                             for (; i >= 0 &&compare(els[i], els[i + 1]) >= 0; i--) ;
@@ -1670,8 +1677,8 @@ export class Runtime {
     private doMinus() {
         let b = this.pop(), a = this.pop();
         if (isArray(a) && isArray(b)) {
-            let bArr = b;
-            let result = a.filter(a_ => !bArr.some(b_ => areEqual(a_, b_)));
+            const bSet = new StaxSet(b);
+            let result = a.filter(a_ => !bSet.has(a_) && (!isArray(a_) || a_.length == 0 || !bSet.has(a_[0])));
             this.push(result);
         }
         else if (isArray(a)) {
@@ -1740,7 +1747,7 @@ export class Runtime {
             this.pushStackFrame();
             for (this.index = zero; this.index.valueOf() < times; this.index = int.add(this.index, one)) {
                 for (let s of this.runSteps(block)) {
-                    if (s.cancel) break; 
+                    if (s.cancel) break;
                     yield s;
                 }
             }
@@ -1751,7 +1758,7 @@ export class Runtime {
             this.pushStackFrame();
             for (this.index = zero; this.index.valueOf() < times; this.index = int.add(this.index, one)) {
                 for (let s of this.runSteps(block)) {
-                    if (s.cancel) break; 
+                    if (s.cancel) break;
                     yield s;
                 }
             }
@@ -1832,7 +1839,7 @@ export class Runtime {
             this.push([a, b]);
             return;
         }
-        
+
         if (!isArray(a) && isArray(b)) a = b.length ? [a] : [];
         else if (isArray(a) && !isArray(b)) b = a.length ? [b] : [];
 
@@ -1914,7 +1921,7 @@ export class Runtime {
                 this.push(int.bitxor(b, this.popInt()));
             }
             else {
-                let len = int.floatify(b), arr = this.popArray(), result: StaxArray = []; 
+                let len = int.floatify(b), arr = this.popArray(), result: StaxArray = [];
                 let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
                 while (len <= arr.length) {
                     result.push(idxs.map(idx => arr[idx]));
@@ -2019,7 +2026,7 @@ export class Runtime {
             }
         }
         if (!isArray(indexes)) throw new Error("unknown index type for assign-index");
-        
+
         const self = this;
         function *doFinalAssign (flatArr: StaxArray, index: number) {
             if (index >= flatArr.length) {
@@ -2046,14 +2053,14 @@ export class Runtime {
         let list = this.popArray(), result: StaxArray = [...list];
         for (let arg of indexes) {
             if (isArray(arg)) {
-                // path to deep target element 
+                // path to deep target element
                 let idxPath = arg, target = result, idx: number;
                 for (let i = 0; i < idxPath.length - 1; i++) {
                     idx = floatify(idxPath[i] as StaxInt);
                     while (target.length <= idx) target.push([]);
                     if (isArray(target[idx])) {
                         target = target[idx] = (target[idx] as StaxArray).slice();
-                    } 
+                    }
                     else {
                         target = target[idx] = [ target[idx] ];
                     }
@@ -2118,7 +2125,7 @@ export class Runtime {
                 number = int.div(number, base);
             } while (number.valueOf() > 0);
             if (negative && stringRepresentation) result.unshift(int.make("-".charCodeAt(0)));
-            
+
             this.push(result);
         }
         else if (isArray(number)) {
@@ -2219,7 +2226,7 @@ export class Runtime {
 
     private *doPadRight() {
         let b = this.pop(), a = this.pop();
-        
+
         if (isArray(b) && isInt(a)) [a, b] = [b, a];
         if (isInt(a)) a = stringFormat(a);
 
@@ -2307,14 +2314,13 @@ export class Runtime {
 
         if (isArray(input) && isArray(translation)) {
             let result = [];
-            let map: {[key: string]: StaxValue} = {};
+            let map = new StaxMap;
 
             for (let i = 0; i < translation.length; i += 2) {
-                let key = this.format(translation[i]);
-                map[key] = translation[i + 1];
+                map.set(translation[i], translation[i + 1]);
             }
             for (let e of input) {
-                let mapped = map[this.format(e)];
+                let mapped = map.get(e);
                 result.push(mapped == null ? e : mapped);
             }
             this.push(result);
@@ -2335,7 +2341,7 @@ export class Runtime {
         for (; i < a.length; i++) {
             if (isArray(b)) {
                 if (!b.some(e => areEqual(e, a[i]))) break;
-            } 
+            }
             else {
                 if (!areEqual(a[i], b)) break;
             }
@@ -2347,7 +2353,7 @@ export class Runtime {
 
     private doTrimElementsFromEnd() {
         let b = this.pop(), a = this.popArray(), i = a.length - 1;
-        
+
         for (; i >= 0; i--) {
             if (isArray(b)) {
                 if (!b.some(e => areEqual(e, a[i]))) break;
@@ -2541,7 +2547,7 @@ export class Runtime {
                     result.push(arr.slice(consumed, consumed + toTake));
                     consumed += toTake;
                 }
-    
+
                 this.push(result);
             }
         }
@@ -2669,7 +2675,7 @@ export class Runtime {
         let replace = this.pop(), search = this.pop(), text = this.pop();
         if (!isArray(text) || !isArray(search)) throw new Error("bad types for replace");
         let ts = A2S(text);
-        
+
         if (isArray(replace)) {
             let ss = RegExp(A2S(search), "g");
             this.push(S2A(ts.replace(ss, A2S(replace))));
@@ -2677,7 +2683,7 @@ export class Runtime {
         else if (replace instanceof Block) {
             let ss = RegExp(A2S(search), "g");
             let replaceBlock = replace;
-            
+
             let result = "";
             let lastEnd = 0;
             let match: RegExpMatchArray | null;
@@ -2685,13 +2691,13 @@ export class Runtime {
             this.pushStackFrame();
             while (match = ss.exec(ts)) {
                 result += ts.substring(lastEnd, match.index!);
-                
+
                 this.push(this._ = S2A(match[0]));
                 for (let s of this.runSteps(replaceBlock)) yield s;
                 const replaced = this.pop();
                 result += A2S(isArray(replaced) ? replaced : stringFormat(replaced));
                 lastEnd = match.index! + match[0].length;
-                
+
                 this.index = int.add(this.index, one);
             }
             result += ts.substr(lastEnd);
@@ -2707,7 +2713,7 @@ export class Runtime {
             let block = this.pop() as Block, data = this.pop();
             if (isInt(data)) data = range(1, int.add(data, one));
             if (!isArray(data)) throw Error("block-for operates on ints and arrays, not this garbage. get out of here.");
-            
+
             this.pushStackFrame();
             for (let e of data) {
                 this.push(this._ = e);
@@ -2721,7 +2727,7 @@ export class Runtime {
         }
         else if (isArray(this.peek()) || isInt(this.peek())) {
             let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : lazyCountTo(data);
-    
+
             this.pushStackFrame();
             for (let e of arr) {
                 this.push(this._ = e);
@@ -2739,7 +2745,7 @@ export class Runtime {
     private *doUnconditionalWhile(rest: Block) {
         let cancelled = false;
         let body: (Block | string) = (this.totalSize() && this.peek() instanceof Block) ? this.pop() as Block : rest;
-    
+
         this.pushStackFrame();
         do {
             for (let s of this.runSteps(body)) {
@@ -2754,7 +2760,7 @@ export class Runtime {
     private *doWhile(rest: Block) {
         let cancelled = false;
         let body: (Block | string) = (this.totalSize() && this.peek() instanceof Block) ? this.pop() as Block : rest;
-    
+
         this.pushStackFrame();
         do {
             for (let s of this.runSteps(body)) {
@@ -2806,10 +2812,10 @@ export class Runtime {
     }
 
     private *doCrossMap(rest: Block) {
-        let top = this.pop(), 
-            shorthand = !(top instanceof Block), 
+        let top = this.pop(),
+            shorthand = !(top instanceof Block),
             map: Block | string = shorthand ? rest : top as Block;
-        
+
         let inner = shorthand ? top : this.pop(), outer =  this.pop();
         if (isInt(inner)) inner = range(one, int.add(inner, one));
         if (isInt(outer)) outer = range(one, int.add(outer, one));
@@ -2847,10 +2853,10 @@ export class Runtime {
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop(), result: StaxArray = [], cancelled = false;
             let arr: Iterable<StaxValue>;
-            if (isArray(data)) arr = data; 
+            if (isArray(data)) arr = data;
             else if (isInt(data)) arr = lazyCountTo(data);
             else throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
-            
+
             this.pushStackFrame();
             for (let e of arr) {
                 this.push(this._ = e);
@@ -2866,7 +2872,7 @@ export class Runtime {
         }
         else {
             let data = this.pop(), cancelled = false;
-            let arr = isArray(data) ? data 
+            let arr = isArray(data) ? data
                 : isInt(data) ? range(1, int.add(data, one))
                 : fail("bad type for shorthand filter data")
 
@@ -2890,7 +2896,7 @@ export class Runtime {
             let block = top, data = this.pop(), result: StaxArray = [], cancelled = false;
             if (isInt(data)) data = range(1, int.add(data, one));
             if (!isArray(data)) throw Error("block-map operates on ints and arrays, not this garbage. get out of here.");
-            
+
             this.pushStackFrame();
             for (let e of data) {
                 this.push(this._ = e);
@@ -2954,7 +2960,7 @@ export class Runtime {
         const scalarMode = lowerSpec === 's' || lowerSpec === 'e' || lowerSpec === 'p';
         const keepOnlyLoop = lowerSpec === 'l';
         let postPop = spec !== lowerSpec;
-        
+
         let genBlock = rest;
         if (!shorthand) {
             let popped = this.pop();
@@ -3004,7 +3010,7 @@ export class Runtime {
                 if (!emptyGenBlock) {
                     for (let s of this.runSteps(genBlock)) {
                         if (s.cancel && stopOnCancel) genComplete = cancelled = true;
-                        if (s.cancel) { 
+                        if (s.cancel) {
                             cancelled = true;
                             break;
                         }
@@ -3012,7 +3018,7 @@ export class Runtime {
                     }
                 }
                 else { // empty gen block, use ^
-                    this.runMacro("^");   
+                    this.runMacro("^");
                 }
             }
 
@@ -3023,7 +3029,7 @@ export class Runtime {
                     this._ = generated;
                     for (let s of this.runSteps(filter)) {
                         if (s.cancel && stopOnCancel) genComplete = cancelled = true;
-                        if (s.cancel) { 
+                        if (s.cancel) {
                             cancelled = true;
                             break;
                         }
@@ -3055,14 +3061,14 @@ export class Runtime {
                 }
             }
             if (genComplete) break;
-            this.index = int.add(this.index, one); 
+            this.index = int.add(this.index, one);
         }
         if (!postPop && !genComplete) {
             // Remove left-over value from pre-peek mode
             // It's kept on stack between iterations, but iterations are over now
             this.pop();
         }
-        
+
         this.popStackFrame();
 
         if (shorthand) {

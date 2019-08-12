@@ -1,30 +1,22 @@
-import { StaxValue, areEqual } from './types';
+import { StaxValue, StaxMap } from './types';
 
 export default class Multiset {
-    private entries: {key: StaxValue, count: number}[] = [];
+    private entries = new StaxMap<number>();
 
     constructor(values: StaxValue[] | undefined = undefined) {
         if (values) values.forEach(this.add.bind(this));
     }
 
     add(val: StaxValue) {
-        for (let entry of this.entries) {
-            if (areEqual(val, entry.key)) {
-                ++entry.count;
-                return;
-            }
-        }
-        this.entries.push({ key: val, count: 1 });
+        const current = this.entries.get(val);
+        this.entries.set(val, current == undefined ? 1 : current + 1);
     }
 
     remove(val: StaxValue) {
-        for (let entry of this.entries) {
-            if (areEqual(val, entry.key) && entry.count > 0) {
-                --entry.count;
-                return;
-            }
-        }
-        throw new Error("can't remove element from multiset that doesn't exist");
+        const current = this.entries.get(val);
+        if (!current) throw new Error("can't remove element from multiset that doesn't exist");
+        if (current <= 1) this.entries.remove(val);
+        else this.entries.set(val, current - 1);
     }
 
     addAll(...vals: StaxValue[]) {
@@ -32,10 +24,7 @@ export default class Multiset {
     }
 
     get(val: StaxValue) {
-        for (let entry of this.entries) {
-            if (areEqual(val, entry.key)) return entry.count;
-        }
-        return 0;
+        return this.entries.get(val) || 0;
     }
 
     contains(val: StaxValue) {
@@ -43,6 +32,6 @@ export default class Multiset {
     }
 
     keys() {
-        return this.entries.map(e => e.key);
+        return [...this.entries.keys()];
     }
 }
