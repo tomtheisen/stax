@@ -237,7 +237,7 @@ function showDebugInfo(ip: number, steps: number) {
             let start = document.createElement("span"), mid = document.createElement("a"), end = document.createElement("span");
             start.textContent = value.substr(0, maxLength >> 1);
             end.textContent = value.substr(value.length - (maxLength >> 1));
-            mid.textContent = '…';
+            mid.textContent = '«…»';
             mid.title = value.substr(maxLength >> 1, value.length - maxLength);
             mid.href = "javascript:void(0)";
             mid.classList.add("replace-text");

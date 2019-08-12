@@ -135,6 +135,9 @@ html.debugging #debugState {
 #debugCodePost, #version {
     color: grey;
 }
+.replace-text {
+    background-color: #aac;
+}
 
 html.show-quickref body {
     margin-right: calc(1em + 60vw);
