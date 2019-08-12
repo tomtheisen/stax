@@ -2,14 +2,14 @@ import { StaxArray, StaxNumber, StaxValue,
     isArray, isFloat, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength,
     areEqual, indexOf, compare,
-    stringFormat, unEval, stringFormatFloat, pow, StaxSet, StaxMap } from './types';
+    stringFormat, unEval, stringFormatFloat, pow } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
-import Multiset from './multiset';
+import { Multiset, StaxSet, StaxMap } from './collections';
 import { primeFactors, allPrimes } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
