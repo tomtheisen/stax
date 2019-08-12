@@ -959,10 +959,10 @@ export class Runtime {
                         this.runMacro("~;%R{;)mr,d"); // all suffixes
                         break;
                     case '|{':
-                        this.runMacro("o|RMhso|RMh="); // setwise equal
+                        this.push(new StaxSet(this.popArray()).eq(new StaxSet(this.popArray())) ? one : zero);
                         break;
                     case '|}':
-                        this.runMacro("oso="); // multiset equal
+                        this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? one : zero);
                         break;
                     case '|^':
                         if (isArray(this.peek())) {

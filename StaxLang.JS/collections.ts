@@ -35,6 +35,13 @@ export class Multiset {
         return this.get(val) > 0;
     }
 
+    eq(other: Multiset) {
+        const otherkeys = other.keys();
+        if (otherkeys.length !== this.keys().length) return false;
+        for (let key of otherkeys) if (this.get(key) !== other.get(key)) return false;
+        return true;
+    }
+
     keys() {
         return [...this.entries.keys()];
     }
@@ -122,10 +129,22 @@ export class StaxSet {
         return this;
     }
 
+    eq(other: StaxSet) {
+        if (other.size !== this.size) return false;
+        for (let val of this.entries()) if (!other.has(val)) return false;
+        return true;
+    }
+
     *entries(): IterableIterator<StaxValue> {
         for (let rec of this.contents.values()) {
             for (let el of rec) yield el;
         }
+    }
+
+    get size() {
+        let result = 0;
+        for (let rec of this.contents.values()) result += rec.length;
+        return result;
     }
 }
 
