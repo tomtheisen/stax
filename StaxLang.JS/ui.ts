@@ -220,9 +220,30 @@ copyOutputButton.addEventListener("click", ev => {
     }
 });
 
+document.addEventListener("click", ev => {
+    if (ev.target instanceof HTMLElement && ev.target.classList && ev.target.classList.contains("replace-text")) {
+        ev.target.replaceWith(ev.target.title);
+    }
+})
+
 function showDebugInfo(ip: number, steps: number) {
     function stripComments(stax: string): string {
         return stax.split(/\n/g).map(line => line.replace(/\t.*/, "")).join("\n");
+    }
+    function showValue(el: HTMLElement, value: string): void {
+        const maxLength = 300;
+        if (value.length <= maxLength) el.textContent = value;
+        else {
+            let start = document.createElement("span"), mid = document.createElement("a"), end = document.createElement("span");
+            start.textContent = value.substr(0, maxLength >> 1);
+            end.textContent = value.substr(value.length - (maxLength >> 1));
+            mid.textContent = '…';
+            mid.title = value.substr(maxLength >> 1, value.length - maxLength);
+            mid.href = "javascript:void(0)";
+            mid.classList.add("replace-text");
+            el.innerHTML = "";
+            el.append(start, mid, end);
+        }
     }
     if (!activeRuntime) return;
     root.classList.add("debugging");
@@ -238,16 +259,16 @@ function showDebugInfo(ip: number, steps: number) {
     debugPostEl.textContent = stripComments(code.substr(ip));
 
     let state = activeRuntime.getDebugState();
-    document.getElementById("watchX")!.textContent = state.x;
-    document.getElementById("watchY")!.textContent = state.y;
-    document.getElementById("watchi")!.textContent = state.index.toString();
-    document.getElementById("watch_")!.textContent = state._;
+    showValue(document.getElementById("watchX")!, state.x);
+    showValue(document.getElementById("watchY")!, state.y);
+    showValue(document.getElementById("watchi")!, state.index.toString());
+    showValue(document.getElementById("watch_")!, state._);
     
     const watchMainEl = document.getElementById("watchMain") as HTMLOListElement;
     watchMainEl.innerText = "";
     state.main.forEach(e => {
         let li = document.createElement("li");
-        li.textContent = e;
+        showValue(li, e);
         watchMainEl.appendChild(li);
     });
     
@@ -255,7 +276,7 @@ function showDebugInfo(ip: number, steps: number) {
     watchInputEl.innerText = "";
     state.input.forEach(e => {
         let li = document.createElement("li");
-        li.textContent = e;
+        showValue(li, e);
         watchInputEl.appendChild(li);
     });
 }
