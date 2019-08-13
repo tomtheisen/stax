@@ -11,7 +11,7 @@
         <div id=aboutInfo>
             <a href=https://github.com/tomtheisen/stax/releases id=version title="Version history"></a>
             <button id=quickref-link>Help<span class=shortcut>/About (F1)</span></button>
-            <button id=tools-link><span class=shortcut>Tools</span> ≡</button>
+            <button id=tools-link>≡ <span class=shortcut>Tools</span></button>
         </div>
         <h1><a href=https://github.com/tomtheisen/stax>Stax</a></h1>
         <div id=control-header>
@@ -139,15 +139,17 @@
             <details>
                 <summary><span class=btn>Source</span></summary>
                 <div class=well>
-                    <button id=compress>Compress Literals</button>
-                    <button id=uncompress>Uncompress Literals</button>
-                    <button id=pack>Pack</button>
-                    <button id=golf hidden title="Remove comments and whitespace">Golf</button>
-                    <br>
+                    <div>
+                        <button id=compress>Compress Literals</button>
+                        <button id=uncompress>Uncompress Literals</button>
+                        <button id=pack title="Convert to PackedStax representation of the same program">Pack</button>
+                        <button id=golf title="Remove comments and whitespace">Golf</button>
+                        <button id=dump title="Dump memory contents at the end of lines">Dump stacks</button>
+                    </div>
                     <a href=# class=btn id=download title=Download download=program.stax>&#11123; Download</a>
                     <button id=upload title=Upload>&#11121; Upload</button>
                     <input type=file id=uploadFile accept=.stax hidden=true>
-                    <button id=newfile>Reset</a>
+                    <button id=newfile>Reset</button>
                 </div>
             </details>
 

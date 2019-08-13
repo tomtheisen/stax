@@ -236,6 +236,24 @@ export function decompressLiterals(program: string): string {
     return result;
 }
 
+export function squareLinesAndComments(program: string): string {
+    // matches one line of ascii stax minus trailing whitespace and comment
+    const linePattern = /^((?:[^|:V".\n]|[|:V](?:.|\n)|\.(?:.|\n){2}|"(?:[^"`]|`(?:[^|:V]|[|:V].))*(?:"|$))+?) *(?:\t.*)?$/gm;
+
+    let lines: string[] = [];
+    do {
+        var m = linePattern.exec(program);
+        if (m) lines.push(m[1]);
+    } while (m);
+
+    const maxlen = Math.max(...lines.map(l => l.length));
+    lines = lines.map(l => {
+        while (l.length < maxlen) l += " "; // no dependency on pad-right lol
+        return l + "\t";
+    });
+    return lines.join("\n");
+}
+
 export function parseProgram(program: string): Program {
     return parseCore(program, 0, true);
 }

@@ -1,7 +1,7 @@
 import { Runtime, ExecutionState } from './stax';
 import { 
     parseProgram, Block, getCodeType, CodeType, LiteralTypes, 
-    compressLiterals, decompressLiterals 
+    compressLiterals, decompressLiterals, squareLinesAndComments 
 } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
@@ -47,6 +47,7 @@ const quickrefFilter = el<HTMLInputElement>("quickref-filter");
 const packButton = el<HTMLButtonElement>("pack");
 const golfButton = el<HTMLButtonElement>("golf");
 const compressButton = el<HTMLButtonElement>("compress");
+const dumpButton = el<HTMLButtonElement>("dump");
 const uncompressButton = el<HTMLButtonElement>("uncompress");
 const downLink = el<HTMLAnchorElement>("download");
 const upButton = el<HTMLButtonElement>("upload");
@@ -62,10 +63,10 @@ const blankSplitEl = el<HTMLInputElement>("blankSplit");
 const lineSplitEl = el<HTMLInputElement>("lineSplit");
 const noSplitEl = el<HTMLInputElement>("noSplit");
 
-let activeRuntime: Runtime | null = null;
+let activeRuntime: Runtime | null = null, lastExecutedProgram: string = "";
 let activeStateIterator: Iterator<ExecutionState> | null = null;
 let steps = 0, start = 0, input = 0;
-let pendingBreak = false;
+let pendingBreak = false, dumping = false;
 let pendingInputs: string[] = [];
 
 let codeType: CodeType;
@@ -81,11 +82,11 @@ function resetRuntime() {
     start = performance.now();
     outputEl.textContent = "";
     warningsEl.textContent = "";
-    pendingBreak = false;
+    dumping = pendingBreak = false;
 
     golfButton.disabled = packButton.disabled = upButton.disabled = true;
     codeArea.disabled = inputArea.disabled = true;
-    compressButton.disabled = uncompressButton.disabled = true;
+    dumpButton.disabled = compressButton.disabled = uncompressButton.disabled = true;
     root.classList.remove("debugging");
     stopButton.disabled = false;
     copyOutputButton.hidden = true;
@@ -103,7 +104,8 @@ function startNextInput() {
         return;
     }
 
-    let code = codeArea.value, stdin = pendingInputs.shift()!.split(/\r?\n/);
+    lastExecutedProgram = codeArea.value;
+    let stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
         line => {
             outputEl.textContent += line;
@@ -111,7 +113,7 @@ function startNextInput() {
         },
         warning => warningsEl.innerHTML += `<li>${ warning }`
     );
-    activeStateIterator = activeRuntime.runProgram(code, stdin);
+    activeStateIterator = activeRuntime.runProgram(lastExecutedProgram, stdin);
     if (input++) outputEl.textContent += "\n";
 }
 
@@ -151,6 +153,20 @@ function runProgramTimeSlice() {
         try {
             while (!(result = activeStateIterator.next()).done) {
                 steps += 1;
+                if (dumping && activeRuntime) {
+                    const prefix = lastExecutedProgram.substr(0, result.value.ip);
+                    if (/\t\n *$/.test(prefix)) {
+                        const lines = codeArea.value.split(/\n/g);
+                        const lineidx = prefix.split(/\n/g).length - 2;
+                        if (lines[lineidx].endsWith("\t")) {
+                            const state = activeRuntime.getDebugState();
+                            lines[lineidx] 
+                                += "main:" + state.main.filter(e => !e.startsWith("Block")).join(" ")
+                                + " input:" + state.input.filter(e => !e.startsWith("Block")).join(" ");
+                            codeArea.value = lines.join("\n");
+                        }
+                    }
+                }
                 if (result.value.break) {
                     showDebugInfo(result.value.ip, steps);
                     return;
@@ -224,7 +240,7 @@ document.addEventListener("click", ev => {
     if (ev.target instanceof HTMLElement && ev.target.classList && ev.target.classList.contains("replace-text")) {
         ev.target.replaceWith(ev.target.title);
     }
-})
+});
 
 function showDebugInfo(ip: number, steps: number) {
     function stripComments(stax: string): string {
@@ -330,11 +346,11 @@ function updateStats() {
     catch (ex) { /* sessionStorage throws on file system in chrome */ }
 
     packButton.hidden = false;
-    compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
+    dumpButton.disabled = compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
     let literalTypes: LiteralTypes;
     [codeType, literalTypes] = getCodeType(codeArea.value);
     if (codeType === CodeType.Packed) {
-        compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
+        dumpButton.hidden = compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
         codeChars = codeBytes = codeArea.value.length;
         propsEl.textContent = `${ codeArea.value.length } bytes, packed`;
         packButton.textContent = "Unpack";
@@ -350,6 +366,7 @@ function updateStats() {
         }
         packButton.hidden = codeType != CodeType.TightAscii || codeArea.value === "";
         golfButton.hidden = codeType != CodeType.LooseAscii;
+        dumpButton.hidden = codeType != CodeType.LooseAscii || !codeArea.value.includes("\n");
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
         uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
 
@@ -570,6 +587,15 @@ compressButton.addEventListener("click", ev => {
 uncompressButton.addEventListener("click", ev => {
     codeArea.value = decompressLiterals(codeArea.value);
     updateStats();
+});
+
+dumpButton.addEventListener("click", ev => {
+    codeArea.value = squareLinesAndComments(codeArea.value);
+    pendingBreak = false;
+    resetRuntime();
+    statusEl.innerText = "Dumping";
+    dumping = true;
+    runProgramTimeSlice();
 });
 
 upButton.addEventListener("click", ev => {
