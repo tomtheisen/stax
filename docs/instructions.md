@@ -105,7 +105,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;g</code>     	|int int    	|gcd           	|                   	|Greatest common denominator.
 <code>&#124;H</code>     	|int        	|base-16       	|                   	|Convert to hexadecimal. (base 16)
 <code>&#124;H</code>     	|arr        	|base-16       	|                   	|Convert from hexadecimal. (base 16)
-<code>&#124;j</code>     	|num        	|rationalize   	|                   	|Convert any number to a rational with no loss of precision.  Stax attempts to minimize the denominator.
+<code>&#124;j</code>     	|num        	|rationalize   	|                   	|Convert any number to a rational with minimal loss of precision.  Stax attempts to minimize the denominator.
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
 <code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` -> `[2 0 1]`)
