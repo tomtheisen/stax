@@ -77,8 +77,10 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
     let extraWhitespace = false;
     for (let pos = 0; pos < program.length; pos++) {
         switch (program[pos]) {
-            case ' ':
             case '\t':
+                pos = program.indexOf("\n", pos);
+                if (pos < 0) pos = program.length - 1;
+            case ' ':
             case '\r':
             case '\n':
                 extraWhitespace = true;
@@ -141,6 +143,12 @@ export function compressLiterals(program: string): string {
     let result = "";
     for (let pos = 0; pos < program.length; pos++) {
         switch (program[pos]) {
+            case '\t':
+                let newpos = program.indexOf("\n", pos);
+                if (newpos < 0) newpos = program.length - 1;
+                result += program.substring(pos, newpos + 1);
+                pos = newpos;
+                break;
             case 'V':
             case ':':
             case '|':
