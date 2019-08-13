@@ -356,6 +356,7 @@ op                  	|Types              	|Name              	|Description
 `:F`                	|arr                	|falsy-indices     	|~~Get all indices of falsy elements.~~ Deprecated.  Use `:0` instead.
 `:g`                	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
 `:G`                	|arr                	|run-lengths       	|Get the lengths of runs of duplicate elements.
+`:i`                	|arr                	|interleave        	|Distribute elements from array of arrays in a round-robin fashion.  e.g. `[[1,2],[],[3],[4,5,6]]` -> `[1,3,4,2,5,6]`
 `:I`                	|arr arr            	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
 `:J`                	|arr                	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m`                	|arr int            	|repeat-to         	|Repeat array until it is exactly length n.

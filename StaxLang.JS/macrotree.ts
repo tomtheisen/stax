@@ -149,6 +149,7 @@ function setup() {
         { alias: "G", types: "i", code: "2|E|22|E"},
         { alias: "h", types: "a", code: "'<s+'>+"},
         { alias: "h", types: "ii", code: "s|Hs|z"},
+        { alias: "i", types: "a", code: "{f{|cBB~]{f+,gC"},
         { alias: "I", types: "aa", code: "{[Imsd"},
         { alias: "J", types: "a", code: "c%|Qe~;J(,/"},
         { alias: "J", types: "ii", code: "JsJs"},

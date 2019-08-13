@@ -146,6 +146,7 @@ namespace StaxLang {
                 ('G', "i", "2|E|22|E", "unset all but the highest bit"),
                 ('h', "a", "'<s+'>+", "embed string in angle brackets"),
                 ('h', "ii", "s|Hs|z", "fixed-size zero-padded hexadecimal conversion"),
+                ('i', "a", "{f{|cBB~]{f+,gC", "interleave array of arrays"),
                 ('I', "aa", "{[Imsd", "get indexes of all"),
                 ('J', "a", "c%|Qe~;J(,/", "squarify"),
                 ('J', "ii", "JsJs", "square top 2 stack elements"),

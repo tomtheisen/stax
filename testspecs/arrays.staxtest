@@ -1207,3 +1207,10 @@ z :$ %
 0
 	stax
 |}
+	name:Interleave
+	in
+[[1,2],[],[3],[4,5,6]]
+	out
+1 3 4 2 5 6
+	stax
+:iJ
