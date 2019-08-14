@@ -238,20 +238,47 @@ export function decompressLiterals(program: string): string {
 
 export function squareLinesAndComments(program: string): string {
     // matches one line of ascii stax minus trailing whitespace and comment
-    const linePattern = /^((?:[^|:V".\n]|[|:V](?:.|\n)|\.(?:.|\n){2}|"(?:[^"`]|`(?:[^|:V]|[|:V].))*(?:"|$))+?) *(?:\t.*)?$/gm;
-
-    let lines: string[] = [];
-    do {
-        var m = linePattern.exec(program);
-        if (m) lines.push(m[1]);
-    } while (m);
-
+    let lines = program.split("\n").map(l => l.split(/\t/)[0].trimRight());
     const maxlen = Math.max(...lines.map(l => l.length));
     lines = lines.map(l => {
         while (l.length < maxlen) l += " "; // no dependency on pad-right lol
         return l + "\t";
     });
     return lines.join("\n");
+}
+
+export function hasNewLineInLiteral(program: string): boolean {
+    if (isPacked(program)) return false;
+
+    for (let pos = 0; pos < program.length; pos++) {
+        switch (program[pos]) {
+            case '\t':
+                pos = program.indexOf("\n", pos);
+                if (pos < 0) pos = program.length - 1;
+                break;
+            case 'V':
+            case ':':
+            case '|':
+            case "'":
+                if (program[++pos] == "\n") return true;
+                break;
+            case '.':
+                if (program.substr(pos + 1, 2).includes("\n")) return true;
+                pos += 2;
+                break;
+            case '"': {
+                let literal = parseString(program, pos);
+                if (literal.includes("\n")) return true;
+                pos += literal.length - 1;
+                break;
+            }
+            case '`':
+                pos += parseCompressedString(program, pos).length - 1;
+                break;
+            default: break;
+        }
+    }
+    return false;
 }
 
 export function parseProgram(program: string): Program {

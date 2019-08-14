@@ -1,7 +1,8 @@
 import { Runtime, ExecutionState } from './stax';
 import { 
     parseProgram, Block, getCodeType, CodeType, LiteralTypes, 
-    compressLiterals, decompressLiterals, squareLinesAndComments 
+    compressLiterals, decompressLiterals, 
+    squareLinesAndComments, hasNewLineInLiteral 
 } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
@@ -153,21 +154,24 @@ function runProgramTimeSlice() {
         try {
             while (!(result = activeStateIterator.next()).done) {
                 steps += 1;
-                if (dumping && activeRuntime) {
+                if (dumping) {
                     const prefix = lastExecutedProgram.substr(0, result.value.ip);
-                    if (/\t\n *$/.test(prefix)) {
+                    const atEnd = result.value.ip === lastExecutedProgram.length;
+                    if (atEnd || /\t\n *$/.test(prefix)) {
+                        const lineidx = prefix.split(/\n/g).length - (atEnd ? 1 : 2);
                         const lines = codeArea.value.split(/\n/g);
-                        const lineidx = prefix.split(/\n/g).length - 2;
-                        if (lines[lineidx].endsWith("\t")) {
+                        if (activeRuntime && lines[lineidx].endsWith("\t")) {
                             const state = activeRuntime.getDebugState();
-                            lines[lineidx] 
-                                += "main:" + state.main.filter(e => !e.startsWith("Block")).join(" ")
-                                + " input:" + state.input.filter(e => !e.startsWith("Block")).join(" ");
-                            codeArea.value = lines.join("\n");
+                            const main = state.main.filter(e => !e.startsWith("Block")).join(" "),
+                                input = state.input.filter(e => !e.startsWith("Block")).join(" ");
+                            if (!main.startsWith("Block")) {
+                                lines[lineidx] += (input && `input:${ input } `) + (main && `main:${ main } `);
+                                codeArea.value = lines.join("\n");
+                            }
                         }
                     }
                 }
-                if (result.value.break) {
+                else if (result.value.break) {
                     showDebugInfo(result.value.ip, steps);
                     return;
                 }
@@ -366,7 +370,7 @@ function updateStats() {
         }
         packButton.hidden = codeType != CodeType.TightAscii || codeArea.value === "";
         golfButton.hidden = codeType != CodeType.LooseAscii;
-        dumpButton.hidden = codeType != CodeType.LooseAscii || !codeArea.value.includes("\n");
+        dumpButton.hidden = codeType != CodeType.LooseAscii || hasNewLineInLiteral(codeArea.value);
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
         uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
 
