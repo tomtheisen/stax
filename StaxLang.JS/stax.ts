@@ -416,9 +416,7 @@ export class Runtime {
                                 yield s;
                             }
                         }
-                        else {
-                            this.push(result);
-                        }
+                        else this.push(result);
                         break;
                     }
                     case '@':
@@ -651,9 +649,7 @@ export class Runtime {
                     }
                     case 'l': {
                         let a = this.pop();
-                        if (a instanceof Rational) {
-                            this.push([a.numerator, a.denominator]);
-                        }
+                        if (a instanceof Rational) this.push([a.numerator, a.denominator]);
                         else if (isInt(a)) {
                             let result: StaxValue[] = [];
                             for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
@@ -1302,9 +1298,7 @@ export class Runtime {
                             let result = [], match: string[] | null;
                             do {
                                 match = regex.exec(text);
-                                if (match) {
-                                    result.push(S2A(match[0]));
-                                }
+                                if (match) result.push(S2A(match[0]));
                             } while (match);
                             this.push(result);
                         }
@@ -1321,9 +1315,7 @@ export class Runtime {
                         else if (isArray(this.peek())) { // all regex matches
                             let re = new RegExp(A2S(this.popArray()), "g");
                             let input = A2S(this.popArray()), result = [], m;
-                            while (m = re.exec(input)) {
-                                result.push(S2A(m[0]));
-                            }
+                            while (m = re.exec(input)) result.push(S2A(m[0]));
                             this.push(result);
                         }
                         break;
@@ -1529,9 +1521,7 @@ export class Runtime {
                             let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
                             let match: RegExpExecArray | null;
                             let result: StaxValue[] = [];
-                            while (match = pattern.exec(text)) {
-                                result.push(int.make(match.index));
-                            }
+                            while (match = pattern.exec(text)) result.push(int.make(match.index));
                             this.push(result);
                         }
                         break;
@@ -1662,15 +1652,9 @@ export class Runtime {
             else throw "weird types or something; can't add?"
             this.push(result);
         }
-        else if (isArray(a) && isArray(b)) {
-            this.push([...a, ...b]);
-        }
-        else if (isArray(a)) {
-            this.push([...a, b]);
-        }
-        else if (isArray(b)) {
-            this.push([a, ...b]);
-        }
+        else if (isArray(a) && isArray(b)) this.push([...a, ...b]);
+        else if (isArray(a)) this.push([...a, b]);
+        else if (isArray(b)) this.push([a, ...b]);
     }
 
     private doMinus() {
@@ -1907,9 +1891,7 @@ export class Runtime {
         }
         else if (isInt(arg)) {
             let result = [];  // array of decimal digits
-            for (let c of int.abs(arg).toString()) {
-                result.push(int.make(c));
-            }
+            for (let c of int.abs(arg).toString()) result.push(int.make(c));
             this.push(result);
         }
     }
@@ -1917,9 +1899,7 @@ export class Runtime {
     private doPowersetOrXor() {
         let b = this.pop();
         if (isInt(b)) {
-            if (this.totalSize() === 0) {
-                this.push(b);
-            }
+            if (this.totalSize() === 0) this.push(b);
             else if (isInt(this.peek())) {
                 this.push(int.bitxor(b, this.popInt()));
             }
@@ -2049,9 +2029,7 @@ export class Runtime {
                 if (!cancelled) flatArr[index] = self.pop();
                 self.popStackFrame();
             }
-            else {
-                flatArr[index] = element;
-            }
+            else flatArr[index] = element;
         }
 
         let list = this.popArray(), result: StaxValue[] = [...list];
@@ -2065,9 +2043,7 @@ export class Runtime {
                     if (isArray(target[idx])) {
                         target = target[idx] = (target[idx] as StaxArray).slice();
                     }
-                    else {
-                        target = target[idx] = [ target[idx] ];
-                    }
+                    else target = target[idx] = [ target[idx] ];
                 }
                 idx = floatify(last(idxPath) as StaxInt);
                 for (let s of doFinalAssign(target, idx)) yield s;
@@ -2315,8 +2291,7 @@ export class Runtime {
         if (isInt(input)) input = [input];
 
         if (isArray(input) && isArray(translation)) {
-            let result = [];
-            let map = new StaxMap;
+            let result = [], map = new StaxMap;
 
             for (let i = 0; i < translation.length; i += 2) {
                 map.set(translation[i], translation[i + 1]);
@@ -2344,9 +2319,7 @@ export class Runtime {
             if (isArray(b)) {
                 if (!b.some(e => areEqual(e, a[i]))) break;
             }
-            else {
-                if (!areEqual(a[i], b)) break;
-            }
+            else if (!areEqual(a[i], b)) break;
         }
 
         let result = a.slice(i);
@@ -2360,9 +2333,7 @@ export class Runtime {
             if (isArray(b)) {
                 if (!b.some(e => areEqual(e, a[i]))) break;
             }
-            else {
-                if (!areEqual(a[i], b)) break;
-            }
+            else if (!areEqual(a[i], b)) break;
         }
 
         let result = a.slice(0, i + 1);
@@ -2390,10 +2361,7 @@ export class Runtime {
                 }
                 result.push(listPartition);
             }
-            else {
-                let mapped = partition.map(v => int.make(v));
-                result.push(mapped);
-            }
+            else result.push(partition.map(v => int.make(v)));
 
             let i: number;
             for (i = n - 1; i >= 0 && partition[i] === 1; i --) ;
@@ -2809,9 +2777,7 @@ export class Runtime {
 
             if (shorthand) this.print(this.pop());
         }
-        else {
-            throw new Error("bad types for reduce");
-        }
+        else throw new Error("bad types for reduce");
     }
 
     private *doCrossMap(rest: Block) {

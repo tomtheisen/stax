@@ -55,8 +55,7 @@ export function staxEncode(bytes: number[] | Uint8Array): string {
 }
 
 export function unpack(packedStax: string): string {
-    let bytes = staxDecode(packedStax);
-    return unpackBytes(bytes);
+    return unpackBytes(staxDecode(packedStax));
 }
 
 export function unpackBytes(bytes: number[] | Uint8Array): string {

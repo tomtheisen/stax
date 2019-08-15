@@ -60,7 +60,7 @@ export enum LiteralTypes {
     CompressedString     = 0b000001,
     CompressableString   = 0b000010,
     UncompressableString = 0b000100,
-    CompressedInt        = 0b001000,    
+    CompressedInt        = 0b001000,
     CompressableInt      = 0b010000,
     UncompressableInt    = 0b100000,
 }
@@ -119,8 +119,8 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                         let compressed = compress(contents);
                         if (!compressed || compressed.length >= contents.length) compressable = false;
                     }
-                    literals |= compressable 
-                        ? LiteralTypes.CompressableString 
+                    literals |= compressable
+                        ? LiteralTypes.CompressableString
                         : LiteralTypes.UncompressableString;
                 }
                 pos += literal.length - 1;
@@ -237,7 +237,6 @@ export function decompressLiterals(program: string): string {
 }
 
 export function squareLinesAndComments(program: string): string {
-    // matches one line of ascii stax minus trailing whitespace and comment
     let lines = program.split("\n").map(l => l.split(/\t/)[0].trimRight());
     const maxlen = Math.max(...lines.map(l => l.length));
     lines = lines.map(l => {

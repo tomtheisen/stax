@@ -55,9 +55,7 @@ export function last<T>(arr: ReadonlyArray<T>): T | undefined {
 }
 
 export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
-    if (nums.some(isFloat)) {
-        return nums.map(floatify);
-    }
+    if (nums.some(isFloat)) return nums.map(floatify);
     if (nums.some(n => n instanceof Rational)) {
         return nums.map(n => n instanceof Rational ? n : new Rational(n as StaxInt, int.one));
     }
@@ -87,9 +85,7 @@ export function runLength(arr: StaxArray): StaxArray {
     if (arr.length === 0) return arr;
     let result: StaxValue[] = [], last: StaxValue | null = null, run = 0;
     for (let e of arr) {
-        if (last != null && areEqual(e, last)) {
-            run += 1;
-        }
+        if (last != null && areEqual(e, last)) run += 1;
         else {
             if (run > 0) result.push([last!, int.make(run)]);
             [last, run] = [e, 1];
@@ -119,10 +115,7 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
 }
 
 export function indexOf(arr: StaxArray, val: StaxValue): number {
-    for (let i = 0; i  < arr.length; i++) {
-        if (areEqual(arr[i], val)) return i;
-    }
-    return -1;
+    return arr.findIndex(e => areEqual(e, val));
 }
 
 export function compare(a: StaxValue, b: StaxValue): number {
