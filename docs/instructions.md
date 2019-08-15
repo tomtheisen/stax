@@ -251,7 +251,9 @@ op                  	|Types              	|Name              	|Description
 `&`                 	|arr int block      	|mutate-element    	|Mutate element at index using block.
 `&`                 	|arr arr block      	|mutate-element    	|Mutate element at indices using block. If indices array is an array of arrays, then treat them as a path to navigate a multidimensional array of arrays.
 `(`                 	|arr int            	|pad-right         	|Truncate or pad on right with 0s as necessary for target length.  Negative numbers remove that number of elements.
+`(`                 	|int arr            	|pad-right         	|Truncate or pad on right with 0s as necessary for target length.  Negative numbers remove that number of elements.
 `)`                 	|arr int            	|pad-left          	|Truncate or pad on left with 0s as necessary for target length.  Negative numbers remove that number of elements.
+`)`                 	|int arr            	|pad-left          	|Truncate or pad on left with 0s as necessary for target length.  Negative numbers remove that number of elements.
 `]`                 	|any                	|singleton         	|Make a 1 element array.
 `B`                 	|arr int            	|batch             	|Get all (overlapping) sub-arrays of specified length.
 `B`                 	|arr                	|uncons-left       	|Remove first element from array.  Push the tail of the array, then the removed element.
