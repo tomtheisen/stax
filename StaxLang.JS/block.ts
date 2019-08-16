@@ -48,11 +48,12 @@ export class Program extends Block {
 }
 
 export enum CodeType {
-    LooseAscii,         // all ascii with extra whitespace or comments
-    LowAscii,           // ascii with no extra whitespace, but can't be packed, e.g. newline in string literal
-    TightAscii,         // minified ascii, could be packed
-    Packed,             // PackedStax, tightest representation known
-    UnpackedNonascii,   // Unpackable, due to emojis or something
+    LooseAscii,              // all ascii with extra whitespace or comments
+    LowAscii,                // ascii with no extra whitespace, but can't be packed, e.g. newline in string literal
+    TightAscii,              // minified ascii, could be packed
+    Packed,                  // PackedStax, tightest representation known
+    UnpackedTightNonAscii,   // Unpackable, due to emojis or something
+    UnpackedLooseNonAscii,   // Unpackable, due to emojis or something
 }
 
 export enum LiteralTypes {
@@ -131,7 +132,12 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 break;
         }
     }
-    if (highCodepoint) return [CodeType.UnpackedNonascii, literals];
+    console.log("code type", {lowAscii, highCodepoint, literals});
+
+    if (highCodepoint) {
+        if (extraWhitespace) return [CodeType.UnpackedLooseNonAscii, literals];
+        else return [CodeType.UnpackedTightNonAscii, literals];
+    }
     if (extraWhitespace) return [CodeType.LooseAscii, literals];
     if (lowAscii) return [CodeType.LowAscii, literals];
     return [CodeType.TightAscii, literals];

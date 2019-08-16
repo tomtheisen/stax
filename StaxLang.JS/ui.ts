@@ -369,12 +369,12 @@ function updateStats() {
             if (charCode !== codePoint) pairs += 1;
         }
         packButton.hidden = codeType != CodeType.TightAscii || codeArea.value === "";
-        golfButton.hidden = codeType != CodeType.LooseAscii;
+        golfButton.hidden = codeType != CodeType.LooseAscii && codeType != CodeType.UnpackedLooseNonAscii;
         dumpButton.hidden = codeType != CodeType.LooseAscii || hasNewLineInLiteral(codeArea.value);
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
         uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
 
-        if (codeType === CodeType.UnpackedNonascii) {
+        if (codeType === CodeType.UnpackedTightNonAscii) {
             codeChars = codeArea.value.length - pairs;
             codeBytes = countUtf8Bytes(codeArea.value);
             propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes UTF-8`;
@@ -489,7 +489,7 @@ postLink.addEventListener("click", ev => {
         case CodeType.Packed:
             template += `${ codeBytes } [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)`;
             break;
-        case CodeType.UnpackedNonascii:
+        case CodeType.UnpackedTightNonAscii:
             template += `${ codeBytes } bytes, (${ codeChars } chars, UTF-8)`;
             break;
     }
