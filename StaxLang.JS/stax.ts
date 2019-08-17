@@ -2411,7 +2411,7 @@ export class Runtime {
 
     private doLastIndexOf() {
         let target = this.popArray(), arr = this.popArray();
-        for (let i = arr.length - 1 - target.length; i >= 0; i--) {
+        for (let i = arr.length - target.length; i >= 0; i--) {
             if (areEqual(target, arr.slice(i, i + target.length))) {
                 this.push(int.make(i));
                 return;

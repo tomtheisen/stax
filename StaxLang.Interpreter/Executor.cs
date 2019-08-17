@@ -2920,7 +2920,7 @@ namespace StaxLang {
         private void DoLastIndexOf() {
             List<object> target = this.Pop(), arr = this.Pop();
 
-            for (int i = arr.Count - 1 - target.Count; i >= 0; i--) {
+            for (int i = arr.Count - target.Count; i >= 0; i--) {
                 var match = true;
                 for (int j = 0; j < target.Count; j++) {
                     if (!AreEqual(target[j], arr[i + j])) {

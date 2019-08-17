@@ -684,6 +684,14 @@ J|q
 2
 	stax
 |q
+	name:LastIndexOfOnLastIndex
+	in
+f
+asdfasdf
+	out
+7
+	stax
+|~
 	name:MultisetXorMutates
 	out
 9
