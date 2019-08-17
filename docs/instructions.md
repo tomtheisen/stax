@@ -132,9 +132,9 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:a`                     	|int int    	|fixed-binary  	|zfill(bin(a), b)   	|Binary representation of a zero-padded to b digits. (e.g. `11`, `6` -> `"001011"`)
 `:A`                     	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
 `:b`                     	|num int int	|between       	|b <= a < c         	|Value is in range?
-`:b`                     	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits.
+`:b`                     	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits (binary digits).
 `:B`                     	|int arr    	|custom-base   	|                   	|Encode number in custom base from string characters.
-`:B`                     	|int        	|binary-digits 	|                   	|Generate array of binary digits.  Absolute value is used in case of negative number.
+`:B`                     	|int        	|binary-digits 	|                   	|Generate array of bits (binary digits).  Absolute value is used in case of negative number.
 `:c`                     	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:C`                     	|int        	|catalan       	|choose(2a,a)/(a+1) 	|Catalan number; number of strings with a matched pairs of brackets.
 `:d`                     	|int        	|divisors      	|                   	|Get all divisors of n.
@@ -413,7 +413,7 @@ op                  	|Types        	|Name               	|Description
 `k`                 	|int block    	|reduce-range       	|Terminate a block and reduce (fold) [1 .. n] using the block.
 `k`                 	|arr          	|reduce-short       	|If there is no open block, use the rest of the program as the block to reduce the array.  Implicitly print the result.
 `k`                 	|int          	|reduce-short-range 	|If there is no open block, use the rest of the program as the block to reduce [1 .. n].  Implicitly print the result.
-`K`                 	|arr arr block	|cross-map          	|Terminate a block and map using over a cartesian join.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be an array of arrays.
+`K`                 	|arr arr block	|cross-map          	|Terminate a block and map using over a cartesian join.  If integers are provided, a 1-based range will be used.  Both elements will be pushed to the stack.  `_` will also push both to stack.  The result will be an array of arrays.
 `m`                 	|arr block    	|map                	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
 `m`                 	|arr          	|map-short          	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`                 	|int          	|map-range-short    	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
