@@ -241,7 +241,7 @@ copyOutputButton.addEventListener("click", ev => {
 });
 
 document.addEventListener("click", ev => {
-    if (ev.target instanceof HTMLElement && ev.target.classList && ev.target.classList.contains("replace-text")) {
+    if (ev.target instanceof HTMLElement && ev.target.classList && ev.target.classList.contains("debug-omit")) {
         ev.target.replaceWith(ev.target.title);
     }
 });
@@ -260,7 +260,7 @@ function showDebugInfo(ip: number, steps: number) {
             mid.textContent = '«…»';
             mid.title = value.substr(maxLength >> 1, value.length - maxLength);
             mid.href = "javascript:void(0)";
-            mid.classList.add("replace-text");
+            mid.classList.add("debug-omit");
             el.innerHTML = "";
             el.append(start, mid, end);
         }

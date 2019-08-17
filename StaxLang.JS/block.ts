@@ -132,7 +132,6 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 break;
         }
     }
-    console.log("code type", {lowAscii, highCodepoint, literals});
 
     if (highCodepoint) {
         if (extraWhitespace) return [CodeType.UnpackedLooseNonAscii, literals];
