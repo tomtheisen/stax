@@ -3,10 +3,12 @@ import { StaxInt, isInt } from './integer';
 import * as int from './integer'
 import { Rational, one as rationalOne } from './rational';
 import * as rat from './rational';
+import { IntRange } from './collections';
 
 export type StaxNumber = number | Rational | StaxInt;
 export type StaxValue = StaxNumber | Block | StaxArray;
-export interface StaxArray extends ReadonlyArray<StaxValue> { }
+export interface MaterializedStaxArray extends ReadonlyArray<StaxValue> { }
+export type StaxArray = MaterializedStaxArray | IntRange;
 
 export function S2A(s: string): StaxInt[] {
     let result: StaxInt[] = [];
@@ -41,7 +43,7 @@ export function isFloat(n: any): n is number {
     return typeof n === "number";
 }
 export function isArray(n: StaxValue | string): n is StaxArray {
-    return Array.isArray(n);
+    return Array.isArray(n) || n instanceof IntRange;
 }
 export function isMatrix(n: StaxArray): n is StaxArray[] {
     return n.length > 0 && n.every(isArray);
@@ -50,7 +52,17 @@ export function isNumber(n: StaxValue): n is StaxNumber {
     return isInt(n) || isFloat(n) || n instanceof Rational;
 }
 
-export function last<T>(arr: ReadonlyArray<T>): T | undefined {
+export function materialize(arr: StaxArray): MaterializedStaxArray {
+    return Array.isArray(arr) ? arr : [...arr];
+}
+
+export function last<T>(arr: ReadonlyArray<T>): T | undefined;
+export function last(arr: IntRange): StaxInt | undefined;
+export function last(arr: StaxArray): StaxValue | undefined;
+export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | undefined {
+    if (arr instanceof IntRange) {
+        return (arr.length > 0) ? int.sub(arr.end, int.one) : undefined;
+    }
     return arr[arr.length - 1];
 }
 
@@ -98,13 +110,15 @@ export function runLength(arr: StaxArray): StaxArray {
 export function areEqual(a: StaxValue, b: StaxValue): boolean {
     if (isArray(a) && isArray(b)) {
         if (a.length != b.length) return false;
-        for (let i = 0; i < a.length; i++) {
-            if (!areEqual(a[i], b[i])) return false;
+        b = materialize(b);
+        let i = 0;
+        for (let e of a) {
+            if (!areEqual(e, b[i++])) return false;
         }
         return true;
     }
-    if (isArray(a)) a = a[0];
-    if (isArray(b)) b = b[0];
+    if (isArray(a)) [a] = a;
+    if (isArray(b)) [b] = b;
     if (isNumber(a) && isNumber(b)) {
         [a, b] = widenNumbers(a, b);
         if (isInt(a)) return int.eq(a, b as StaxInt);
@@ -115,6 +129,13 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
 }
 
 export function indexOf(arr: StaxArray, val: StaxValue): number {
+    if (arr instanceof IntRange) {
+        if (!isInt(val)) return -1;
+        if (int.cmp(val, arr.start) >= 0 && int.cmp(val, arr.end) < 0) {
+            return floatify(val) - floatify(arr.start);
+        }
+        else return -1;
+    }
     return arr.findIndex(e => areEqual(e, val));
 }
 
@@ -132,16 +153,19 @@ export function compare(a: StaxValue, b: StaxValue): number {
         }
         if (isArray(b)) {
             if (b.length === 0) return 1;
-            return compare(a, b[0]);
+            let [bs] = b;
+            return compare(a, bs);
         }
     }
     else if (isNumber(b)) {
         if (isArray(a)) {
             if (a.length === 0) return -1;
-            return compare(a[0], b);
+            let [as] = a;
+            return compare(as, b);
         }
     }
     else if (isArray(a) && isArray(b)) {
+        a = materialize(a); b = materialize(b);
         for (let i = 0; i < a.length && i < b.length; i++) {
             let ec = compare(a[i], b[i]);
             if (ec) return ec;

@@ -2,14 +2,14 @@ import { StaxArray, StaxNumber, StaxValue,
     isArray, isFloat, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength,
     areEqual, indexOf, compare,
-    stringFormat, unEval, stringFormatFloat, pow } from './types';
+    stringFormat, unEval, stringFormatFloat, pow, materialize } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
 import { isInt, StaxInt, zero, one, minusOne } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
-import { Multiset, StaxSet, StaxMap } from './collections';
+import { Multiset, StaxSet, StaxMap, IntRange } from './collections';
 import { primeFactors, allPrimes } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
@@ -31,15 +31,10 @@ function fail(msg: string): never {
     throw new Error(msg);
 }
 
-function *lazyCountTo(end: StaxInt) {
-    for (let n = one; int.cmp(n, end) <= 0; n = int.add(n, one)) yield n;
-}
-
-function range(start: number | StaxInt, end: number | StaxInt): StaxInt[] {
-    let result: StaxInt[] = [];
-    const _end = Number(end.valueOf());
-    for (let e = Number(start.valueOf()); e < _end; e++) result.push(int.make(e));
-    return result;
+function range(start: number | StaxInt, end: number | StaxInt): IntRange {
+    return new IntRange(
+        typeof start === "number" ? int.make(start) : start,
+        typeof end === "number" ? int.make(end) : end);
 }
 
 class EarlyTerminate extends Error {
@@ -82,8 +77,11 @@ export class Runtime {
         }
         if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) ||
             int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
-            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt))))
-                .replace(/\\u0000/g, "\\0");
+                return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt))))
+                    .replace(/\\u0000/g, "\\0");
+        }
+        if (arg instanceof IntRange && arg.length >= 3) {
+            return `[${ arg.start } .. ${ int.sub(arg.end, one) }]`;
         }
 
         return '[' + arg.map(this.format).join(", ") + ']';
@@ -550,7 +548,7 @@ export class Runtime {
                     else if (isArray(this.peek())) {
                         let arr = this.popArray();
                         if (arr.length === 0) fail("empty array has no first element");
-                        this.push(arr[0]);
+                        this.push(...arr.slice(0, 1));
                     }
                     else if (this.peek() instanceof Block) {
                         let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
@@ -920,15 +918,16 @@ export class Runtime {
                         // embed grid at coords
                         let payload = this.popArray();
                         let col = int.floatify(this.popInt()), row = int.floatify(this.popInt());
-                        let result = this.popArray().slice();
+                        let result = [...this.popArray()];
 
-                        for (let r = 0; r < payload.length; r++) {
-                            let payline = payload[r];
-                            if (!isArray(payline)) payline = [payline];
+                        let r = -1;
+                        for (let payline of payload) {
+                            ++r;
+                            payline = isArray(payline) ? [...payline] : [payline];
                             while (result.length <= row + r) result.push([]);
                             if (!isArray(result[row + r])) result[row + r] = [result[row + r]];
 
-                            let resultline = (result[row + r] as StaxArray).slice();
+                            let resultline = (result[row + r] as StaxArray).map(c => c);
                             for (let c = 0; c < payline.length; c++) {
                                 while (resultline.length <= col + c) resultline.push(zero);
                                 resultline[col + c] = payline[c];
@@ -1072,6 +1071,7 @@ export class Runtime {
                         this.push(a);
                     }
                     else if (isArray(a) && isArray(b)) {
+                        b = materialize(b);
                         let result: StaxValue[] = [];
                         for (let i = 0, offset = 0; offset < a.length; i++) {
                             let size = b[i % b.length];
@@ -1089,7 +1089,7 @@ export class Runtime {
                         this.runMacro("b%s% t~ ;(s,(s \\"); // zip; truncate to shorter
                     }
                     else { // zip arrays using fill element
-                        let fill = this.pop(), b = this.popArray(), a = this.popArray(), result = [];
+                        let fill = this.pop(), b = materialize(this.popArray()), a = materialize(this.popArray()), result = [];
                         for (let i = 0; i < Math.max(a.length, b.length); i++) {
                             result.push([
                                 i < a.length ? a[i] : fill,
@@ -1103,10 +1103,8 @@ export class Runtime {
                         this.runMacro("ssb%~/1u*@,");
                     }
                     else if (isArray(this.peek())) { // embed sub-array
-                        let c = this.pop(), b = this.pop(), a = this.popArray();
-                        let result = a.slice(), loc: number, payload: StaxArray;
-                        if (isArray(c)) [payload, loc] = [c, floatify(b as StaxNumber)];
-                        else [payload, loc] = [b as StaxArray, floatify(c as StaxNumber)];
+                        let c = this.popArray(), b = this.pop(), a = this.popArray();
+                        let result = [...a], payload = materialize(c), loc = floatify(b as StaxNumber);
 
                         if (loc < 0) {
                             loc += result.length;
@@ -1157,7 +1155,7 @@ export class Runtime {
                         let result = [], i = 0;
                         for (let e of this.popArray()) {
                             if (isArray(e)) {
-                                if (e.length > i) result.push(e[i]);
+                                if (e.length > i) result.push(materialize(e)[i]);
                                 else result.push(zero);
                             }
                             else {
@@ -1243,7 +1241,7 @@ export class Runtime {
                     }
                     else if (isArray(this.peek())) {
                         // keep elements of a, no more than their occurrences in b
-                        let b = this.popArray().slice(), a = this.popArray(), result = [];
+                        let b = [...this.popArray()], a = this.popArray(), result = [];
                         for (let e of a) {
                             for (let i = 0; i < b.length; i++) {
                                 if (areEqual(b[i], e)) {
@@ -1322,10 +1320,10 @@ export class Runtime {
                 case '|G': { // round-robin flatten
                     let arr = this.popArray(), result: StaxValue[] = [];
                     let maxlen = Math.max(...arr.map(e => (e as StaxArray).length));
+                    const grid = arr.map(e => isArray(e) ? materialize(e) : fail("can't flatten array of non-arrays"));
                     for (let i = 0; i < maxlen; i++) {
-                        for (let e of arr) {
-                            let line = e as StaxArray;
-                            if (line.length > i) result.push(line[i]);
+                        for (let e of grid) {
+                            if (e.length > i) result.push(e[i]);
                         }
                     }
                     this.push(result);
@@ -1449,7 +1447,7 @@ export class Runtime {
                     }
                     else if (isArray(this.peek())) {
                         // combine elements from a and b, removing common elements as many times as they mutually occur
-                        let b = this.popArray().slice(), a = this.popArray(), result: StaxValue[] = [];
+                        let b = [...this.popArray()], a = this.popArray(), result: StaxValue[] = [];
                         for (let e of a) {
                             let found = false;
                             for (let i = 0; i < b.length; i++) {
@@ -1486,9 +1484,13 @@ export class Runtime {
                     break;
                 case '|o': { // get indices of elements when ordered
                     let a = this.popArray(), result: StaxValue[] = [], i = 0;
-                    let idxs = range(0, a.length).sort((x: StaxInt, y: StaxInt) => compare(a[floatify(x)], a[floatify(y)]));
-                    for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
-                    this.push(result);
+                    if (a instanceof IntRange) this.push(range(0, a.length));
+                    else {
+                        let loca = a;
+                        let idxs = [...range(0, loca.length)].sort((x: StaxInt, y: StaxInt) => compare(loca[floatify(x)], loca[floatify(y)]));
+                        for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
+                        this.push(result);
+                    }
                     break;
                 }
                 case '|p':
@@ -1656,9 +1658,12 @@ export class Runtime {
     private doMinus() {
         let b = this.pop(), a = this.pop();
         if (isArray(a) && isArray(b)) {
-            const bSet = new StaxSet(b);
-            let result = a.filter(a_ => !bSet.has(a_) && (!isArray(a_) || a_.length == 0 || !bSet.has(a_[0])));
-            this.push(result);
+            if (b.length * a.length === 0) this.push(a);
+            else {
+                const bSet = new StaxSet(b);
+                let result = a.filter(a_ => !bSet.has(a_) && (!isArray(a_) || a_.length == 0 || !bSet.has(materialize(a_.slice(0, 1))[0]))); //omg wtf
+                this.push(result);
+            }
         }
         else if (isArray(a)) {
             this.push(a.filter(a_ => !areEqual(a_, b)));
@@ -1696,7 +1701,7 @@ export class Runtime {
             if (count === 1) this.push(b);
             else {
                 let result: StaxValue[] = [];
-                for (let i = 0; i < count; i++) result = result.concat(b);
+                for (let i = 0; i < count; i++) result = [...result, ...b];
                 this.push(result);
             }
         }
@@ -1706,7 +1711,7 @@ export class Runtime {
             if (count === 1) this.push(a);
             else {
                 let result: StaxValue[] = [];
-                for (let i = 0; i < count; i++) result = result.concat(a);
+                for (let i = 0; i < count; i++) result = [...result, ...a];
                 this.push(result);
             }
         }
@@ -1826,8 +1831,8 @@ export class Runtime {
         if (!isArray(a) && isArray(b)) a = b.length ? [a] : [];
         else if (isArray(a) && !isArray(b)) b = a.length ? [b] : [];
 
-        a = a as StaxArray;
-        b = b as StaxArray;
+        a = materialize(a as StaxArray);
+        b = materialize(b as StaxArray);
 
         let result: StaxValue[] = [], size = Math.max(a.length, b.length);
         if (a.length && b.length) for (let i = 0 ; i < size; i++) {
@@ -1900,7 +1905,7 @@ export class Runtime {
                 this.push(int.bitxor(b, this.popInt()));
             }
             else {
-                let len = int.floatify(b), arr = this.popArray(), result: StaxValue[] = [];
+                let len = int.floatify(b), arr = materialize(this.popArray()), result: StaxValue[] = [];
                 let idxs = range(0, b).map(i => int.floatify((i as StaxInt)));
                 while (len <= arr.length) {
                     result.push(idxs.map(idx => arr[idx]));
@@ -1966,7 +1971,7 @@ export class Runtime {
             if (arr.length === 0) fail("Can't index into empty array");
             idx = Math.floor(Number(idx.valueOf())) % arr.length;
             if (idx < 0) idx += arr.length;
-            return arr[idx];
+            return materialize(arr.slice(idx,idx + 1))[0];
         }
 
         // read at index
@@ -2032,12 +2037,12 @@ export class Runtime {
         for (let arg of indexes) {
             if (isArray(arg)) {
                 // path to deep target element
-                let idxPath = arg, target = result, idx: number;
+                let idxPath = materialize(arg), target = result, idx: number;
                 for (let i = 0; i < idxPath.length - 1; i++) {
                     idx = floatify(idxPath[i] as StaxInt);
                     while (target.length <= idx) target.push([]);
                     if (isArray(target[idx])) {
-                        target = target[idx] = (target[idx] as StaxArray).slice();
+                        target = target[idx] = [...(target[idx] as StaxArray)];
                     }
                     else target = target[idx] = [ target[idx] ];
                 }
@@ -2162,6 +2167,8 @@ export class Runtime {
         }
         else if (isArray(a) && isArray(b)) {
             let result = [];
+            a = materialize(a);
+            b = materialize(b);
             for (let i = 0; i < b.length; i++) {
                 result.push(a.length - b.length + i >= 0 ? a[a.length - b.length + i] : b[i]);
             }
@@ -2170,6 +2177,7 @@ export class Runtime {
         else if (isArray(a) && b instanceof Block) {
             // partition where the block produces a truthy for the pair of values surrounding the boundary
             let result: StaxValue[] = [], current = [];
+            a = materialize(a);
             if (a.length > 0) current.push(a[0]);
 
             this.pushStackFrame();
@@ -2214,6 +2222,8 @@ export class Runtime {
         }
         else if (isArray(a) && isArray(b)) {
             let result = [];
+            a = materialize(a);
+            b = materialize(b);
             for (let i = 0; i < b.length; i++) {
                 result.push(i < a.length ? a[i] : b[i]);
             }
@@ -2288,7 +2298,7 @@ export class Runtime {
 
         if (isArray(input) && isArray(translation)) {
             let result = [], map = new StaxMap;
-
+            translation = materialize(translation);
             for (let i = 0; i < translation.length; i += 2) {
                 map.set(translation[i], translation[i + 1]);
             }
@@ -2309,7 +2319,7 @@ export class Runtime {
     }
 
     private doTrimElementsFromStart() {
-        let b = this.pop(), a = this.popArray(), i = 0;
+        let b = this.pop(), a = materialize(this.popArray()), i = 0;
 
         for (; i < a.length; i++) {
             if (isArray(b)) {
@@ -2323,7 +2333,7 @@ export class Runtime {
     }
 
     private doTrimElementsFromEnd() {
-        let b = this.pop(), a = this.popArray(), i = a.length - 1;
+        let b = this.pop(), a = materialize(this.popArray()), i = a.length - 1;
 
         for (; i >= 0; i--) {
             if (isArray(b)) {
@@ -2382,15 +2392,15 @@ export class Runtime {
     }
 
     private doRotate(direction: number) {
-        let distance = this.pop(), arr: StaxArray;
+        let distance = this.pop(), arr: ReadonlyArray<StaxValue>;
 
         if (isArray(distance)) {
-            arr = distance;
+            arr = materialize(distance);
             distance = one;
         }
         else {
             let popped = this.pop();
-            arr = isArray(popped) ? popped : fail("bad types for rotate");
+            arr = isArray(popped) ? materialize(popped) : fail("bad types for rotate");
         }
 
         if (!isInt(distance)) throw new Error("bad rotation distance");
@@ -2429,8 +2439,9 @@ export class Runtime {
         if (!isArray(arr)) [arr, target] = [target, arr];
         if (!isArray(arr)) throw new Error("bad types for index-of");
 
-        for (let i = 0; i < arr.length; i++) {
-            let el = arr[i];
+        let i = -1;
+        for (let el of arr) {
+            ++i;
             if (isArray(target)) {
                 if (i + target.length > arr.length) {
                     this.push(minusOne);
@@ -2518,19 +2529,19 @@ export class Runtime {
             }
         }
         else if (isArray(top)) {
+            top = materialize(top);
             if (top.length > 0 && !isArray(top[0])) top = [top];
             const copied = top.map((line) => [...line as StaxValue[]]); // prevent mutations
             let result: StaxValue[] = [];
             let maxlen = Math.max(...copied.map(e => (e as StaxArray).length));
 
             for (let line of copied) {
-                line = line as StaxValue[];
                 line.push(...Array(maxlen - line.length).fill(zero));
             }
 
             for (let i = 0; i < maxlen; i++) {
                 let column: StaxValue[] = [];
-                for (let row of copied) column.push((row as StaxArray)[i]);
+                for (let row of copied) column.push(row[i]);
                 result.push(column);
             }
 
@@ -2619,19 +2630,20 @@ export class Runtime {
         else if (target instanceof Block) {
             this.pushStackFrame();
             let result = [];
-            for (let i = 0; i < arr.length; i++) {
-                this.push(this._ = arr[i]);
-                this.index = int.make(i);
+            for (let el of arr) {
+                this.push(this._ = el);
                 for (let s of this.runSteps(target)) yield s;
                 if (isTruthy(this.pop())) result.push(this.index);
+                this.index = int.add(this.index, one);
             }
             this.popStackFrame();
             this.push(result);
         }
         else {
-            let result = [];
-            for (let i = 0; i < arr.length; i++) {
-                if (areEqual(arr[i], target)) result.push(int.make(i));
+            let result = [], i = 0;
+            for (let el of arr) {
+                if (areEqual(el, target)) result.push(int.make(i));
+                i++;
             }
             this.push(result);
         }
@@ -2691,7 +2703,7 @@ export class Runtime {
             this.popStackFrame();
         }
         else if (isArray(this.peek()) || isInt(this.peek())) {
-            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : lazyCountTo(data);
+            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : range(one, int.add(data, one));
 
             this.pushStackFrame();
             for (let e of arr) {
@@ -2744,19 +2756,20 @@ export class Runtime {
         if (top instanceof Block) [block, arr] = [top, this.pop()];
         else [block, arr] = [rest, top];
 
-        let reduceArr: StaxValue[] | null = null;
+        let reduceArr: StaxArray | null = null;
         if (isInt(arr)) reduceArr = range(one, int.add(arr, one));
         else if (isArray(arr)) reduceArr = [...arr];
 
         if (reduceArr) {
             if (reduceArr.length === 0) throw new Error("tried to reduce empty array");
             if (reduceArr.length === 1) {
-                this.push(reduceArr[0]);
+                this.push(...reduceArr);
                 return;
             }
 
             this.pushStackFrame();
-            this.push(reduceArr.shift()!);
+            this.push(...reduceArr.slice(0, 1));
+            reduceArr = reduceArr.slice(1);
             for (let e of reduceArr) {
                 this.push(this._ = e);
                 for (let s of this.runSteps(block)) {
@@ -2818,7 +2831,7 @@ export class Runtime {
             let block = this.pop() as Block, data = this.pop(), result: StaxValue[] = [], cancelled = false;
             let arr: Iterable<StaxValue>;
             if (isArray(data)) arr = data;
-            else if (isInt(data)) arr = lazyCountTo(data);
+            else if (isInt(data)) arr = range(one, int.add(data, one));
             else throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
 
             this.pushStackFrame();
@@ -2875,7 +2888,7 @@ export class Runtime {
             this.push(result);
         }
         else if (isArray(top) || isInt(top)) {
-            let data = isArray(top) ? top : lazyCountTo(top), cancelled = false;
+            let data = isArray(top) ? top : range(one, int.add(top, one)), cancelled = false;
 
             this.pushStackFrame();
             for (let e of data) {
@@ -2900,9 +2913,9 @@ export class Runtime {
             return;
         }
 
-        let result = [arr[0]];
+        let result = [...arr.slice(0, 1)];
         this.pushStackFrame();
-        this.push(arr[0]);
+        this.push(result[0]);
         for (let e of arr.slice(1)) {
             this.push(this._ = e);
             for (let s of this.runSteps(reduce)) yield s;

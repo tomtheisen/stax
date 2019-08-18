@@ -1,5 +1,5 @@
 import { StaxValue, StaxArray, floatify, isFloat, isArray, S2A, areEqual } from './types';
-import { isInt } from './integer';
+import { isInt, StaxInt, cmp, add, one, make } from './integer';
 import { Rational } from './rational';
 import { Block } from './block';
 import * as int from './integer'
@@ -96,7 +96,7 @@ export class StaxSet {
     private contents = new Map<number, StaxValue[]>();
 
     constructor(items?: StaxArray) {
-        if (items) this.add(...items);
+        if (items) items.forEach(e => this.add(e));
     }
 
     has(val: StaxValue): boolean {
@@ -195,5 +195,89 @@ export class StaxMap<TValue = StaxValue> {
         for (let rec of this.contents.values()) {
             for (let el of rec) yield el.key;
         }
+    }
+}
+
+export class IntRange {
+    readonly start: StaxInt;
+    readonly end: StaxInt;
+
+    constructor(start: StaxInt, end: StaxInt) {
+        if (cmp(start, end) > 0) throw new Error("Attempted to create range with [start] > [end]");
+        this.start = start;
+        this.end = end;
+    }
+
+    get length() {
+        return floatify(this.end) - floatify(this.start);
+    }
+
+    includes(val: StaxValue) {
+        return isInt(val) && cmp(val, this.start) >= 0 && cmp(val, this.end) < 0;
+    }
+
+    *[Symbol.iterator]() {
+        for (let i = this.start; cmp(i, this.end) < 0; i = add(i, one)) {
+            yield i;
+        }
+    }
+
+    every(predicate: (el: StaxValue, i: number) => boolean): boolean {
+        let i = 0;
+        for(let e of this) if (!predicate(e, i++)) return false;
+        return true;
+    }
+
+    some(predicate: (el: StaxValue, i: number) => boolean): boolean {
+        let i = 0;
+        for(let e of this) if (predicate(e, i++)) return true;
+        return false;
+    }
+
+    map<T>(callbackfn: (value: StaxValue, index: number, array: readonly StaxValue[]) => T, thisArg?: any): T[] {
+        callbackfn = callbackfn.bind(thisArg);
+        let result = [], i = 0;
+        for(let e of this) result.push(callbackfn(e, i++, this as any /* dragons here */));
+        return result;
+    }
+
+    filter(callbackfn: (value: StaxValue, index: number, array: readonly StaxValue[]) => boolean, thisArg?: any): StaxArray {
+        let i = 0, allPass = true, filtered: StaxValue[] = [];
+        for (let e of this) {
+            const pass = callbackfn(e, i, this as any /* dragons here */);
+            if (allPass && !pass) {
+                filtered = [...this.slice(0, i)];
+                allPass = false;
+            }
+            else if (!allPass && pass) {
+                filtered.push(e);
+            }
+            i++;
+        }
+        return allPass ? this : filtered;
+    }
+
+    forEach(callbackfn: (value: StaxValue, index: number, array: readonly StaxValue[]) => void, thisArg?: any): void {
+        callbackfn = callbackfn.bind(thisArg);
+        let i = 0;
+        for(let e of this) callbackfn(e, i++, this as any /* dragons here */);
+    }
+
+    slice(start?: number, end?: number) {
+        if (start == null && end == null) return this;
+
+        let newStart = add(this.start, make(start || 0));
+        let newEnd = add(this.start, make(typeof end === "number" ? end : this.length));
+        if (cmp(newEnd, this.end) > 0) newEnd = this.end;
+        if (cmp(newEnd, newStart) < 0) newEnd = newStart;
+        return new IntRange(newStart, newEnd);
+    }
+
+    reverse() {
+        return [...this].reverse();
+    }
+
+    concat(...others: StaxValue[]): StaxValue[] {
+        return [...this, ...others];
     }
 }
