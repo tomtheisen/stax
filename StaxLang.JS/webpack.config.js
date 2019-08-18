@@ -33,6 +33,7 @@ module.exports = {
         })
     ],
     optimization: {
-        minimize: process.argv.some(a => a.startsWith("--optimize-minimize")), // supposedly this is supposed to work by itself
+        // I can't get --optimize-minimize to do anything at all.
+        minimize: !process.argv.includes("-debug"), 
     }
 };
