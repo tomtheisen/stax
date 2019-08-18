@@ -285,7 +285,6 @@ export class Runtime {
 
     private *runSteps(block: Block): IterableIterator<ExecutionState> {
         let ip = block.offset, i = 0;
-
         for (let token of block.tokens) {
             i += 1;
             const getRest = () => new Block(
@@ -295,12 +294,11 @@ export class Runtime {
                 false);
 
             if (token === '|`') {
-                ip += 2;
-                yield new ExecutionState(ip, false, true);
+                yield new ExecutionState(ip += 2, false, true);
                 continue;
             }
             // don't step on a no-op
-            if (typeof token !== 'string' || !token.match(/^\s/)) yield new ExecutionState(ip);
+            else if (typeof token !== 'string' || !token.match(/^[ \n]/)) yield new ExecutionState(ip);
 
             if (token instanceof Block) {
                 this.push(token);

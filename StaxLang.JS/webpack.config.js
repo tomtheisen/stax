@@ -1,6 +1,6 @@
 const path = require('path');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const commitHash = require('child_process')
   .execSync('git rev-parse --short HEAD')
@@ -30,11 +30,9 @@ module.exports = {
         new webpack.DefinePlugin({
             __COMMIT_HASH__: JSON.stringify(commitHash),
             __BUILD_DATE__: JSON.stringify(new Date),
-        }),
-        new UglifyJSPlugin({
-            uglifyOptions: {
-                safari10: true
-            }
         })
-    ]
+    ],
+    optimization: {
+        minimize: process.argv.some(a => a.startsWith("--optimize-minimize")), // supposedly this is supposed to work by itself
+    }
 };

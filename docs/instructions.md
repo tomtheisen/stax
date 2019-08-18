@@ -79,7 +79,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `U`                      	|           	|              	|-1                 	|Negative unit.
 <code>&#124;%</code>     	|num num    	|divmod        	|a / b, a % b       	|Perform division and modulus.
 <code>&#124;/</code>     	|int int    	|div-all       	|                   	|Divide a by b as many times as it will go evenly.
-<code>&#124;<</code>     	|int int    	|shift-left    	|a << b             	|Bitshift left.
+<code>&#124;&lt;</code>  	|int int    	|shift-left    	|a << b             	|Bitshift left.
 <code>&#124;></code>     	|int int    	|shift-right   	|a >> b             	|Bitshift right.
 <code>&#124;1</code>     	|int        	|parity-sign   	|(-1) ** a          	|Power of negative one.
 <code>&#124;2</code>     	|int        	|2-power       	|2 ** a             	|Power of two.
@@ -188,7 +188,7 @@ op                       	|Types          	|Name              	|Description
 `t`                      	|arr            	|trim-left         	|Trim whitespace from left of string.
 `T`                      	|arr            	|trim-right        	|Trim whitespace from right of string.
 <code>&#124;~</code>     	|arr arr        	|last-index-of     	|Get the index of the last occurrence of the substring.
-<code>&#124;<</code>     	|arr            	|left-align        	|Left align lines of text, padding to longest line.
+<code>&#124;&lt;</code>  	|arr            	|left-align        	|Left align lines of text, padding to longest line.
 <code>&#124;></code>     	|arr            	|right-align       	|Right align lines of text, padding to longest line.
 <code>&#124;&#124;</code>	|arr int int arr	|embed-grid        	|Embed a grid inside another grid at the specfied coordinates.  Negative coordinates are not allowed.  OOB extends the necessary dimensions.
 <code>&#124;e</code>     	|arr arr arr    	|replace-first     	|String replace; first instance only.

@@ -154,20 +154,16 @@ function runProgramTimeSlice() {
         try {
             while (!(result = activeStateIterator.next()).done) {
                 steps += 1;
-                if (dumping) {
+                if (dumping && lastExecutedProgram[result.value.ip] === "\t") {
                     const prefix = lastExecutedProgram.substr(0, result.value.ip);
-                    const atEnd = result.value.ip === lastExecutedProgram.length;
-                    if (atEnd || /\t\n *$/.test(prefix)) {
-                        const lineidx = prefix.split(/\n/g).length - (atEnd ? 1 : 2);
-                        const lines = codeArea.value.split(/\n/g);
-                        if (activeRuntime && lines[lineidx].endsWith("\t")) {
-                            const state = activeRuntime.getDebugState();
-                            const main = state.main.filter(e => !e.startsWith("Block")).join(" "),
-                                input = state.input.filter(e => !e.startsWith("Block")).join(" ");
-                            if (!main.startsWith("Block")) {
-                                lines[lineidx] += (input && `input:${ input } `) + (main && `main:${ main } `);
-                                codeArea.value = lines.join("\n");
-                            }
+                    const lineidx = prefix.split(/\n/g).length - 1, lines = codeArea.value.split(/\n/g);
+                    if (activeRuntime && lines[lineidx].endsWith("\t")) {
+                        const state = activeRuntime.getDebugState();
+                        const main = state.main.filter(e => !e.startsWith("Block")).join(" "),
+                            input = state.input.filter(e => !e.startsWith("Block")).join(" ");
+                        if (!main.startsWith("Block")) {
+                            lines[lineidx] += (input && `input:${ input } `) + (main && `main:${ main } `);
+                            codeArea.value = lines.join("\n");
                         }
                     }
                 }
