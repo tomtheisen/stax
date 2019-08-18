@@ -697,3 +697,14 @@ asdfasdf
 9
 	stax
 9]cc|ndJ
+	name:EmptyZip
+	in
+"foo" []
+	out
+0
+	in
+[] "foo"
+	out
+0
+	stax
+\%

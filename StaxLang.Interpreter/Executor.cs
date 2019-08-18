@@ -2567,7 +2567,7 @@ namespace StaxLang {
             block.AddDesc("zip two arrays; non-arrays are wrapped, and the shorter one is repeated");
             var result = new List<object>();
             int size = Math.Max(a.Count, b.Count);
-            for (int i = 0; i < size; i++) {
+            if (a.Count > 0 && b.Count > 0) for (int i = 0; i < size; i++) {
                 result.Add(new List<object> { a[i%a.Count], b[i%b.Count] });
             }
             Push(result);

@@ -1830,7 +1830,7 @@ export class Runtime {
         b = b as StaxArray;
 
         let result: StaxValue[] = [], size = Math.max(a.length, b.length);
-        for (let i = 0 ; i < size; i++) {
+        if (a.length && b.length) for (let i = 0 ; i < size; i++) {
             result.push([ a[i % a.length], b[i % b.length] ]);
         }
         this.push(result);
