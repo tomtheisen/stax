@@ -2648,8 +2648,6 @@ export class Runtime {
         }
         else if (replace instanceof Block) {
             let ss = RegExp(A2S(search), "g");
-            let replaceBlock = replace;
-
             let result = "";
             let lastEnd = 0;
             let match: RegExpMatchArray | null;
@@ -2659,12 +2657,13 @@ export class Runtime {
                 result += ts.substring(lastEnd, match.index!);
 
                 this.push(this._ = S2A(match[0]));
-                for (let s of this.runSteps(replaceBlock)) yield s;
+                for (let s of this.runSteps(replace)) yield s;
                 const replaced = this.pop();
                 result += A2S(isArray(replaced) ? replaced : stringFormat(replaced));
                 lastEnd = match.index! + match[0].length;
 
                 this.index = int.add(this.index, one);
+                if (!match[0]) ss.lastIndex += 1;
             }
             result += ts.substr(lastEnd);
 

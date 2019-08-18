@@ -708,3 +708,10 @@ asdfasdf
 0
 	stax
 \%
+	name:ZeroWidthRegexBlockReplace
+	in
+foo
+	out
+-f-o-o-
+	stax
+z{'-+}R

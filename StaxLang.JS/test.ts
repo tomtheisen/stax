@@ -23,9 +23,10 @@ function rewindLine() {
 
 class TestFiles{
     cases: TestCase[] = [];
-    name: string = '';//test name
-    attempts: number = 0;
-    passed: number = 0;
+    name = '';//test name
+    attempts = 0;
+    passed = 0;
+    totalSteps = 0;
 
     constructor(fullPath: string) {
         this.name = path.basename(fullPath);
@@ -100,8 +101,8 @@ class TestFiles{
                     let outputFlat = "";
                     var rt = new Runtime(o => outputFlat += o);
 
+                    let i = 0, start = (new Date).valueOf();
                     try {
-                        let i = 0, start = (new Date).valueOf();
                         for (let _ of rt.runProgram(prog.code, io.in)) {
                             if (++i % 1000 === 0 && ((new Date).valueOf() - start) > TimeoutMs) {
                                 throw new Error(`Timeout in ${ i } steps`);
@@ -116,6 +117,9 @@ class TestFiles{
                         console.error();
                         process.stdout.write("\x1b[0m");
                         continue;
+                    }
+                    finally {
+                        this.totalSteps += i;
                     }
 
                     let expectedFlat = io.expected.join("\n").replace(/[\r\n]+$/, "");
@@ -166,7 +170,9 @@ tests.forEach((test, i) => test.runCases(i, tests.length));
 
 let totPassed = tests.reduce((accumulator, current) => accumulator + current.passed, 0);
 let totAttempts = tests.reduce((accumulator, current) => accumulator + current.attempts, 0);
+let totSteps = tests.reduce((accumulator, current) => accumulator + current.totalSteps, 0);
+let totTime = ((new Date).valueOf() - start.valueOf()) / 1000;
 
 console.log(`${totPassed}/${totAttempts} passed`);
-console.log(`${ tests.length } specs complete in ${ ((new Date).valueOf() - start.valueOf()) / 1000 }`);
+console.log(`${ tests.length } specs complete in ${ totTime } (${ totSteps } steps)`);
 process.exit();
