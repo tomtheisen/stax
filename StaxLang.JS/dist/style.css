@@ -2,11 +2,15 @@ html {
     --main-bg: #eee;
     --main-fg: #000;
     --muted-fg: #888;
+    --input-bg: #fff;
+    --input-fg: #000;
+    --input-border: #ddd;
     --button-bg: #44e;
     --button-bg-hover: #55f;
     --button-bg-disable: #339;
     --button-fg: #fff;
     --button-fg-disable: #bbb;
+    --link-fg: #44e;
     --run-bg: #2c3;
     --run-bg-hover: #3d4;
     --warning-bg: #ee7;
@@ -17,6 +21,32 @@ html {
     --quickref-alt-bg: #fff;
     --output-bg: #fff;
     --debug-pre-bg: #aac;
+    --debug-post-fg: #888;
+    --debug-omit-bg: #aac;
+}
+html.theme-dark {
+    --main-bg: #222;
+    --main-fg: #fff;
+    --muted-fg: #888;
+    --input-bg: #111;
+    --input-fg: #fff;
+    --input-border: #666;
+    --button-bg: #339;
+    --button-bg-hover: #44a;
+    --button-bg-disable: #227;
+    --button-fg: #fff;
+    --button-fg-disable: #bbb;
+    --link-fg: #99e;
+    --run-bg: #2a3;
+    --run-bg-hover: #3b4;
+    --warning-bg: #412;
+    --well-bg: #333;
+    --quickref-code-fg: #713;
+    --quickref-code-border: #888;
+    --quickref-border: #aaa;
+    --quickref-alt-bg: #333;
+    --output-bg: #333;
+    --debug-pre-bg: #557;
     --debug-post-fg: #888;
     --debug-omit-bg: #aac;
 }
@@ -42,8 +72,15 @@ textarea {
     resize: vertical;
     margin: 0.2em;
     font-size: 11pt;
+    background-color: var(--input-bg);
+    color: var(--input-fg);
+    border-color: var(--input-border);
+    border-style: inset;
 }
 input {
+    background-color: var(--input-bg);
+    color: var(--input-fg);
+    border-color: var(--input-border);
     font-family: monospace;
 }
 
@@ -237,7 +274,7 @@ dt {
 
 a {
     text-decoration: none;
-    color: var(--button-bg);
+    color: var(--link-fg);
 }
 
 pre {

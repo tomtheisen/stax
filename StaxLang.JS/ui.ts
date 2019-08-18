@@ -63,6 +63,7 @@ const autoCheckEl = el<HTMLInputElement>("autoRunPermalink");
 const blankSplitEl = el<HTMLInputElement>("blankSplit");
 const lineSplitEl = el<HTMLInputElement>("lineSplit");
 const noSplitEl = el<HTMLInputElement>("noSplit");
+const darkThemeEl = el<HTMLInputElement>("darkTheme");
 
 let activeRuntime: Runtime | null = null, lastExecutedProgram: string = "";
 let activeStateIterator: Iterator<ExecutionState> | null = null;
@@ -762,3 +763,13 @@ document.addEventListener("keydown", ev => {
             break;
     }
 });
+
+function setDarkState() {
+    document.documentElement.classList.toggle("theme-dark", darkThemeEl.checked);
+}
+darkThemeEl.addEventListener("change", () => {
+    setDarkState();
+    localStorage.setItem("theme-dark", darkThemeEl.checked.toString());
+});
+darkThemeEl.checked = localStorage.getItem("theme-dark") === true.toString();
+setDarkState();
