@@ -305,1324 +305,1322 @@ export class Runtime {
                 ip += token.contents.length;
                 continue;
             }
-            else {
-                if (!!token.match(/^\d+!/)) this.push(parseFloat(token.replace("!", ".")));
-                else if (!!token[0].match(/^\d/)) this.push(int.make(token));
-                else if (token.startsWith('"')) this.doEvaluateStringToken(token);
-                else if (token.startsWith('`')) {
-                    let compressed = token.replace(/^`|`$/g, '');
-                    this.push(S2A(decompress(compressed)));
-                    if (token[token.length - 1] !== '`') this.print(this.peek());
+            else if (!!token.match(/^\d+!/)) this.push(parseFloat(token.replace("!", ".")));
+            else if (!!token[0].match(/^\d/)) this.push(int.make(token));
+            else if (token.startsWith('"')) this.doEvaluateStringToken(token);
+            else if (token.startsWith('`')) {
+                let compressed = token.replace(/^`|`$/g, '');
+                this.push(S2A(decompress(compressed)));
+                if (token[token.length - 1] !== '`') this.print(this.peek());
+            }
+            else if (token.startsWith("'") || token.startsWith(".")) this.push(S2A(token.substr(1)));
+            else if (token.startsWith('V')) this.push(constants[token[1]]);
+            else if (token.startsWith(':')) this.doMacroAlias(token[1]);
+            else if (token.startsWith('g')) { // generator
+                // shorthand is indicated by
+                //  no trailing block
+                //  OR trailing block with explicit close }, in which case it's a filter
+                let peeked = this.peek();
+                let shorthand = !(peeked instanceof Block)
+                    || (block as Block).contents[ip - 1] == '}';
+                for (let s of this.doGenerator(shorthand, token[1], getRest())) {
+                    yield s;
                 }
-                else if (token.startsWith("'") || token.startsWith(".")) this.push(S2A(token.substr(1)));
-                else if (token.startsWith('V')) this.push(constants[token[1]]);
-                else if (token.startsWith(':')) this.doMacroAlias(token[1]);
-                else if (token.startsWith('g')) { // generator
-                    // shorthand is indicated by
-                    //  no trailing block
-                    //  OR trailing block with explicit close }, in which case it's a filter
-                    let peeked = this.peek();
-                    let shorthand = !(peeked instanceof Block)
-                        || (block as Block).contents[ip - 1] == '}';
-                    for (let s of this.doGenerator(shorthand, token[1], getRest())) {
-                        yield s;
+                if (shorthand) break;
+            }
+            else if (token.startsWith('\t')) {} // tab starts comment
+            else if (token.match(/^\s+$/)) {} // noop
+            else switch (token) {
+                case '}':
+                    return;
+                case '~':
+                    this.inputStack.push(this.pop());
+                    break;
+                case ';':
+                    if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
+                    this.push(last(this.inputStack)!);
+                    break;
+                case ',':
+                    if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
+                    this.push(this.inputStack.pop()!);
+                    break;
+                case '#': {
+                    let b = this.pop(), a = this.pop();
+                    if (isNumber(a) && isNumber(b)) {
+                        this.push(pow(a, b));
                     }
-                    if (shorthand) break;
-                }
-                else if (token.startsWith('\t')) {} // tab starts comment
-                else if (token.match(/^\s+$/)) {} // noop
-                else switch (token) {
-                    case '}':
-                        return;
-                    case '~':
-                        this.inputStack.push(this.pop());
-                        break;
-                    case ';':
-                        if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
-                        this.push(last(this.inputStack)!);
-                        break;
-                    case ',':
-                        if(!this.inputStack.length) throw new EarlyTerminate("input stack empty");
-                        this.push(this.inputStack.pop()!);
-                        break;
-                    case '#': {
-                        let b = this.pop(), a = this.pop();
-                        if (isNumber(a) && isNumber(b)) {
-                            this.push(pow(a, b));
-                        }
-                        else {
-                            if (isNumber(a)) [a, b] = [b, a];
-                            this.push(a, b);
-                            if (isArray(this.peek())) this.runMacro("/%v");
-                            else if (isNumber(this.peek())) this.runMacro("]|&%");
-                        }
-                        break;
-                    }
-                    case '_':
-                        if (this._ instanceof IteratorPair) this.push(this._.item1, this._.item2);
-                        else this.push(this._);
-                        break;
-                    case '!':
-                        if (this.peek() instanceof Block) {
-                            for (let s of this.runSteps(this.pop() as Block)) {
-                                if (s.cancel) break;
-                                yield s;
-                            }
-                        }
-                        else this.push(isTruthy(this.pop()) ? zero : one);
-                        break;
-                    case '+':
-                        this.doPlus();
-                        break;
-                    case '-':
-                        this.doMinus();
-                        break;
-                    case '*':
-                        for (let s of this.doStar()) yield s;
-                        break;
-                    case '/':
-                        for (let s of this.doSlash()) yield s;
-                        break;
-                    case '\\':
-                        this.doZipRepeat();
-                        break;
-                    case '%':
-                        this.doPercent();
-                        break;
-                    case '&':
-                        for (let s of this.doAssignIndex()) yield s;
-                        break;
-                    case '=':
-                        this.push(areEqual(this.pop(), this.pop()) ? one : zero);
-                        break;
-                    case '<': {
-                        let b = this.pop(), a = this.pop();
-                        this.push(compare(a, b) < 0 ? one : zero);
-                        break;
-                    }
-                    case '>': {
-                        let b = this.pop(), a = this.pop();
-                        this.push(compare(a, b) > 0 ? one : zero);
-                        break;
-                    }
-                    case '?': {
-                        let b = this.pop(), a = this.pop();
-                        let result = isTruthy(this.pop()) ? a : b;
-                        if (result instanceof Block) {
-                            for (let s of this.runSteps(result)) {
-                                if (s.cancel) break;
-                                yield s;
-                            }
-                        }
-                        else this.push(result);
-                        break;
-                    }
-                    case '@':
-                        this.doAt();
-                        break;
-                    case '$':
-                        this.push(stringFormat(this.pop()));
-                        break;
-                    case '(':
-                        for (let s of this.doPadRight()) yield s;
-                        break;
-                    case ')':
-                        for (let s of this.doPadLeft()) yield s;
-                        break;
-                    case '[': {
-                        let b = this.pop(), a = this.peek();
+                    else {
+                        if (isNumber(a)) [a, b] = [b, a];
                         this.push(a, b);
-                        break;
+                        if (isArray(this.peek())) this.runMacro("/%v");
+                        else if (isNumber(this.peek())) this.runMacro("]|&%");
                     }
-                    case ']':
-                        this.push([this.pop()]);
-                        break;
-                    case 'a': {
-                        let c = this.pop(), b = this.pop(), a = this.pop();
-                        this.push(b, c, a);
-                        break;
-                    }
-                    case 'A':
-                        this.push(int.make(10))
-                        break;
-                    case 'b': {
-                        let b = this.pop(), a = this.peek();
-                        this.push(b, a, b);
-                        break;
-                    }
-                    case 'B':
-                        if (isInt(this.peek())) this.doOverlappingBatch();
-                        else if (isArray(this.peek())) this.runMacro("c1tsh"); // uncons
-                        else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
-                        else if (this.peek() instanceof Block) {
-                            let b = this.pop() as Block;
-                            for (let i = 0; i < 3; i++) {
-                                for (let s of this.runSteps(b)) yield s;
-                            }
-                        }
-                        else fail("bad type for B");
-                        break;
-                    case 'c':
-                        this.push(this.peek());
-                        break;
-                    case 'C':
-                        if (this.peek() instanceof Block) {
-                            for (let s of this.doCollect()) yield s;
-                        }
-                        else {
-                            if (isTruthy(this.pop())) {
-                                yield new ExecutionState(ip, true);
-                                return;
-                            }
-                        }
-                        break;
-                    case 'd':
-                        this.pop();
-                        break;
-                    case 'D':
-                        if (isArray(this.peek())) { // remove first element
-                            let result = [...this.popArray()];
-                            result.shift();
-                            this.push(result);
-                        }
-                        else if (isInt(this.peek())) { // n times do
-                            let n = this.popInt();
-                            this.pushStackFrame();
-                            for (this.index = zero; int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
-                                this._ = int.add(this.index, one);
-                                for (let s of this.runSteps(getRest())) yield s;
-                            }
-                            this.popStackFrame();
-                            return;
-                        }
-                        else if (isNumber(this.peek())) {
-                            this.runMacro("1%"); // get fractional part
-                        }
-                        else if (this.peek() instanceof Block) {
-                            let b = this.pop() as Block;
-                            for (let i = 0; i < 2; i++) {
-                                for (let s of this.runSteps(b)) yield s;
-                            }
-                        }
-                        break;
-                    case 'e':
-                        if (isArray(this.peek())) {
-                            if (!this.doEval()) throw new Error("eval failed");
-                        }
-                        else if (typeof this.peek() === "number") {
-                            this.push(int.make(Math.ceil(this.pop() as number)));
-                        }
-                        else if (this.peek() instanceof Rational) {
-                            this.push((this.pop() as Rational).ceiling())
-                        }
-                        else if (this.peek() instanceof Block) {
-                            for (let s of this.doExtremaBy(-1)) yield s;
-                        }
-                        break;
-                    case 'E':
-                        if (this.peek() instanceof Block) {
-                            for (let s of this.doExtremaBy(1)) yield s;
-                        }
-                        else this.doExplode();
-                        break;
-                    case 'f': {
-                        let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doFilter(getRest())) yield s;
-                        if (shorthand) return;
-                        break;
-                    }
-                    case 'F': {
-                        let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doFor(getRest())) yield s;
-                        if (shorthand) return;
-                        break;
-                    }
-                    case 'G': {
-                        let target = this.program.getGotoTarget(++this.gotoCallDepth);
-                        for (let s of this.runSteps(target)) {
+                    break;
+                }
+                case '_':
+                    if (this._ instanceof IteratorPair) this.push(this._.item1, this._.item2);
+                    else this.push(this._);
+                    break;
+                case '!':
+                    if (this.peek() instanceof Block) {
+                        for (let s of this.runSteps(this.pop() as Block)) {
                             if (s.cancel) break;
                             yield s;
                         }
-                        --this.gotoCallDepth;
-                        break;
                     }
-                    case 'h':
-                        if (isNumber(this.peek())) this.runMacro("2/");
-                        else if (isArray(this.peek())) {
-                            let arr = this.popArray();
-                            if (arr.length === 0) fail("empty array has no first element");
-                            this.push(arr[0]);
-                        }
-                        else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
-                            if (!isArray(arr)) throw new Error("bad types for take-while");
-
-                            this.pushStackFrame();
-                            for (let e of arr) {
-                                this.push(this._ = e);
-                                for (let s of this.runSteps(pred)) {
-                                    if (cancelled = s.cancel) break;
-                                    yield s;
-                                }
-                                if (cancelled || !isTruthy(this.pop())) break;
-                                result.push(e);
-                                this.index = int.add(this.index, one);
-                            }
-                            this.popStackFrame();
-                            this.push(result);
-                        }
-                        break;
-                    case 'H':
-                        if (isNumber(this.peek())) this.runMacro("2*");
-                        else if (isArray(this.peek())) {
-                            let arr = this.popArray();
-                            if (arr.length === 0) fail("empty array has no last element");
-                            this.push(last(arr)!);
-                        }
-                        else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
-                            if (!isArray(arr)) throw new Error("bad types for take-while");
-                            arr = [...arr].reverse();
-
-                            this.pushStackFrame();
-                            for (let e of arr) {
-                                this.push(this._ = e);
-                                for (let s of this.runSteps(pred)) {
-                                    if (cancelled = s.cancel) break;
-                                    yield s;
-                                }
-                                if (cancelled || !isTruthy(this.pop())) break;
-                                result.unshift(e);
-                                this.index = int.add(this.index, one);
-                            }
-                            this.popStackFrame();
-                            this.push(result);
-                        }
-                        break;
-                    case 'i':
-                        // leading i suppresses eval, which is already taken care of
-                        if (this.callStackFrames.length) this.push(this.index);
-                        break;
-                    case 'I':
-                        for (let s of this.doIndexOfOrAnd()) yield s;
-                        break;
-                    case 'j':
-                        if (isArray(this.peek())) this.runMacro("' /");
-                        else if (isInt(this.peek())) {
-                            let digits = this.popInt(), num = this.pop();
-                            num = isNumber(num) ? floatify(num) : fail("can't round a non-number");
-                            this.push(S2A(num.toFixed(int.floatify(digits))));
-                        }
-                        else if (isNumber(this.peek())) {
-                            this.runMacro("2u+@");
-                        }
-                        else if (this.peek() instanceof Block) {
-                            for (let s of this.doFindFirst()) yield s;
-                        }
-                        else throw new Error("unknown type for j");
-                        break;
-                    case 'J':
-                        if (isArray(this.peek())) {
-                            this.runMacro("0]*");
-                        }
-                        else if (isNumber(this.peek())) {
-                            this.runMacro("c*");
-                        }
-                        else if (this.peek() instanceof Block) {
-                            for (let s of this.doFindFirst(true)) yield s;
-                        }
-                        else throw new Error("unknown type for J");
-                        break;
-                    case 'k': {
-                        let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doReduce(getRest())) yield s;
-                        if (shorthand) return;
-                        break;
-                    }
-                    case 'K': {
-                        let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doCrossMap(getRest())) yield s;
-                        if (shorthand) return;
-                        break;
-                    }
-                    case 'l': {
-                        let a = this.pop();
-                        if (a instanceof Rational) this.push([a.numerator, a.denominator]);
-                        else if (isInt(a)) {
-                            let result: StaxValue[] = [];
-                            for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
-                            this.push(result);
-                        }
-                        else throw new Error("bad types for l");
-                        break;
-                    }
-                    case 'L':
-                        this.mainStack = [[...this.mainStack.reverse(), ...this.inputStack.reverse()]];
-                        this.inputStack = [];
-                        break;
-                    case 'm': {
-                        let shorthand = !(this.peek() instanceof Block);
-                        for (let s of this.doMap(getRest())) yield s;
-                        if (shorthand) return;
-                        break;
-                    }
-                    case 'M':
-                        for (let s of this.doTransposeOrMaybe()) yield s;
-                        break;
-                    case 'n':
-                        this.push(this.pop(), this.peek());
-                        break;
-                    case 'N':
-                        if (isNumber(this.peek())) this.runMacro("U*");
-                        else if (isArray(this.peek())) this.runMacro("c1TsH");
-                        else if (this.peek() instanceof Block) {
-                            let block = this.pop() as Block, n = this.inputStack.pop();
-                            if (isInt(n)) {
-                                for (this.pushStackFrame(); int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
-                                    for (let s of this.runSteps(block)) {
-                                        if (!s.cancel) yield s;
-                                    }
-                                }
-                                this.popStackFrame();
-                            }
-                        }
-                        break;
-                    case 'o':
-                        for (let s of this.doOrder()) yield s;
-                        break;
-                    case 'O':
-                        this.runMacro("1s");
-                        break;
-                    case 'p':
-                        this.print(this.pop(), false);
-                        break;
-                    case 'P':
-                        this.print(this.pop());
-                        break;
-                    case 'q':
-                        this.print(this.peek(), false);
-                        break;
-                    case 'Q':
-                        this.print(this.peek());
-                        break;
-                    case 'r': {
-                        let top = this.pop();
-                        if (isInt(top)) this.push(range(0, top));
-                        else if (isArray(top)) this.push(top.slice().reverse());
-                        else if (top instanceof Rational) this.push(top.numerator);
-                        break;
-                    }
-                    case 'R':
-                        if (isInt(this.peek())) this.push(range(1, int.add(this.popInt(), one)));
-                        else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
-                        else for (let s of this.doRegexReplace()) yield s;
-                        break;
-                    case 's':
-                        this.push(this.pop(), this.pop());
-                        break;
-                    case 'S':
-                        this.doPowersetOrXor();
-                        break;
-                    case 't':
-                        if (isArray(this.peek())) {
-                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
-                        }
-                        else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
-                            if (!isArray(arr)) throw new Error("bad types for trim");
-                            let result = [...arr];
-
-                            this.pushStackFrame();
-                            while (result.length) {
-                                this.push(this._ = result[0]);
-                                for (let s of this.runSteps(pred)) {
-                                    if (cancelled = s.cancel) break;
-                                    yield s;
-                                }
-                                if (cancelled || !isTruthy(this.pop())) break;
-                                result.shift();
-                                this.index = int.add(this.index, one);
-                            }
-                            this.popStackFrame();
-                            this.push(result);
-                        }
-                        else {
-                            if (this.totalSize() < 2) {
-                                this.push(this.pop());
-                                break;
-                            }
-                            let top = this.pop(), next = this.pop();
-                            if (isNumber(top) && isNumber(next)) {
-                                this.push(compare(next, top) < 0 ? next : top);
-                            }
-                            else {
-                                this.inputStack.push(top);
-                                this.push(next);
-                                this.runMacro("c%,-0T)");
-                            }
-                        }
-                        break;
-                    case 'T':
-                        if (isArray(this.peek())) {
-                            this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
-                        }
-                        else if (this.peek() instanceof Block) {
-                            let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
-                            if (!isArray(arr)) throw new Error("bad types for trim");
-                            let result = [...arr];
-
-                            this.pushStackFrame();
-                            while (result.length) {
-                                this.push(this._ = last(result)!);
-                                for (let s of this.runSteps(pred)) {
-                                    if (cancelled = s.cancel) break;
-                                    yield s;
-                                }
-                                if (cancelled || !isTruthy(this.pop())) break;
-                                result.pop();
-                                this.index = int.add(this.index, one);
-                            }
-                            this.popStackFrame();
-                            this.push(result);
-                        }
-                        else {
-                            if (this.totalSize() < 2) {
-                                this.push(this.pop());
-                                break;
-                            }
-                            let top = this.pop(), next = this.pop();
-                            if (isNumber(top) && isNumber(next)) {
-                                this.push(compare(next, top) > 0 ? next : top);
-                            }
-                            else {
-                                this.inputStack.push(top);
-                                this.push(next);
-                                this.runMacro("c%,-0T(");
-                            }
-                        }
-                        break;
-                    case 'u': {
-                            let arg = this.pop();
-                            if (isArray(arg)) {
-                                let set = new StaxSet, result: StaxValue[] = [];
-                                for (let el of arg) {
-                                    if (set.has(el)) continue;
-                                    result.push(el);
-                                    set.add(el);
-                                }
-                                this.push(result);
-                            }
-                            else if (isInt(arg)) this.push(new Rational(one, arg));
-                            else if (arg instanceof Rational) this.push(arg.invert());
-                            else if (typeof arg === "number") this.push(1 / arg);
-                            else fail("bad type for u");
-                            break;
-                        }
-                    case 'U':
-                        this.push(minusOne);
-                        break;
-                    case 'v':
-                        if (isNumber(this.peek())) this.runMacro("1-");
-                        else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toLowerCase()));
-                        else throw new Error("unknown type for ^");
-                        break;
-                    case '^':
-                        if (isNumber(this.peek())) this.runMacro("1+");
-                        else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toUpperCase()));
-                        else throw new Error("unknown type for ^");
-                        break;
-                    case 'w': {
-                        let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
-                        for (let s of this.doWhile(getRest())) {
-                            if (s.cancel) return;
+                    else this.push(isTruthy(this.pop()) ? zero : one);
+                    break;
+                case '+':
+                    this.doPlus();
+                    break;
+                case '-':
+                    this.doMinus();
+                    break;
+                case '*':
+                    for (let s of this.doStar()) yield s;
+                    break;
+                case '/':
+                    for (let s of this.doSlash()) yield s;
+                    break;
+                case '\\':
+                    this.doZipRepeat();
+                    break;
+                case '%':
+                    this.doPercent();
+                    break;
+                case '&':
+                    for (let s of this.doAssignIndex()) yield s;
+                    break;
+                case '=':
+                    this.push(areEqual(this.pop(), this.pop()) ? one : zero);
+                    break;
+                case '<': {
+                    let b = this.pop(), a = this.pop();
+                    this.push(compare(a, b) < 0 ? one : zero);
+                    break;
+                }
+                case '>': {
+                    let b = this.pop(), a = this.pop();
+                    this.push(compare(a, b) > 0 ? one : zero);
+                    break;
+                }
+                case '?': {
+                    let b = this.pop(), a = this.pop();
+                    let result = isTruthy(this.pop()) ? a : b;
+                    if (result instanceof Block) {
+                        for (let s of this.runSteps(result)) {
+                            if (s.cancel) break;
                             yield s;
                         }
-                        if (shorthand) return;
-                        break;
                     }
-                    case 'W': {
-                        let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
-                        for (let s of this.doUnconditionalWhile(getRest())) {
-                            if (s.cancel) return;
-                            yield s;
+                    else this.push(result);
+                    break;
+                }
+                case '@':
+                    this.doAt();
+                    break;
+                case '$':
+                    this.push(stringFormat(this.pop()));
+                    break;
+                case '(':
+                    for (let s of this.doPadRight()) yield s;
+                    break;
+                case ')':
+                    for (let s of this.doPadLeft()) yield s;
+                    break;
+                case '[': {
+                    let b = this.pop(), a = this.peek();
+                    this.push(a, b);
+                    break;
+                }
+                case ']':
+                    this.push([this.pop()]);
+                    break;
+                case 'a': {
+                    let c = this.pop(), b = this.pop(), a = this.pop();
+                    this.push(b, c, a);
+                    break;
+                }
+                case 'A':
+                    this.push(int.make(10))
+                    break;
+                case 'b': {
+                    let b = this.pop(), a = this.peek();
+                    this.push(b, a, b);
+                    break;
+                }
+                case 'B':
+                    if (isInt(this.peek())) this.doOverlappingBatch();
+                    else if (isArray(this.peek())) this.runMacro("c1tsh"); // uncons
+                    else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
+                    else if (this.peek() instanceof Block) {
+                        let b = this.pop() as Block;
+                        for (let i = 0; i < 3; i++) {
+                            for (let s of this.runSteps(b)) yield s;
                         }
-                        if (shorthand) return;
-                        break;
                     }
-                    case 'x':
-                        this.push(this.x);
-                        break;
-                    case 'X':
-                        this.x = this.peek();
-                        break;
-                    case 'y':
-                        this.push(this.y);
-                        break;
-                    case 'Y':
-                        this.y = this.peek();
-                        break;
-                    case 'z':
-                        this.push([]);
-                        break;
-                    case 'Z':
-                        this.runMacro('0s');
-                        break;
-                    case '|?':
-                        if (block instanceof Block) this.push(S2A(block.contents));
-                        else this.push(S2A(block));
-                        break;
-                    case '| ':
-                        this.print(' ', false);
-                        break;
-                    case '|;':
-                        this.push(int.mod(this.index, int.make(2)));
-                        break;
-                    case '|~':
-                        this.doLastIndexOf();
-                        break;
-                    case '|@':
-                        this.doRemoveOrInsert();
-                        break;
-                    case '|&':
-                        if (isArray(this.peek())) { // set intersection
-                            let b = this.popArray(), a = this.pop();
-                            if (!isArray(a)) a = [a];
-                            let result: StaxValue[] = [];
-                            const bSet = new StaxSet(b);
-                            for (let e of a) if (bSet.has(e)) result.push(e);
-                            this.push(result);
-                        }
-                        else {
-                            if (this.infoOut) this.infoOut("<code>|&</code> is deprecated for bitwise and.  Use <code>I</code> instead.");
-                            if (this.totalSize() < 2) break;
-                            this.push(int.bitand(this.popInt(), this.popInt()));
-                        }
-                        break;
-                    case '|#':
-                        if (isArray(this.peek())) { // number of occurrences in array
-                            let b = this.popArray(), a = this.popArray();
-                            this.push(int.make(a.filter(e => areEqual(e, b)).length));
-                        }
-                        break;
-                    case '|$': {
-                        let b = this.pop(), a = this.pop(), cmp = compare(a, b);
-                        if (cmp > 0) this.push(one);
-                        else if (cmp < 0) this.push(minusOne);
-                        else this.push(zero);
-                        break;
+                    else fail("bad type for B");
+                    break;
+                case 'c':
+                    this.push(this.peek());
+                    break;
+                case 'C':
+                    if (this.peek() instanceof Block) {
+                        for (let s of this.doCollect()) yield s;
                     }
-                    case '||':
-                        if (isInt(this.peek())) {
-                            if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");
-                            if (this.totalSize() < 2) break;
-                            this.push(int.bitor(this.popInt(), this.popInt()));
-                        }
-                        else if (isArray(this.peek())) {
-                            // embed grid at coords
-                            let payload = this.popArray();
-                            let col = int.floatify(this.popInt()), row = int.floatify(this.popInt());
-                            let result = this.popArray().slice();
-
-                            for (let r = 0; r < payload.length; r++) {
-                                let payline = payload[r];
-                                if (!isArray(payline)) payline = [payline];
-                                while (result.length <= row + r) result.push([]);
-                                if (!isArray(result[row + r])) result[row + r] = [result[row + r]];
-
-                                let resultline = (result[row + r] as StaxArray).slice();
-                                for (let c = 0; c < payline.length; c++) {
-                                    while (resultline.length <= col + c) resultline.push(zero);
-                                    resultline[col + c] = payline[c];
-                                }
-                                result[row + r] = resultline;
-                            }
-
-                            this.push(result);
-                        }
-                        break;
-                    case '|(':
-                        this.doRotate(-1);
-                        break;
-                    case '|)':
-                        this.doRotate(1);
-                        break;
-                    case '|[':
-                        this.runMacro("~;%R{;(m,d"); // all prefixes
-                        break;
-                    case '|]':
-                        this.runMacro("~;%R{;)mr,d"); // all suffixes
-                        break;
-                    case '|{':
-                        this.push(new StaxSet(this.popArray()).eq(new StaxSet(this.popArray())) ? one : zero);
-                        break;
-                    case '|}':
-                        this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? one : zero);
-                        break;
-                    case '|^':
-                        if (isArray(this.peek())) {
-                            this.runMacro("s b-~ s-, +"); // symmetric array difference
-                        }
-                        else if (isInt(this.peek())) { // tuples of specified size from array elements
-                            if (this.totalSize() < 2) break;
-                            let b = this.popInt(), a = this.pop();
-                            if (isArray(a)) {
-                                let result: StaxValue[] = [[]], els = a, _b = b.valueOf();
-                                for (let i = 0; i < _b; i++) {
-                                    result = ([] as StaxArray).concat(
-                                        ...result.map((r: StaxArray) => els.map(e => [...r, e])))
-                                }
-                                this.push(result);
-                            }
-                            else if (isInt(a)) { // xor
-                                if (this.infoOut) this.infoOut("<code>|^</code> is deprecated for bitwise xor.  Use <code>S</code> instead.");
-                                this.push(int.bitxor(a, b));
-                            }
-                        }
-                        break;
-                    case '|<':
-                        if (isInt(this.peek())) this.runMacro('|2*');
-                        else if (isArray(this.peek())) {
-                            let arr = [...this.popArray()], maxlen = 0, result = [];
-                            for (let i = 0; i < arr.length; i++) {
-                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
-                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
-                            }
-                            for (let i = 0; i < arr.length; i++) {
-                                let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
-                                line.unshift(...arr[i] as StaxArray);
-                                result.push(line);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|>':
-                        if (isInt(this.peek())) this.runMacro('|2/');
-                        else if (isArray(this.peek())) {
-                            let arr = [...this.popArray()], maxlen = 0, result = [];
-                            for (let i = 0; i < arr.length; i++) {
-                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
-                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
-                            }
-                            for (let i = 0; i < arr.length; i++) {
-                                let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
-                                line.push(...arr[i] as StaxArray);
-                                result.push(line);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|=':
-                        if (isArray(this.peek())) { // multi-mode
-                            let arr = this.popArray(), result: StaxValue[] = [];
-                            if (arr.length > 0) {
-                                let multi = new Multiset(arr), keys = multi.keys();
-                                let max = Math.max(...keys.map(k => multi.get(k)));
-                                result = keys.filter(k => multi.get(k) === max);
-                                result.sort(compare);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|!':
-                        if (isInt(this.peek())) this.doPartition();
-                        else if (isArray(this.peek())) this.doMultiAntiMode();
-                        break;
-                    case '|+':
-                        if (isNumber(this.peek())) this.runMacro("c^*h");
-                        else this.runMacro('Z{+F');
-                        break;
-                    case '|-': { // multiset subtract
-                        let b = this.pop(), a = this.popArray();
-                        if (!isArray(b)) b = [b];
-                        let result = [], bset = new Multiset(b);
-                        for (let e of a) {
-                            if (bset.contains(e)) bset.remove(e);
-                            else result.push(e);
-                        }
-                        this.push(result);
-                        break;
-                    }
-                    case '|*': {
-                        let b = this.pop(), a = this.pop();
-                        if (isNumber(a) && isNumber(b)) {
-                            if (this.warnedInstructions.indexOf(token) < 0) {
-                                this.warnedInstructions.push(token);
-                                if (this.infoOut) this.infoOut("<code>|*</code> for exponent is deprecated.  Use <code>#</code> instead.");
-                            }
-                            this.push(pow(a, b));
-                        }
-                        else if (isInt(b) && isArray(a)) {
-                            let result = [];
-                            for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
-                            this.push(result);
-                        }
-                        else if (isArray(b)) {
-                            if (!isArray(a)) throw new Error('tried to cross-product non-array');
-                            let result = [];
-                            for (let a_ of a) for (let b_ of b) result.push([a_, b_]);
-                            this.push(result);
-                        }
-                        break;
-                    }
-                    case '|/': {
-                        let b = this.pop(), a = this.pop();
-                        if (isInt(a) && isInt(b)) {
-                            if (!int.eq(a, zero) && int.abs(b).valueOf() > 1) {
-                                while (int.eq(zero, int.mod(a, b)) && !int.eq(b, one)) a = int.div(a, b);
-                            }
-                            this.push(a);
-                        }
-                        else if (isArray(a) && isArray(b)) {
-                            let result: StaxValue[] = [];
-                            for (let i = 0, offset = 0; offset < a.length; i++) {
-                                let size = b[i % b.length];
-                                if (isNumber(size)) {
-                                    result.push(a.slice(offset, offset += Math.floor(Number(size.valueOf()))));
-                                }
-                                else fail("can't multi-chunk by non-number");
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    }
-                    case '|\\':
-                        if (isArray(this.peek())) {
-                            this.runMacro("b%s% t~ ;(s,(s \\"); // zip; truncate to shorter
-                        }
-                        else { // zip arrays using fill element
-                            let fill = this.pop(), b = this.popArray(), a = this.popArray(), result = [];
-                            for (let i = 0; i < Math.max(a.length, b.length); i++) {
-                                result.push([
-                                    i < a.length ? a[i] : fill,
-                                    i < b.length ? b[i] : fill]);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|%':
-                        if (isNumber(this.peek())) { // divmod
-                            this.runMacro("ssb%~/1u*@,");
-                        }
-                        else if (isArray(this.peek())) { // embed sub-array
-                            let c = this.pop(), b = this.pop(), a = this.popArray();
-                            let result = a.slice(), loc: number, payload: StaxArray;
-                            if (isArray(c)) [payload, loc] = [c, floatify(b as StaxNumber)];
-                            else [payload, loc] = [b as StaxArray, floatify(c as StaxNumber)];
-
-                            if (loc < 0) {
-                                loc += result.length;
-                                if (loc < 0) {
-                                    result.unshift(...new Array(-loc).fill(zero));
-                                    loc = 0;
-                                }
-                            }
-
-                            for (let i = 0; i < payload.length; i++) {
-                                while (loc + i >= result.length) result.push(zero);
-                                result[loc + i] = payload[i];
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|0':
-                        if (isArray(this.peek())) {
-                            let result = minusOne, i = zero;
-                            for (let e of this.popArray()) {
-                                if (!isTruthy(e)) {
-                                    result = i;
-                                    break;
-                                }
-                                i = int.add(i, one);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|1':
-                        if (isArray(this.peek())) { // index of 1st truthy
-                            let result = minusOne, i = 0;
-                            for (let e of this.popArray()) {
-                                if (isTruthy(e)) {
-                                    result = int.make(i);
-                                    break;
-                                }
-                                ++i;
-                            }
-                            this.push(result);
-                        }
-                        else if (isInt(this.peek())) {
-                            this.runMacro("2%U1?"); // power of -1
-                        }
-                        break;
-                    case '|2':
-                        if (isArray(this.peek())) { // diagonal of matrix
-                            let result = [], i = 0;
-                            for (let e of this.popArray()) {
-                                if (isArray(e)) {
-                                    if (e.length > i) result.push(e[i]);
-                                    else result.push(zero);
-                                }
-                                else {
-                                    result.push(i == 0 ? e : zero);
-                                }
-                                ++i;
-                            }
-                            this.push(result);
-                        }
-                        else if (isNumber(this.peek())) {
-                            this.runMacro("2s#"); // power of 2
-                        }
-                        break;
-                    case '|3':
-                        this.runMacro("36|b"); // base 36
-                        break;
-                    case '|4':
-                        this.push(isArray(this.pop()) ? one : zero);
-                        break;
-                    case '|5': { // 0-indexed fibonacci number
-                        let n = this.popInt().valueOf(), a = one, b = one;
-                        if (n >= 0) for (let i = 0; i < n; i++) [a, b] = [b, int.add(a, b)];
-                        else for (let i = 0; i > n; i--) [a, b] = [int.sub(b, a), a];
-                        this.push(a);
-                        break;
-                    }
-                    case '|6': { // 0-indexed nth prime
-                        let i = 0, n = floatify(this.popInt());
-                        for (let p of allPrimes()) {
-                            if (i++ === n) {
-                                this.push(p);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case '|7':
-                        this.push(Math.cos(Number((this.pop() as StaxNumber).valueOf())));
-                        break;
-                    case '|8':
-                        this.push(Math.sin(Number((this.pop() as StaxNumber).valueOf())));
-                        break;
-                    case '|9':
-                        this.push(Math.tan(Number((this.pop() as StaxNumber).valueOf())));
-                        break;
-                    case '|a':
-                        if (isNumber(this.peek())) { // absolute value
-                            let num = this.pop();
-                            if (isInt(num)) this.push(int.abs(num));
-                            else if (isFloat(num)) this.push(Math.abs(num));
-                            else if (num instanceof Rational) this.push(num.abs());
-                            else fail("number but not a number in abs");
-                        }
-                        else if (isArray(this.peek())) { // any
-                            let result = zero;
-                            for (let e of this.popArray()) {
-                                if (isTruthy(e)) {
-                                    result = one;
-                                    break;
-                                }
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|A':
-                        if (isInt(this.peek())) {
-                            this.push(int.pow(int.make(10), this.popInt()));
-                        }
-                        else if (isArray(this.peek())) {
-                            let result = one;
-                            for (let e of this.popArray()) {
-                                if (!isTruthy(e)) {
-                                    result = zero;
-                                    break;
-                                }
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|b':
-                        if (isInt(this.peek())) {
-                            this.doBaseConvert();
-                        }
-                        else if (isArray(this.peek())) {
-                            // keep elements of a, no more than their occurrences in b
-                            let b = this.popArray().slice(), a = this.popArray(), result = [];
-                            for (let e of a) {
-                                for (let i = 0; i < b.length; i++) {
-                                    if (areEqual(b[i], e)) {
-                                        result.push(e);
-                                        b.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    case '|B':
-                        this.runMacro("2|b");
-                        break;
-                    case '|c':
-                        if (!isTruthy(this.peek())) {
-                            this.pop();
+                    else {
+                        if (isTruthy(this.pop())) {
                             yield new ExecutionState(ip, true);
                             return;
                         }
-                        break;
-                    case '|C':
-                        this.doCenter();
-                        break;
-                    case '|d':
-                        this.push(int.make(this.mainStack.length));
-                        break;
-                    case '|D':
-                        this.push(int.make(this.inputStack.length));
-                        break;
-                    case '|e':
-                        if (isInt(this.peek())) {
-                            this.push(int.eq(zero, int.mod(this.pop() as StaxInt, int.make(2))) ? one : zero);
-                        }
-                        else if (isArray(this.peek())) {
-                            let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
-                            this.push(S2A(original.replace(from, to)));
-                        }
-                        break;
-                    case '|E':
-                        this.doBaseConvert(false);
-                        break;
-                    case '|f': {
-                        let t = this.pop();
-                        if (isInt(t)) this.push(primeFactors(t));
-                        else if (isArray(t)) {
-                            let text = A2S(this.popArray()), pattern = A2S(t), regex = RegExp(pattern, 'g');
-                            let result = [], match: string[] | null;
-                            do {
-                                match = regex.exec(text);
-                                if (match) result.push(S2A(match[0]));
-                            } while (match);
-                            this.push(result);
-                        }
-                        break;
                     }
-                    case '|F':
-                        if (isInt(this.peek())) { // factorial
-                            let result = one, n = this.popInt();
-                            for (let i = one; i <= n.valueOf(); i = int.add(i, one)) {
-                                result = int.mul(result, i);
+                    break;
+                case 'd':
+                    this.pop();
+                    break;
+                case 'D':
+                    if (isArray(this.peek())) { // remove first element
+                        let result = [...this.popArray()];
+                        result.shift();
+                        this.push(result);
+                    }
+                    else if (isInt(this.peek())) { // n times do
+                        let n = this.popInt();
+                        this.pushStackFrame();
+                        for (this.index = zero; int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
+                            this._ = int.add(this.index, one);
+                            for (let s of this.runSteps(getRest())) yield s;
+                        }
+                        this.popStackFrame();
+                        return;
+                    }
+                    else if (isNumber(this.peek())) {
+                        this.runMacro("1%"); // get fractional part
+                    }
+                    else if (this.peek() instanceof Block) {
+                        let b = this.pop() as Block;
+                        for (let i = 0; i < 2; i++) {
+                            for (let s of this.runSteps(b)) yield s;
+                        }
+                    }
+                    break;
+                case 'e':
+                    if (isArray(this.peek())) {
+                        if (!this.doEval()) throw new Error("eval failed");
+                    }
+                    else if (typeof this.peek() === "number") {
+                        this.push(int.make(Math.ceil(this.pop() as number)));
+                    }
+                    else if (this.peek() instanceof Rational) {
+                        this.push((this.pop() as Rational).ceiling())
+                    }
+                    else if (this.peek() instanceof Block) {
+                        for (let s of this.doExtremaBy(-1)) yield s;
+                    }
+                    break;
+                case 'E':
+                    if (this.peek() instanceof Block) {
+                        for (let s of this.doExtremaBy(1)) yield s;
+                    }
+                    else this.doExplode();
+                    break;
+                case 'f': {
+                    let shorthand = !(this.peek() instanceof Block);
+                    for (let s of this.doFilter(getRest())) yield s;
+                    if (shorthand) return;
+                    break;
+                }
+                case 'F': {
+                    let shorthand = !(this.peek() instanceof Block);
+                    for (let s of this.doFor(getRest())) yield s;
+                    if (shorthand) return;
+                    break;
+                }
+                case 'G': {
+                    let target = this.program.getGotoTarget(++this.gotoCallDepth);
+                    for (let s of this.runSteps(target)) {
+                        if (s.cancel) break;
+                        yield s;
+                    }
+                    --this.gotoCallDepth;
+                    break;
+                }
+                case 'h':
+                    if (isNumber(this.peek())) this.runMacro("2/");
+                    else if (isArray(this.peek())) {
+                        let arr = this.popArray();
+                        if (arr.length === 0) fail("empty array has no first element");
+                        this.push(arr[0]);
+                    }
+                    else if (this.peek() instanceof Block) {
+                        let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
+                        if (!isArray(arr)) throw new Error("bad types for take-while");
+
+                        this.pushStackFrame();
+                        for (let e of arr) {
+                            this.push(this._ = e);
+                            for (let s of this.runSteps(pred)) {
+                                if (cancelled = s.cancel) break;
+                                yield s;
+                            }
+                            if (cancelled || !isTruthy(this.pop())) break;
+                            result.push(e);
+                            this.index = int.add(this.index, one);
+                        }
+                        this.popStackFrame();
+                        this.push(result);
+                    }
+                    break;
+                case 'H':
+                    if (isNumber(this.peek())) this.runMacro("2*");
+                    else if (isArray(this.peek())) {
+                        let arr = this.popArray();
+                        if (arr.length === 0) fail("empty array has no last element");
+                        this.push(last(arr)!);
+                    }
+                    else if (this.peek() instanceof Block) {
+                        let pred = this.pop() as Block, result: StaxValue[] = [], arr = this.pop(), cancelled = false;
+                        if (!isArray(arr)) throw new Error("bad types for take-while");
+                        arr = [...arr].reverse();
+
+                        this.pushStackFrame();
+                        for (let e of arr) {
+                            this.push(this._ = e);
+                            for (let s of this.runSteps(pred)) {
+                                if (cancelled = s.cancel) break;
+                                yield s;
+                            }
+                            if (cancelled || !isTruthy(this.pop())) break;
+                            result.unshift(e);
+                            this.index = int.add(this.index, one);
+                        }
+                        this.popStackFrame();
+                        this.push(result);
+                    }
+                    break;
+                case 'i':
+                    // leading i suppresses eval, which is already taken care of
+                    if (this.callStackFrames.length) this.push(this.index);
+                    break;
+                case 'I':
+                    for (let s of this.doIndexOfOrAnd()) yield s;
+                    break;
+                case 'j':
+                    if (isArray(this.peek())) this.runMacro("' /");
+                    else if (isInt(this.peek())) {
+                        let digits = this.popInt(), num = this.pop();
+                        num = isNumber(num) ? floatify(num) : fail("can't round a non-number");
+                        this.push(S2A(num.toFixed(int.floatify(digits))));
+                    }
+                    else if (isNumber(this.peek())) {
+                        this.runMacro("2u+@");
+                    }
+                    else if (this.peek() instanceof Block) {
+                        for (let s of this.doFindFirst()) yield s;
+                    }
+                    else throw new Error("unknown type for j");
+                    break;
+                case 'J':
+                    if (isArray(this.peek())) {
+                        this.runMacro("0]*");
+                    }
+                    else if (isNumber(this.peek())) {
+                        this.runMacro("c*");
+                    }
+                    else if (this.peek() instanceof Block) {
+                        for (let s of this.doFindFirst(true)) yield s;
+                    }
+                    else throw new Error("unknown type for J");
+                    break;
+                case 'k': {
+                    let shorthand = !(this.peek() instanceof Block);
+                    for (let s of this.doReduce(getRest())) yield s;
+                    if (shorthand) return;
+                    break;
+                }
+                case 'K': {
+                    let shorthand = !(this.peek() instanceof Block);
+                    for (let s of this.doCrossMap(getRest())) yield s;
+                    if (shorthand) return;
+                    break;
+                }
+                case 'l': {
+                    let a = this.pop();
+                    if (a instanceof Rational) this.push([a.numerator, a.denominator]);
+                    else if (isInt(a)) {
+                        let result: StaxValue[] = [];
+                        for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
+                        this.push(result);
+                    }
+                    else throw new Error("bad types for l");
+                    break;
+                }
+                case 'L':
+                    this.mainStack = [[...this.mainStack.reverse(), ...this.inputStack.reverse()]];
+                    this.inputStack = [];
+                    break;
+                case 'm': {
+                    let shorthand = !(this.peek() instanceof Block);
+                    for (let s of this.doMap(getRest())) yield s;
+                    if (shorthand) return;
+                    break;
+                }
+                case 'M':
+                    for (let s of this.doTransposeOrMaybe()) yield s;
+                    break;
+                case 'n':
+                    this.push(this.pop(), this.peek());
+                    break;
+                case 'N':
+                    if (isNumber(this.peek())) this.runMacro("U*");
+                    else if (isArray(this.peek())) this.runMacro("c1TsH");
+                    else if (this.peek() instanceof Block) {
+                        let block = this.pop() as Block, n = this.inputStack.pop();
+                        if (isInt(n)) {
+                            for (this.pushStackFrame(); int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
+                                for (let s of this.runSteps(block)) {
+                                    if (!s.cancel) yield s;
+                                }
+                            }
+                            this.popStackFrame();
+                        }
+                    }
+                    break;
+                case 'o':
+                    for (let s of this.doOrder()) yield s;
+                    break;
+                case 'O':
+                    this.runMacro("1s");
+                    break;
+                case 'p':
+                    this.print(this.pop(), false);
+                    break;
+                case 'P':
+                    this.print(this.pop());
+                    break;
+                case 'q':
+                    this.print(this.peek(), false);
+                    break;
+                case 'Q':
+                    this.print(this.peek());
+                    break;
+                case 'r': {
+                    let top = this.pop();
+                    if (isInt(top)) this.push(range(0, top));
+                    else if (isArray(top)) this.push(top.slice().reverse());
+                    else if (top instanceof Rational) this.push(top.numerator);
+                    break;
+                }
+                case 'R':
+                    if (isInt(this.peek())) this.push(range(1, int.add(this.popInt(), one)));
+                    else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
+                    else for (let s of this.doRegexReplace()) yield s;
+                    break;
+                case 's':
+                    this.push(this.pop(), this.pop());
+                    break;
+                case 'S':
+                    this.doPowersetOrXor();
+                    break;
+                case 't':
+                    if (isArray(this.peek())) {
+                        this.push(S2A(A2S(this.pop() as StaxArray).replace(/^\s+/, "")))
+                    }
+                    else if (this.peek() instanceof Block) {
+                        let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
+                        if (!isArray(arr)) throw new Error("bad types for trim");
+                        let result = [...arr];
+
+                        this.pushStackFrame();
+                        while (result.length) {
+                            this.push(this._ = result[0]);
+                            for (let s of this.runSteps(pred)) {
+                                if (cancelled = s.cancel) break;
+                                yield s;
+                            }
+                            if (cancelled || !isTruthy(this.pop())) break;
+                            result.shift();
+                            this.index = int.add(this.index, one);
+                        }
+                        this.popStackFrame();
+                        this.push(result);
+                    }
+                    else {
+                        if (this.totalSize() < 2) {
+                            this.push(this.pop());
+                            break;
+                        }
+                        let top = this.pop(), next = this.pop();
+                        if (isNumber(top) && isNumber(next)) {
+                            this.push(compare(next, top) < 0 ? next : top);
+                        }
+                        else {
+                            this.inputStack.push(top);
+                            this.push(next);
+                            this.runMacro("c%,-0T)");
+                        }
+                    }
+                    break;
+                case 'T':
+                    if (isArray(this.peek())) {
+                        this.push(S2A(A2S(this.pop() as StaxArray).replace(/\s+$/, "")))
+                    }
+                    else if (this.peek() instanceof Block) {
+                        let pred = this.pop() as Block, arr = this.pop(), cancelled = false;
+                        if (!isArray(arr)) throw new Error("bad types for trim");
+                        let result = [...arr];
+
+                        this.pushStackFrame();
+                        while (result.length) {
+                            this.push(this._ = last(result)!);
+                            for (let s of this.runSteps(pred)) {
+                                if (cancelled = s.cancel) break;
+                                yield s;
+                            }
+                            if (cancelled || !isTruthy(this.pop())) break;
+                            result.pop();
+                            this.index = int.add(this.index, one);
+                        }
+                        this.popStackFrame();
+                        this.push(result);
+                    }
+                    else {
+                        if (this.totalSize() < 2) {
+                            this.push(this.pop());
+                            break;
+                        }
+                        let top = this.pop(), next = this.pop();
+                        if (isNumber(top) && isNumber(next)) {
+                            this.push(compare(next, top) > 0 ? next : top);
+                        }
+                        else {
+                            this.inputStack.push(top);
+                            this.push(next);
+                            this.runMacro("c%,-0T(");
+                        }
+                    }
+                    break;
+                case 'u': {
+                        let arg = this.pop();
+                        if (isArray(arg)) {
+                            let set = new StaxSet, result: StaxValue[] = [];
+                            for (let el of arg) {
+                                if (set.has(el)) continue;
+                                result.push(el);
+                                set.add(el);
                             }
                             this.push(result);
                         }
-                        else if (isArray(this.peek())) { // all regex matches
-                            let re = new RegExp(A2S(this.popArray()), "g");
-                            let input = A2S(this.popArray()), result = [], m;
-                            while (m = re.exec(input)) result.push(S2A(m[0]));
+                        else if (isInt(arg)) this.push(new Rational(one, arg));
+                        else if (arg instanceof Rational) this.push(arg.invert());
+                        else if (typeof arg === "number") this.push(1 / arg);
+                        else fail("bad type for u");
+                        break;
+                    }
+                case 'U':
+                    this.push(minusOne);
+                    break;
+                case 'v':
+                    if (isNumber(this.peek())) this.runMacro("1-");
+                    else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toLowerCase()));
+                    else throw new Error("unknown type for ^");
+                    break;
+                case '^':
+                    if (isNumber(this.peek())) this.runMacro("1+");
+                    else if (isArray(this.peek())) this.push(S2A(A2S(this.pop() as StaxArray).toUpperCase()));
+                    else throw new Error("unknown type for ^");
+                    break;
+                case 'w': {
+                    let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
+                    for (let s of this.doWhile(getRest())) {
+                        if (s.cancel) return;
+                        yield s;
+                    }
+                    if (shorthand) return;
+                    break;
+                }
+                case 'W': {
+                    let shorthand = this.totalSize() === 0 || !(this.peek() instanceof Block);
+                    for (let s of this.doUnconditionalWhile(getRest())) {
+                        if (s.cancel) return;
+                        yield s;
+                    }
+                    if (shorthand) return;
+                    break;
+                }
+                case 'x':
+                    this.push(this.x);
+                    break;
+                case 'X':
+                    this.x = this.peek();
+                    break;
+                case 'y':
+                    this.push(this.y);
+                    break;
+                case 'Y':
+                    this.y = this.peek();
+                    break;
+                case 'z':
+                    this.push([]);
+                    break;
+                case 'Z':
+                    this.runMacro('0s');
+                    break;
+                case '|?':
+                    if (block instanceof Block) this.push(S2A(block.contents));
+                    else this.push(S2A(block));
+                    break;
+                case '| ':
+                    this.print(' ', false);
+                    break;
+                case '|;':
+                    this.push(int.mod(this.index, int.make(2)));
+                    break;
+                case '|~':
+                    this.doLastIndexOf();
+                    break;
+                case '|@':
+                    this.doRemoveOrInsert();
+                    break;
+                case '|&':
+                    if (isArray(this.peek())) { // set intersection
+                        let b = this.popArray(), a = this.pop();
+                        if (!isArray(a)) a = [a];
+                        let result: StaxValue[] = [];
+                        const bSet = new StaxSet(b);
+                        for (let e of a) if (bSet.has(e)) result.push(e);
+                        this.push(result);
+                    }
+                    else {
+                        if (this.infoOut) this.infoOut("<code>|&</code> is deprecated for bitwise and.  Use <code>I</code> instead.");
+                        if (this.totalSize() < 2) break;
+                        this.push(int.bitand(this.popInt(), this.popInt()));
+                    }
+                    break;
+                case '|#':
+                    if (isArray(this.peek())) { // number of occurrences in array
+                        let b = this.popArray(), a = this.popArray();
+                        this.push(int.make(a.filter(e => areEqual(e, b)).length));
+                    }
+                    break;
+                case '|$': {
+                    let b = this.pop(), a = this.pop(), cmp = compare(a, b);
+                    if (cmp > 0) this.push(one);
+                    else if (cmp < 0) this.push(minusOne);
+                    else this.push(zero);
+                    break;
+                }
+                case '||':
+                    if (isInt(this.peek())) {
+                        if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");
+                        if (this.totalSize() < 2) break;
+                        this.push(int.bitor(this.popInt(), this.popInt()));
+                    }
+                    else if (isArray(this.peek())) {
+                        // embed grid at coords
+                        let payload = this.popArray();
+                        let col = int.floatify(this.popInt()), row = int.floatify(this.popInt());
+                        let result = this.popArray().slice();
+
+                        for (let r = 0; r < payload.length; r++) {
+                            let payline = payload[r];
+                            if (!isArray(payline)) payline = [payline];
+                            while (result.length <= row + r) result.push([]);
+                            if (!isArray(result[row + r])) result[row + r] = [result[row + r]];
+
+                            let resultline = (result[row + r] as StaxArray).slice();
+                            for (let c = 0; c < payline.length; c++) {
+                                while (resultline.length <= col + c) resultline.push(zero);
+                                resultline[col + c] = payline[c];
+                            }
+                            result[row + r] = resultline;
+                        }
+
+                        this.push(result);
+                    }
+                    break;
+                case '|(':
+                    this.doRotate(-1);
+                    break;
+                case '|)':
+                    this.doRotate(1);
+                    break;
+                case '|[':
+                    this.runMacro("~;%R{;(m,d"); // all prefixes
+                    break;
+                case '|]':
+                    this.runMacro("~;%R{;)mr,d"); // all suffixes
+                    break;
+                case '|{':
+                    this.push(new StaxSet(this.popArray()).eq(new StaxSet(this.popArray())) ? one : zero);
+                    break;
+                case '|}':
+                    this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? one : zero);
+                    break;
+                case '|^':
+                    if (isArray(this.peek())) {
+                        this.runMacro("s b-~ s-, +"); // symmetric array difference
+                    }
+                    else if (isInt(this.peek())) { // tuples of specified size from array elements
+                        if (this.totalSize() < 2) break;
+                        let b = this.popInt(), a = this.pop();
+                        if (isArray(a)) {
+                            let result: StaxValue[] = [[]], els = a, _b = b.valueOf();
+                            for (let i = 0; i < _b; i++) {
+                                result = ([] as StaxArray).concat(
+                                    ...result.map((r: StaxArray) => els.map(e => [...r, e])))
+                            }
                             this.push(result);
                         }
-                        break;
-                    case '|g':
-                        this.doGCD();
-                        break;
-                    case '|G': { // round-robin flatten
+                        else if (isInt(a)) { // xor
+                            if (this.infoOut) this.infoOut("<code>|^</code> is deprecated for bitwise xor.  Use <code>S</code> instead.");
+                            this.push(int.bitxor(a, b));
+                        }
+                    }
+                    break;
+                case '|<':
+                    if (isInt(this.peek())) this.runMacro('|2*');
+                    else if (isArray(this.peek())) {
+                        let arr = [...this.popArray()], maxlen = 0, result = [];
+                        for (let i = 0; i < arr.length; i++) {
+                            if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                            maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                        }
+                        for (let i = 0; i < arr.length; i++) {
+                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                            line.unshift(...arr[i] as StaxArray);
+                            result.push(line);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|>':
+                    if (isInt(this.peek())) this.runMacro('|2/');
+                    else if (isArray(this.peek())) {
+                        let arr = [...this.popArray()], maxlen = 0, result = [];
+                        for (let i = 0; i < arr.length; i++) {
+                            if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                            maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                        }
+                        for (let i = 0; i < arr.length; i++) {
+                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                            line.push(...arr[i] as StaxArray);
+                            result.push(line);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|=':
+                    if (isArray(this.peek())) { // multi-mode
                         let arr = this.popArray(), result: StaxValue[] = [];
-                        let maxlen = Math.max(...arr.map(e => (e as StaxArray).length));
-                        for (let i = 0; i < maxlen; i++) {
-                            for (let e of arr) {
-                                let line = e as StaxArray;
-                                if (line.length > i) result.push(line[i]);
+                        if (arr.length > 0) {
+                            let multi = new Multiset(arr), keys = multi.keys();
+                            let max = Math.max(...keys.map(k => multi.get(k)));
+                            result = keys.filter(k => multi.get(k) === max);
+                            result.sort(compare);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|!':
+                    if (isInt(this.peek())) this.doPartition();
+                    else if (isArray(this.peek())) this.doMultiAntiMode();
+                    break;
+                case '|+':
+                    if (isNumber(this.peek())) this.runMacro("c^*h");
+                    else this.runMacro('Z{+F');
+                    break;
+                case '|-': { // multiset subtract
+                    let b = this.pop(), a = this.popArray();
+                    if (!isArray(b)) b = [b];
+                    let result = [], bset = new Multiset(b);
+                    for (let e of a) {
+                        if (bset.contains(e)) bset.remove(e);
+                        else result.push(e);
+                    }
+                    this.push(result);
+                    break;
+                }
+                case '|*': {
+                    let b = this.pop(), a = this.pop();
+                    if (isNumber(a) && isNumber(b)) {
+                        if (this.warnedInstructions.indexOf(token) < 0) {
+                            this.warnedInstructions.push(token);
+                            if (this.infoOut) this.infoOut("<code>|*</code> for exponent is deprecated.  Use <code>#</code> instead.");
+                        }
+                        this.push(pow(a, b));
+                    }
+                    else if (isInt(b) && isArray(a)) {
+                        let result = [];
+                        for (let e of a) result.push(...Array(Math.abs(int.floatify(b))).fill(e));
+                        this.push(result);
+                    }
+                    else if (isArray(b)) {
+                        if (!isArray(a)) throw new Error('tried to cross-product non-array');
+                        let result = [];
+                        for (let a_ of a) for (let b_ of b) result.push([a_, b_]);
+                        this.push(result);
+                    }
+                    break;
+                }
+                case '|/': {
+                    let b = this.pop(), a = this.pop();
+                    if (isInt(a) && isInt(b)) {
+                        if (!int.eq(a, zero) && int.abs(b).valueOf() > 1) {
+                            while (int.eq(zero, int.mod(a, b)) && !int.eq(b, one)) a = int.div(a, b);
+                        }
+                        this.push(a);
+                    }
+                    else if (isArray(a) && isArray(b)) {
+                        let result: StaxValue[] = [];
+                        for (let i = 0, offset = 0; offset < a.length; i++) {
+                            let size = b[i % b.length];
+                            if (isNumber(size)) {
+                                result.push(a.slice(offset, offset += Math.floor(Number(size.valueOf()))));
+                            }
+                            else fail("can't multi-chunk by non-number");
+                        }
+                        this.push(result);
+                    }
+                    break;
+                }
+                case '|\\':
+                    if (isArray(this.peek())) {
+                        this.runMacro("b%s% t~ ;(s,(s \\"); // zip; truncate to shorter
+                    }
+                    else { // zip arrays using fill element
+                        let fill = this.pop(), b = this.popArray(), a = this.popArray(), result = [];
+                        for (let i = 0; i < Math.max(a.length, b.length); i++) {
+                            result.push([
+                                i < a.length ? a[i] : fill,
+                                i < b.length ? b[i] : fill]);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|%':
+                    if (isNumber(this.peek())) { // divmod
+                        this.runMacro("ssb%~/1u*@,");
+                    }
+                    else if (isArray(this.peek())) { // embed sub-array
+                        let c = this.pop(), b = this.pop(), a = this.popArray();
+                        let result = a.slice(), loc: number, payload: StaxArray;
+                        if (isArray(c)) [payload, loc] = [c, floatify(b as StaxNumber)];
+                        else [payload, loc] = [b as StaxArray, floatify(c as StaxNumber)];
+
+                        if (loc < 0) {
+                            loc += result.length;
+                            if (loc < 0) {
+                                result.unshift(...new Array(-loc).fill(zero));
+                                loc = 0;
+                            }
+                        }
+
+                        for (let i = 0; i < payload.length; i++) {
+                            while (loc + i >= result.length) result.push(zero);
+                            result[loc + i] = payload[i];
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|0':
+                    if (isArray(this.peek())) {
+                        let result = minusOne, i = zero;
+                        for (let e of this.popArray()) {
+                            if (!isTruthy(e)) {
+                                result = i;
+                                break;
+                            }
+                            i = int.add(i, one);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                case '|1':
+                    if (isArray(this.peek())) { // index of 1st truthy
+                        let result = minusOne, i = 0;
+                        for (let e of this.popArray()) {
+                            if (isTruthy(e)) {
+                                result = int.make(i);
+                                break;
+                            }
+                            ++i;
+                        }
+                        this.push(result);
+                    }
+                    else if (isInt(this.peek())) {
+                        this.runMacro("2%U1?"); // power of -1
+                    }
+                    break;
+                case '|2':
+                    if (isArray(this.peek())) { // diagonal of matrix
+                        let result = [], i = 0;
+                        for (let e of this.popArray()) {
+                            if (isArray(e)) {
+                                if (e.length > i) result.push(e[i]);
+                                else result.push(zero);
+                            }
+                            else {
+                                result.push(i == 0 ? e : zero);
+                            }
+                            ++i;
+                        }
+                        this.push(result);
+                    }
+                    else if (isNumber(this.peek())) {
+                        this.runMacro("2s#"); // power of 2
+                    }
+                    break;
+                case '|3':
+                    this.runMacro("36|b"); // base 36
+                    break;
+                case '|4':
+                    this.push(isArray(this.pop()) ? one : zero);
+                    break;
+                case '|5': { // 0-indexed fibonacci number
+                    let n = this.popInt().valueOf(), a = one, b = one;
+                    if (n >= 0) for (let i = 0; i < n; i++) [a, b] = [b, int.add(a, b)];
+                    else for (let i = 0; i > n; i--) [a, b] = [int.sub(b, a), a];
+                    this.push(a);
+                    break;
+                }
+                case '|6': { // 0-indexed nth prime
+                    let i = 0, n = floatify(this.popInt());
+                    for (let p of allPrimes()) {
+                        if (i++ === n) {
+                            this.push(p);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case '|7':
+                    this.push(Math.cos(Number((this.pop() as StaxNumber).valueOf())));
+                    break;
+                case '|8':
+                    this.push(Math.sin(Number((this.pop() as StaxNumber).valueOf())));
+                    break;
+                case '|9':
+                    this.push(Math.tan(Number((this.pop() as StaxNumber).valueOf())));
+                    break;
+                case '|a':
+                    if (isNumber(this.peek())) { // absolute value
+                        let num = this.pop();
+                        if (isInt(num)) this.push(int.abs(num));
+                        else if (isFloat(num)) this.push(Math.abs(num));
+                        else if (num instanceof Rational) this.push(num.abs());
+                        else fail("number but not a number in abs");
+                    }
+                    else if (isArray(this.peek())) { // any
+                        let result = zero;
+                        for (let e of this.popArray()) {
+                            if (isTruthy(e)) {
+                                result = one;
+                                break;
                             }
                         }
                         this.push(result);
-                        break;
                     }
-                    case '|H':
-                        this.runMacro("16|b");
-                        break;
-                    case '|i':
-                        this.push(this.indexOuter);
-                        break;
-                    case '|I':
-                        for (let s of this.doFindIndexAll()) yield s;
-                        break;
-                    case '|j':
-                        if (isArray(this.peek())) {
-                            this.runMacro("Vn/"); // split on newlines
+                    break;
+                case '|A':
+                    if (isInt(this.peek())) {
+                        this.push(int.pow(int.make(10), this.popInt()));
+                    }
+                    else if (isArray(this.peek())) {
+                        let result = one;
+                        for (let e of this.popArray()) {
+                            if (!isTruthy(e)) {
+                                result = zero;
+                                break;
+                            }
                         }
-                        else if (isInt(this.peek())) {
-                            this.runMacro("1u*");
-                        }
-                        else if (isFloat(this.peek())) {
-                            this.push(rationalize(this.pop() as number));
-                        }
-                        break;
-                    case '|J':
-                        this.runMacro("Vn*"); // join with newlines
-                        break;
-                    case '|l': // lcm
-                        if (isArray(this.peek())) this.runMacro("O{|lF");
-                        else if (isInt(this.peek())) this.runMacro("sb|g~*,n{/}{d}?");
-                        else fail("bad types for lcm");
-                        break;
-                    case '|L': {
-                        let b = this.pop(), a = this.pop();
-                        if (isNumber(b) && isNumber(a)) { // log with base
-                            if (isInt(a) && isInt(b)) {
-                                // check for exact power
-                                let num = a, multiplicity = 0;
-                                while (int.mod(num, b).valueOf() == 0 && num.valueOf() > 1) {
-                                    num = int.div(num, b);
-                                    multiplicity += 1;
-                                }
-                                if (num.valueOf() == 1) {
-                                    this.push(multiplicity);
+                        this.push(result);
+                    }
+                    break;
+                case '|b':
+                    if (isInt(this.peek())) {
+                        this.doBaseConvert();
+                    }
+                    else if (isArray(this.peek())) {
+                        // keep elements of a, no more than their occurrences in b
+                        let b = this.popArray().slice(), a = this.popArray(), result = [];
+                        for (let e of a) {
+                            for (let i = 0; i < b.length; i++) {
+                                if (areEqual(b[i], e)) {
+                                    result.push(e);
+                                    b.splice(i, 1);
                                     break;
                                 }
                             }
-                            let result = Math.log(floatify(a)) / Math.log(floatify(b));
-                            this.push(result);
                         }
-                        else if (isArray(b) && isArray(a)) {
-                            // combine elements from a and b, with each occurring the max of its occurrences from a and b
-                            let result: StaxValue[] = [], b_ = [...b];
-                            for (let e of a) {
-                                result.push(e);
-                                for (let i = 0; i < b_.length; i++) {
-                                    if (areEqual(b_[i], e)) {
-                                        b_.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                            }
-                            this.push(result.concat(b_));
-                        }
-                        break;
+                        this.push(result);
                     }
-                    case '|m': {
-                        if (isNumber(this.peek())) {
-                            if (this.warnedInstructions.indexOf(token) < 0) {
-                                this.warnedInstructions.push(token);
-                                if (this.infoOut) this.infoOut("<code>|m</code> for minimum of scalars is deprecated.  Use <code>t</code> instead.");
-                            }
-                            if (this.totalSize() < 2) break;
-                            let top = this.pop(), next = this.pop();
-                            this.push(compare(next, top) < 0 ? next : top);
-                        }
-                        else if (isArray(this.peek())) {
-                            let arr = this.popArray();
-                            let result: StaxValue = Number.POSITIVE_INFINITY;
-                            for (let e of arr) {
-                                if (compare(e, result) < 0) result = e;
-                            }
-                            this.push(result);
-                        }
-                        break;
+                    break;
+                case '|B':
+                    this.runMacro("2|b");
+                    break;
+                case '|c':
+                    if (!isTruthy(this.peek())) {
+                        this.pop();
+                        yield new ExecutionState(ip, true);
+                        return;
                     }
-                    case '|M': {
-                        if (isNumber(this.peek())) {
-                            if (this.warnedInstructions.indexOf(token) < 0) {
-                                this.warnedInstructions.push(token);
-                                if (this.infoOut) this.infoOut("<code>|M</code> for maximum of scalars is deprecated.  Use <code>T</code> instead.");
-                            }
-                            if (this.totalSize() < 2) break;
-                            let top = this.pop(), next = this.pop();
-                            this.push(compare(next, top) > 0 ? next : top);
-                        }
-                        else if (isArray(this.peek())) {
-                            let arr = this.popArray();
-                            let result: StaxValue = Number.NEGATIVE_INFINITY;
-                            for (let e of arr) {
-                                if (compare(e, result) > 0) result = e;
-                            }
-                            this.push(result);
-                        }
-                        break;
+                    break;
+                case '|C':
+                    this.doCenter();
+                    break;
+                case '|d':
+                    this.push(int.make(this.mainStack.length));
+                    break;
+                case '|D':
+                    this.push(int.make(this.inputStack.length));
+                    break;
+                case '|e':
+                    if (isInt(this.peek())) {
+                        this.push(int.eq(zero, int.mod(this.pop() as StaxInt, int.make(2))) ? one : zero);
                     }
-                    case '|n':
-                        if (isInt(this.peek())) { // exponents of sequential primes in factorization
-                            let target = int.abs(this.popInt()), result: StaxValue[] = [];
-                            for (let p of allPrimes()) {
-                                if (target.valueOf() <= 1) break;
-                                let exp = zero;
-                                while (int.mod(target,p).valueOf() == 0) {
-                                    target = int.div(target, p);
-                                    exp = int.add(exp, one);
-                                }
-                                result.push(exp);
-                            }
-                            this.push(result);
+                    else if (isArray(this.peek())) {
+                        let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
+                        this.push(S2A(original.replace(from, to)));
+                    }
+                    break;
+                case '|E':
+                    this.doBaseConvert(false);
+                    break;
+                case '|f': {
+                    let t = this.pop();
+                    if (isInt(t)) this.push(primeFactors(t));
+                    else if (isArray(t)) {
+                        let text = A2S(this.popArray()), pattern = A2S(t), regex = RegExp(pattern, 'g');
+                        let result = [], match: string[] | null;
+                        do {
+                            match = regex.exec(text);
+                            if (match) result.push(S2A(match[0]));
+                        } while (match);
+                        this.push(result);
+                    }
+                    break;
+                }
+                case '|F':
+                    if (isInt(this.peek())) { // factorial
+                        let result = one, n = this.popInt();
+                        for (let i = one; i <= n.valueOf(); i = int.add(i, one)) {
+                            result = int.mul(result, i);
                         }
-                        else if (isArray(this.peek())) {
-                            // combine elements from a and b, removing common elements as many times as they mutually occur
-                            let b = this.popArray().slice(), a = this.popArray(), result: StaxValue[] = [];
-                            for (let e of a) {
-                                let found = false;
-                                for (let i = 0; i < b.length; i++) {
-                                    if (areEqual(b[i], e)) {
-                                        found = true;
-                                        b.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                                if (!found) result.push(e);
-                            }
-                            this.push(result.concat(b));
+                        this.push(result);
+                    }
+                    else if (isArray(this.peek())) { // all regex matches
+                        let re = new RegExp(A2S(this.popArray()), "g");
+                        let input = A2S(this.popArray()), result = [], m;
+                        while (m = re.exec(input)) result.push(S2A(m[0]));
+                        this.push(result);
+                    }
+                    break;
+                case '|g':
+                    this.doGCD();
+                    break;
+                case '|G': { // round-robin flatten
+                    let arr = this.popArray(), result: StaxValue[] = [];
+                    let maxlen = Math.max(...arr.map(e => (e as StaxArray).length));
+                    for (let i = 0; i < maxlen; i++) {
+                        for (let e of arr) {
+                            let line = e as StaxArray;
+                            if (line.length > i) result.push(line[i]);
                         }
-                        break;
-                    case '|N':
-                        if (isArray(this.peek())) { // next permutation in lexicographic order
-                            let els = [...this.popArray()], result: StaxValue[] = [], i = els.length - 2;
-                            for (; i >= 0 &&compare(els[i], els[i + 1]) >= 0; i--) ;
-                            if (i < 0) {
-                                this.push(els.reverse());
+                    }
+                    this.push(result);
+                    break;
+                }
+                case '|H':
+                    this.runMacro("16|b");
+                    break;
+                case '|i':
+                    this.push(this.indexOuter);
+                    break;
+                case '|I':
+                    for (let s of this.doFindIndexAll()) yield s;
+                    break;
+                case '|j':
+                    if (isArray(this.peek())) {
+                        this.runMacro("Vn/"); // split on newlines
+                    }
+                    else if (isInt(this.peek())) {
+                        this.runMacro("1u*");
+                    }
+                    else if (isFloat(this.peek())) {
+                        this.push(rationalize(this.pop() as number));
+                    }
+                    break;
+                case '|J':
+                    this.runMacro("Vn*"); // join with newlines
+                    break;
+                case '|l': // lcm
+                    if (isArray(this.peek())) this.runMacro("O{|lF");
+                    else if (isInt(this.peek())) this.runMacro("sb|g~*,n{/}{d}?");
+                    else fail("bad types for lcm");
+                    break;
+                case '|L': {
+                    let b = this.pop(), a = this.pop();
+                    if (isNumber(b) && isNumber(a)) { // log with base
+                        if (isInt(a) && isInt(b)) {
+                            // check for exact power
+                            let num = a, multiplicity = 0;
+                            while (int.mod(num, b).valueOf() == 0 && num.valueOf() > 1) {
+                                num = int.div(num, b);
+                                multiplicity += 1;
+                            }
+                            if (num.valueOf() == 1) {
+                                this.push(multiplicity);
                                 break;
                             }
-
-                            result.push(...els.splice(0, i));
-                            for (i = els.length - 1; compare(els[i], els[0]) <= 0; i--) ;
-                            result.push(...els.splice(i, 1));
-                            result.push(...els.sort(compare));
-                            this.push(result);
                         }
-                        else if (isInt(this.peek())) {
-                            let b = this.popInt(), a = this.popInt();
-                            this.push(int.nthRoot(a, b));
-                        }
-                        break;
-                    case '|o': { // get indices of elements when ordered
-                        let a = this.popArray(), result: StaxValue[] = [], i = 0;
-                        let idxs = range(0, a.length).sort((x: StaxInt, y: StaxInt) => compare(a[floatify(x)], a[floatify(y)]));
-                        for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
+                        let result = Math.log(floatify(a)) / Math.log(floatify(b));
                         this.push(result);
-                        break;
                     }
-                    case '|p':
-                        if (isInt(this.peek())) {
-                            this.runMacro("|f%1="); // is prime?
+                    else if (isArray(b) && isArray(a)) {
+                        // combine elements from a and b, with each occurring the max of its occurrences from a and b
+                        let result: StaxValue[] = [], b_ = [...b];
+                        for (let e of a) {
+                            result.push(e);
+                            for (let i = 0; i < b_.length; i++) {
+                                if (areEqual(b_[i], e)) {
+                                    b_.splice(i, 1);
+                                    break;
+                                }
+                            }
                         }
-                        else if (isArray(this.peek())) {
-                            this.runMacro("cr1t+"); // palindromize
-                        }
-                        break;
-                    case '|P':
+                        this.push(result.concat(b_));
+                    }
+                    break;
+                }
+                case '|m': {
+                    if (isNumber(this.peek())) {
                         if (this.warnedInstructions.indexOf(token) < 0) {
                             this.warnedInstructions.push(token);
-                            if (this.infoOut) this.infoOut("<code>|P</code> is deprecated.  Use <code>zP</code> instead.");
+                            if (this.infoOut) this.infoOut("<code>|m</code> for minimum of scalars is deprecated.  Use <code>t</code> instead.");
                         }
-                        this.print('');
-                        break;
-                    case '|q': {
-                        let b = this.pop();
-                        if (isInt(b)) {
-                            this.push(int.floorSqrt(int.abs(b)));
-                        }
-                        else if (isNumber(b)) {
-                            this.push(int.make(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
-                        }
-                        else if (isArray(b)) {
-                            let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
-                            let match: RegExpExecArray | null;
-                            let result: StaxValue[] = [];
-                            while (match = pattern.exec(text)) result.push(int.make(match.index));
-                            this.push(result);
-                        }
-                        break;
+                        if (this.totalSize() < 2) break;
+                        let top = this.pop(), next = this.pop();
+                        this.push(compare(next, top) < 0 ? next : top);
                     }
-                    case '|Q': {
-                        let b = this.pop();
-                        if (isNumber(b)) {
-                            this.push(Math.sqrt(Math.abs(Number(b.valueOf()))));
+                    else if (isArray(this.peek())) {
+                        let arr = this.popArray();
+                        let result: StaxValue = Number.POSITIVE_INFINITY;
+                        for (let e of arr) {
+                            if (compare(e, result) < 0) result = e;
                         }
-                        else if (isArray(b)) {
-                            let a = this.popArray();
-                            let match = RegExp(`^(?:${ A2S(b) })$`).exec(A2S(a));
-                            this.push(match ? one : zero);
-                        }
-                        break;
+                        this.push(result);
                     }
-                    case '|r': {
-                        // explicit range
-                        let end = this.pop(), start = this.pop();
-                        if (isArray(end)) end = int.make(end.length);
-                        if (isArray(start)) start = int.make(start.length);
-                        if (isInt(start) && isInt(end)) this.push(range(start, end));
-                        else fail("bad types for |r");
-                        break;
-                    }
-                    case '|R': {
-                        if (isInt(this.peek())) { // start-end-stride with range
-                            let stride = this.popInt(), end = this.popInt(), start = this.popInt();
-                            let result = range(0, int.sub(end, start))
-                                .map((n: StaxInt) => int.add(int.mul(n, stride), start))
-                                .filter(n => int.cmp(n, end) < 0);
-                            this.push(result);
-                        }
-                        else if (isArray(this.peek())) { // RLE
-                            this.push(runLength(this.popArray()));
-                        }
-                        break;
-                    }
-                    case '|s': {
-                        let search = A2S(this.popArray()), text = A2S(this.popArray());
-                        this.push(text.split(new RegExp(search)).filter(p => typeof p === "string").map(S2A));
-                        break;
-                    }
-                    case '|S': { // surround
-                        let b = this.pop(), a = this.pop();
-                        if (!isArray(a)) a = [a];
-                        if (!isArray(b)) b = [b];
-                        this.push([...b, ...a, ...b]);
-                        break;
-                    }
-                    case '|t':
-                        this.doTranslate();
-                        break;
-                    case '|T':
-                        this.doPermutations();
-                        break;
-                    case '|u':
-                        this.push(S2A(unEval(this.popArray())));
-                        break;
-                    case '|V':
-                        this.push([]); // command line args
-                        break;
-                    case '|w':
-                        this.doTrimElementsFromStart();
-                        break;
-                    case '|W':
-                        this.doTrimElementsFromEnd();
-                        break;
-                    case '|x':
-                        this.push(this.x = int.sub(isInt(this.x) ? this.x : zero, one));
-                        break;
-                    case '|X':
-                        this.push(this.x = int.add(isInt(this.x) ? this.x : zero, one));
-                        break;
-                    case '|y':
-                        this.push(this.y = int.sub(isInt(this.y) ? this.y : zero, one));
-                        break;
-                    case '|Y':
-                        this.push(this.y = int.add(isInt(this.y) ? this.y : zero, one));
-                        break;
-                    case '|z':
-                        this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
-                        break;
-                    case '|Z':
-                        if (isArray(this.peek())) { // rectangularize using empty array
-                            let arr = [...this.popArray()], maxlen = 0;
-                            for (let i = 0; i < arr.length; i ++) {
-                                if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
-                                maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
-                            }
-                            let result: StaxValue[] = [];
-                            for (let i = 0; i < arr.length; i++) {
-                                let orig = arr[i] as StaxArray;
-                                let line = new Array(maxlen - orig.length).fill([]);
-                                line.unshift(...orig);
-                                result.push(line);
-                            }
-                            this.push(result);
-                        }
-                        break;
-                    default:
-                        throw new Error(`unknown token ${token}`);
+                    break;
                 }
+                case '|M': {
+                    if (isNumber(this.peek())) {
+                        if (this.warnedInstructions.indexOf(token) < 0) {
+                            this.warnedInstructions.push(token);
+                            if (this.infoOut) this.infoOut("<code>|M</code> for maximum of scalars is deprecated.  Use <code>T</code> instead.");
+                        }
+                        if (this.totalSize() < 2) break;
+                        let top = this.pop(), next = this.pop();
+                        this.push(compare(next, top) > 0 ? next : top);
+                    }
+                    else if (isArray(this.peek())) {
+                        let arr = this.popArray();
+                        let result: StaxValue = Number.NEGATIVE_INFINITY;
+                        for (let e of arr) {
+                            if (compare(e, result) > 0) result = e;
+                        }
+                        this.push(result);
+                    }
+                    break;
+                }
+                case '|n':
+                    if (isInt(this.peek())) { // exponents of sequential primes in factorization
+                        let target = int.abs(this.popInt()), result: StaxValue[] = [];
+                        for (let p of allPrimes()) {
+                            if (target.valueOf() <= 1) break;
+                            let exp = zero;
+                            while (int.mod(target,p).valueOf() == 0) {
+                                target = int.div(target, p);
+                                exp = int.add(exp, one);
+                            }
+                            result.push(exp);
+                        }
+                        this.push(result);
+                    }
+                    else if (isArray(this.peek())) {
+                        // combine elements from a and b, removing common elements as many times as they mutually occur
+                        let b = this.popArray().slice(), a = this.popArray(), result: StaxValue[] = [];
+                        for (let e of a) {
+                            let found = false;
+                            for (let i = 0; i < b.length; i++) {
+                                if (areEqual(b[i], e)) {
+                                    found = true;
+                                    b.splice(i, 1);
+                                    break;
+                                }
+                            }
+                            if (!found) result.push(e);
+                        }
+                        this.push(result.concat(b));
+                    }
+                    break;
+                case '|N':
+                    if (isArray(this.peek())) { // next permutation in lexicographic order
+                        let els = [...this.popArray()], result: StaxValue[] = [], i = els.length - 2;
+                        for (; i >= 0 &&compare(els[i], els[i + 1]) >= 0; i--) ;
+                        if (i < 0) {
+                            this.push(els.reverse());
+                            break;
+                        }
+
+                        result.push(...els.splice(0, i));
+                        for (i = els.length - 1; compare(els[i], els[0]) <= 0; i--) ;
+                        result.push(...els.splice(i, 1));
+                        result.push(...els.sort(compare));
+                        this.push(result);
+                    }
+                    else if (isInt(this.peek())) {
+                        let b = this.popInt(), a = this.popInt();
+                        this.push(int.nthRoot(a, b));
+                    }
+                    break;
+                case '|o': { // get indices of elements when ordered
+                    let a = this.popArray(), result: StaxValue[] = [], i = 0;
+                    let idxs = range(0, a.length).sort((x: StaxInt, y: StaxInt) => compare(a[floatify(x)], a[floatify(y)]));
+                    for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
+                    this.push(result);
+                    break;
+                }
+                case '|p':
+                    if (isInt(this.peek())) {
+                        this.runMacro("|f%1="); // is prime?
+                    }
+                    else if (isArray(this.peek())) {
+                        this.runMacro("cr1t+"); // palindromize
+                    }
+                    break;
+                case '|P':
+                    if (this.warnedInstructions.indexOf(token) < 0) {
+                        this.warnedInstructions.push(token);
+                        if (this.infoOut) this.infoOut("<code>|P</code> is deprecated.  Use <code>zP</code> instead.");
+                    }
+                    this.print('');
+                    break;
+                case '|q': {
+                    let b = this.pop();
+                    if (isInt(b)) {
+                        this.push(int.floorSqrt(int.abs(b)));
+                    }
+                    else if (isNumber(b)) {
+                        this.push(int.make(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
+                    }
+                    else if (isArray(b)) {
+                        let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
+                        let match: RegExpExecArray | null;
+                        let result: StaxValue[] = [];
+                        while (match = pattern.exec(text)) result.push(int.make(match.index));
+                        this.push(result);
+                    }
+                    break;
+                }
+                case '|Q': {
+                    let b = this.pop();
+                    if (isNumber(b)) {
+                        this.push(Math.sqrt(Math.abs(Number(b.valueOf()))));
+                    }
+                    else if (isArray(b)) {
+                        let a = this.popArray();
+                        let match = RegExp(`^(?:${ A2S(b) })$`).exec(A2S(a));
+                        this.push(match ? one : zero);
+                    }
+                    break;
+                }
+                case '|r': {
+                    // explicit range
+                    let end = this.pop(), start = this.pop();
+                    if (isArray(end)) end = int.make(end.length);
+                    if (isArray(start)) start = int.make(start.length);
+                    if (isInt(start) && isInt(end)) this.push(range(start, end));
+                    else fail("bad types for |r");
+                    break;
+                }
+                case '|R': {
+                    if (isInt(this.peek())) { // start-end-stride with range
+                        let stride = this.popInt(), end = this.popInt(), start = this.popInt();
+                        let result = range(0, int.sub(end, start))
+                            .map((n: StaxInt) => int.add(int.mul(n, stride), start))
+                            .filter(n => int.cmp(n, end) < 0);
+                        this.push(result);
+                    }
+                    else if (isArray(this.peek())) { // RLE
+                        this.push(runLength(this.popArray()));
+                    }
+                    break;
+                }
+                case '|s': {
+                    let search = A2S(this.popArray()), text = A2S(this.popArray());
+                    this.push(text.split(new RegExp(search)).filter(p => typeof p === "string").map(S2A));
+                    break;
+                }
+                case '|S': { // surround
+                    let b = this.pop(), a = this.pop();
+                    if (!isArray(a)) a = [a];
+                    if (!isArray(b)) b = [b];
+                    this.push([...b, ...a, ...b]);
+                    break;
+                }
+                case '|t':
+                    this.doTranslate();
+                    break;
+                case '|T':
+                    this.doPermutations();
+                    break;
+                case '|u':
+                    this.push(S2A(unEval(this.popArray())));
+                    break;
+                case '|V':
+                    this.push([]); // command line args
+                    break;
+                case '|w':
+                    this.doTrimElementsFromStart();
+                    break;
+                case '|W':
+                    this.doTrimElementsFromEnd();
+                    break;
+                case '|x':
+                    this.push(this.x = int.sub(isInt(this.x) ? this.x : zero, one));
+                    break;
+                case '|X':
+                    this.push(this.x = int.add(isInt(this.x) ? this.x : zero, one));
+                    break;
+                case '|y':
+                    this.push(this.y = int.sub(isInt(this.y) ? this.y : zero, one));
+                    break;
+                case '|Y':
+                    this.push(this.y = int.add(isInt(this.y) ? this.y : zero, one));
+                    break;
+                case '|z':
+                    this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
+                    break;
+                case '|Z':
+                    if (isArray(this.peek())) { // rectangularize using empty array
+                        let arr = [...this.popArray()], maxlen = 0;
+                        for (let i = 0; i < arr.length; i ++) {
+                            if (!isArray(arr[i])) arr[i] = stringFormat(arr[i]);
+                            maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
+                        }
+                        let result: StaxValue[] = [];
+                        for (let i = 0; i < arr.length; i++) {
+                            let orig = arr[i] as StaxArray;
+                            let line = new Array(maxlen - orig.length).fill([]);
+                            line.unshift(...orig);
+                            result.push(line);
+                        }
+                        this.push(result);
+                    }
+                    break;
+                default:
+                    throw new Error(`unknown token ${token}`);
             }
 
             ip += token.length;
