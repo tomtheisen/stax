@@ -3,7 +3,9 @@ html {
     --main-fg: #000;
     --muted-fg: #888;
     --input-bg: #fff;
+    --input-bg-disabled: #ddd;
     --input-fg: #000;
+    --input-fg-disabled: #666;
     --input-border: #ddd;
     --button-bg: #44e;
     --button-bg-hover: #55f;
@@ -29,7 +31,9 @@ html.theme-dark {
     --main-fg: #fff;
     --muted-fg: #888;
     --input-bg: #111;
+    --input-bg-disabled: #222;
     --input-fg: #fff;
+    --input-fg-disabled: #888;
     --input-border: #666;
     --button-bg: #339;
     --button-bg-hover: #44a;
@@ -77,11 +81,19 @@ textarea {
     border-color: var(--input-border);
     border-style: inset;
 }
+textarea:disabled {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-fg-disabled);
+}
 input {
     background-color: var(--input-bg);
     color: var(--input-fg);
     border-color: var(--input-border);
     font-family: monospace;
+}
+input:disabled {
+    background-color: var(--input-bg-disabled);
+    color: var(--input-fg-disabled);
 }
 
 .btn {
