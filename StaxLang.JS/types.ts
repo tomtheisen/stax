@@ -57,10 +57,11 @@ export function materialize(arr: StaxArray): MaterializedStaxArray {
 }
 
 export function last<T>(arr: ReadonlyArray<T>): T | undefined;
-export function last(arr: IntRange): StaxInt | undefined;
+export function last(arr: IntRange): StaxInt | number | undefined;
 export function last(arr: StaxArray): StaxValue | undefined;
-export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | undefined {
+export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number | undefined {
     if (arr instanceof IntRange) {
+        if (arr.end == null) return Number.POSITIVE_INFINITY;
         return (arr.length > 0) ? int.sub(arr.end, int.one) : undefined;
     }
     return arr[arr.length - 1];
@@ -131,7 +132,7 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
 export function indexOf(arr: StaxArray, val: StaxValue): number {
     if (arr instanceof IntRange) {
         if (!isInt(val)) return -1;
-        if (int.cmp(val, arr.start) >= 0 && int.cmp(val, arr.end) < 0) {
+        if (int.cmp(val, arr.start) >= 0 && (arr.end == null || int.cmp(val, arr.end) < 0)) {
             return floatify(val) - floatify(arr.start);
         }
         else return -1;
@@ -228,6 +229,7 @@ export const constants: {[key: string]: StaxValue} = {
     '0': rat.zero,
     '2': 0.5,
     '3': Math.pow(2, 1.0 / 12),
+    //'8': new IntRange(int.one),
     '/': Math.PI / 3,
     'a': S2A("abcdefghijklmnopqrstuvwxyz"),
     'A': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),

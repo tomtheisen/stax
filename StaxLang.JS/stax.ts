@@ -75,13 +75,11 @@ export class Runtime {
         if (arg.every(e => isInt(e) && int.eq(e, zero))) {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
-        if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) ||
-            int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
-                return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt))))
-                    .replace(/\\u0000/g, "\\0");
+        if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) || int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
+            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt)))).replace(/\\u0000/g, "\\0");
         }
         if (arg instanceof IntRange && arg.length >= 3) {
-            return `[${ arg.start } .. ${ int.sub(arg.end, one) }]`;
+            return `[${ arg.start } .. ${ arg.end != null ? int.sub(arg.end, one) : '' }]`;
         }
 
         return '[' + arg.map(this.format).join(", ") + ']';
@@ -705,7 +703,7 @@ export class Runtime {
                 case 'r': {
                     let top = this.pop();
                     if (isInt(top)) this.push(range(0, top));
-                    else if (isArray(top)) this.push(top.slice().reverse());
+                    else if (isArray(top)) this.push([...top].reverse());
                     else if (top instanceof Rational) this.push(top.numerator);
                     break;
                 }
@@ -1844,7 +1842,7 @@ export class Runtime {
     private doPercent() {
         let b = this.pop();
         if (isArray(b)) {
-            this.push(int.make(b.length));
+            this.push(isFinite(b.length) ? int.make(b.length) : b.length);
             return;
         }
         let a = this.pop();
@@ -1920,7 +1918,7 @@ export class Runtime {
         }
         else if (isArray(b)) {
             let result: StaxValue[] = [];
-            for (let e of b.slice().reverse()) {
+            for (let e of [...b].reverse()) {
                 result = result.concat(result.map(r => [e, ...r as StaxArray]));
                 result.push([e]);
             }

@@ -200,24 +200,24 @@ export class StaxMap<TValue = StaxValue> {
 
 export class IntRange {
     readonly start: StaxInt;
-    readonly end: StaxInt;
+    readonly end?: StaxInt;
 
-    constructor(start: StaxInt, end: StaxInt) {
-        if (cmp(start, end) > 0) throw new Error("Attempted to create range with [start] > [end]");
+    constructor(start: StaxInt, end?: StaxInt) {
+        if (end != null && cmp(start, end) > 0) throw new Error("Attempted to create range with [start] > [end]");
         this.start = start;
         this.end = end;
     }
 
     get length() {
-        return floatify(this.end) - floatify(this.start);
+        return isInt(this.end) ? floatify(this.end) - floatify(this.start) : Number.POSITIVE_INFINITY;
     }
 
     includes(val: StaxValue) {
-        return isInt(val) && cmp(val, this.start) >= 0 && cmp(val, this.end) < 0;
+        return isInt(val) && cmp(val, this.start) >= 0 && (this.end == null || cmp(val, this.end) < 0);
     }
 
     *[Symbol.iterator]() {
-        for (let i = this.start; cmp(i, this.end) < 0; i = add(i, one)) {
+        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; i = add(i, one)) {
             yield i;
         }
     }
@@ -263,14 +263,17 @@ export class IntRange {
         for(let e of this) callbackfn(e, i++, this as any /* dragons here */);
     }
 
-    slice(start?: number, end?: number) {
-        if (start == null && end == null) return this;
-
-        let newStart = add(this.start, make(start || 0));
-        let newEnd = add(this.start, make(typeof end === "number" ? end : this.length));
-        if (cmp(newEnd, this.end) > 0) newEnd = this.end;
-        if (cmp(newEnd, newStart) < 0) newEnd = newStart;
-        return new IntRange(newStart, newEnd);
+    slice(start = 0, end?: number): StaxArray {
+        start = Math.max(start, 0);
+        if (start === 0) {
+            if (end == null || end >= this.length) return this;
+            return new IntRange(this.start, add(this.start, make(end)));
+        }
+        if (start > this.length) return [];
+        if (end == null || end >= this.length) {
+            return new IntRange(add(this.start, make(start)), this.end);
+        }
+        return new IntRange(add(this.start, make(start)), add(this.start, make(end)));
     }
 
     reverse() {
