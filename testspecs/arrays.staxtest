@@ -233,6 +233,11 @@ U]] $h
 15
 	stax
 5R |+
+	in
+	out
+155
+	stax
+20RAt|+
 	name:MinimumArray
 	in
 	out

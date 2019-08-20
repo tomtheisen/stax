@@ -229,7 +229,7 @@ export const constants: {[key: string]: StaxValue} = {
     '0': rat.zero,
     '2': 0.5,
     '3': Math.pow(2, 1.0 / 12),
-    //'8': new IntRange(int.one),
+    '8': new IntRange(int.one),
     '/': Math.PI / 3,
     'a': S2A("abcdefghijklmnopqrstuvwxyz"),
     'A': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),

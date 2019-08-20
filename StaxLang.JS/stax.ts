@@ -1010,13 +1010,16 @@ export class Runtime {
                 case '|=':
                     if (isArray(this.peek())) { // multi-mode
                         let arr = this.popArray(), result: StaxValue[] = [];
-                        if (arr.length > 0) {
-                            let multi = new Multiset(arr), keys = multi.keys();
-                            let max = Math.max(...keys.map(k => multi.get(k)));
-                            result = keys.filter(k => multi.get(k) === max);
-                            result.sort(compare);
+                        if (arr instanceof IntRange) this.push(arr);
+                        else {
+                            if (arr.length > 0) {
+                                let multi = new Multiset(arr), keys = multi.keys();
+                                let max = Math.max(...keys.map(k => multi.get(k)));
+                                result = keys.filter(k => multi.get(k) === max);
+                                result.sort(compare);
+                            }
+                            this.push(result);
                         }
-                        this.push(result);
                     }
                     break;
                 case '|!':
@@ -1025,6 +1028,12 @@ export class Runtime {
                     break;
                 case '|+':
                     if (isNumber(this.peek())) this.runMacro("c^*h");
+                    else if (this.peek() instanceof IntRange) {
+                        const range = this.popArray() as IntRange;
+                        if (range.end == null) this.push(Number.POSITIVE_INFINITY);
+                        // gauss sum
+                        else this.push(int.div(int.mul(int.sub(range.end, range.start), int.sub(int.add(range.start, range.end), int.one)), int.make(2)));
+                    }
                     else this.runMacro('Z{+F');
                     break;
                 case '|-': { // multiset subtract
@@ -1400,12 +1409,13 @@ export class Runtime {
                         this.push(compare(next, top) < 0 ? next : top);
                     }
                     else if (isArray(this.peek())) {
-                        let arr = this.popArray();
-                        let result: StaxValue = Number.POSITIVE_INFINITY;
-                        for (let e of arr) {
-                            if (compare(e, result) < 0) result = e;
+                        let arr = this.popArray(), result: StaxValue = Number.POSITIVE_INFINITY;
+                        if (arr.length === 0) this.push(result);
+                        else if (arr instanceof IntRange) this.push(arr.start);
+                        else {
+                            for (let e of arr) if (compare(e, result) < 0) result = e;
+                            this.push(result);
                         }
-                        this.push(result);
                     }
                     break;
                 }
@@ -1420,12 +1430,13 @@ export class Runtime {
                         this.push(compare(next, top) > 0 ? next : top);
                     }
                     else if (isArray(this.peek())) {
-                        let arr = this.popArray();
-                        let result: StaxValue = Number.NEGATIVE_INFINITY;
-                        for (let e of arr) {
-                            if (compare(e, result) > 0) result = e;
+                        let arr = this.popArray(), result: StaxValue = Number.NEGATIVE_INFINITY;
+                        if (arr.length === 0) this.push(result);
+                        else if (arr instanceof IntRange) this.push(isInt(arr.end) ? arr.end : Number.POSITIVE_INFINITY);
+                        else {
+                            for (let e of arr) if (compare(e, result) > 0) result = e;
+                            this.push(result);
                         }
-                        this.push(result);
                     }
                     break;
                 }
@@ -2157,20 +2168,14 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            let a_ = [...a], bval = int.floatify(b);
-            if (bval < 0) bval += a_.length;
-            if (a_.length < bval) a_.unshift(...Array(bval - a_.length).fill(zero));
-            if (a_.length > bval) a_.splice(0, a_.length - bval);
-            this.push(a_);
+            let bval = int.floatify(b);
+            if (bval < 0) bval += a.length;
+            if (bval <= a.length) this.push(a.slice(a.length - bval));
+            else this.push([...Array(bval - a.length).fill(zero), ...a]);
         }
         else if (isArray(a) && isArray(b)) {
-            let result = [];
-            a = materialize(a);
-            b = materialize(b);
-            for (let i = 0; i < b.length; i++) {
-                result.push(a.length - b.length + i >= 0 ? a[a.length - b.length + i] : b[i]);
-            }
-            this.push(result);
+            if (a.length >= b.length) this.push(a.slice(a.length - b.length));
+            else this.push([...b.slice(0, b.length - a.length), ...a]);
         }
         else if (isArray(a) && b instanceof Block) {
             // partition where the block produces a truthy for the pair of values surrounding the boundary
@@ -2212,20 +2217,14 @@ export class Runtime {
         if (isInt(a)) a = stringFormat(a);
 
         if (isArray(a) && isInt(b)) {
-            let a_ = [...a], bval = int.floatify(b);
-            if (bval < 0) bval += a_.length;
-            if (a_.length < bval) a_.push(...Array(bval - a_.length).fill(zero));
-            if (a_.length > bval) a_.splice(bval);
-            this.push(a_);
+            let bval = int.floatify(b);
+            if (bval < 0) bval += a.length;
+            if (bval <= a.length) this.push(a.slice(0, bval));
+            else this.push([...a, ...Array(bval - a.length).fill(zero)]);
         }
         else if (isArray(a) && isArray(b)) {
-            let result = [];
-            a = materialize(a);
-            b = materialize(b);
-            for (let i = 0; i < b.length; i++) {
-                result.push(i < a.length ? a[i] : b[i]);
-            }
-            this.push(result);
+            if (a.length >= b.length) this.push(a.slice(0, b.length));
+            else this.push([...a, ...b.slice(a.length)]);
         }
         else if (isArray(a) && b instanceof Block) {
             let result = [], current: StaxValue[] | null = null;
@@ -2380,13 +2379,16 @@ export class Runtime {
 
     private doMultiAntiMode() {
         let arr = this.popArray(), result: StaxValue[] = [];
-        if (arr.length > 0) {
-            let multi = new Multiset(arr), keys = multi.keys();
-            let min = Math.min(...keys.map(k => multi.get(k)));
-            result = keys.filter(k => multi.get(k) === min);
-            result.sort(compare);
+        if (arr instanceof IntRange) this.push(arr);
+        else {
+            if (arr.length > 0) {
+                let multi = new Multiset(arr), keys = multi.keys();
+                let min = Math.min(...keys.map(k => multi.get(k)));
+                result = keys.filter(k => multi.get(k) === min);
+                result.sort(compare);
+            }
+            this.push(result);
         }
-        this.push(result);
     }
 
     private doRotate(direction: number) {
