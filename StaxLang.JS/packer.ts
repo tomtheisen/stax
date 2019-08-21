@@ -38,13 +38,13 @@ export function packBytes(asciiStax: string): number[] {
     return result;
 }
 
-export function staxDecode(packedStax: string): Uint8Array {
-    let bytes = packedStax.split('').map(c => {
-        let result = CodePageIndex[c];
-        if (result == null) throw new Error("Not a packed stax character: " + c);
-        return result;
-    });
-
+export function staxDecode(packedStax: string): Uint8Array | undefined {
+    let bytes: number[] = [];
+    for (let c of packedStax) {
+        let byte = CodePageIndex[c];
+        if (byte == null || bytes.length === 0 && byte <= 0x80) return undefined;
+        bytes.push(byte);
+    }
     return new Uint8Array(bytes);
 }
 
@@ -55,7 +55,9 @@ export function staxEncode(bytes: number[] | Uint8Array): string {
 }
 
 export function unpack(packedStax: string): string {
-    return unpackBytes(staxDecode(packedStax));
+    const decoded = staxDecode(packedStax);
+    if (decoded == null) throw new Error("not a packed program");
+    return unpackBytes(decoded);
 }
 
 export function unpackBytes(bytes: number[] | Uint8Array): string {
@@ -76,11 +78,6 @@ export function unpackBytes(bytes: number[] | Uint8Array): string {
 }
 
 export function isPacked(stax: string | number[] | Uint8Array): boolean {
-    try {
-        if (typeof stax === 'string') stax = staxDecode(stax);
-        return stax[0] >= 0x80;
-    }
-    catch {
-        return false;
-    }
+    if (typeof stax === 'string') return staxDecode(stax) != null;
+    return stax[0] >= 0x80;
 }

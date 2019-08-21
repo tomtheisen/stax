@@ -305,9 +305,8 @@ function sizeTextArea(el: HTMLTextAreaElement, maxAutoRows = 30) {
 }
 
 function encodePacked(packed: string): string | null {
-    let bytes = staxDecode(packed);
-    if (bytes.some(b => b < 0)) return null;
-    let result = "";
+    let bytes = staxDecode(packed), result = "";
+    if (!bytes) return null;
     bytes.forEach(b => {
         result += (256 + b).toString(16).substr(1);
     });
@@ -350,6 +349,7 @@ function updateStats() {
     dumpButton.disabled = compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
     let literalTypes: LiteralTypes;
     [codeType, literalTypes] = getCodeType(codeArea.value);
+    console.log({codeType, literalTypes});
     if (codeType === CodeType.Packed) {
         dumpButton.hidden = compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
         codeChars = codeBytes = codeArea.value.length;
@@ -359,42 +359,33 @@ function updateStats() {
     else {
         packButton.textContent = "Pack";
 
-        let pairs = 0;
-        for (let i = 0; i < codeArea.value.length; i++) {
-            let charCode = codeArea.value.charCodeAt(i);
-            let codePoint = codeArea.value.codePointAt(i);
-            if (charCode !== codePoint) pairs += 1;
-        }
         packButton.hidden = codeType != CodeType.TightAscii || codeArea.value === "";
         golfButton.hidden = codeType != CodeType.LooseAscii && codeType != CodeType.UnpackedLooseNonAscii;
         dumpButton.hidden = codeType != CodeType.LooseAscii || hasNewLineInLiteral(codeArea.value);
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
         uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
 
-        if (codeType === CodeType.UnpackedTightNonAscii) {
-            codeChars = codeArea.value.length - pairs;
+        codeChars = [...codeArea.value].length;
+        if (codeType === CodeType.UnpackedTightNonAscii || codeType === CodeType.UnpackedLooseNonAscii) {
             codeBytes = countUtf8Bytes(codeArea.value);
             propsEl.textContent = `${ codeChars } characters, ${ codeBytes } bytes UTF-8`;
         }
         else {
-            codeChars = codeBytes = codeArea.value.length;
+            codeBytes = codeArea.value.length;
             propsEl.textContent = `${ codeArea.value.length } bytes, ASCII`;
         }
     }
 
     // make download blob link
     if (downLink.href !== "#") URL.revokeObjectURL(downLink.href);
-    let buffer = new ArrayBuffer(codeBytes);
-    let blob: Blob;
+    let buffer = new ArrayBuffer(codeBytes), blob: Blob;
     if (codeType === CodeType.Packed) {
-        let view = new Uint8Array(buffer);
-        let decoded = staxDecode(codeArea.value);
+        let view = new Uint8Array(buffer), decoded = staxDecode(codeArea.value);
+        if (decoded == null) throw new Error("not a packed program");
         for (let i = 0; i < codeBytes; i++) view[i] = decoded[i];
         blob = new Blob([buffer], { type: "x/stax" });
     }
-    else {
-        blob = new Blob([codeArea.value], { type: "x/stax" });
-    }
+    else blob = new Blob([codeArea.value], { type: "x/stax" });
     downLink.href = URL.createObjectURL(blob);
 }
 
