@@ -639,3 +639,8 @@ FOO
 foo
 	stax
 :c
+	name:RegexEscape
+	out
+ !"#\$%&'\(\)\*\+,-\./0123456789:;<=>\?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\\\]\^_`abcdefghijklmnopqrstuvwxyz\{\|\}~
+	stax
+Vp:x

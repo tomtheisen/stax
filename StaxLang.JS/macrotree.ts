@@ -185,6 +185,7 @@ function setup() {
         { alias: "V", types: "a", code: "c%us|+*"},
         { alias: "w", types: "a", code: "c1T:R+"},
         { alias: "W", types: "a", code: "c:R+"},
+        { alias: "x", types: "a", code: "\"[$()*+.?[\\\\\\]^{|}]\" \"\\$&\"R"},
     ];
 
     for (let macro of macros) {

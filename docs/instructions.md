@@ -221,6 +221,7 @@ op                       	|Types          	|Name              	|Description
 `:t`                     	|arr arr        	|ring-translate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 `:w`                     	|arr            	|brace-palindromize	|Concatenate all but the last character reversed.  Braces and slashes are individually reversed also.
 `:W`                     	|arr            	|brace-mirror      	|Concatenate the string reversed.  Braces and slashes are individually reversed also.
+`:x`                     	|arr            	|regex-escape      	|Escape regex special characters.  (e.g. `"c:\foo.txt"` -> `"c:\\foo\.txt"`)
 
 ## Array
 op                  	|Types              	|Name              	|Description

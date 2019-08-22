@@ -183,6 +183,7 @@ namespace StaxLang {
                 ('V', "a", "c%us|+*", "mean"),
                 ('w', "a", "c1T:R+", "ascii-art palindromize; reflect braces and slashes"),
                 ('W', "a", "c:R+", "ascii-art mirror; reflect braces and slashes"),
+                ('x', "a", "\"[$()*+.?[\\\\\\]^{|}]\" \"\\$&\"R", "escape special chars for regex"),
             };
 
             var trees = new Dictionary<char, TreeNode>();
