@@ -9,6 +9,7 @@ html {
     --input-border: #ddd;
     --button-bg: #44e;
     --button-bg-hover: #55f;
+    --button-bg-active: #aaf;
     --button-bg-disable: #339;
     --button-fg: #fff;
     --button-fg-disable: #bbb;
@@ -37,6 +38,7 @@ html.theme-dark {
     --input-border: #666;
     --button-bg: #339;
     --button-bg-hover: #44a;
+    --button-bg-active: #77d;
     --button-bg-disable: #227;
     --button-fg: #fff;
     --button-fg-disable: #bbb;
@@ -173,15 +175,12 @@ input.wide {
 }
 
 #generatepost {
-    vertical-align: bottom;
-    transition-property: all;
+    transition-property: background-color;
     transition-duration: 200ms;
 }
-
 #generatepost:active {
-    font-size: 150%;
     transition-duration: 50ms;
-    letter-spacing: -5px;
+    background-color: var(--button-bg-active);
 }
 
 #stringOutput, #debugCode, #debugState dl {

@@ -349,7 +349,6 @@ function updateStats() {
     dumpButton.disabled = compressButton.disabled = uncompressButton.disabled = golfButton.disabled = packButton.disabled = isActive();
     let literalTypes: LiteralTypes;
     [codeType, literalTypes] = getCodeType(codeArea.value);
-    console.log({codeType, literalTypes});
     if (codeType === CodeType.Packed) {
         dumpButton.hidden = compressButton.hidden = uncompressButton.hidden = golfButton.hidden = true;
         codeChars = codeBytes = codeArea.value.length;
