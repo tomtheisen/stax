@@ -3344,7 +3344,7 @@ namespace StaxLang {
 
         private IEnumerable<ExecutionState> DoFilter(Block block, Block rest) {
             dynamic top = Pop(), a;
-            bool shorthand = !(top is Block);
+            bool shorthand = !(top is Block), isInfinite = double.PositiveInfinity.Equals(top);
             Block pred;
             if (shorthand) {
                 pred = rest;
@@ -3355,7 +3355,11 @@ namespace StaxLang {
                 a = Pop();
             }
 
+            IEnumerable<BigInteger> Count() {
+                for (BigInteger i = 1; ; i++) yield return i;
+            }
             if (IsInt(a)) a = Range(1, a);
+            else if (isInfinite) a = Count();
 
             if (IsArray(a)) {
                 if (shorthand) block.AddDesc("treat rest of program as filter and print the result");
@@ -3586,12 +3590,13 @@ namespace StaxLang {
         }
 
         private IEnumerable<ExecutionState> DoMap(Block block, Block rest) {
-            if (IsInt(Peek())) {
+            bool isInfinite = double.PositiveInfinity.Equals(Peek());
+            if (IsInt(Peek()) || isInfinite) {
                 if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "map range 1 to " + e + " using rest of program; print the results");
                 else block.AddDesc("map range 1 to n using rest of program; print the results");
                 var n = Pop();
                 PushStackFrame();
-                for (Index = BigInteger.Zero; Index < n; Index++) {
+                for (Index = BigInteger.Zero; isInfinite || Index < n; Index++) {
                     Push(_ = Index + 1);
                     foreach (var s in RunSteps(rest)) {
                         if (s.Cancel) goto NextIndex;

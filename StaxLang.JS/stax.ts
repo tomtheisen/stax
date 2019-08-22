@@ -2849,6 +2849,7 @@ export class Runtime {
         }
         else {
             let data = this.pop(), cancelled = false;
+            if (data === Number.POSITIVE_INFINITY) data = new IntRange(one);
             let arr = isArray(data) ? data
                 : isInt(data) ? range(1, int.add(data, one))
                 : fail("bad type for shorthand filter data")
@@ -2869,6 +2870,7 @@ export class Runtime {
 
     private *doMap(rest: Block) {
         let top = this.pop();
+        if (top === Number.POSITIVE_INFINITY) top = new IntRange(one);
         if (top instanceof Block) {
             let block = top, data = this.pop(), result: StaxValue[] = [], cancelled = false;
             if (isInt(data)) data = range(1, int.add(data, one));
