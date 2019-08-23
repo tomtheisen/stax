@@ -220,7 +220,9 @@ export function decompressLiterals(program: string): string {
             case '"': {
                 let literal = parseString(program, pos);
                 if (literal.endsWith("%")) {
+                    if (/\d!?$/.test(result)) result += ' '; // keep space between literals
                     result += uncramSingle(literal.replace(/^"|"%$/g, '')).toString();
+                    if (/^[0-9!]/.test(program.substr(pos + literal.length))) result += ' ';
                 }
                 else result += literal;
                 pos += literal.length - 1;

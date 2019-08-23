@@ -42,7 +42,7 @@ export function staxDecode(packedStax: string): Uint8Array | undefined {
     let bytes: number[] = [];
     for (let c of packedStax) {
         let byte = CodePageIndex[c];
-        if (byte == null || bytes.length === 0 && byte <= 0x80) return undefined;
+        if (byte == null || bytes.length === 0 && byte < 0x80) return undefined;
         bytes.push(byte);
     }
     return new Uint8Array(bytes);
