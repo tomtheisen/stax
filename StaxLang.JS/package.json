@@ -4,8 +4,9 @@
   "description": "Stax Golfing Language",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "test": "tsc && node js/test.js ../testspecs"
+    "build": "npx webpack --config webpack.prod.js",
+    "build-dev": "npx webpack --config webpack.dev.js",
+    "test": "npx tsc && node js/test.js ../testspecs"
   },
   "author": "Tom Theisen",
   "contributors": [
@@ -25,7 +26,7 @@
     "html-loader": ">=0.5.5",
     "markdown-loader": "^5.0.0",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.4.0-rc",
+    "typescript": "3.5.3",
     "uglifyjs-webpack-plugin": "^1.3.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.6"
