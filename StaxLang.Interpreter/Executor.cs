@@ -612,7 +612,9 @@ namespace StaxLang {
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("first element");
-                            Push(Pop()[0]); 
+                            var list = Pop();
+                            if (list.Count == 0) yield break;
+                            Push(list[0]);
                         }
                         else if (IsBlock(Peek())) {
                             Block pred = Pop();
@@ -641,7 +643,9 @@ namespace StaxLang {
                         }
                         else if (IsArray(Peek())) {
                             block.AddDesc("last element");
-                            Push(Peek()[Pop().Count - 1]);
+                            var list = Pop();
+                            if (list.Count == 0) yield break;
+                            Push(list[list.Count - 1]);
                         }
                         else if (IsBlock(Peek())) {
                             Block pred = Pop();
@@ -3113,6 +3117,7 @@ namespace StaxLang {
             var list = Pop();
 
             dynamic ReadAt(List<object> arr, int idx) {
+                if (arr.Count == 0) throw new InvalidOperationException("early terminate");
                 idx %= arr.Count;
                 if (idx < 0) idx += arr.Count;
                 return arr[idx];

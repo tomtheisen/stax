@@ -545,7 +545,7 @@ export class Runtime {
                     if (isNumber(this.peek())) this.runMacro("2/");
                     else if (isArray(this.peek())) {
                         let arr = this.popArray();
-                        if (arr.length === 0) fail("empty array has no first element");
+                        if (arr.length === 0) return;
                         this.push(...arr.slice(0, 1));
                     }
                     else if (this.peek() instanceof Block) {
@@ -571,7 +571,7 @@ export class Runtime {
                     if (isNumber(this.peek())) this.runMacro("2*");
                     else if (isArray(this.peek())) {
                         let arr = this.popArray();
-                        if (arr.length === 0) fail("empty array has no last element");
+                        if (arr.length === 0) return;
                         this.push(last(arr)!);
                     }
                     else if (this.peek() instanceof Block) {
@@ -1977,7 +1977,7 @@ export class Runtime {
         let list = this.pop();
 
         function readAt(arr: StaxArray, idx: StaxNumber) {
-            if (arr.length === 0) fail("Can't index into empty array");
+            if (arr.length === 0) throw new EarlyTerminate("Can't index into empty array");
             idx = Math.floor(Number(idx.valueOf())) % arr.length;
             if (idx < 0) idx += arr.length;
             return materialize(arr.slice(idx,idx + 1))[0];
