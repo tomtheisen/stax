@@ -397,6 +397,8 @@ op                  	|Types        	|Name               	|Description
 `E`                 	|block        	|max-by             	|Get the values which yield the maximum value when applying the block to the array. Does not terminate a block.
 `f`                 	|arr block    	|filter             	|Terminate a block and filter array using it as a predicate.
 `f`                 	|arr          	|filter-short       	|If there is no open block, use the rest of the program as the predicate.  Print passing elements on separate lines.
+`f`                 	|int          	|filter-range-short 	|Use the rest of the program as a block to filter the range [1 .. n].  Use the rest of the program as the predicate.  Print passing elements on separate lines.
+`f`                 	|inf          	|filter-inf-short   	|When a floating infinity `VI` is encountered, use the rest of the program as a block to filter positive integers [1 .. ] ceaselessly and without end.  Use the rest of the program as the predicate.  Print passing elements on separate lines.
 `F`                 	|arr block    	|foreach            	|Terminate a block.  Push each element of the array, and execute the block for each.
 `F`                 	|arr          	|foreach-short      	|If there is no open block, use the rest of the program as the block.  Execute it after pushing each element.
 `F`                 	|int          	|for-short          	|Perform `foreach-short` using the range [1 .. n].
@@ -418,6 +420,7 @@ op                  	|Types        	|Name               	|Description
 `m`                 	|arr block    	|map                	|Terminate a block and map using a block.  If the block execution is cancelled, that element won't be included in the result.
 `m`                 	|arr          	|map-short          	|If there is no open block, use the rest of the program as the block.  Print each mapped element with a new-line.
 `m`                 	|int          	|map-range-short    	|Use the rest of the program as a block to map [1 .. n].  Print each mapped element with a new-line.
+`m`                 	|inf          	|map-inf-short      	|When a floating infinity `VI` is encountered, use the rest of the program as a block to map positive integers [1 .. ] ceaselessly and without end.  Print each mapped element with a new-line.
 `M`                 	|any block    	|maybe              	|Execute block if value is truthy.  Does not terminate a block.
 `N`                 	|block        	|repeat-from-input  	|Pop integer from input stack, and repeats block that many times. `{...}N` is functionally equivalent to `{...},*`
 `o`                 	|arr block    	|order              	|Terminate a block and order array by key.  If there are no open blocks, order the array itself.
