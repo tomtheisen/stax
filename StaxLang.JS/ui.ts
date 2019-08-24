@@ -159,7 +159,7 @@ function runProgramTimeSlice() {
                     const prefix = lastExecutedProgram.substr(0, result.value.ip);
                     const lineidx = prefix.split(/\n/g).length - 1, lines = codeArea.value.split(/\n/g);
                     if (activeRuntime && lines[lineidx].endsWith("\t")) {
-                        const state = activeRuntime.getDebugState();
+                        const state = activeRuntime.getDebugState({ zeroString: " " });
                         const main = state.main.filter(e => !e.startsWith("Block")).join(" "),
                             input = state.input.filter(e => !e.startsWith("Block")).join(" ");
                         if (!main.startsWith("Block")) {

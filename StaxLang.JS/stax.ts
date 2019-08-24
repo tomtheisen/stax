@@ -43,6 +43,7 @@ class EarlyTerminate extends Error {
     }
 }
 
+type FormatOptions = { zeroString?: string };
 export class Runtime {
     private standardOut: (line: string) => void;
     private infoOut?: (line: string) => void;
@@ -66,8 +67,9 @@ export class Runtime {
         this.infoOut = info;
     }
 
-    private format: (arg: StaxValue | IteratorPair) => string = arg => {
-        const _10 = int.make(10), _32 = int.make(32), _127 = int.make(127)
+    private format(arg: (StaxValue | IteratorPair), options?: FormatOptions): string {
+        const _10 = int.make(10), _32 = int.make(32), _127 = int.make(127);
+        const nul = options && options.zeroString || "\\0";
         if (arg instanceof IteratorPair) return `(${ this.format(arg.item1) }, ${ this.format(arg.item2) })`;
         if (isNumber(arg)) return arg.toString();
         if (arg instanceof Block) return `Block ${ arg.contents }`;
@@ -76,24 +78,24 @@ export class Runtime {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
         if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) || int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
-            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt)))).replace(/\\u0000/g, "\\0");
+            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt)))).replace(/\\u0000/g, nul);
         }
         if (arg instanceof IntRange && arg.length >= 3) {
             return `[${ arg.start } .. ${ arg.end != null ? int.sub(arg.end, one) : '' }]`;
         }
 
-        return '[' + arg.map(this.format).join(", ") + ']';
+        return '[' + arg.map(val => this.format(val, options)).join(", ") + ']';
     }
 
-    public getDebugState() {
+    public getDebugState(options?: FormatOptions) {
         return {
             implicitEval: this.implicitEval,
-            x: this.format(this.x),
-            y: this.format(this.y),
+            x: this.format(this.x, options),
+            y: this.format(this.y, options),
             index: this.index,
             _: this.format(this._),
-            main: this.mainStack.map(this.format).reverse(),
-            input: this.inputStack.map(this.format).reverse(),
+            main: this.mainStack.map(val => this.format(val, options)).reverse(),
+            input: this.inputStack.map(val => this.format(val, options)).reverse(),
         };
     }
 
