@@ -390,8 +390,8 @@ function updateStats() {
 
 function load() {
     let saved: string | null = null, conflicted = false;
-    try { 
-        saved = sessionStorage.getItem(saveKey);
+    try {
+        if (!location.hash.startsWith("#force=1&")) saved = sessionStorage.getItem(saveKey);
         if (saved && location.hash && saved !== location.hash) {
             conflicted = true;
             warningsEl.innerHTML += "<li>Restored unsaved program state from session.  <a id=load-from-url href='javascript:void(0)'>Load from URL instead.</a>";
