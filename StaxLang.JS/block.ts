@@ -1,6 +1,6 @@
 import { last } from './types';
 import { isPacked } from './packer';
-import { compress, decompress } from './huffmancompression';
+import { compress, decompress, compressLiteral } from './huffmancompression';
 import { cramSingle, uncramSingle } from './crammer';
 import * as int from './integer';
 
@@ -175,11 +175,18 @@ export function compressLiterals(program: string): string {
                 let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
                 let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
                 if (compressable) {
-                    let compressed = compress(contents);
-                    if (!compressed || compressed.length >= contents.length) compressable = false;
+                    if (literal.endsWith('"')) {
+                        let compressed = compressLiteral(contents);
+                        if (!compressed || compressed.length >= literal.length) compressable = false;
+                        else result += compressed;
+                    }
                     else {
-                        result += '`' + compressed;
-                        if (literal.endsWith('"')) result += '`';
+                        let compressed = compress(contents);
+                        if (!compressed || compressed.length >= contents.length) compressable = false;
+                        else {
+                            result += '`' + compressed;
+                            if (literal.endsWith('"')) result += '`';
+                        }
                     }
                 }
                 if (!compressable) result += literal;

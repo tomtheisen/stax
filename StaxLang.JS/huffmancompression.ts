@@ -41,9 +41,7 @@ let trees: {[key: string]: HuffmanNode} = {};
 function setup() {
     for (let prefix in englishData) {
         trees[prefix] = new HuffmanNode;
-        let treespec = englishData[prefix];
-
-        let path = "";
+        let treespec = englishData[prefix], path = "";
         for (let i = 0; i < treespec.length; i += 2) {
             let ch = treespec[i];
             let zeroes = "0123456789abcdefghijklmnop".indexOf(treespec[i + 1]);
@@ -61,27 +59,61 @@ function setup() {
 }
 setup();
 
-export function compress(input: string): string | null {
-    input = '. ' + input;
-    let path = '';
+/** e.g. "Hello, World" -> "`;Kp0TDt`" */
+export function compressLiteral(input: string): string | null {
+    let compressed = compress(input);
+    if (!compressed) return null;
 
-    for (let i = 2; i < input.length; i++) {
-        let tree = trees[input.substr(i - 2, 2)], cpath = tree.findPath(input[i]);
-        if (!cpath) return null;
-        if (i === input.length - 1) {
-            while (cpath.length >= 2 && cpath[cpath.length - 1] === '0') {
-                cpath = cpath.substr(0, cpath.length - 1);
-            }
-        }
-        path += cpath;
+    const lowerInput = input.toLowerCase(), upperInput = input.toUpperCase();
+    const titleInput = lowerInput.replace(/\b\w/g, m => m[0].toUpperCase());
+    let caseTransform : string | null;
+    switch (input) {
+        case lowerInput: caseTransform = "v"; break;
+        case upperInput: caseTransform = "^"; break;
+        case titleInput: caseTransform = ":."; break;
+        default: caseTransform = null;
     }
 
-    let big = int.one, result = "", symlen = int.make(symbols.length);
+    const untransformed = '`' + compressed + '`';
+    if (!caseTransform) return untransformed;
+    const caseTransformed = '`' + compress(input, true) + '`' + caseTransform;
+    return (caseTransformed.length < untransformed.length) ? caseTransformed : untransformed;
+}
+
+export function compress(input: string, flexcase = false): string | null {
+    let path = '', big = int.one, result = "", symlen = int.make(symbols.length);
+    
+    if (flexcase) {
+        let picked = '. ';
+        for (let c of input) {
+            let tree = trees[picked]; 
+            let cpath1 = tree.findPath(c.toLowerCase()), cpath2 = tree.findPath(c.toUpperCase());
+            if (!cpath1 || !cpath2) return null;
+            if (cpath2.length < cpath1.length) {
+                picked = picked.substr(1) + c.toUpperCase();
+                path += cpath2;
+            }
+            else {
+                picked = picked.substr(1) + c.toLowerCase();
+                path += cpath1;
+            }
+        }
+    }
+    else {
+        input = '. ' + input;
+        for (let i = 2; i < input.length; i++) {
+            let tree = trees[input.substr(i - 2, 2)], cpath = tree.findPath(input[i]);
+            if (!cpath) return null;
+            if (i === input.length - 1) cpath = cpath.replace(/0+$/, '') || '0';
+            path += cpath;
+        }
+    }
+
     for (let i = 0; i < path.length; i++) {
         big = int.mul(big, _2);
         big = int.add(big, path[i] === '1' ? int.one : int.zero);
     }
-    while (int.floatify(big) > 0) {
+    while (int.cmp(big, int.zero) > 0) {
         let [quotient, remainder] = [int.div(big, symlen), int.mod(big, symlen)];
         result += symbols[int.floatify(remainder)];
         big = quotient;

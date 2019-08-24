@@ -7,7 +7,7 @@ import {
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
-import { compress } from './huffmancompression';
+import { compressLiteral } from './huffmancompression';
 import { cram, cramSingle, baseArrayCrammed } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
@@ -508,9 +508,9 @@ function doStringCoder() {
     else if (input.length === 1) result = "'" + input;
     else if (input.length === 2) result = "." + input;
     else {
-        const compressed = compress(input);
-        if (compressed && compressed.length < input.length) {
-            result = '`' + compressed + '`';
+        const compressed = compressLiteral(input);
+        if (compressed && compressed.length - 2 < input.length) {
+            result = compressed;
         }
         else {
             result = [...input].some(c => c < ' ' || c > '~')
