@@ -2815,12 +2815,15 @@ export class Runtime {
                     if (cancelled = s.cancel) break;
                     yield s;
                 }
-                if (!cancelled) row.push(this.pop());
+                if (!cancelled) {
+                    if (shorthand) this.print([this.pop()], false);
+                    else row.push(this.pop());
+                }
                 this.index = int.add(this.index, one);
             }
             this.popStackFrame();
             this.index = int.add(this.index, one);
-            if (shorthand) this.print(row);
+            if (shorthand) this.print("");
             else result.push(row);
         }
         this.popStackFrame();
