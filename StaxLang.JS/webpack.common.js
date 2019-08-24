@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const commitHash = require('child_process')
   .execSync('git rev-parse --short HEAD')
@@ -31,9 +30,5 @@ module.exports = {
             __COMMIT_HASH__: JSON.stringify(commitHash),
             __BUILD_DATE__: JSON.stringify(new Date),
         })
-    ],
-    optimization: {
-        // I can't get --optimize-minimize to do anything at all.
-        minimize: !process.argv.includes("-debug"), 
-    }
+    ]
 };
