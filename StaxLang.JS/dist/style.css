@@ -54,7 +54,7 @@ html.theme-dark {
     --output-bg: #333;
     --debug-pre-bg: #557;
     --debug-post-fg: #888;
-    --debug-omit-bg: #aac;
+    --debug-omit-bg: #557;
 }
 
 * {
