@@ -242,7 +242,8 @@ export class Runtime {
         this.implicitEval = false;
 
         // starting 'i' suppresses eval
-        if (stdin.length === 1 && !program.match(/^( |\t.*\n)*i/)) {
+        if (program.match(/^( |\t.*\n)*i/)) {}
+        else if (stdin.length === 1) {
             if (!this.doEval()) {
                 this.mainStack = [];
                 this.inputStack = stdin.reverse().map(S2A);
@@ -255,6 +256,9 @@ export class Runtime {
                 this.x = this.mainStack[0];
                 [this.mainStack, this.inputStack] = [this.inputStack, this.mainStack];
             }
+        }
+        else if (stdin.length >= 2 && stdin[0] === '"""' && last(stdin) === '"""') {
+            this.inputStack = [S2A(stdin.slice(1, stdin.length - 1).reverse().join("\n"))];
         }
 
         if (this.inputStack.length > 0 && !this.implicitEval) switch (program[0]) {

@@ -144,3 +144,29 @@ implicitly
 "implicitly" zh
 "implicitly" zH
 "implicitly" z3@
+	name:HereDoc
+	in
+"""
+Dear Recipient,
+Your request has been denied.
+    With authority,
+    Your compliance official
+"""
+	out
+Dear Recipient,
+Your request has been denied.
+    With authority,
+    Your compliance official
+	stax
+P
+	in
+"""
+Dear Recipient,
+Your request has been denied.
+    With authority,
+    Your compliance official
+"""
+	out
+"""
+	stax
+iP

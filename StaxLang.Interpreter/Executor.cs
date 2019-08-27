@@ -191,6 +191,11 @@ namespace StaxLang {
                     (MainStack, InputStack) = (InputStack, MainStack);
                 }
             }
+            else if (input.Length >= 2 && input[0] == "\"\"\"" && input.Last() == "\"\"\"") {
+                string multiline = string.Join("\n", input.Skip(1).Take(input.Length - 2));
+                InputStack.Clear();
+                InputStack.Push(S2A(multiline));
+            }
         }
 
         private dynamic Pop() => MainStack.Any() ? MainStack.Pop() : InputStack.Pop();

@@ -3,7 +3,6 @@ Stax Golfing Language
 
 * [Walkthrough](walkthrough.md)
 * [PackedStax](packed.md)
-* [AnnotatedStax](annotate.md)
 * [Stacks](stacks.md)
 * [Types](types.md)
 * [Execution](execution.md)
