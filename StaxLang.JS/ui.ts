@@ -93,7 +93,13 @@ function resetRuntime() {
     stopButton.disabled = false;
     copyOutputButton.hidden = true;
 
-    if (blankSplitEl.checked) pendingInputs = inputArea.value.split(/(?:\r?\n){2,}/);
+    if (blankSplitEl.checked) {
+        // split on \n\n+ *unless* some block starts with triple quote
+        const pattern = /^(?!"""$).(?:.+\n?)+|^"""$(?:.|\n)*?(?:^"""$|(?!.|\n))/gm;
+        pendingInputs = [];
+        let match: ReturnType<typeof pattern.exec>;
+        while (match = pattern.exec(inputArea.value)) pendingInputs.push(match[0]);
+    }
     else if (lineSplitEl.checked) pendingInputs = inputArea.value.split(/\r?\n/);
     else pendingInputs = [inputArea.value];
     startNextInput();
