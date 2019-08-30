@@ -178,8 +178,10 @@ export function compare(a: StaxValue, b: StaxValue): number {
 
 export function stringFormatFloat(arg: number) {
     let result = arg.toPrecision(15).replace("Infinity", "∞");
-    if (result.indexOf('.') >= 0) result = result.replace(/\.?0+$/, '');
-    return result;
+    if (result.indexOf('.') >= 0) result = result
+        .replace(/\.0+/, '')
+        .replace(/\.(\d+?)0+($|e)/, '.$1$2');
+    return result.replace('e', 'E');
 }
 
 export function stringFormat(arg: StaxValue): StaxArray {

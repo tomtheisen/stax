@@ -170,3 +170,10 @@ Your request has been denied.
 """
 	stax
 iP
+	name:FloatFormat
+	in
+9e100
+	out
+9E+100
+	stax
+P
