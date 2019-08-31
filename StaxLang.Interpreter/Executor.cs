@@ -475,9 +475,7 @@ namespace StaxLang {
                         }
                         break;
                     case 'B':
-                        if (IsInt(Peek())) {
-                            DoOverlappingBatch(block);
-                        }
+                        if (IsInt(Peek())) DoOverlappingBatch(block);
                         else if (IsArray(Peek())) {
                             block.AddDesc("uncons; remove first element from array and push both");
                             RunMacro("c1tsh");
@@ -485,6 +483,14 @@ namespace StaxLang {
                         else if (IsFrac(Peek())) {
                             block.AddDesc("properize fraction; push integer floor and remainder of fraction separately");
                             RunMacro("c@s1%");
+                        }
+                        else if (Peek() is double) {
+                            block.AddDesc("get binary representation of floating point number");
+                            byte[] bytes = BitConverter.GetBytes(Pop());
+                            ulong u = BitConverter.ToUInt64(bytes, 0);
+                            var list = new List<object>(64);
+                            for (int i = 63; i >= 0; i--) list.Add((BigInteger)(u >> i & 1));
+                            Push(list);
                         }
                         else if (IsBlock(Peek())) {
                             Block b = Pop();

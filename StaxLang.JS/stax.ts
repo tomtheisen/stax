@@ -455,6 +455,17 @@ export class Runtime {
                     if (isInt(this.peek())) this.doOverlappingBatch();
                     else if (isArray(this.peek())) this.runMacro("c1tsh"); // uncons
                     else if (this.peek() instanceof Rational) this.runMacro("c@s1%"); // properize
+                    else if (typeof this.peek() === "number") {
+                        let buf = new ArrayBuffer(8), view = new DataView(buf);
+                        view.setFloat64(0, this.pop() as number);
+                        let result: StaxInt[] = [];
+                        for (let i = 0; i < 8; i++) {
+                            for (let j = 7; j >= 0; j--) {
+                                result.push(view.getUint8(i) >> j & 1 ? one : zero);
+                            }
+                        }
+                        this.push(result);
+                    }
                     else if (this.peek() instanceof Block) {
                         let b = this.pop() as Block;
                         for (let i = 0; i < 3; i++) {

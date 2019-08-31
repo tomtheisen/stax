@@ -52,6 +52,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `v`                      	|num        	|dec           	|a - 1              	|Decrement by 1.
 `^`                      	|num        	|inc           	|a + 1              	|Increment by 1.
 `B`                      	|frac       	|properize     	|floor(a), a%1      	|Properize fraction.  Push integer floor, and proper remainder separately.
+`B`                      	|float      	|float-binary   |                   	|Get binary IEEE-754 representation as 64-element array of bits.
 `D`                      	|num        	|frac-part     	|a%1                	|Get fractional non-integer part of rational or float.
 `e`                      	|frac       	|ceil          	|ceiling(a)         	|Integer ceiling of fraction.
 `e`                      	|float      	|ceil          	|ceiling(a)         	|Integer ceiling of float.
