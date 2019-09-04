@@ -240,16 +240,26 @@ H
 #
 	name:PowerOfTen
 	in
+3
 	out
 1000
+	in
+-2
+	out
+1/100
 	stax
-3 |A
+|A
 	name:PowerOfTwo
 	in
+9
 	out
 512
+	in
+-5
+	out
+1/32
 	stax
-9 |2
+|2
 	name:PowerOfMinusOne
 	in
 	out

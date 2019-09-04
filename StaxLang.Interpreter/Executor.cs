@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.1.7 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.1.8 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -1488,7 +1488,7 @@ namespace StaxLang {
                                 if (IsInt(Peek())) {
                                     if (block.LastInstrType == InstructionType.Value) block.AmendDesc(e => "10 to the " + e);
                                     else block.AddDesc("power of 10");
-                                    Push(BigInteger.Pow(10, (int)Pop()));
+                                    RunMacro("As#");
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("all");

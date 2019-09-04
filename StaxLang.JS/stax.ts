@@ -1189,9 +1189,7 @@ export class Runtime {
                         }
                         this.push(result);
                     }
-                    else if (isNumber(this.peek())) {
-                        this.runMacro("2s#"); // power of 2
-                    }
+                    else if (isNumber(this.peek())) this.runMacro("2s#"); // power of 2
                     break;
                 case '|3':
                     this.runMacro("36|b"); // base 36
@@ -1245,9 +1243,7 @@ export class Runtime {
                     }
                     break;
                 case '|A':
-                    if (isInt(this.peek())) {
-                        this.push(int.pow(int.make(10), this.popInt()));
-                    }
+                    if (isInt(this.peek())) this.runMacro("As#");
                     else if (isArray(this.peek())) {
                         let result = one;
                         for (let e of this.popArray()) {
