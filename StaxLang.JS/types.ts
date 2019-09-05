@@ -265,4 +265,8 @@ export const constants: {[key: string]: StaxValue} = {
     'V': S2A("AEIOU"),
     'w': S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
     'W': S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    'y': S2A("aeiouy"),
+    'Y': S2A("AEIOUY"),
+    'z': S2A("bcdfghjklmnpqrstvwxz"),
+    'Z': S2A("BCDFGHJKLMNPQRSTVWXZ"),
 };

@@ -16,12 +16,22 @@ Va
 BCDFGHJKLMNPQRSTVWXYZ
 	stax
 VC
+	in
+	out
+BCDFGHJKLMNPQRSTVWXZ
+	stax
+VZ
 	name:LowerConsonants
 	in
 	out
 bcdfghjklmnpqrstvwxyz
 	stax
 Vc
+	in
+	out
+bcdfghjklmnpqrstvwxz
+	stax
+Vz
 	name:Digits
 	in
 	out
@@ -34,12 +44,22 @@ Vd
 AEIOU
 	stax
 VV
+	in
+	out
+AEIOUY
+	stax
+VY
 	name:LowerVowels
 	in
 	out
 aeiou
 	stax
 Vv
+	in
+	out
+aeiouy
+	stax
+Vy
 	name:UpperWord
 	in
 	out

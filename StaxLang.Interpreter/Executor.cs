@@ -72,6 +72,10 @@ namespace StaxLang {
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
             ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
             ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
+            ['y'] = (S2A("aeiouy"), "lowercase vowels with y"),
+            ['Y'] = (S2A("AEIOUY"), "uppercase vowels with Y"),
+            ['z'] = (S2A("bcdfghjklmnpqrstvwxz"), "lowercase consonants without y"),
+            ['Z'] = (S2A("BCDFGHJKLMNPQRSTVWXZ"), "uppercase consonants without Y"),
         };
 
         private static NumberFormatInfo NumberFormat;

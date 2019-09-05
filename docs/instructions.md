@@ -512,3 +512,7 @@ op   	|Value
 `Vv` 	|"aeiou"
 `VW` 	|"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Vw` 	|"0123456789abcdefghijklmnopqrstuvwxyz"
+`VY` 	|"AEIOUY"
+`Vy` 	|"aeiouy"
+`VZ` 	|"BCDFGHJKLMNPQRSTVWXZ"
+`Vz` 	|"bcdfghjklmnpqrstvwxz"
