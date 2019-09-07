@@ -622,16 +622,27 @@ E {Hm J
 6|^
 	name:ShiftLeft
 	in
+7 3
 	out
 56
 	stax
-7 3 |<
+	in
+7 -1
+	out
+3
+	stax
+|<
 	name:ShiftRight
 	in
+255 2
 	out
 63
+	in
+255 -1
+	out
+510
 	stax
-255 2 |>
+|>
 	name:Equality
 	in
 	out

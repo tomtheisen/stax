@@ -993,7 +993,7 @@ export class Runtime {
                     }
                     break;
                 case '|<':
-                    if (isInt(this.peek())) this.runMacro('|2*');
+                    if (isInt(this.peek())) this.runMacro('cU>{|2*}{N|2/}?');
                     else if (isArray(this.peek())) {
                         let arr = [...this.popArray()], maxlen = 0, result = [];
                         for (let i = 0; i < arr.length; i++) {
@@ -1009,7 +1009,7 @@ export class Runtime {
                     }
                     break;
                 case '|>':
-                    if (isInt(this.peek())) this.runMacro('|2/');
+                    if (isInt(this.peek())) this.runMacro('cU>{|2/}{N|2*}?');
                     else if (isArray(this.peek())) {
                         let arr = [...this.popArray()], maxlen = 0, result = [];
                         for (let i = 0; i < arr.length; i++) {

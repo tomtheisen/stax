@@ -1331,7 +1331,7 @@ namespace StaxLang {
                             case '<':
                                 if (IsInt(Peek())) {
                                     block.AddDesc("bit shift left");
-                                    RunMacro("|2*");
+                                    RunMacro("cU>{|2*}{N|2/}?");
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("left-align lines");
@@ -1353,7 +1353,7 @@ namespace StaxLang {
                             case '>':
                                 if (IsInt(Peek())) {
                                     block.AddDesc("bit shift right");
-                                    RunMacro("|2/"); 
+                                    RunMacro("cU>{|2/}{N|2*}?"); 
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("right-align lines");
