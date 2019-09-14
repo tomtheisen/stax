@@ -4,6 +4,7 @@ import { StaxInt } from './integer';
 
 const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
 
+const _10 = int.make(10);
 const _46 = int.make(46);
 const _93 = int.make(93);
 
@@ -83,8 +84,16 @@ export function uncramSingle(s: string): StaxInt {
 }
 
 export function baseArrayCrammed(arr: StaxInt[]): string | null {
-    if (arr.some(e => int.cmp(e, int.zero) < 0)) return null;
+    if (arr.some(e => int.cmp(e, int.zero) < 0) || int.eq(arr[0], int.zero)) return null;
     const base = int.add(arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a), int.one);
     const all = arr.reduce((a, b) => int.add(int.mul(a, base), b));
-    return cramSingle(all) + cramSingle(base) + "|E";
+    let best = cramSingle(all) + cramSingle(base) + "|E";
+
+    if (arr.every(e => int.cmp(e, int.zero) >= 0 && int.cmp(e , _10) < 0) && int.cmp(arr[0], int.zero) > 0) {
+        const all = arr.reduce((a, b) => int.add(int.mul(a, _10), b));
+        const digited = cramSingle(all) + "E";
+        if (digited.length < best.length) best = digited;
+    }
+
+    return best;
 }
