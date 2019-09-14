@@ -107,11 +107,11 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 break;
             case '"':
                 let literal = parseString(program, pos);
-                if (literal.endsWith("%")) {
+                if (literal.endsWith('"%')) {
                     literals |= LiteralTypes.CompressedInt;
                 }
-                if (literal.endsWith("!")) {
-                    // can't do anything about crammed arrays
+                if (literal.endsWith('"!')) {
+                    // can't do anything about crammed arrays... yet
                 }
                 else {
                     let contents = literal.replace(/^"|"$/g, "");
