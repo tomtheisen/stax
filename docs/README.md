@@ -1,7 +1,9 @@
 # Stax
 Stax Golfing Language
 
-* [Walkthrough](walkthrough.md)
+* Walkthroughs
+  * [Hello world](walkthroughs/hello.md)
+  * [Fizzbuzz](walkthroughs/fizzbuzz.md)
 * [PackedStax](packed.md)
 * [Stacks](stacks.md)
 * [Types](types.md)
