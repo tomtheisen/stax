@@ -178,7 +178,7 @@ input.wide {
     transition-property: background-color;
     transition-duration: 200ms;
 }
-#generatepost:active {
+#generatepost:active:not([disabled]) {
     transition-duration: 50ms;
     background-color: var(--button-bg-active);
 }

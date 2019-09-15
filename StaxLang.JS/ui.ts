@@ -42,7 +42,7 @@ const outputEl = el<HTMLPreElement>("output");
 const copyOutputButton = el<HTMLButtonElement>("outputCopy");
 const warningsEl = el<HTMLUListElement>("warnings");
 const saveLink = el<HTMLAnchorElement>("savelink");
-const postLink = el<HTMLAnchorElement>("generatepost");
+const postLink = el<HTMLButtonElement>("generatepost");
 const newLink = el<HTMLAnchorElement>("newfile");
 const quickrefFilter = el<HTMLInputElement>("quickref-filter");
 const packButton = el<HTMLButtonElement>("pack");
@@ -472,6 +472,7 @@ codeArea.addEventListener("keydown", ev => {
 });
 inputArea.addEventListener("input", pendUpdate);
 
+postLink.disabled = location.href.startsWith("file:");
 postLink.addEventListener("click", ev => {
     let template = "# [Stax](https://github.com/tomtheisen/stax), ";
     switch (codeType) {
