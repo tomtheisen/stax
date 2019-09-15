@@ -715,3 +715,12 @@ foo
 -f-o-o-
 	stax
 z{'-+}R
+	name:FloatFormat
+	in
+1.0020841800044864e-292
+1.01
+	out
+1.00208418000449E-292
+1.01
+	stax
+me
