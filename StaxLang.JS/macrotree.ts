@@ -131,7 +131,7 @@ function setup() {
         { alias: "c", types: "rii", code: "atT1!*"},
         { alias: "c", types: "ai", code: "svc^?"},
         { alias: "c", types: "a", code: "{[?k"},
-        { alias: "C", types: "a", code: "VaVA\\{cr+m$|t", deprecation: "<code>:C</code> for case inversion is deprecated.  Use <code>:~</code> instead."},
+        { alias: "C", types: "a", code: "{{f|cc{Dms{hmgC" },
         { alias: "C", types: "i", code: "~;H;|C,^/"},
         { alias: "d", types: "i", code: "c|a{[%!fsd"},
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},

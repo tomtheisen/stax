@@ -354,6 +354,7 @@ op                  	|Types              	|Name              	|Description
 `:A`                	|arr                	|maxima-indices    	|Get indices of array maxima.
 `:B`                	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
 `:c`                	|arr                	|coalesce          	|Get first truthy element of array.
+`:C`                	|arr                	|columns           	|Gets the columns of an array of arrays without rectangularizing.  Similar to transpose, but doesn't use a fill element.  Instead, collapse the gaps.  e.g. `[[1,2],[],[3],[4,5,6]]` -> `[[1,3,4],[2,5],[6]]`
 `:d`                	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
 `:E`                	|arr                	|first-last         |Get the first and last element of an array. e.g. `[1,2,3,4]` -> `[1, 4]`
 `:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`

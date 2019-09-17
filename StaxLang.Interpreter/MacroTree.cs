@@ -128,7 +128,7 @@ namespace StaxLang {
                 ('c', "rii", "a|m|M1!*", "clamp float to bounds"),
                 ('c', "ai", "svc^?", "set case of string based on truthiness of integer"),
                 ('c', "a", "{[?k", "get first truthy element"),
-                ('C', "a", "VaVA\\{cr+m$|t", "invert case of letters"),
+                ('C', "a", "{{f|cc{Dms{hmgC", "extract columns from array of arrays"),
                 ('C', "i", "~;H;|C,^/", "nth catalan number"),
                 ('d', "i", "c|a{[%!fsd", "all divisors"),
                 ('d', "a", "oc%vh~;t,Tc|+s%u*", "median"),
