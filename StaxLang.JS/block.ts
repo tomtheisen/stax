@@ -116,7 +116,8 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 else {
                     let contents = literal.replace(/^"|"$/g, "");
                     let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
-                    if (compressable) {
+                    if (literal.length <= 4) compressable = true;
+                    else if (compressable) {
                         let compressed = compress(contents);
                         if (!compressed || compressed.length >= contents.length) compressable = false;
                     }
@@ -174,7 +175,20 @@ export function compressLiterals(program: string): string {
             case '"': {
                 let literal = parseString(program, pos), contents = literal.replace(/^"|"$/g, "");
                 let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
-                if (compressable) {
+                if (literal.endsWith('"') && literal.length <= 4) {
+                    switch (literal.length) {
+                        case 2:
+                            result += "z";
+                            break;
+                        case 3:
+                            result += "'" + contents;
+                            break;
+                        case 4:
+                            result += "." + contents;
+                            break;
+                    }
+                }
+                else if (compressable) {
                     if (literal.endsWith('"')) {
                         let compressed = compressLiteral(contents);
                         if (!compressed || compressed.length >= literal.length) compressable = false;
