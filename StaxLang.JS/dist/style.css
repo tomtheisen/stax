@@ -76,7 +76,7 @@ textarea {
     font-family: monospace;
     width: 100%;
     resize: vertical;
-    margin: 0.2em;
+    margin: 0.2em 0;
     font-size: 11pt;
     background-color: var(--input-bg);
     color: var(--input-fg);
@@ -339,6 +339,11 @@ summary:hover .btn {
 #control-header {
     display: flex;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    padding: 0.4em;
+    margin-bottom: -0.4em;
+    background: var(--main-bg);
 }
 #control-header > *:nth-child(n+2) {
     margin-left: 0.5em;

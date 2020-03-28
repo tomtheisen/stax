@@ -115,9 +115,10 @@ function startNextInput() {
     lastExecutedProgram = codeArea.value;
     let stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
-        line => {
-            outputEl.textContent += line;
+        content => {
+            outputEl.textContent += content;
             copyOutputButton.hidden = false;
+            window.scrollTo(0, 1e6);
         },
         warning => warningsEl.innerHTML += `<li>${ warning }`
     );

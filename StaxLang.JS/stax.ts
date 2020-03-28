@@ -62,7 +62,7 @@ export class Runtime {
     private y: StaxValue;
     private implicitEval = false;
 
-    constructor(partialOutput: (line: string) => void, info?: (line: string) => void) {
+    constructor(partialOutput: (content: string) => void, info?: (line: string) => void) {
         this.standardOut = partialOutput;
         this.infoOut = info;
     }
