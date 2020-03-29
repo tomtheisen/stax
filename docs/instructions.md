@@ -146,6 +146,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:h`                     	|int int    	|fixed-hex     	|zfill(hex(a), b)   	|Hexadecimal representation of a zero-padded to b digits. (e.g. `258`, `4` -> `"0102"`)
 `:J`                     	|num num    	|square-two    	|a\*\*2, b\*\*2     	|Square top two elements; useful for hypotenuse and things.
 `:m`                     	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b.
+`:n`                     	|int int    	|n-factorize   	|                   	|Get all n-part factorizations. (e.g. `4`, `3` => `[[1,1,4],[1,2,2],[1,4,1],[2,1,2],[2,2,1],[4,1,1]]`)
 `:N`                     	|int int    	|is-power      	|                   	|Can a be expressed as some integer to the b power?
 `:p`                     	|int        	|last-prime    	|                   	|Last prime < n.
 `:P`                     	|int        	|next-prime    	|                   	|Next prime >= n.
