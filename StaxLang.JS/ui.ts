@@ -107,6 +107,8 @@ function resetRuntime() {
     startNextInput();
 }
 
+// when running, this triggers the scroll to the end after each time slice
+let newOutput = false;
 // begin the next test case, or clean up if done
 function startNextInput() {
     if (pendingInputs.length === 0) {
@@ -120,7 +122,7 @@ function startNextInput() {
         content => {
             outputEl.textContent += content;
             copyOutputButton.hidden = false;
-            window.scrollTo(0, 1e6);
+            newOutput = true;
         },
         warning => warningsEl.innerHTML += `<li>${ warning }`
     );
@@ -183,6 +185,8 @@ function runProgramTimeSlice() {
                 }
                 if(performance.now() - sliceStart > workMilliseconds) break;
             }
+            if (newOutput) window.scrollTo(0, document.body.scrollHeight);
+            newOutput = false;
             if (result.done) startNextInput();
             runProgramTimeSlice();
         }
