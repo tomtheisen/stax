@@ -12,13 +12,15 @@ import { cram, cramSingle, baseArrayCrammed } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 import { S2A } from './types';
+import { nativeSortIsStable } from './stable-sort';
 
 declare var __COMMIT_HASH__: string;
 declare var __BUILD_DATE__: string;
 document.getElementById("buildInfo")!.textContent = `
     ${__COMMIT_HASH__}
-    built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")}
-    integers: ${ int.usingNativeBigInt ? 'ES bigint' : 'npm big-integer' }`;
+    built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")},
+    ${ int.usingNativeBigInt ? 'ES bigint' : 'npm big-integer' },
+    ${ nativeSortIsStable() ? 'stable' : 'unstable' } sort`;
 
 // duration to run stax program before yielding to ui and pumping messages
 const workMilliseconds = 40;
@@ -499,8 +501,7 @@ newLink.addEventListener("click", ev => {
     if (!confirm("Reset program and input?")) return;
 
     for (let area of [codeArea, inputArea]) {
-        area.value = "";
-        area.style.height = null;
+        area.style.height = area.value = "";
         area.rows = 2;
     }
     outputEl.textContent = "";

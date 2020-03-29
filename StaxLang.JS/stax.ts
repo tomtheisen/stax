@@ -14,6 +14,7 @@ import { primeFactors, allPrimes } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
+import { ensureStableSort } from './stable-sort';
 
 export class ExecutionState {
     public ip: number;
@@ -65,6 +66,7 @@ export class Runtime {
     constructor(partialOutput: (content: string) => void, info?: (line: string) => void) {
         this.standardOut = partialOutput;
         this.infoOut = info;
+        ensureStableSort();
     }
 
     private format(arg: (StaxValue | IteratorPair), options?: FormatOptions): string {
@@ -2566,10 +2568,7 @@ export class Runtime {
     private *doOrder() {
         let top = this.pop();
         if (isArray(top)) {
-            let result = top.map((val, idx) => ({ val, idx }))
-                .sort((a, b) => compare(a.val, b.val) || a.idx - b.idx)
-                .map(t => t.val);
-            this.push(result);
+            this.push(top.map(e => e).sort(compare));
             return;
         }
         if (top instanceof Block) {

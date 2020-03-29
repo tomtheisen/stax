@@ -14,7 +14,6 @@
   ],
   "license": "WTFPL",
   "dependencies": {
-    "@types/node": "^8.10.36",
     "big-integer": ">=1.6.36",
     "url-search-params-polyfill": ">=5.0.0"
   },
@@ -23,6 +22,7 @@
     "url": "https://github.com/tomtheisen/stax/"
   },
   "devDependencies": {
+    "@types/node": "^13.9.5",
     "html-loader": ">=0.5.5",
     "markdown-loader": "^5.0.0",
     "ts-loader": "^5.3.3",
