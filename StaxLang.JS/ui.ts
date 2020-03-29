@@ -767,12 +767,23 @@ document.addEventListener("keydown", ev => {
     }
 });
 
+const darkChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel('theme-dark') : null;
+let receivingDarkMessage = false;
 function setDarkState() {
     document.documentElement.classList.toggle("theme-dark", darkThemeEl.checked);
 }
 darkThemeEl.addEventListener("change", () => {
     setDarkState();
-    localStorage.setItem("theme-dark", darkThemeEl.checked.toString());
+    if (!receivingDarkMessage) {
+        localStorage.setItem("theme-dark", darkThemeEl.checked.toString());
+        darkChannel?.postMessage(darkThemeEl.checked);
+    }
 });
+darkChannel?.addEventListener("message", ev => {
+    receivingDarkMessage = true;
+    darkThemeEl.checked = ev.data;
+    setDarkState();
+    receivingDarkMessage = false;
+})
 darkThemeEl.checked = localStorage.getItem("theme-dark") === true.toString();
 setDarkState();
