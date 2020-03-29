@@ -767,6 +767,7 @@ document.addEventListener("keydown", ev => {
     }
 });
 
+// theme stuff
 const darkChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel('theme-dark') : null;
 let receivingDarkMessage = false;
 function setDarkState() {
@@ -787,3 +788,9 @@ darkChannel?.addEventListener("message", ev => {
 });
 darkThemeEl.checked = localStorage.getItem("theme-dark") === true.toString();
 setDarkState();
+
+// hide top link when at the top
+const topLink = document.getElementById("toplink") as HTMLAnchorElement;
+document.addEventListener("scroll", () => {
+    topLink.style.display = window.scrollY < codeArea.offsetTop ? "none" : "";
+});
