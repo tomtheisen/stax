@@ -784,6 +784,6 @@ darkChannel?.addEventListener("message", ev => {
     darkThemeEl.checked = ev.data;
     setDarkState();
     receivingDarkMessage = false;
-})
+});
 darkThemeEl.checked = localStorage.getItem("theme-dark") === true.toString();
 setDarkState();
