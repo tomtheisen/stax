@@ -12,9 +12,7 @@ export function nativeSortIsStable() {
         }
         return true;
     }
-    return stable ?? (stable = test());
-    // if (typeof stable === "boolean") return stable;
-    // else return stable = test();
+    return stable = stable ?? test();
 }
 
 let ensured = false;
@@ -29,7 +27,7 @@ export function ensureStableSort() {
     }
 
     const originalSort = Array.prototype.sort;
-    Array.prototype.sort = function sort<T>(this: Array<T>, compareFn: (a: T, b: T) => number = defaultCompare) {
+    Array.prototype.sort = function sort<T>(this: T[], compareFn: (a: T, b: T) => number = defaultCompare) {
         let wrapped = this.map((el, idx) => ({ el, idx }));
 
         type WrapType = { el: T, idx: number };
