@@ -791,6 +791,8 @@ setDarkState();
 
 // hide top link when at the top
 const topLink = document.getElementById("toplink") as HTMLAnchorElement;
-document.addEventListener("scroll", () => {
+function handleScroll() {
     topLink.style.display = window.scrollY < codeArea.offsetTop ? "none" : "";
-});
+}
+handleScroll();
+document.addEventListener("scroll", handleScroll);
