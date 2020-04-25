@@ -197,7 +197,7 @@ op                       	|Types          	|Name              	|Description
 <code>&#124;C</code>     	|arr int        	|center            	|Center string in n characters.
 <code>&#124;C</code>     	|arr            	|center-block      	|Center lines of text, using longest line.
 <code>&#124;F</code>     	|arr arr        	|regex-find-all    	|Get all regex pattern matches.
-<code>&#124;I</code>     	|arr arr        	|str-index-all     	|Find all indexes of the substring.
+<code>&#124;I</code>     	|arr arr        	|str-index-all     	|Find all indices of the substring.
 <code>&#124;j</code>     	|arr            	|split-newline     	|Split string on newlines.
 <code>&#124;J</code>     	|arr            	|join-newline      	|Join strings with newline.
 <code>&#124;q</code>     	|arr arr        	|regex-indices     	|Get all indices of regex matches.
@@ -288,7 +288,7 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;@</code>	|arr int            	|remove-at         	|Remove element from array at index.
 <code>&#124;@</code>	|arr int num        	|insert-at         	|Insert element to array at index.
 <code>&#124;#</code>	|arr arr            	|verbatim-count    	|Counts number of occurrences of b as an element of a, without any string flattening.
-<code>&#124;%</code>	|arr int arr        	|embed-array       	|Embed c in a, starting at position b.  Negative indexes from the end.  OOB extend the array.
+<code>&#124;%</code>	|arr int arr        	|embed-array       	|Embed c in a, starting at position b.  Negative indices from the end.  OOB extend the array.
 <code>&#124;&</code>	|arr arr            	|arr-intersect     	|Keep all elements from a that are in b.
 <code>&#124;^</code>	|arr arr            	|arr-xor           	|Keep all elements from a that are not in b, followed by all elements in b that are not in a.
 <code>&#124;^</code>	|arr int            	|multi-self-join   	|Generate all arrays of size b using elements from a.
@@ -312,7 +312,7 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;b</code>	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.
 <code>&#124;g</code>	|arr                	|gcd               	|Greatest common denominator of array.
 <code>&#124;G</code>	|arr                	|round-flatten     	|Flatten array of arrays using round-robin distribution.  Cycle between inner arrays until all elements are reached.
-<code>&#124;I</code>	|arr num            	|find-all          	|Find all indexes of occurrences of the value.
+<code>&#124;I</code>	|arr num            	|find-all          	|Find all indices of occurrences of the value.
 <code>&#124;l</code>	|arr                	|lcm               	|Least common multiple of array.
 <code>&#124;L</code>	|arr arr            	|multiset-union    	|Combine elements from a and b, with each occurring the max of its occurrences from a and b.
 <code>&#124;m</code>	|arr                	|min               	|Minimum value in array.
@@ -436,7 +436,7 @@ op                  	|Types        	|Name               	|Description
 `W`                 	|             	|while-short        	|If there is no open block, use the rest of the program as the block.
 `_`                 	|             	|current            	|Get the current iteration value.  If there are no blocks executing, this will be all of standard input, as one string.
 <code>&#124;c</code>	|             	|contend            	|Assert top of stack is truthy.  Cancel if not.  Do not pop.
-<code>&#124;I</code>	|arr block    	|filter-index       	|Get all indexes in the array that produce a truthy value from the block.
+<code>&#124;I</code>	|arr block    	|filter-index       	|Get all indices in the array that produce a truthy value from the block.
 
 ## Registers
 op                  	|Description
@@ -482,15 +482,15 @@ op   	|Value
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
 `V/` 	|pi/3
 `V%` 	|[0, 0]
-`VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"
+`VA` 	|"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Vb` 	|"()[]{}<>"
 `VB` 	|256
-`VC` 	|"BCDFGHJKLMNPQRSTVWXYZ"
 `Vc` 	|"bcdfghjklmnpqrstvwxyz"
+`VC` 	|"BCDFGHJKLMNPQRSTVWXYZ"
 `Vd` 	|"0123456789"
 `VD` 	|sqrt(2)
-`Ve` 	|natural log base
+`Ve` 	|natural log base (e)
 `VE` 	|sqrt(3)
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"
@@ -512,6 +512,7 @@ op   	|Value
 `Vu` 	|pow(2, 32)
 `VV` 	|"AEIOU"
 `Vv` 	|"aeiou"
+`Vx` 	|[Packed stax character encoding](./packed.md) expressed as array of 256 codepoints
 `VW` 	|"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 `Vw` 	|"0123456789abcdefghijklmnopqrstuvwxyz"
 `VY` 	|"AEIOUY"

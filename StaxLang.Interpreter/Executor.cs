@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.1.8 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.1.9 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -70,6 +70,7 @@ namespace StaxLang {
             ['u'] = (BigInteger.Pow(2, 32), "2 ** 32"),
             ['v'] = (S2A("aeiou"), "lowercase vowels"),
             ['V'] = (S2A("AEIOU"), "uppercase vowels"),
+            ['x'] = (S2A(StaxPacker.CodePage), "packed stax code page (modified CP437)"),
             ['w'] = (S2A("0123456789abcdefghijklmnopqrstuvwxyz"), "all digits and lowercase letters"),
             ['W'] = (S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), "all digits and uppercase letters"),
             ['y'] = (S2A("aeiouy"), "lowercase vowels with y"),

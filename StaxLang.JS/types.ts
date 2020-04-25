@@ -4,6 +4,7 @@ import * as int from './integer'
 import { Rational, one as rationalOne } from './rational';
 import * as rat from './rational';
 import { IntRange } from './collections';
+import { codePage } from './packer';
 
 export type StaxNumber = number | Rational | StaxInt;
 export type StaxValue = StaxNumber | Block | StaxArray;
@@ -212,7 +213,7 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
-const versionInfo = "Stax 1.1.8 - Tom Theisen - https://github.com/tomtheisen/stax"
+const versionInfo = "Stax 1.1.9 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
@@ -263,6 +264,7 @@ export const constants: {[key: string]: StaxValue} = {
     'u': int.make(4294967296),
     'v': S2A("aeiou"),
     'V': S2A("AEIOU"),
+    'x': S2A(codePage),
     'w': S2A("0123456789abcdefghijklmnopqrstuvwxyz"),
     'W': S2A("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     'y': S2A("aeiouy"),
