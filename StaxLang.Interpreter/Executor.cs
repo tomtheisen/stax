@@ -4066,8 +4066,7 @@ namespace StaxLang {
 
         private static List<object> S2A(string arg) {
             var result = new List<object>();
-            var e = StringInfo.GetTextElementEnumerator(arg);
-            while (e.MoveNext()) {
+            for (var e = StringInfo.GetTextElementEnumerator(arg); e.MoveNext();) {
                 int codepoint = char.ConvertToUtf32((string)e.Current, 0);
                 result.Add(new BigInteger(codepoint));
             }
