@@ -177,3 +177,29 @@ iP
 9E+100
 	stax
 P
+	name:HexLiterals
+	in
+-0xff
+	out
+-255
+	stax
+P
+	in
+"-0xff"
+	out
+-255
+	stax
+e
+	name:BinaryLiterals
+	in
+-0b1101
+	out
+-13
+	stax
+P
+	in
+"-0b1101"
+	out
+-13
+	stax
+e

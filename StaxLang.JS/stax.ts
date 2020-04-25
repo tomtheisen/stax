@@ -217,6 +217,36 @@ export class Runtime {
                         break;
                     }
 
+                    match = substring.match(/^-?0x([0-9a-f]+)/i);
+                    if (match) {
+                        const _16 = int.make(16);
+                        let hex = [...match[1].toLowerCase()].reduce(
+                            (acc, dig) => int.add(
+                                int.mul(acc, _16), 
+                                int.make("0123456789abcdef".indexOf(dig))
+                            ), 
+                            int.zero);
+                        if (substring.startsWith("-")) hex = int.negate(hex);
+                        newValue(hex);
+                        i += match[0].length - 1;
+                        break;
+                    }
+
+                    match = substring.match(/^-?0b([01]+)/i);
+                    if (match) {
+                        const _2 = int.make(2);
+                        let hex = [...match[1].toLowerCase()].reduce(
+                            (acc, dig) => int.add(
+                                int.mul(acc, _2), 
+                                int.make("01".indexOf(dig))
+                            ), 
+                            int.zero);
+                        if (substring.startsWith("-")) hex = int.negate(hex);
+                        newValue(hex);
+                        i += match[0].length - 1;
+                        break;
+                    }
+
                     match = substring.match(/^-?\d+/);
                     if (match) {
                         newValue(int.make(match[0]));

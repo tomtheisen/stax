@@ -2632,9 +2632,9 @@ namespace StaxLang {
                     case '∞':
                         NewValue(double.PositiveInfinity);
                         break;
-                    case '-':
+                    case '-': 
                     case '0': case '1': case '2': case '3': case '4':
-                    case '5': case '6': case '7': case '8': case '9':
+                    case '5': case '6': case '7': case '8': case '9': {
                         var substring = arg.Substring(i);
 
                         if (substring.StartsWith("-∞")) {
@@ -2643,33 +2643,49 @@ namespace StaxLang {
                             break;
                         } 
                         
-                        {
-                            var match = Regex.Match(substring, @"^-?\d+(\.\d+([eE]-?\d+)?|[eE]-?\d+)");
-                            if (match.Success) {
-                                NewValue(double.Parse(match.Value));
-                                i += match.Value.Length - 1;
-                                break;
-                            }
+                        var match = Regex.Match(substring, @"^-?\d+(\.\d+([eE]-?\d+)?|[eE]-?\d+)");
+                        if (match.Success) {
+                            NewValue(double.Parse(match.Value));
+                            i += match.Value.Length - 1;
+                            break;
+                        }
 
-                            match = Regex.Match(substring, @"^(-?\d+)/(-?\d+)");
-                            if (match.Success) {
-                                var frac = new Rational(
-                                    BigInteger.Parse(match.Groups[1].Value),
-                                    BigInteger.Parse(match.Groups[2].Value));
-                                NewValue(frac);
-                                i += match.Value.Length - 1;
-                                break;
-                            }
+                        match = Regex.Match(substring, @"^(-?\d+)/(-?\d+)");
+                        if (match.Success) {
+                            var frac = new Rational(
+                                BigInteger.Parse(match.Groups[1].Value),
+                                BigInteger.Parse(match.Groups[2].Value));
+                            NewValue(frac);
+                            i += match.Value.Length - 1;
+                            break;
+                        }
 
-                            match = Regex.Match(substring, @"^-?\d+");
-                            if (match.Success) {
-                                NewValue(BigInteger.Parse(match.Value));
-                                i += match.Value.Length - 1;
-                                break;
-                            }
+                        match = Regex.Match(substring, @"^-?0x([0-9a-f]+)", RegexOptions.IgnoreCase);
+                        if (match.Success) {
+                            var hex = BigInteger.Parse("0" + match.Groups[1].Value, NumberStyles.HexNumber);
+                            if (substring[0] == '-') hex = -hex;
+                            NewValue(hex);
+                            i += match.Value.Length - 1;
+                            break;
+                        }
+
+                        match = Regex.Match(substring, @"^-?0b([01]+)", RegexOptions.IgnoreCase);
+                        if (match.Success) {
+                            var bin = match.Groups[1].Value.Aggregate(BigInteger.Zero, (acc, dig) => 2 * acc + (dig - '0'));
+                            if (substring[0] == '-') bin = -bin;
+                            NewValue(bin);
+                            i += match.Value.Length - 1;
+                            break;
+                        }
+
+                        match = Regex.Match(substring, @"^-?\d+");
+                        if (match.Success) {
+                            NewValue(BigInteger.Parse(match.Value));
+                            i += match.Value.Length - 1;
+                            break;
                         }
                         return false;
-
+                    }
                     case ' ': case '\t': case '\r': case '\n': case ',':
                         break;
                     default: return false;

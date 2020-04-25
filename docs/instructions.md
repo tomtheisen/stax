@@ -24,7 +24,7 @@ op                  	|Example           	|Name         	|Description
 `~`                 	|                  	|input-push   	|Pop top item, and push it to input stack.
 `;`                 	|                  	|input-peek   	|Peek from input stack, and push to main stack.
 `,`                 	|                  	|input-pop    	|Pop from input stack, and push to main stack.
-`e`                 	|arr               	|eval         	|Parse string as data to be pushed on the stack. e.g. [12, 3.4, [5/6, "a string"]]  Multiple top level values in the same string will be pushed separately. `\"`, `\\`, `\n`, and `\x41` are escapes.
+`e`                 	|arr               	|eval         	|Parse string as data to be pushed on the stack. e.g. [12, 3.4, 0x7fff, 0b110011, [5/6, "a string"]]  Multiple top level values in the same string will be pushed separately. `\"`, `\\`, `\n`, and `\x41` are escapes.
 `E`                 	|arr               	|explode      	|Push all elements from array onto stack.
 `L`                 	|… -> […]          	|listify-stack	|Clear both stacks, and put all items in an array back on stack.
 `l`                 	|int               	|listify-n    	|Pop n items, and put them in an array on top of the stack.
