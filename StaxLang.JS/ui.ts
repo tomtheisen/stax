@@ -565,10 +565,14 @@ packButton.addEventListener("click", ev => {
 });
 
 function golf(tokens: (string | Block)[]): string {
-    let golfed = tokens.map(t => {
-        if (typeof t === "string") return /^\s/.test(t) ? "" : t;
-        // golf block
-        return "{" + golf(t.tokens) + (t.explicitlyTerminated ? "}" : "");
+    const isNumberLiteral = (token: (string | Block)) => typeof token === "string" && /^\d/.test(token);
+
+    let golfed = tokens.map((t, i) => {
+        if (t instanceof Block) return "{" + golf(t.tokens) + (t.explicitlyTerminated ? "}" : "");
+        else if (!/^\s/.test(t)) return t;
+        // space is necessary between numeric literal tokens
+        else if (isNumberLiteral(tokens[i - 1]) && isNumberLiteral(tokens[i + 1])) return " ";
+        else return "";
     });
     return golfed.join("");
 }

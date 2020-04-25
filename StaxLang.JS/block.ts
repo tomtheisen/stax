@@ -103,7 +103,9 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                     if (crammed.length < n.length) literals |= LiteralTypes.CompressableInt;
                     else literals |= LiteralTypes.UncompressableInt;
                 }
-                pos += n.length - 1;
+                pos += / \d/.test(program.substr(pos + n.length, 2))
+                    ? n.length // skip one necessary space between numeric literals
+                    : n.length - 1;
                 break;
             case '"':
                 let literal = parseString(program, pos);
