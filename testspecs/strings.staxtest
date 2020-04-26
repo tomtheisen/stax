@@ -644,3 +644,11 @@ foo
  !"#\$%&'\(\)\*\+,-\./0123456789:;<=>\?@ABCDEFGHIJKLMNOPQRSTUVWXYZ\[\\\]\^_`abcdefghijklmnopqrstuvwxyz\{\|\}~
 	stax
 Vp:x
+	name:Utf8
+	in
+🍹stax🍹
+	out
+240 159 141 185 115 116 97 120 240 159 141 185
+🍹stax🍹
+	stax
+|kcJP|KP

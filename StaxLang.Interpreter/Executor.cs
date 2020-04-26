@@ -1648,6 +1648,18 @@ namespace StaxLang {
                                 block.AddDesc("join with newlines");
                                 RunMacro("Vn*");
                                 break;
+                            case 'k': {
+                                var bytes = Encoding.UTF8.GetBytes(A2S((List<object>)Pop()))
+                                    .Select(e => (object)new BigInteger(e))
+                                    .ToList();
+                                Push(bytes);
+                                break;
+                            }
+                            case 'K': {
+                                var bytes = ((List<object>)Pop()).Select(e => (byte)(BigInteger)e).ToArray();
+                                Push(S2A(Encoding.UTF8.GetString(bytes)));
+                                break;
+                            }
                             case 'l':
                                 block.AddDesc("lowest common denominator");
                                 if (IsArray(Peek())) RunMacro("O{|lF");

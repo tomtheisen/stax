@@ -1404,6 +1404,16 @@ export class Runtime {
                 case '|J':
                     this.runMacro("Vn*"); // join with newlines
                     break;
+                case '|k': {
+                    const str = A2S(this.popArray()), enc = new TextEncoder;
+                    this.push([...enc.encode(str)].map(e => int.make(e)));
+                    break;
+                }
+                case '|K': {
+                    const bytes = Uint8Array.from(this.popArray().map(floatify)), dec = new TextDecoder;
+                    this.push(S2A(dec.decode(bytes.buffer)));
+                    break;
+                }
                 case '|l': // lcm
                     if (isArray(this.peek())) this.runMacro("O{|lF");
                     else if (isInt(this.peek())) this.runMacro("sb|g~*,n{/}{d}?");

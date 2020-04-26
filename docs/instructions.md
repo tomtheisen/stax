@@ -200,6 +200,8 @@ op                       	|Types          	|Name              	|Description
 <code>&#124;I</code>     	|arr arr        	|str-index-all     	|Find all indices of the substring.
 <code>&#124;j</code>     	|arr            	|split-newline     	|Split string on newlines.
 <code>&#124;J</code>     	|arr            	|join-newline      	|Join strings with newline.
+<code>&#124;k</code>     	|arr            	|utf8-encode       	|Encode to byte array using UTF8
+<code>&#124;K</code>     	|arr            	|utf8-decode       	|Decode byte array using UTF8
 <code>&#124;q</code>     	|arr arr        	|regex-indices     	|Get all indices of regex matches.
 <code>&#124;Q</code>     	|arr arr        	|regex-is-match    	|Regex matches entire string?
 <code>&#124;s</code>     	|arr arr        	|regex-split       	|Split by ECMA regex. Captured groups will be included in result.
