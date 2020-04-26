@@ -570,7 +570,8 @@ function golf(tokens: (string | Block)[]): string {
     let golfed = tokens.map((t, i) => {
         if (t instanceof Block) return "{" + golf(t.tokens) + (t.explicitlyTerminated ? "}" : "");
         else if (!/^\s/.test(t)) return t;
-        // space is necessary between numeric literal tokens
+        // space is necessary between numeric literal tokens unless the first one is '0'
+        else if (tokens[i - 1] === "0") return "";
         else if (isNumberLiteral(tokens[i - 1]) && isNumberLiteral(tokens[i + 1])) return " ";
         else return "";
     });
