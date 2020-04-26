@@ -332,7 +332,7 @@ export class Runtime {
                 continue;
             }
             // don't step on a no-op
-            else if (typeof token !== 'string' || !token.match(/^[ \n]/)) yield new ExecutionState(ip);
+            else if (typeof token !== 'string' || !token.match(/^[ \n\t]/)) yield new ExecutionState(ip);
 
             if (token instanceof Block) {
                 this.push(token);
