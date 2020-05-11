@@ -375,7 +375,7 @@ function updateStats() {
         golfButton.hidden = codeType != CodeType.LooseAscii && codeType != CodeType.UnpackedLooseNonAscii;
         dumpButton.hidden = codeType != CodeType.LooseAscii || hasNewLineInLiteral(codeArea.value);
         compressButton.hidden = !(literalTypes & (LiteralTypes.CompressableString | LiteralTypes.CompressableInt));
-        uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt));
+        uncompressButton.hidden = !(literalTypes & (LiteralTypes.CompressedString | LiteralTypes.CompressedInt | LiteralTypes.CrammedArray));
 
         codeChars = [...codeArea.value].length;
         if (codeType === CodeType.UnpackedTightNonAscii || codeType === CodeType.UnpackedLooseNonAscii) {

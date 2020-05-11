@@ -57,13 +57,14 @@ export enum CodeType {
 }
 
 export enum LiteralTypes {
-    None                 = 0b000000,
-    CompressedString     = 0b000001,
-    CompressableString   = 0b000010,
-    UncompressableString = 0b000100,
-    CompressedInt        = 0b001000,
-    CompressableInt      = 0b010000,
-    UncompressableInt    = 0b100000,
+    None                 = 0b0000000,
+    CompressedString     = 0b0000001,
+    CompressableString   = 0b0000010,
+    UncompressableString = 0b0000100,
+    CompressedInt        = 0b0001000,
+    CompressableInt      = 0b0010000,
+    UncompressableInt    = 0b0100000,
+    CrammedArray         = 0b1000000,
 }
 
 export function getCodeType(program: string) : [CodeType, LiteralTypes] {
@@ -109,12 +110,8 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 break;
             case '"':
                 let literal = parseString(program, pos);
-                if (literal.endsWith('"%')) {
-                    literals |= LiteralTypes.CompressedInt;
-                }
-                if (literal.endsWith('"!')) {
-                    // can't do anything about crammed arrays... yet
-                }
+                if (literal.endsWith('"%')) literals |= LiteralTypes.CompressedInt;
+                else if (literal.endsWith('"!')) literals |= LiteralTypes.CrammedArray;
                 else {
                     let contents = literal.replace(/^"|"$/g, "");
                     let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
@@ -249,7 +246,7 @@ export function decompressLiterals(program: string): string {
                 }
                 else if (literal.endsWith("!")) { // crammed int array
                     result += 'z';
-                    for (let e of uncram(literal.replace(/^"|"%$/g, ''))) {
+                    for (let e of uncram(literal.replace(/^"|"!$/g, ''))) {
                         result += literalFor(e) + '+';
                     }
                 }
@@ -260,7 +257,7 @@ export function decompressLiterals(program: string): string {
             case '`': {
                 let compressed = parseCompressedString(program, pos), contents = compressed.replace(/^`|`$/g, "");
                 result += '"' + decompress(contents);
-                if (compressed.endsWith('`')) result += '"';
+                if (compressed.substring(1).endsWith('`')) result += '"';
                 pos += compressed.length - 1;
                 break;
             }
@@ -449,7 +446,7 @@ function parseString(program: string, pos: number) {
 }
 
 function parseCompressedString(program: string, pos: number) {
-    let matches = program.substr(pos).match(/`[^`]+(`|$)/);
+    let matches = program.substr(pos).match(/`[^`]*(`|$)/);
     if (!matches) throw "tried to parse a compressed string, but no backtick";
     return matches[0];
 }
