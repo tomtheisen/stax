@@ -1,7 +1,7 @@
-import { last } from './types';
+import { last, literalFor } from './types';
 import { isPacked } from './packer';
 import { compress, decompress, compressLiteral } from './huffmancompression';
-import { cramSingle, uncramSingle } from './crammer';
+import { cramSingle, uncramSingle, uncram } from './crammer';
 import * as int from './integer';
 
 export class Block {
@@ -242,10 +242,16 @@ export function decompressLiterals(program: string): string {
                 break;
             case '"': {
                 let literal = parseString(program, pos);
-                if (literal.endsWith("%")) {
+                if (literal.endsWith("%")) { // crammed scalar int
                     if (/\d!?$/.test(result)) result += ' '; // keep space between literals
                     result += uncramSingle(literal.replace(/^"|"%$/g, '')).toString();
                     if (/^[0-9!]/.test(program.substr(pos + literal.length))) result += ' ';
+                }
+                else if (literal.endsWith("!")) { // crammed int array
+                    result += 'z';
+                    for (let e of uncram(literal.replace(/^"|"%$/g, ''))) {
+                        result += literalFor(e) + '+';
+                    }
                 }
                 else result += literal;
                 pos += literal.length - 1;

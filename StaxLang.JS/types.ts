@@ -213,6 +213,13 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
+const _10 = int.make(10);
+export function literalFor(arg: StaxInt): string {
+    if (int.cmp(arg, int.zero) < 0) return literalFor(int.negate(arg)) + 'N';
+    if (int.eq(arg, _10)) return 'A';
+    return arg.toString();
+}
+
 const versionInfo = "Stax 1.1.9 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {

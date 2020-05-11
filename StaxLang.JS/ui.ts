@@ -8,7 +8,7 @@ import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
 import * as int from './integer';
 import { compressLiteral } from './huffmancompression';
-import { cram, cramSingle, baseArrayCrammed } from './crammer';
+import { cram, cramSingle, compressIntAray } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
 import 'url-search-params-polyfill';
 import { S2A } from './types';
@@ -546,10 +546,7 @@ function doIntegerCoder() {
             integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (scalar)`;
         }
         else {
-            let crammedBest = cram(ints);
-            let baseCrammed = baseArrayCrammed(ints);
-            if (baseCrammed && baseCrammed.length < crammedBest.length) crammedBest = baseCrammed;
-            integerOutputEl.value = crammedBest;
+            integerOutputEl.value = compressIntAray(ints);
             integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (array)`;
         }
     }
