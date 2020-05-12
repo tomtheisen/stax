@@ -720,6 +720,7 @@ function isTools(): boolean {
 function toggleTools() {
     if (isQuickRef()) toggleQuickRef();
     document.documentElement && document.documentElement.classList.toggle("show-tools");
+    if (isTools()) document.querySelector("#tools")?.querySelector("summary")?.focus();
 }
 document.getElementById("tools-link")!.addEventListener("click", toggleTools);
 
@@ -755,6 +756,10 @@ document.addEventListener("keydown", ev => {
             ev.preventDefault();
             run();
             break;
+        case "F9":
+            ev.preventDefault();
+            toggleTools();
+            break;
         case "F11":
             ev.preventDefault();
             stepButton.focus(); // ensure document's active element is not disabled
@@ -765,6 +770,30 @@ document.addEventListener("keydown", ev => {
             if (isActive()) stop();
             else if (isQuickRef()) toggleQuickRef();
             else if (isTools()) toggleTools();
+            break;
+        case "ArrowUp":
+        case "ArrowDown":
+            for (let e = document.activeElement; e; e = e.parentElement) {
+                if (e instanceof HTMLInputElement) break;
+                let sibling = ev.key === "ArrowUp" ? e.previousElementSibling : e.nextElementSibling;
+                if (e instanceof HTMLDetailsElement && sibling instanceof HTMLDetailsElement) {
+                    sibling.querySelector("summary")?.focus();
+                    ev.preventDefault();
+                    break;
+                }
+            } 
+            break;
+        case "ArrowLeft":
+        case "ArrowRight":
+            for (let e = document.activeElement; e; e = e.parentElement) {
+                if (e instanceof HTMLInputElement) break;
+                if (e instanceof HTMLDetailsElement) {
+                    e.open = ev.key === "ArrowRight";
+                    e.querySelector("summary")?.focus();
+                    ev.preventDefault();
+                    break;
+                }
+            }
             break;
     }
 });

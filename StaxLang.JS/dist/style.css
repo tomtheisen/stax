@@ -67,6 +67,9 @@ body {
     background-color: var(--main-bg);
     color: var(--main-fg);
 }
+:focus {
+    outline: solid var(--link-fg) 2px;
+}
 
 h1 {
     margin: 0;
