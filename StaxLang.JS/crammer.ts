@@ -152,12 +152,16 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
 function shortenRepeatedArray(arr: int.StaxInt[]): string | null {
     if (arr.length < 2) return null;
     if (arr.some(e => !int.eq(e, arr[0]))) return null;
-    return cramSingle(arr[0]) + ']' + cramSingle(int.make(arr.length)) + '*';
+    if (int.cmp(arr[0], _32) >= 0 && int.cmp(arr[0], _127) < 0) {
+        return "'" + String.fromCharCode(floatify(arr[0])) + cramSingle(int.make(arr.length)) + '*';
+    }
+    else return cramSingle(arr[0]) + ']' + cramSingle(int.make(arr.length)) + '*';
 }
 
  function shortenPair(arr: int.StaxInt[]): string | null {
     if (arr.length !== 2) return null;
-    const a = cramSingle(arr[0]), b = cramSingle(arr[1]);
+    let a = cramSingle(arr[0]), b = cramSingle(arr[1]);
+    if (a === b) b = 'c';
     return /\d$/.test(a) && /^\d/.test(b)
         ? a + ' ' + b + '\\'
         : a + b + '\\';

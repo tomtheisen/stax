@@ -1,7 +1,7 @@
 import { last, literalFor } from './types';
 import { isPacked } from './packer';
 import { compress, decompress, compressLiteral } from './huffmancompression';
-import { cramSingle, uncramSingle, uncram } from './crammer';
+import { cramSingle, uncramSingle, uncram, cram } from './crammer';
 import * as int from './integer';
 
 export class Block {
@@ -57,14 +57,15 @@ export enum CodeType {
 }
 
 export enum LiteralTypes {
-    None                 = 0b0000000,
-    CompressedString     = 0b0000001,
-    CompressableString   = 0b0000010,
-    UncompressableString = 0b0000100,
-    CompressedInt        = 0b0001000,
-    CompressableInt      = 0b0010000,
-    UncompressableInt    = 0b0100000,
-    CrammedArray         = 0b1000000,
+    None                 = 0b00000000,
+    CompressedString     = 0b00000001,
+    CompressableString   = 0b00000010,
+    UncompressableString = 0b00000100,
+    CompressedInt        = 0b00001000,
+    CompressableInt      = 0b00010000,
+    UncompressableInt    = 0b00100000,
+    CrammedArray         = 0b01000000,
+    CrammableSequence    = 0b10000000,
 }
 
 export function getCodeType(program: string) : [CodeType, LiteralTypes] {
@@ -130,6 +131,9 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 pos += parseCompressedString(program, pos).length - 1;
                 literals |= LiteralTypes.CompressedString;
                 break;
+            case 'z':
+                let expanded = program.slice(pos).match(/^z(?:(?:A|(?!10\+)[1-9]\d*)N?\+){2,}/);
+                if (expanded) literals |= LiteralTypes.CrammableSequence;
         }
     }
 
@@ -210,6 +214,21 @@ export function compressLiterals(program: string): string {
                 let compressed = parseCompressedString(program, pos);
                 result += compressed;
                 pos += compressed.length - 1;
+                break;
+            }
+            case 'z': {
+                const expanded = program.slice(pos).match(/^z(?:(?:A|(?!10\+)[1-9]\d*)N?\+){2,}/);
+                if (expanded) {
+                   const ints = expanded[0]
+                        .replace(/A/g, "10")
+                        .replace(/(\d+)N/g, "-$1")
+                        .replace(/^z|\+$/g, "")
+                        .split('+')
+                        .map(int.make);
+                    result += cram(ints);
+                    pos += expanded[0].length - 1;
+                }
+                else result += program[pos];
                 break;
             }
             default:
