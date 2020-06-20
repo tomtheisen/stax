@@ -61,7 +61,7 @@ setup();
 
 /** e.g. "Hello, World" -> "`;Kp0TDt`" */
 export function compressLiteral(input: string): string | null {
-    let compressed = compress(input);
+    let compressed = compressCore(input);
     if (!compressed) return null;
 
     const lowerInput = input.toLowerCase(), upperInput = input.toUpperCase();
@@ -76,11 +76,11 @@ export function compressLiteral(input: string): string | null {
 
     const untransformed = '`' + compressed + '`';
     if (!caseTransform) return untransformed;
-    const caseTransformed = '`' + compress(input, true) + '`' + caseTransform;
+    const caseTransformed = '`' + compressCore(input, true) + '`' + caseTransform;
     return (caseTransformed.length < untransformed.length) ? caseTransformed : untransformed;
 }
 
-export function compress(input: string, flexcase = false): string | null {
+function compressCore(input: string, flexcase = false): string | null {
     let path = '', big = int.one, result = "", symlen = int.make(symbols.length);
     
     if (flexcase) {

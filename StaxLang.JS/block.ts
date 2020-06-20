@@ -1,6 +1,6 @@
 import { last, literalFor } from './types';
 import { isPacked } from './packer';
-import { compress, decompress, compressLiteral } from './huffmancompression';
+import { decompress, compressLiteral } from './huffmancompression';
 import { cramSingle, uncramSingle, uncram, cram } from './crammer';
 import * as int from './integer';
 
@@ -116,10 +116,10 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 else {
                     let contents = literal.replace(/^"|"$/g, "");
                     let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
-                    if (literal.length <= 4) compressable = true;
+                    if (literal.endsWith('"') && literal.length <= 4) compressable = true;
                     else if (compressable) {
-                        let compressed = compress(contents);
-                        if (!compressed || compressed.length >= contents.length) compressable = false;
+                        let compressed = compressLiteral(contents);
+                        if (!compressed || compressed.length >= literal.length) compressable = false;
                     }
                     literals |= compressable
                         ? LiteralTypes.CompressableString
@@ -198,7 +198,7 @@ export function compressLiterals(program: string): string {
                         else result += compressed;
                     }
                     else {
-                        let compressed = compress(contents);
+                        let compressed = compressLiteral(contents);
                         if (!compressed || compressed.length >= contents.length) compressable = false;
                         else {
                             result += '`' + compressed;
