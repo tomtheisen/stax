@@ -1497,15 +1497,26 @@ export class Runtime {
                 }
                 case '|n':
                     if (isInt(this.peek())) { // exponents of sequential primes in factorization
-                        let target = int.abs(this.popInt()), result: StaxValue[] = [];
+                        let target = int.abs(this.popInt()), result: StaxValue[] = [], singleRemaining = false;
                         for (let p of allPrimes()) {
                             if (target.valueOf() <= 1) break;
+                            if (singleRemaining) {
+                                if (int.eq(p, target)) {
+                                    result.push(one);
+                                    break;
+                                }
+                                else {
+                                    result.push(zero);
+                                    continue;
+                                }
+                            }
                             let exp = zero;
-                            while (int.mod(target,p).valueOf() == 0) {
+                            while (int.eq(int.mod(target, p), zero)) {
                                 target = int.div(target, p);
                                 exp = int.add(exp, one);
                             }
                             result.push(exp);
+                            singleRemaining = int.cmp(int.mul(p, p), target) > 0;
                         }
                         this.push(result);
                     }

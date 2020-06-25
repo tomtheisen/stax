@@ -951,6 +951,12 @@ u
 2 0 1
 	stax
 |n J
+	in
+1000
+	out
+608
+	stax
+vF|n|M2<+
 	name:Totient
 	in
 13
