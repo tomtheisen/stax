@@ -947,10 +947,12 @@ u
 	name:FactorizationExponents
 	in
 20
+194
 	out
 2 0 1
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 	stax
-|n J
+me|n J
 	in
 1000
 	out

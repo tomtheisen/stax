@@ -14,7 +14,7 @@ export function primeFactors(n: StaxInt): StaxInt[] {
             n = int.div(n, d);
         }
         if (n.valueOf() == 1) return result;
-        if (int.cmp(int.pow(d, two), n) > 0) {
+        if (int.cmp(int.mul(d, d), n) > 0) {
             result.push(n);
             return result;
         }
