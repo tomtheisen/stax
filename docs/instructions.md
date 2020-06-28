@@ -45,7 +45,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `-`                      	|num num    	|sub           	|a - b              	|Subtract.
 `*`                      	|num num    	|mul           	|a * b              	|Multiply.
 `/`                      	|num num    	|div           	|a / b              	|Integers will use integer division.
-`%`                      	|int int    	|mod           	|a % b              	|Modulus.
+`%`                      	|num num    	|mod           	|a % b              	|Modulus.
 `@`                      	|frac       	|floor         	|floor(a)           	|Integer floor of fraction.
 `@`                      	|float      	|floor         	|floor(a)           	|Integer floor of float.
 `#`                      	|num num    	|pow           	|a ** b             	|Exponent. Can produce an integer, rational or float depending on inputs.
