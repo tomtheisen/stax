@@ -10,7 +10,7 @@ import { isInt, StaxInt, zero, one, minusOne } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
 import { Multiset, StaxSet, StaxMap, IntRange } from './collections';
-import { primeFactors, allPrimes } from './primehelper';
+import { primeFactors, allPrimes, indexOfPrime } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
@@ -1498,17 +1498,7 @@ export class Runtime {
                 case '|n':
                     if (isInt(this.peek())) { // exponents of sequential primes in factorization
                         let target = int.abs(this.popInt()), result: StaxValue[] = [];
-                        let singleRemaining = false, zeroes = 0;
                         if (target.valueOf() > 1) for (let p of allPrimes()) {
-                            if (singleRemaining) {
-                                if (int.eq(p, target)) {
-                                    result = result.concat(Array(zeroes).fill(zero));
-                                    result.push(one);
-                                    break;
-                                }
-                                zeroes += 1;
-                                continue;
-                            }
                             let exp = zero;
                             while (int.eq(int.mod(target, p), zero)) {
                                 target = int.div(target, p);
@@ -1516,7 +1506,13 @@ export class Runtime {
                             }
                             result.push(exp);
                             if (target.valueOf() <= 1) break;
-                            singleRemaining = int.cmp(int.mul(p, p), target) > 0;
+
+                            if (int.cmp(int.mul(p, p), target) > 0) {
+                                // only a single factor remains
+                                result = result.concat(Array(indexOfPrime(target) - result.length).fill(zero));
+                                result.push(one);
+                                break;
+                            }
                         }
                         this.push(result);
                     }
