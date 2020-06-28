@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "target": "es2016",
         "noImplicitAny": true,
-        "sourceMap": false,
+        "sourceMap": true, // stripped by webpack for distribution, but used in debug
         "alwaysStrict": true,
         "strictNullChecks": true,
         "noUnusedLocals": true,
