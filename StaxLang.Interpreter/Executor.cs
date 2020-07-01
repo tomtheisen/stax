@@ -26,6 +26,7 @@ namespace StaxLang {
             ['0'] = (new Rational(0, 1), "0/1"),
             ['2'] = (0.5, "0.5"),
             ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
+            ['6'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), "Base64 symbol alphabet"),
             ['/'] = (Math.PI / 3, "pi / 3"),
             ['%'] = (new List<object>{ BigInteger.Zero, BigInteger.Zero }, "[0 0]"),
             ['!'] = (S2A("[a-z]"), "[a-z]"),
