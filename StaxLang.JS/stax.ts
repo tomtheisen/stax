@@ -1554,12 +1554,13 @@ export class Runtime {
                     }
                     break;
                 case '|o': { // get indices of elements when ordered
-                    let a = this.popArray(), result: StaxValue[] = [], i = 0;
+                    let a = this.popArray(), result: StaxValue[] = [];
                     if (a instanceof IntRange) this.push(range(0, a.length));
                     else {
                         let loca = a;
-                        let idxs = [...range(0, loca.length)].sort((x: StaxInt, y: StaxInt) => compare(loca[floatify(x)], loca[floatify(y)]));
-                        for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
+                        let idxs = range(0, loca.length).map(floatify)
+                            .sort((x: number, y: number) => compare(loca[x], loca[y]) || x - y);
+                        for (let i = 0; i < idxs.length; i++) result[idxs[i]] = int.make(i);
                         this.push(result);
                     }
                     break;
