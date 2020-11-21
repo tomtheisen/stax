@@ -216,6 +216,7 @@ op                       	|Types          	|Name              	|Description
 `:{`                     	|any            	|parenthesize      	|Embed value in parentheses as string.
 `:}`                     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`                     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
+`:3`                     	|arr int        	|rot-13            	|Caesar cipher; shifts all letters by the specified amount, wrapping from 'z' to 'a'.
 `:c`                     	|arr int        	|set-case          	|Set case of string. If integer is zero, use upper case.  Otherwise, lower.
 `:D`                     	|arr int        	|trim-both         	|Trim element from both ends of string.
 `:D`                     	|arr arr        	|trim-both         	|Trim all characters from both ends of string.
