@@ -56,6 +56,7 @@ function setup() {
         { alias: "2", types: "r", code: "2|L@"},
         { alias: "2", types: "a", code: "c|*"},
         { alias: "3", types: "a", code: "Vac13|)\\:fc^+|t"},
+        { alias: "3", types: "ai", code: "Vaca|(\\:fc^+|t"},
         { alias: "~", types: "a", code: "VaVA\\{+kcr+|t"},
         { alias: "~", types: "i", code: "c0>{|B%|2v}{UT}?"},
         { alias: "@", types: "a", code: "{f%"},

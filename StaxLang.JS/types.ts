@@ -213,7 +213,14 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
-const versionInfo = "Stax 1.1.9 - Tom Theisen - https://github.com/tomtheisen/stax"
+const _10 = int.make(10);
+export function literalFor(arg: StaxInt): string {
+    if (int.cmp(arg, int.zero) < 0) return literalFor(int.negate(arg)) + 'N';
+    if (int.eq(arg, _10)) return 'A';
+    return arg.toString();
+}
+
+const versionInfo = "Stax 1.1.10 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
@@ -232,6 +239,7 @@ export const constants: {[key: string]: StaxValue} = {
     '0': rat.zero,
     '2': 0.5,
     '3': Math.pow(2, 1.0 / 12),
+    '6': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"),
     '/': Math.PI / 3,
     'a': S2A("abcdefghijklmnopqrstuvwxyz"),
     'A': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),

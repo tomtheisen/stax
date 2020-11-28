@@ -764,6 +764,12 @@ e
 1.77124374916142
 	stax
 7 3 |L
+	in
+0 7
+	out
+-∞
+	stax
+|L
 	name:LogFloorShortcuts
 	in
 100
@@ -785,6 +791,18 @@ e
 0
 	stax
 :A
+	in
+200
+	out
+374
+	stax
+|F:A
+	in
+200
+	out
+1245
+	stax
+|F:2
 	name:CustomBase
 	in
 97
@@ -947,10 +965,18 @@ u
 	name:FactorizationExponents
 	in
 20
+194
 	out
 2 0 1
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 	stax
-|n J
+me|n J
+	in
+1000
+	out
+608
+	stax
+vF|n|M2<+
 	name:Totient
 	in
 13

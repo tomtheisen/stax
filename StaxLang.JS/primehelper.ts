@@ -14,7 +14,7 @@ export function primeFactors(n: StaxInt): StaxInt[] {
             n = int.div(n, d);
         }
         if (n.valueOf() == 1) return result;
-        if (int.cmp(int.pow(d, two), n) > 0) {
+        if (int.cmp(int.mul(d, d), n) > 0) {
             result.push(n);
             return result;
         }
@@ -38,5 +38,23 @@ function addPrime(): StaxInt {
                 return c;
             }
         }
+    }
+}
+
+export function indexOfPrime(p: StaxInt): number {
+    if (int.cmp(p, last(primes)!) <= 0) {
+        // binary search
+        for (let lo = 0, hi = primes.length;lo < hi; ) {
+            let mid = lo + hi >> 1;
+            let cmp = int.cmp(p, primes[mid]);
+            if (cmp === 0) return mid;
+            if (cmp < 0) hi = mid; else lo = mid + 1;
+        }
+        return -1;
+    }
+    else for (let i = primes.length; ; i++) {
+        const cmp = int.cmp(p, addPrime());
+        if (cmp < 0) return -1;
+        if (cmp === 0) return i;
     }
 }

@@ -4,5 +4,6 @@ module.exports = {
     ...common,
     optimization: {
         minimize: false // no minification in dev builds
-    }
+    }, 
+    devtool: 'inline-source-map'
 };

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace StaxLang {
     public class Executor {
-        public const string VersionInfo = "Stax 1.1.9 - Tom Theisen - https://github.com/tomtheisen/stax";
+        public const string VersionInfo = "Stax 1.1.10 - Tom Theisen - https://github.com/tomtheisen/stax";
 
         private bool OutputWritten = false;
         public TextWriter Output { get; private set; }
@@ -26,6 +26,7 @@ namespace StaxLang {
             ['0'] = (new Rational(0, 1), "0/1"),
             ['2'] = (0.5, "0.5"),
             ['3'] = (Math.Pow(2, 1.0 / 12), "semitone ratio in equal temperament"),
+            ['6'] = (S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"), "Base64 symbol alphabet"),
             ['/'] = (Math.PI / 3, "pi / 3"),
             ['%'] = (new List<object>{ BigInteger.Zero, BigInteger.Zero }, "[0 0]"),
             ['!'] = (S2A("[a-z]"), "[a-z]"),
@@ -1672,19 +1673,22 @@ namespace StaxLang {
                                     else block.AddDesc("log with base");
                                     dynamic b = Pop(), a = Pop();
                                     if (b is BigInteger && a is BigInteger) {
-                                        BigInteger num = a;
-                                        double multiplicity = 0;
-                                        while (num % b == 0 && num > 1) {
-                                            num /= b;
-                                            multiplicity += 1;
-                                        }
-                                        if (num == 1) {
-                                            Push(multiplicity);
-                                            break;
+                                        if (a == 0) Push(double.NegativeInfinity);
+                                        else if (b <= 1) Push(double.PositiveInfinity);
+                                        else { 
+                                            BigInteger n = 1, significance = BigInteger.Pow(2, 52);
+                                            double result = 0;
+                                            for (a = BigInteger.Abs(a); n < a; result++) n *= b;
+                                            // ensure values are finite before floatifying
+                                            if (a > significance) { 
+                                                BigInteger reduction = a / significance;
+                                                a /= reduction;
+                                                n /= reduction;
+                                            }
+                                            Push(result + Math.Log((double)a / (double)n, (double)b));
                                         }
                                     }
-
-                                    Push(Math.Log((double)a, (double)b));
+                                    else Push(Math.Log((double)a, (double)b));
                                 }
                                 else if (IsArray(Peek())) {
                                     block.AddDesc("combine elements from a and b, with each occurring the max of its occurrences from a and b");

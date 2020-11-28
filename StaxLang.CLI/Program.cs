@@ -43,7 +43,10 @@ namespace StaxLang.CLI {
             }
         }
 
-        private static void Overwrite(string msg) => Console.Write(msg.PadRight(Console.BufferWidth));
+        private static void Overwrite(string msg) {
+            if (Console.CursorLeft != 0) Console.WriteLine();
+            Console.Write(msg.PadRight(Console.BufferWidth));
+        }
 
         private static void DoTests(string path, bool @throw) {
             var sw = Stopwatch.StartNew();

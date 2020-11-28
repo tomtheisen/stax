@@ -1,7 +1,7 @@
-import { last } from './types';
+import { last, literalFor } from './types';
 import { isPacked } from './packer';
-import { compress, decompress, compressLiteral } from './huffmancompression';
-import { cramSingle, uncramSingle } from './crammer';
+import { decompress, compressLiteral } from './huffmancompression';
+import { cramSingle, uncramSingle, uncram, cram } from './crammer';
 import * as int from './integer';
 
 export class Block {
@@ -57,13 +57,15 @@ export enum CodeType {
 }
 
 export enum LiteralTypes {
-    None                 = 0b000000,
-    CompressedString     = 0b000001,
-    CompressableString   = 0b000010,
-    UncompressableString = 0b000100,
-    CompressedInt        = 0b001000,
-    CompressableInt      = 0b010000,
-    UncompressableInt    = 0b100000,
+    None                 = 0b00000000,
+    CompressedString     = 0b00000001,
+    CompressableString   = 0b00000010,
+    UncompressableString = 0b00000100,
+    CompressedInt        = 0b00001000,
+    CompressableInt      = 0b00010000,
+    UncompressableInt    = 0b00100000,
+    CrammedArray         = 0b01000000,
+    CrammableSequence    = 0b10000000,
 }
 
 export function getCodeType(program: string) : [CodeType, LiteralTypes] {
@@ -109,19 +111,15 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 break;
             case '"':
                 let literal = parseString(program, pos);
-                if (literal.endsWith('"%')) {
-                    literals |= LiteralTypes.CompressedInt;
-                }
-                if (literal.endsWith('"!')) {
-                    // can't do anything about crammed arrays... yet
-                }
+                if (literal.endsWith('"%')) literals |= LiteralTypes.CompressedInt;
+                else if (literal.endsWith('"!')) literals |= LiteralTypes.CrammedArray;
                 else {
                     let contents = literal.replace(/^"|"$/g, "");
                     let compressable = !contents.match(/[^ !',-.:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]/);
-                    if (literal.length <= 4) compressable = true;
+                    if (literal.endsWith('"') && literal.length <= 4) compressable = true;
                     else if (compressable) {
-                        let compressed = compress(contents);
-                        if (!compressed || compressed.length >= contents.length) compressable = false;
+                        let compressed = compressLiteral(contents);
+                        if (!compressed || compressed.length >= literal.length) compressable = false;
                     }
                     literals |= compressable
                         ? LiteralTypes.CompressableString
@@ -133,6 +131,9 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
                 pos += parseCompressedString(program, pos).length - 1;
                 literals |= LiteralTypes.CompressedString;
                 break;
+            case 'z':
+                let expanded = program.slice(pos).match(/^z(?:(?:A|(?!10\+)[1-9]\d*)N?\+){2,}/);
+                if (expanded) literals |= LiteralTypes.CrammableSequence;
         }
     }
 
@@ -197,7 +198,7 @@ export function compressLiterals(program: string): string {
                         else result += compressed;
                     }
                     else {
-                        let compressed = compress(contents);
+                        let compressed = compressLiteral(contents);
                         if (!compressed || compressed.length >= contents.length) compressable = false;
                         else {
                             result += '`' + compressed;
@@ -213,6 +214,21 @@ export function compressLiterals(program: string): string {
                 let compressed = parseCompressedString(program, pos);
                 result += compressed;
                 pos += compressed.length - 1;
+                break;
+            }
+            case 'z': {
+                const expanded = program.slice(pos).match(/^z(?:(?:A|(?!10\+)[1-9]\d*)N?\+){2,}/);
+                if (expanded) {
+                   const ints = expanded[0]
+                        .replace(/A/g, "10")
+                        .replace(/(\d+)N/g, "-$1")
+                        .replace(/^z|\+$/g, "")
+                        .split('+')
+                        .map(int.make);
+                    result += cram(ints);
+                    pos += expanded[0].length - 1;
+                }
+                else result += program[pos];
                 break;
             }
             default:
@@ -242,10 +258,16 @@ export function decompressLiterals(program: string): string {
                 break;
             case '"': {
                 let literal = parseString(program, pos);
-                if (literal.endsWith("%")) {
+                if (literal.endsWith("%")) { // crammed scalar int
                     if (/\d!?$/.test(result)) result += ' '; // keep space between literals
                     result += uncramSingle(literal.replace(/^"|"%$/g, '')).toString();
                     if (/^[0-9!]/.test(program.substr(pos + literal.length))) result += ' ';
+                }
+                else if (literal.endsWith("!")) { // crammed int array
+                    result += 'z';
+                    for (let e of uncram(literal.replace(/^"|"!$/g, ''))) {
+                        result += literalFor(e) + '+';
+                    }
                 }
                 else result += literal;
                 pos += literal.length - 1;
@@ -254,7 +276,7 @@ export function decompressLiterals(program: string): string {
             case '`': {
                 let compressed = parseCompressedString(program, pos), contents = compressed.replace(/^`|`$/g, "");
                 result += '"' + decompress(contents);
-                if (compressed.endsWith('`')) result += '"';
+                if (compressed.substring(1).endsWith('`')) result += '"';
                 pos += compressed.length - 1;
                 break;
             }
@@ -443,7 +465,7 @@ function parseString(program: string, pos: number) {
 }
 
 function parseCompressedString(program: string, pos: number) {
-    let matches = program.substr(pos).match(/`[^`]+(`|$)/);
+    let matches = program.substr(pos).match(/`[^`]*(`|$)/);
     if (!matches) throw "tried to parse a compressed string, but no backtick";
     return matches[0];
 }

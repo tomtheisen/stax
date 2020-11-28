@@ -45,7 +45,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `-`                      	|num num    	|sub           	|a - b              	|Subtract.
 `*`                      	|num num    	|mul           	|a * b              	|Multiply.
 `/`                      	|num num    	|div           	|a / b              	|Integers will use integer division.
-`%`                      	|int int    	|mod           	|a % b              	|Modulus.
+`%`                      	|num num    	|mod           	|a % b              	|Modulus.
 `@`                      	|frac       	|floor         	|floor(a)           	|Integer floor of fraction.
 `@`                      	|float      	|floor         	|floor(a)           	|Integer floor of float.
 `#`                      	|num num    	|pow           	|a ** b             	|Exponent. Can produce an integer, rational or float depending on inputs.
@@ -216,6 +216,7 @@ op                       	|Types          	|Name              	|Description
 `:{`                     	|any            	|parenthesize      	|Embed value in parentheses as string.
 `:}`                     	|any            	|bracercise        	|Embed value in square braces as string.
 `:3`                     	|arr            	|rot-13            	|Rot13 encode/decode; dual-purpose.
+`:3`                     	|arr int        	|rot-13            	|Caesar cipher; shifts all letters by the specified amount, wrapping from 'z' to 'a'.
 `:c`                     	|arr int        	|set-case          	|Set case of string. If integer is zero, use upper case.  Otherwise, lower.
 `:D`                     	|arr int        	|trim-both         	|Trim element from both ends of string.
 `:D`                     	|arr arr        	|trim-both         	|Trim all characters from both ends of string.
@@ -482,6 +483,7 @@ op   	|Value
 `V0` 	|rational 0/1
 `V2` 	|0.5
 `V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
+`V6` 	|Base-64 symbol alphabet
 `V/` 	|pi/3
 `V%` 	|[0, 0]
 `Va` 	|"abcdefghijklmnopqrstuvwxyz"

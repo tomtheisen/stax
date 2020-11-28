@@ -391,6 +391,13 @@ Hello, world.
 Uryyb, jbeyq.
 	stax
 :3
+	name:Rot-n
+	in
+"abc, XYZ." 1
+	out
+bcd, YZA.
+	stax
+:3
 	name:RingTranslate
 	in
 Hello, world.

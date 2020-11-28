@@ -10,7 +10,7 @@ import { isInt, StaxInt, zero, one, minusOne } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
 import { Multiset, StaxSet, StaxMap, IntRange } from './collections';
-import { primeFactors, allPrimes } from './primehelper';
+import { primeFactors, allPrimes, indexOfPrime } from './primehelper';
 import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
@@ -1423,19 +1423,21 @@ export class Runtime {
                     let b = this.pop(), a = this.pop();
                     if (isNumber(b) && isNumber(a)) { // log with base
                         if (isInt(a) && isInt(b)) {
-                            // check for exact power
-                            let num = a, multiplicity = 0;
-                            while (int.mod(num, b).valueOf() == 0 && num.valueOf() > 1) {
-                                num = int.div(num, b);
-                                multiplicity += 1;
-                            }
-                            if (num.valueOf() == 1) {
-                                this.push(multiplicity);
-                                break;
+                            if (int.eq(a, zero)) this.push(Number.NEGATIVE_INFINITY);
+                            else if (int.cmp(b, one) <= 0) this.push(Number.POSITIVE_INFINITY);
+                            else {
+                                let n = one, result = 0, significance = int.make(Math.pow(2, 52));
+                                for (a = int.abs(a); int.cmp(n, a) < 0; result++) n = int.mul(n, b);
+                                // ensure values are finite before floatifying
+                                if (int.cmp(a, significance) > 0) {
+                                    let reduction = int.div(a, significance);
+                                    a = int.div(a, reduction);
+                                    n = int.div(n, reduction);
+                                }
+                                this.push(result + Math.log(floatify(a) / floatify(n)) / Math.log(floatify(b)));
                             }
                         }
-                        let result = Math.log(floatify(a)) / Math.log(floatify(b));
-                        this.push(result);
+                        else this.push(Math.log(floatify(a)) / Math.log(floatify(b)));
                     }
                     else if (isArray(b) && isArray(a)) {
                         // combine elements from a and b, with each occurring the max of its occurrences from a and b
@@ -1498,14 +1500,21 @@ export class Runtime {
                 case '|n':
                     if (isInt(this.peek())) { // exponents of sequential primes in factorization
                         let target = int.abs(this.popInt()), result: StaxValue[] = [];
-                        for (let p of allPrimes()) {
-                            if (target.valueOf() <= 1) break;
+                        if (target.valueOf() > 1) for (let p of allPrimes()) {
                             let exp = zero;
-                            while (int.mod(target,p).valueOf() == 0) {
+                            while (int.eq(int.mod(target, p), zero)) {
                                 target = int.div(target, p);
                                 exp = int.add(exp, one);
                             }
                             result.push(exp);
+                            if (target.valueOf() <= 1) break;
+
+                            if (int.cmp(int.mul(p, p), target) > 0) {
+                                // only a single factor remains
+                                result = result.concat(Array(indexOfPrime(target) - result.length).fill(zero));
+                                result.push(one);
+                                break;
+                            }
                         }
                         this.push(result);
                     }
@@ -1547,12 +1556,13 @@ export class Runtime {
                     }
                     break;
                 case '|o': { // get indices of elements when ordered
-                    let a = this.popArray(), result: StaxValue[] = [], i = 0;
+                    let a = this.popArray(), result: StaxValue[] = [];
                     if (a instanceof IntRange) this.push(range(0, a.length));
                     else {
                         let loca = a;
-                        let idxs = [...range(0, loca.length)].sort((x: StaxInt, y: StaxInt) => compare(loca[floatify(x)], loca[floatify(y)]));
-                        for (let t of idxs) result[floatify(t as StaxInt)] = int.make(i++);
+                        let idxs = range(0, loca.length).map(floatify)
+                            .sort((x: number, y: number) => compare(loca[x], loca[y]) || x - y);
+                        for (let i = 0; i < idxs.length; i++) result[idxs[i]] = int.make(i);
                         this.push(result);
                     }
                     break;
