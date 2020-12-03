@@ -200,10 +200,7 @@ export function compressLiterals(program: string): string {
                     else {
                         let compressed = compressLiteral(contents);
                         if (!compressed || compressed.length >= contents.length) compressable = false;
-                        else {
-                            result += '`' + compressed;
-                            if (literal.endsWith('"')) result += '`';
-                        }
+                        else result += compressed.slice(0, -1);
                     }
                 }
                 if (!compressable) result += literal;
