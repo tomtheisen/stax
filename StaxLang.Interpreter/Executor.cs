@@ -3996,6 +3996,7 @@ namespace StaxLang {
 
         BigInteger NthRoot(BigInteger val, int n) {
             val = BigInteger.Abs(val);
+            n = Math.Max(1, n);
             BigInteger x = 1;
             for (var i = val; i > 0; i >>= n) x <<= 1;
             do {

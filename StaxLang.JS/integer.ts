@@ -68,6 +68,7 @@ export const floatify: (n: StaxInt) => number = usingNativeBigInt
     : (n: npm_bigInt.BigInteger) => n.valueOf();
 export function nthRoot(val: StaxInt, n: StaxInt): StaxInt {
     val = abs(val);
+    if (cmp(n, one) < 0) n = one;
     let x = one;
     const two = make(2), shift = pow(two, n), n_1 = sub(n, one);
     for (let i = val; cmp(i, zero) > 0; i = div(i, shift)) x = mul(x, two);
