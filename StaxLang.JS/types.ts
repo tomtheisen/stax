@@ -220,7 +220,7 @@ export function literalFor(arg: StaxInt): string {
     return arg.toString();
 }
 
-const versionInfo = "Stax 1.1.10 - Tom Theisen - https://github.com/tomtheisen/stax"
+const versionInfo = "Stax 1.1.11 - Tom Theisen - https://github.com/tomtheisen/stax"
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
