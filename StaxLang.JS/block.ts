@@ -421,7 +421,7 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                     pushToken(program.substr(pos, 2));
                     pos += 2;
                 }
-                else if ("wWmfFkKo".indexOf(program[pos]) >= 0) {
+                else if (!b.explicitlyTerminated && "wWmfFkKo".includes(program[pos])) {
                     pushToken(program[pos++]);
                 }
                 break;
