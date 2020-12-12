@@ -139,6 +139,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:c`                     	|num int int	|clamp         	|min(max(a, b), c)  	|Ensure value is in range.
 `:C`                     	|int        	|catalan       	|choose(2a,a)/(a+1) 	|Catalan number; number of strings with a matched pairs of brackets.
 `:d`                     	|int        	|divisors      	|                   	|Get all divisors of n.
+`:e`                     	|num        	|exp           	|exp(x)             	|Raise *e* to the specified power.
 `:f`                     	|int        	|factorize-exp 	|                   	|Factorize into pairs of [prime, exponent].
 `:F`                     	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:g`                     	|int        	|low-bit       	|                   	|Unset all but the low set bit.
