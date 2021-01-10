@@ -20,11 +20,13 @@ export class ExecutionState {
     public ip: number;
     public cancel: boolean;
     public break: boolean;
+    public frameSleep: boolean;
 
-    constructor(ip: number, cancel = false, break_ = false) {
+    constructor(ip: number, cancel = false, break_ = false, frameSleep = false) {
         this.ip = ip;
         this.cancel = cancel;
         this.break = break_;
+        this.frameSleep = frameSleep;
     }
 }
 
@@ -329,6 +331,10 @@ export class Runtime {
 
             if (token === '|`') {
                 yield new ExecutionState(ip += 2, false, true);
+                continue;
+            }
+            else if (token === '|,') {
+                yield new ExecutionState(ip += 2, false, false, true);
                 continue;
             }
             // don't step on a no-op
@@ -955,6 +961,12 @@ export class Runtime {
                     else this.push(zero);
                     break;
                 }
+                case '|.':
+                    this.runMacro("13]p");
+                    break;
+                case '|:':
+                    this.runMacro("12]p");
+                    break;
                 case '||':
                     if (isInt(this.peek())) {
                         if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");

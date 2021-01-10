@@ -1138,6 +1138,12 @@ namespace StaxLang {
                                     else Push(BigInteger.Zero);
                                 }
                                 break;
+                            case '.':
+                                RunMacro("13]p");
+                                break;
+                            case ':':
+                                RunMacro("12]p");
+                                break;
                             case '|': 
                                 if (IsInt(Peek())) {
                                     block.AddDesc("bitwise or");

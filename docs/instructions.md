@@ -9,8 +9,11 @@ op                  	|Description
 `Q`                 	|Peek and print with a newline.
 <code>&#124;_</code>	|(space, not underscore) Print a single space character.
 <code>&#124;`</code>	|Dump debug state.  Shows registers, iteration info, and both stacks.  In the web-based environment, break execution.
+<code>&#124;,</code>	|When using the web-based execution environment, pause execution for one frame. (via `requestAnimationFrame`)  Useful for animations.
 <code>&#124;u</code>	|Un-eval.  Produce string representation of array. e.g. `"[1, 2, 3, [4, 5]]"`
 <code>&#124;V</code>	|Array of command line arguments.  This will be an empty array for non-command-line invocations.
+<code>&#124;.</code>	|Output a carriage return.  In the web-based execution environment, this will remove all the output from the last line.
+<code>&#124;:</code>	|Output a form feed.  In the web-based execution environment, this will remove and reset all output.
 
 ## Stack
 op                  	|Example           	|Name         	|Description

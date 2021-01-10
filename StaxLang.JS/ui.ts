@@ -169,7 +169,7 @@ function showError(err: Error) {
 }
 
 function runProgramTimeSlice() {
-    pendWork(() => {
+    pendWork(function work() {
         if (!activeStateIterator || pendingBreak) {
             pendingBreak = false;
             return;
@@ -198,6 +198,7 @@ function runProgramTimeSlice() {
                     showDebugInfo(result.value.ip, steps);
                     return;
                 }
+                else if (result.value.frameSleep) return requestAnimationFrame(work);
                 if(performance.now() - sliceStart > workMilliseconds) break;
             }
             if (newOutput) window.scrollTo(0, document.body.scrollHeight);
