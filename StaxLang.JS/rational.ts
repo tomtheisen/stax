@@ -57,8 +57,8 @@ export class Rational {
     }
 
     floor() {
-        if (int.cmp(this.numerator, int.zero) < 0) {
-            return int.div(int.add(int.sub(this.numerator, this.denominator), int.one), this.denominator);
+        if (int.cmp(this.numerator, 0n) < 0) {
+            return int.div(int.add(int.sub(this.numerator, this.denominator), 1n), this.denominator);
         }
         return int.div(this.numerator, this.denominator);
     }
@@ -70,7 +70,7 @@ export class Rational {
     mod(other: Rational) {
         other = other.abs();
         let intPart = this.divide(other).floor();
-        return this.subtract(other.multiply(new Rational(intPart, int.one)));
+        return this.subtract(other.multiply(new Rational(intPart, 1n)));
     }
 
     equals(other: Rational) {
@@ -78,11 +78,11 @@ export class Rational {
     }
 
     private reduce() {
-        if (int.eq(this.denominator, int.zero)) throw new Error("rational divide by zero");
+        if (int.eq(this.denominator, 0n)) throw new Error("rational divide by zero");
         let gcd = int.gcd(this.numerator, this.denominator);
         this.numerator = int.div(this.numerator, gcd);
         this.denominator = int.div(this.denominator, gcd);
-        if (int.cmp(this.denominator, int.zero) < 0) {
+        if (int.cmp(this.denominator, 0n) < 0) {
             this.numerator = int.negate(this.numerator);
             this.denominator = int.negate(this.denominator);
         }
@@ -90,20 +90,20 @@ export class Rational {
 }
 
 export function rationalize(arg: number): Rational {
-    const significantBits = 50, two = int.make(2), epsilon = arg / 2 ** significantBits;;
+    const significantBits = 50, two = 2n, epsilon = arg / 2 ** significantBits;;
 
     if (arg < 0) return rationalize(-arg).negate();
-    if (arg % 1 == 0) return new Rational(int.make(arg), int.one);
+    if (arg % 1 == 0) return new Rational(BigInt(arg), 1n);
 
     type rat = [StaxInt, StaxInt];
     let
-        left: rat = [int.make(Math.floor(arg)), int.one],
-        right: rat = [int.make(Math.ceil(arg)), int.one],
-        best: rat = [int.zero, int.one], mediant: rat;
-    let bestError = Number.POSITIVE_INFINITY, lastMove = int.one;
+        left: rat = [BigInt(Math.floor(arg)), 1n],
+        right: rat = [BigInt(Math.ceil(arg)), 1n],
+        best: rat = [0n, 1n], mediant: rat;
+    let bestError = Number.POSITIVE_INFINITY, lastMove = 1n;
 
     do { // Stern-Brocot binary search
-        mediant = int.cmp(lastMove, int.zero) < 0
+        mediant = int.cmp(lastMove, 0n) < 0
             ? [int.sub(right[0], int.mul(lastMove, left[0])), int.sub(right[1], int.mul(lastMove, left[1]))]
             : [int.add(left[0], int.mul(lastMove, right[0])), int.add(left[1], int.mul(lastMove, right[1]))];
 
@@ -111,23 +111,23 @@ export function rationalize(arg: number): Rational {
         if (isNaN(error)) error = 0;
 
         if (error > 0) {
-            if (int.cmp(lastMove, int.zero) < 0) {
+            if (int.cmp(lastMove, 0n) < 0) {
                 right = mediant;
                 lastMove = int.mul(lastMove, two)
             }
             else {
                 lastMove = int.div(lastMove, two);
-                if (int.eq(lastMove, int.zero)) lastMove = int.minusOne;
+                if (int.eq(lastMove, 0n)) lastMove = -1n;
             }
         }
         else {
-            if (int.cmp(lastMove, int.zero) > 0) {
+            if (int.cmp(lastMove, 0n) > 0) {
                 left = mediant;
                 lastMove = int.mul(lastMove, two)
             }
             else {
                 lastMove = int.div(lastMove, two);
-                if (int.eq(lastMove, int.zero)) lastMove = int.one;
+                if (int.eq(lastMove, 0n)) lastMove = 1n;
             }
         }
         if (Math.abs(error) < bestError) [best, bestError] = [mediant, Math.abs(error)];
@@ -135,5 +135,5 @@ export function rationalize(arg: number): Rational {
     return new Rational(best[0], best[1]);
 }
 
-export const zero = new Rational(int.zero, int.one);
-export const one = new Rational(int.one, int.one);
+export const zero = new Rational(0n, 1n);
+export const one = new Rational(1n, 1n);

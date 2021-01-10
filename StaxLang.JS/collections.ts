@@ -1,5 +1,5 @@
 import { StaxValue, StaxArray, floatify, isFloat, isArray, S2A, areEqual } from './types';
-import { isInt, StaxInt, cmp, add, one, make } from './integer';
+import { isInt, StaxInt, cmp, add } from './integer';
 import { Rational } from './rational';
 import { Block } from './block';
 import * as int from './integer'
@@ -49,7 +49,7 @@ export class Multiset {
 
 const hashMemo = new WeakMap<Exclude<Exclude<StaxValue, number>, BigInt>, number>();
 const buf = new ArrayBuffer(8), intView = new Int32Array(buf), floatView = new Float64Array(buf);
-const HASHMAX_BIG = int.make(0x8000_0000);
+const HASHMAX_BIG = 0x8000_0000n;
 /** returns a value hash in the signed 32-bit range */
 function getHashCode(val: StaxValue): number {
     if (typeof val === "bigint") {
@@ -70,7 +70,7 @@ function getHashCode(val: StaxValue): number {
         return hash;
     }
     if (val instanceof Rational) {
-        if (int.eq(val.denominator, int.one)) return getHashCode(val.numerator); // can be equal to ints
+        if (int.eq(val.denominator, 1n)) return getHashCode(val.numerator); // can be equal to ints
         let hash = getHashCode(val.numerator) ^ getHashCode(val.denominator);
         hashMemo.set(val, hash);
         return hash;
@@ -217,7 +217,7 @@ export class IntRange {
     }
 
     *[Symbol.iterator]() {
-        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; i = add(i, one)) {
+        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; i = add(i, 1n)) {
             yield i;
         }
     }
@@ -267,13 +267,13 @@ export class IntRange {
         start = Math.max(start, 0);
         if (start === 0) {
             if (end == null || end >= this.length) return this;
-            return new IntRange(this.start, add(this.start, make(end)));
+            return new IntRange(this.start, add(this.start, BigInt(end)));
         }
         if (start > this.length) return [];
         if (end == null || end >= this.length) {
-            return new IntRange(add(this.start, make(start)), this.end);
+            return new IntRange(add(this.start, BigInt(start)), this.end);
         }
-        return new IntRange(add(this.start, make(start)), add(this.start, make(end)));
+        return new IntRange(add(this.start, BigInt(start)), add(this.start, BigInt(end)));
     }
 
     reverse() {

@@ -13,18 +13,14 @@ export type StaxArray = MaterializedStaxArray | IntRange;
 
 export function S2A(s: string): StaxInt[] {
     let result: StaxInt[] = [];
-    for (let i = 0; i < s.length; i++) {
-        let code = s.codePointAt(i)!;
-        result.push(int.make(code));
-        if (code > 0x10000) i++;
-    }
+    for (let c of s) result.push(BigInt(c.codePointAt(0)!));
     return result;
 }
 
 export function A2S(a: StaxArray): string {
     let result = "";
     for (let e of a) {
-        if (isInt(e)) result += e.valueOf() == 0 ? ' ' : String.fromCodePoint(int.floatify(e));
+        if (isInt(e)) result += e === 0n ? ' ' : String.fromCodePoint(int.floatify(e));
         else if (isArray(e)) result += A2S(e);
         else throw new Error(`can't convert ${e} to string`);
     }
@@ -63,7 +59,7 @@ export function last(arr: StaxArray): StaxValue | undefined;
 export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number | undefined {
     if (arr instanceof IntRange) {
         if (arr.end == null) return Number.POSITIVE_INFINITY;
-        return (arr.length > 0) ? int.sub(arr.end, int.one) : undefined;
+        return (arr.length > 0) ? int.sub(arr.end, 1n) : undefined;
     }
     return arr[arr.length - 1];
 }
@@ -71,7 +67,7 @@ export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number 
 export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     if (nums.some(isFloat)) return nums.map(floatify);
     if (nums.some(n => n instanceof Rational)) {
-        return nums.map(n => n instanceof Rational ? n : new Rational(n as StaxInt, int.one));
+        return nums.map(n => n instanceof Rational ? n : new Rational(n as StaxInt, 1n));
     }
     return nums;
 }
@@ -79,7 +75,7 @@ export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
 export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
     if (isInt(b)) {
         if (isInt(a)) {
-            if (b.valueOf() < 0) return new Rational(int.one, int.pow(a, int.negate(b)));
+            if (b.valueOf() < 0) return new Rational(1n, int.pow(a, int.negate(b)));
             else return int.pow(a, b);
         }
         else if (a instanceof Rational) {
@@ -97,15 +93,15 @@ export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
 
 export function runLength(arr: StaxArray): StaxArray {
     if (arr.length === 0) return arr;
-    let result: StaxValue[] = [], last: StaxValue | null = null, run = 0;
+    let result: [StaxValue, StaxInt][] = [], last: StaxValue | null = null, run = 1n;
     for (let e of arr) {
-        if (last != null && areEqual(e, last)) run += 1;
+        if (last != null && areEqual(e, last)) ++run;
         else {
-            if (run > 0) result.push([last!, int.make(run)]);
-            [last, run] = [e, 1];
+            if (run > 0) result.push([last!, run]);
+            [last, run] = [e, 1n];
         }
     }
-    result.push([last!, int.make(run)]);
+    result.push([last!, run]);
     return result;
 }
 
@@ -146,10 +142,10 @@ export function compare(a: StaxValue, b: StaxValue): number {
         if (isNumber(b)) {
             if (typeof a === "number" || typeof b === "number") return floatify(a) - floatify(b);
             if (a instanceof Rational || b instanceof Rational) {
-                if (isInt(a)) a = new Rational(a, int.one);
-                if (isInt(b)) b = new Rational(b, int.one);
-                return (a instanceof Rational ? a : new Rational(a, int.one))
-                    .subtract(b instanceof Rational ? b : new Rational(b, int.one)).valueOf();
+                if (isInt(a)) a = new Rational(a, 1n);
+                if (isInt(b)) b = new Rational(b, 1n);
+                return (a instanceof Rational ? a : new Rational(a, 1n))
+                    .subtract(b instanceof Rational ? b : new Rational(b, 1n)).valueOf();
             }
             return int.cmp(a, b);
         }
@@ -213,10 +209,9 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
-const _10 = int.make(10);
 export function literalFor(arg: StaxInt): string {
-    if (int.cmp(arg, int.zero) < 0) return literalFor(int.negate(arg)) + 'N';
-    if (int.eq(arg, _10)) return 'A';
+    if (int.cmp(arg, 0n) < 0) return literalFor(int.negate(arg)) + 'N';
+    if (int.eq(arg, 10n)) return 'A';
     return arg.toString();
 }
 
@@ -224,7 +219,7 @@ const versionInfo = "Stax 1.1.11 - Tom Theisen - https://github.com/tomtheisen/s
 
 export const constants: {[key: string]: StaxValue} = {
     '?': S2A(versionInfo),
-    '%': [int.zero, int.zero],
+    '%': [0n, 0n],
 	'!': S2A("[a-z]"),
 	'@': S2A("[A-Z]"),
 	'#': S2A("[a-zA-Z]"),
@@ -244,7 +239,7 @@ export const constants: {[key: string]: StaxValue} = {
     'a': S2A("abcdefghijklmnopqrstuvwxyz"),
     'A': S2A("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     'b': S2A("()[]{}<>"),
-    'B': int.make(256),
+    'B': 256n,
     'c': S2A("bcdfghjklmnpqrstvwxyz"),
     'C': S2A("BCDFGHJKLMNPQRSTVWXYZ"),
     'd': S2A("0123456789"),
@@ -255,11 +250,11 @@ export const constants: {[key: string]: StaxValue} = {
     'H': S2A("0123456789ABCDEF"),
     'i': Number.NEGATIVE_INFINITY,
     'I': Number.POSITIVE_INFINITY,
-    'k': int.make(1000),
+    'k': 1000n,
     'l': S2A("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     'L': S2A("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-    'm': int.make(0x7fffffff),
-    'M': int.make(1000000),
+    'm': 0x7fffffffn,
+    'M': 1_000_000n,
     'n': S2A("\n"),
     'N': Number.NaN,
     'p': S2A(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"),
@@ -269,7 +264,7 @@ export const constants: {[key: string]: StaxValue} = {
     'S': Math.PI * 4 / 3,
     't': Math.PI * 2,
     'T': 10.0,
-    'u': int.make(4294967296),
+    'u': 4294967296n,
     'v': S2A("aeiou"),
     'V': S2A("AEIOU"),
     'x': S2A(codePage),

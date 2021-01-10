@@ -6,7 +6,6 @@ import {
 } from './block';
 import { pendWork } from './timeoutzero';
 import { setClipboard } from './clipboard';
-import * as int from './integer';
 import { compressLiteral } from './huffmancompression';
 import { cram, cramSingle, compressIntAray } from './crammer';
 import { isPacked, unpack, pack, staxDecode, staxEncode } from './packer';
@@ -19,7 +18,6 @@ declare var __BUILD_DATE__: string;
 document.getElementById("buildInfo")!.textContent = `
     ${__COMMIT_HASH__}
     built ${__BUILD_DATE__.replace(/:\d{2}\.\d{3}Z/, "Z")},
-    ${ int.usingNativeBigInt ? 'ES bigint' : 'npm big-integer' },
     ${ nativeSortIsStable() ? 'stable' : 'unstable' } sort`;
 
 // duration to run stax program before yielding to ui and pumping messages
@@ -120,14 +118,18 @@ function startNextInput() {
     let stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
         content => {
-            if (/\f|\r/.exec(content)) {
+            if (/\f|\r|\x08/.exec(content)) {
                 for (let char of content) {
+                    if (outputEl.textContent == null) outputEl.textContent = "";
                     switch (char) {
                         case "\f":
                             outputEl.textContent = "";
                             break;
                         case "\r":
-                            outputEl.textContent = outputEl.textContent?.slice(0, outputEl.textContent.lastIndexOf('\n')) ?? null;
+                            outputEl.textContent = outputEl.textContent.slice(0, outputEl.textContent.lastIndexOf('\n'));
+                            break;
+                        case "\b":
+                            outputEl.textContent = outputEl.textContent.slice(0, -1);
                             break;
                         default:
                             outputEl.textContent += char;
@@ -177,7 +179,7 @@ function runProgramTimeSlice() {
 
         root.classList.remove("debugging");
 
-        let result: IteratorResult<ExecutionState>, sliceStart = performance.now();
+        let result: IteratorResult<ExecutionState>, sliceEnd = performance.now() + workMilliseconds;
         try {
             while (!(result = activeStateIterator.next()).done) {
                 steps += 1;
@@ -199,10 +201,8 @@ function runProgramTimeSlice() {
                     return;
                 }
                 else if (result.value.frameSleep) return requestAnimationFrame(work);
-                if(performance.now() - sliceStart > workMilliseconds) break;
+                if (performance.now() > sliceEnd) break;
             }
-            if (newOutput) window.scrollTo(0, document.body.scrollHeight);
-            newOutput = false;
             if (result.done) startNextInput();
             runProgramTimeSlice();
         }
@@ -210,6 +210,10 @@ function runProgramTimeSlice() {
             if (e instanceof Error) showError(e);
             startNextInput();
             runProgramTimeSlice();
+        }
+        finally {
+            if (newOutput) window.scrollTo(0, document.body.scrollHeight);
+            newOutput = false;
         }
         
         let elapsed = (performance.now() - start) / 1000;
@@ -556,7 +560,7 @@ stringInputEl.addEventListener("input", doStringCoder);
 function doIntegerCoder() {
     let matches = integerInputEl.value.match(/-?\d+/g);
     if (matches) {
-        let ints = matches.map(e => int.make(e));
+        let ints = matches.map(e => BigInt(e));
         if (ints.length === 1) {
             integerOutputEl.value = cramSingle(ints[0]);
             integerInfoEl.textContent = `${ integerOutputEl.value.length } bytes (scalar)`;

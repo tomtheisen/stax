@@ -6,7 +6,7 @@ import { StaxArray, StaxNumber, StaxValue,
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
 import * as int from './integer';
-import { isInt, StaxInt, zero, one, minusOne } from './integer';
+import { isInt, StaxInt } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
 import { Multiset, StaxSet, StaxMap, IntRange } from './collections';
@@ -36,8 +36,8 @@ function fail(msg: string): never {
 
 function range(start: number | StaxInt, end: number | StaxInt): IntRange {
     return new IntRange(
-        typeof start === "number" ? int.make(start) : start,
-        typeof end === "number" ? int.make(end) : end);
+        typeof start === "number" ? BigInt(start) : start,
+        typeof end === "number" ? BigInt(end) : end);
 }
 
 class EarlyTerminate extends Error {
@@ -59,9 +59,9 @@ export class Runtime {
     private gotoCallDepth = 0;
     private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: StaxInt}[] = [];
     private _: StaxValue | IteratorPair;
-    private index = zero;
-    private indexOuter = zero;
-    private x: StaxValue = zero;
+    private index = 0n;
+    private indexOuter = 0n;
+    private x: StaxValue = 0n;
     private y: StaxValue;
     private implicitEval = false;
 
@@ -72,20 +72,19 @@ export class Runtime {
     }
 
     private format(arg: (StaxValue | IteratorPair), options?: FormatOptions): string {
-        const _10 = int.make(10), _32 = int.make(32), _127 = int.make(127);
         const nul = options && options.zeroString || "\\0";
         if (arg instanceof IteratorPair) return `(${ this.format(arg.item1) }, ${ this.format(arg.item2) })`;
         if (isNumber(arg)) return arg.toString();
         if (arg instanceof Block) return `Block ${ arg.contents }`;
 
-        if (arg.every(e => isInt(e) && int.eq(e, zero))) {
+        if (arg.every(e => isInt(e) && int.eq(e, 0n))) {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
-        if (arg.every(e => isInt(e) && (int.eq(e, zero) || int.eq(e, _10) || int.cmp(e, _32) >= 0 && int.cmp(e, _127) < 0))) {
+        if (arg.every(e => isInt(e) && (int.eq(e, 0n) || int.eq(e, 10n) || int.cmp(e, 32n) >= 0 && int.cmp(e, 127n) < 0))) {
             return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt)))).replace(/\\u0000/g, nul);
         }
         if (arg instanceof IntRange && arg.length >= 3) {
-            return `[${ arg.start } .. ${ arg.end != null ? int.sub(arg.end, one) : '' }]`;
+            return `[${ arg.start } .. ${ arg.end != null ? int.sub(arg.end, 1n) : '' }]`;
         }
 
         return '[' + arg.map(val => this.format(val, options)).join(", ") + ']';
@@ -135,12 +134,12 @@ export class Runtime {
 
     private pushStackFrame() {
         this.callStackFrames.push({_: this._, indexOuter: this.indexOuter});
-        [this.indexOuter, this.index] = [this.index, zero];
+        [this.indexOuter, this.index] = [this.index, 0n];
     }
     private popStackFrame() {
         this.index = this.indexOuter;
         let popped = this.callStackFrames.pop();
-        if (!popped) throw new Error("tried to pop a stack frame; wasn't one");
+        if (!popped) throw new Error("tried to pop a stack frame; wasn't 1n");
         this._ = popped._;
         this.indexOuter = popped.indexOuter;
     }
@@ -214,20 +213,19 @@ export class Runtime {
 
                     match = substring.match(/^(-?\d+)\/(-?\d+)/);
                     if (match) {
-                        newValue(new Rational(int.make(match[1]), int.make(match[2])));
+                        newValue(new Rational(BigInt(match[1]), BigInt(match[2])));
                         i += match[0].length - 1;
                         break;
                     }
 
                     match = substring.match(/^-?0x([0-9a-f]+)/i);
                     if (match) {
-                        const _16 = int.make(16);
                         let hex = [...match[1].toLowerCase()].reduce(
                             (acc, dig) => int.add(
-                                int.mul(acc, _16), 
-                                int.make("0123456789abcdef".indexOf(dig))
+                                int.mul(acc, 16n), 
+                                BigInt("0123456789abcdef".indexOf(dig))
                             ), 
-                            int.zero);
+                            0n);
                         if (substring.startsWith("-")) hex = int.negate(hex);
                         newValue(hex);
                         i += match[0].length - 1;
@@ -236,13 +234,12 @@ export class Runtime {
 
                     match = substring.match(/^-?0b([01]+)/i);
                     if (match) {
-                        const _2 = int.make(2);
                         let hex = [...match[1].toLowerCase()].reduce(
                             (acc, dig) => int.add(
-                                int.mul(acc, _2), 
-                                int.make("01".indexOf(dig))
+                                int.mul(acc, 2n), 
+                                BigInt("01".indexOf(dig))
                             ), 
-                            int.zero);
+                            0n);
                         if (substring.startsWith("-")) hex = int.negate(hex);
                         newValue(hex);
                         i += match[0].length - 1;
@@ -251,7 +248,7 @@ export class Runtime {
 
                     match = substring.match(/^-?\d+/);
                     if (match) {
-                        newValue(int.make(match[0]));
+                        newValue(BigInt(match[0]));
                         i += match[0].length - 1;
                         break;
                     }
@@ -346,7 +343,7 @@ export class Runtime {
                 continue;
             }
             else if (!!token.match(/^\d+!/)) this.push(parseFloat(token.replace("!", ".")));
-            else if (!!token[0].match(/^\d/)) this.push(int.make(token));
+            else if (!!token[0].match(/^\d/)) this.push(BigInt(token));
             else if (token.startsWith('"')) this.doEvaluateStringToken(token);
             else if (token.startsWith('`')) {
                 let compressed = token.replace(/^`|`$/g, '');
@@ -408,7 +405,7 @@ export class Runtime {
                             yield s;
                         }
                     }
-                    else this.push(isTruthy(this.pop()) ? zero : one);
+                    else this.push(isTruthy(this.pop()) ? 0n : 1n);
                     break;
                 case '+':
                     this.doPlus();
@@ -432,16 +429,16 @@ export class Runtime {
                     for (let s of this.doAssignIndex()) yield s;
                     break;
                 case '=':
-                    this.push(areEqual(this.pop(), this.pop()) ? one : zero);
+                    this.push(areEqual(this.pop(), this.pop()) ? 1n : 0n);
                     break;
                 case '<': {
                     let b = this.pop(), a = this.pop();
-                    this.push(compare(a, b) < 0 ? one : zero);
+                    this.push(compare(a, b) < 0 ? 1n : 0n);
                     break;
                 }
                 case '>': {
                     let b = this.pop(), a = this.pop();
-                    this.push(compare(a, b) > 0 ? one : zero);
+                    this.push(compare(a, b) > 0 ? 1n : 0n);
                     break;
                 }
                 case '?': {
@@ -482,7 +479,7 @@ export class Runtime {
                     break;
                 }
                 case 'A':
-                    this.push(int.make(10))
+                    this.push(10n)
                     break;
                 case 'b': {
                     let b = this.pop(), a = this.peek();
@@ -499,7 +496,7 @@ export class Runtime {
                         let result: StaxInt[] = [];
                         for (let i = 0; i < 8; i++) {
                             for (let j = 7; j >= 0; j--) {
-                                result.push(view.getUint8(i) >> j & 1 ? one : zero);
+                                result.push(view.getUint8(i) >> j & 1 ? 1n : 0n);
                             }
                         }
                         this.push(result);
@@ -538,8 +535,8 @@ export class Runtime {
                     else if (isInt(this.peek())) { // n times do
                         let n = this.popInt();
                         this.pushStackFrame();
-                        for (this.index = zero; int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
-                            this._ = int.add(this.index, one);
+                        for (this.index = 0n; int.cmp(this.index, n) < 0; this.index = int.add(this.index, 1n)) {
+                            this._ = int.add(this.index, 1n);
                             for (let s of this.runSteps(getRest())) yield s;
                         }
                         this.popStackFrame();
@@ -560,7 +557,7 @@ export class Runtime {
                         if (!this.doEval()) throw new Error("eval failed");
                     }
                     else if (typeof this.peek() === "number") {
-                        this.push(int.make(Math.ceil(this.pop() as number)));
+                        this.push(BigInt(Math.ceil(this.pop() as number)));
                     }
                     else if (this.peek() instanceof Rational) {
                         this.push((this.pop() as Rational).ceiling())
@@ -616,7 +613,7 @@ export class Runtime {
                             }
                             if (cancelled || !isTruthy(this.pop())) break;
                             result.push(e);
-                            this.index = int.add(this.index, one);
+                            this.index = int.add(this.index, 1n);
                         }
                         this.popStackFrame();
                         this.push(result);
@@ -643,7 +640,7 @@ export class Runtime {
                             }
                             if (cancelled || !isTruthy(this.pop())) break;
                             result.unshift(e);
-                            this.index = int.add(this.index, one);
+                            this.index = int.add(this.index, 1n);
                         }
                         this.popStackFrame();
                         this.push(result);
@@ -728,7 +725,7 @@ export class Runtime {
                     else if (this.peek() instanceof Block) {
                         let block = this.pop() as Block, n = this.inputStack.pop();
                         if (isInt(n)) {
-                            for (this.pushStackFrame(); int.cmp(this.index, n) < 0; this.index = int.add(this.index, one)) {
+                            for (this.pushStackFrame(); int.cmp(this.index, n) < 0; this.index = int.add(this.index, 1n)) {
                                 for (let s of this.runSteps(block)) {
                                     if (!s.cancel) yield s;
                                 }
@@ -763,7 +760,7 @@ export class Runtime {
                     break;
                 }
                 case 'R':
-                    if (isInt(this.peek())) this.push(range(1, int.add(this.popInt(), one)));
+                    if (isInt(this.peek())) this.push(range(1, int.add(this.popInt(), 1n)));
                     else if (this.peek() instanceof Rational) this.push((this.pop() as Rational).denominator);
                     else for (let s of this.doRegexReplace()) yield s;
                     break;
@@ -791,7 +788,7 @@ export class Runtime {
                             }
                             if (cancelled || !isTruthy(this.pop())) break;
                             result.shift();
-                            this.index = int.add(this.index, one);
+                            this.index = int.add(this.index, 1n);
                         }
                         this.popStackFrame();
                         this.push(result);
@@ -830,7 +827,7 @@ export class Runtime {
                             }
                             if (cancelled || !isTruthy(this.pop())) break;
                             result.pop();
-                            this.index = int.add(this.index, one);
+                            this.index = int.add(this.index, 1n);
                         }
                         this.popStackFrame();
                         this.push(result);
@@ -862,14 +859,14 @@ export class Runtime {
                             }
                             this.push(result);
                         }
-                        else if (isInt(arg)) this.push(new Rational(one, arg));
+                        else if (isInt(arg)) this.push(new Rational(1n, arg));
                         else if (arg instanceof Rational) this.push(arg.invert());
                         else if (typeof arg === "number") this.push(1 / arg);
                         else fail("bad type for u");
                         break;
                     }
                 case 'U':
-                    this.push(minusOne);
+                    this.push(-1n);
                     break;
                 case 'v':
                     if (isNumber(this.peek())) this.runMacro("1-");
@@ -925,7 +922,7 @@ export class Runtime {
                     this.print(' ', false);
                     break;
                 case '|;':
-                    this.push(int.mod(this.index, int.make(2)));
+                    this.push(int.mod(this.index, 2n));
                     break;
                 case '|~':
                     this.doLastIndexOf();
@@ -951,14 +948,14 @@ export class Runtime {
                 case '|#':
                     if (isArray(this.peek())) { // number of occurrences in array
                         let b = this.popArray(), a = this.popArray();
-                        this.push(int.make(a.filter(e => areEqual(e, b)).length));
+                        this.push(BigInt(a.filter(e => areEqual(e, b)).length));
                     }
                     break;
                 case '|$': {
                     let b = this.pop(), a = this.pop(), cmp = compare(a, b);
-                    if (cmp > 0) this.push(one);
-                    else if (cmp < 0) this.push(minusOne);
-                    else this.push(zero);
+                    if (cmp > 0) this.push(1n);
+                    else if (cmp < 0) this.push(-1n);
+                    else this.push(0n);
                     break;
                 }
                 case '|.':
@@ -988,7 +985,7 @@ export class Runtime {
 
                             let resultline = (result[row + r] as StaxArray).map(c => c);
                             for (let c = 0; c < payline.length; c++) {
-                                while (resultline.length <= col + c) resultline.push(zero);
+                                while (resultline.length <= col + c) resultline.push(0n);
                                 resultline[col + c] = payline[c];
                             }
                             result[row + r] = resultline;
@@ -1010,10 +1007,10 @@ export class Runtime {
                     this.runMacro("~;%R{;)mr,d"); // all suffixes
                     break;
                 case '|{':
-                    this.push(new StaxSet(this.popArray()).eq(new StaxSet(this.popArray())) ? one : zero);
+                    this.push(new StaxSet(this.popArray()).eq(new StaxSet(this.popArray())) ? 1n : 0n);
                     break;
                 case '|}':
-                    this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? one : zero);
+                    this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? 1n : 0n);
                     break;
                 case '|^':
                     if (isArray(this.peek())) {
@@ -1045,7 +1042,7 @@ export class Runtime {
                             maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
                         }
                         for (let i = 0; i < arr.length; i++) {
-                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(0n);
                             line.unshift(...arr[i] as StaxArray);
                             result.push(line);
                         }
@@ -1061,7 +1058,7 @@ export class Runtime {
                             maxlen = Math.max(maxlen, (arr[i] as StaxArray).length);
                         }
                         for (let i = 0; i < arr.length; i++) {
-                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(zero);
+                            let line = Array(maxlen - (arr[i] as StaxArray).length).fill(0n);
                             line.push(...arr[i] as StaxArray);
                             result.push(line);
                         }
@@ -1093,7 +1090,7 @@ export class Runtime {
                         const range = this.popArray() as IntRange;
                         if (range.end == null) this.push(Number.POSITIVE_INFINITY);
                         // gauss sum
-                        else this.push(int.div(int.mul(int.sub(range.end, range.start), int.sub(int.add(range.start, range.end), int.one)), int.make(2)));
+                        else this.push(int.div(int.mul(int.sub(range.end, range.start), int.sub(int.add(range.start, range.end), 1n)), 2n));
                     }
                     else this.runMacro('Z{+F');
                     break;
@@ -1133,8 +1130,8 @@ export class Runtime {
                 case '|/': {
                     let b = this.pop(), a = this.pop();
                     if (isInt(a) && isInt(b)) {
-                        if (!int.eq(a, zero) && int.abs(b).valueOf() > 1) {
-                            while (int.eq(zero, int.mod(a, b)) && !int.eq(b, one)) a = int.div(a, b);
+                        if (!int.eq(a, 0n) && int.abs(b).valueOf() > 1) {
+                            while (int.eq(0n, int.mod(a, b)) && !int.eq(b, 1n)) a = int.div(a, b);
                         }
                         this.push(a);
                     }
@@ -1177,13 +1174,13 @@ export class Runtime {
                         if (loc < 0) {
                             loc += result.length;
                             if (loc < 0) {
-                                result.unshift(...new Array(-loc).fill(zero));
+                                result.unshift(...new Array(-loc).fill(0n));
                                 loc = 0;
                             }
                         }
 
                         for (let i = 0; i < payload.length; i++) {
-                            while (loc + i >= result.length) result.push(zero);
+                            while (loc + i >= result.length) result.push(0n);
                             result[loc + i] = payload[i];
                         }
                         this.push(result);
@@ -1191,23 +1188,23 @@ export class Runtime {
                     break;
                 case '|0':
                     if (isArray(this.peek())) {
-                        let result = minusOne, i = zero;
+                        let result = -1n, i = 0n;
                         for (let e of this.popArray()) {
                             if (!isTruthy(e)) {
                                 result = i;
                                 break;
                             }
-                            i = int.add(i, one);
+                            i = int.add(i, 1n);
                         }
                         this.push(result);
                     }
                     break;
                 case '|1':
                     if (isArray(this.peek())) { // index of 1st truthy
-                        let result = minusOne, i = 0;
+                        let result = -1n, i = 0;
                         for (let e of this.popArray()) {
                             if (isTruthy(e)) {
-                                result = int.make(i);
+                                result = BigInt(i);
                                 break;
                             }
                             ++i;
@@ -1224,10 +1221,10 @@ export class Runtime {
                         for (let e of this.popArray()) {
                             if (isArray(e)) {
                                 if (e.length > i) result.push(materialize(e)[i]);
-                                else result.push(zero);
+                                else result.push(0n);
                             }
                             else {
-                                result.push(i == 0 ? e : zero);
+                                result.push(i == 0 ? e : 0n);
                             }
                             ++i;
                         }
@@ -1239,10 +1236,10 @@ export class Runtime {
                     this.runMacro("36|b"); // base 36
                     break;
                 case '|4':
-                    this.push(isArray(this.pop()) ? one : zero);
+                    this.push(isArray(this.pop()) ? 1n : 0n);
                     break;
                 case '|5': { // 0-indexed fibonacci number
-                    let n = this.popInt().valueOf(), a = one, b = one;
+                    let n = this.popInt().valueOf(), a = 1n, b = 1n;
                     if (n >= 0) for (let i = 0; i < n; i++) [a, b] = [b, int.add(a, b)];
                     else for (let i = 0; i > n; i--) [a, b] = [int.sub(b, a), a];
                     this.push(a);
@@ -1276,10 +1273,10 @@ export class Runtime {
                         else fail("number but not a number in abs");
                     }
                     else if (isArray(this.peek())) { // any
-                        let result = zero;
+                        let result = 0n;
                         for (let e of this.popArray()) {
                             if (isTruthy(e)) {
-                                result = one;
+                                result = 1n;
                                 break;
                             }
                         }
@@ -1289,10 +1286,10 @@ export class Runtime {
                 case '|A':
                     if (isInt(this.peek())) this.runMacro("As#");
                     else if (isArray(this.peek())) {
-                        let result = one;
+                        let result = 1n;
                         for (let e of this.popArray()) {
                             if (!isTruthy(e)) {
-                                result = zero;
+                                result = 0n;
                                 break;
                             }
                         }
@@ -1332,14 +1329,14 @@ export class Runtime {
                     this.doCenter();
                     break;
                 case '|d':
-                    this.push(int.make(this.mainStack.length));
+                    this.push(BigInt(this.mainStack.length));
                     break;
                 case '|D':
-                    this.push(int.make(this.inputStack.length));
+                    this.push(BigInt(this.inputStack.length));
                     break;
                 case '|e':
                     if (isInt(this.peek())) {
-                        this.push(int.eq(zero, int.mod(this.pop() as StaxInt, int.make(2))) ? one : zero);
+                        this.push(int.eq(0n, int.mod(this.pop() as StaxInt, 2n)) ? 1n : 0n);
                     }
                     else if (isArray(this.peek())) {
                         let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
@@ -1365,8 +1362,8 @@ export class Runtime {
                 }
                 case '|F':
                     if (isInt(this.peek())) { // factorial
-                        let result = one, n = this.popInt();
-                        for (let i = one; i <= n.valueOf(); i = int.add(i, one)) {
+                        let result = 1n, n = this.popInt();
+                        for (let i = 1n; i <= n.valueOf(); i = int.add(i, 1n)) {
                             result = int.mul(result, i);
                         }
                         this.push(result);
@@ -1418,7 +1415,7 @@ export class Runtime {
                     break;
                 case '|k': {
                     const str = A2S(this.popArray()), enc = new TextEncoder;
-                    this.push([...enc.encode(str)].map(e => int.make(e)));
+                    this.push([...enc.encode(str)].map(e => BigInt(e)));
                     break;
                 }
                 case '|K': {
@@ -1435,10 +1432,10 @@ export class Runtime {
                     let b = this.pop(), a = this.pop();
                     if (isNumber(b) && isNumber(a)) { // log with base
                         if (isInt(a) && isInt(b)) {
-                            if (int.eq(a, zero)) this.push(Number.NEGATIVE_INFINITY);
-                            else if (int.cmp(b, one) <= 0) this.push(Number.POSITIVE_INFINITY);
+                            if (int.eq(a, 0n)) this.push(Number.NEGATIVE_INFINITY);
+                            else if (int.cmp(b, 1n) <= 0) this.push(Number.POSITIVE_INFINITY);
                             else {
-                                let n = one, result = 0, significance = int.make(Math.pow(2, 52));
+                                let n = 1n, result = 0, significance = BigInt(Math.pow(2, 52));
                                 for (a = int.abs(a); int.cmp(n, a) < 0; result++) n = int.mul(n, b);
                                 // ensure values are finite before floatifying
                                 if (int.cmp(a, significance) > 0) {
@@ -1513,18 +1510,18 @@ export class Runtime {
                     if (isInt(this.peek())) { // exponents of sequential primes in factorization
                         let target = int.abs(this.popInt()), result: StaxValue[] = [];
                         if (target.valueOf() > 1) for (let p of allPrimes()) {
-                            let exp = zero;
-                            while (int.eq(int.mod(target, p), zero)) {
+                            let exp = 0n;
+                            while (int.eq(int.mod(target, p), 0n)) {
                                 target = int.div(target, p);
-                                exp = int.add(exp, one);
+                                exp = int.add(exp, 1n);
                             }
                             result.push(exp);
                             if (target.valueOf() <= 1) break;
 
                             if (int.cmp(int.mul(p, p), target) > 0) {
                                 // only a single factor remains
-                                result = result.concat(Array(indexOfPrime(target) - result.length).fill(zero));
-                                result.push(one);
+                                result = result.concat(Array(indexOfPrime(target) - result.length).fill(0n));
+                                result.push(1n);
                                 break;
                             }
                         }
@@ -1574,7 +1571,7 @@ export class Runtime {
                         let loca = a;
                         let idxs = range(0, loca.length).map(floatify)
                             .sort((x: number, y: number) => compare(loca[x], loca[y]) || x - y);
-                        for (let i = 0; i < idxs.length; i++) result[idxs[i]] = int.make(i);
+                        for (let i = 0; i < idxs.length; i++) result[idxs[i]] = BigInt(i);
                         this.push(result);
                     }
                     break;
@@ -1600,13 +1597,13 @@ export class Runtime {
                         this.push(int.floorSqrt(int.abs(b)));
                     }
                     else if (isNumber(b)) {
-                        this.push(int.make(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
+                        this.push(BigInt(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
                     }
                     else if (isArray(b)) {
                         let pattern = new RegExp(A2S(b), "g"), text = A2S(this.popArray());
                         let match: RegExpExecArray | null;
                         let result: StaxValue[] = [];
-                        while (match = pattern.exec(text)) result.push(int.make(match.index));
+                        while (match = pattern.exec(text)) result.push(BigInt(match.index));
                         this.push(result);
                     }
                     break;
@@ -1619,15 +1616,15 @@ export class Runtime {
                     else if (isArray(b)) {
                         let a = this.popArray();
                         let match = RegExp(`^(?:${ A2S(b) })$`).exec(A2S(a));
-                        this.push(match ? one : zero);
+                        this.push(match ? 1n : 0n);
                     }
                     break;
                 }
                 case '|r': {
                     // explicit range
                     let end = this.pop(), start = this.pop();
-                    if (isArray(end)) end = int.make(end.length);
-                    if (isArray(start)) start = int.make(start.length);
+                    if (isArray(end)) end = BigInt(end.length);
+                    if (isArray(start)) start = BigInt(start.length);
                     if (isInt(start) && isInt(end)) this.push(range(start, end));
                     else fail("bad types for |r");
                     break;
@@ -1676,19 +1673,19 @@ export class Runtime {
                     this.doTrimElementsFromEnd();
                     break;
                 case '|x':
-                    this.push(this.x = int.sub(isInt(this.x) ? this.x : zero, one));
+                    this.push(this.x = int.sub(isInt(this.x) ? this.x : 0n, 1n));
                     break;
                 case '|X':
-                    this.push(this.x = int.add(isInt(this.x) ? this.x : zero, one));
+                    this.push(this.x = int.add(isInt(this.x) ? this.x : 0n, 1n));
                     break;
                 case '|y':
-                    this.push(this.y = int.sub(isInt(this.y) ? this.y : zero, one));
+                    this.push(this.y = int.sub(isInt(this.y) ? this.y : 0n, 1n));
                     break;
                 case '|Y':
-                    this.push(this.y = int.add(isInt(this.y) ? this.y : zero, one));
+                    this.push(this.y = int.add(isInt(this.y) ? this.y : 0n, 1n));
                     break;
                 case '|z':
-                    this.runMacro("ss ~; '0* s 2l$ ,)"); // zero fill
+                    this.runMacro("ss ~; '0* s 2l$ ,)"); // 0n fill
                     break;
                 case '|Z':
                     if (isArray(this.peek())) { // rectangularize using empty array
@@ -1782,9 +1779,9 @@ export class Runtime {
             this.push(result);
         }
         else if (isInt(a) && isArray(b)) {
-            let count = a.valueOf();
+            let count = a;
             if (count < 0) [b, count] = [[...b].reverse(), -count];
-            if (count === 1) this.push(b);
+            if (count === 1n) this.push(b);
             else {
                 let result: StaxValue[] = [];
                 for (let i = 0; i < count; i++) result = [...result, ...b];
@@ -1794,7 +1791,7 @@ export class Runtime {
         else if (isArray(a) && isInt(b)) {
             let count = b.valueOf();
             if (count < 0) [a, count] = [[...a].reverse(), -count];
-            if (count === 1) this.push(a);
+            if (count === 1n) this.push(a);
             else {
                 let result: StaxValue[] = [];
                 for (let i = 0; i < count; i++) result = [...result, ...a];
@@ -1819,7 +1816,7 @@ export class Runtime {
         else if (a instanceof Block && isInt(b)) {
             let block = a, times = b.valueOf();
             this.pushStackFrame();
-            for (this.index = zero; this.index.valueOf() < times; this.index = int.add(this.index, one)) {
+            for (this.index = 0n; this.index.valueOf() < times; this.index = int.add(this.index, 1n)) {
                 for (let s of this.runSteps(block)) {
                     if (s.cancel) break;
                     yield s;
@@ -1830,7 +1827,7 @@ export class Runtime {
         else if (isInt(a) && b instanceof Block) {
             let block = b, times = a.valueOf();
             this.pushStackFrame();
-            for (this.index = zero; this.index.valueOf() < times; this.index = int.add(this.index, one)) {
+            for (this.index = 0n; this.index.valueOf() < times; this.index = int.add(this.index, 1n)) {
                 for (let s of this.runSteps(block)) {
                     if (s.cancel) break;
                     yield s;
@@ -1845,7 +1842,7 @@ export class Runtime {
         if (isNumber(a) && isNumber(b)) {
             let result: StaxNumber;
             [a, b] = widenNumbers(a, b);
-            if (isInt(b) && int.eq(b, zero) || b instanceof Rational && int.eq(b.numerator, zero)) {
+            if (isInt(b) && int.eq(b, 0n) || b instanceof Rational && int.eq(b.numerator, 0n)) {
                 [a, b] = [floatify(a), 0];
             }
             if (isFloat(a) && isFloat(b)) result = a / b;
@@ -1854,7 +1851,7 @@ export class Runtime {
                 if (b.valueOf() < 0) {
                     [a, b] = [int.negate(a), int.negate(b)];
                 }
-                if (a.valueOf() < 0) a = int.add(int.sub(a, b), one);
+                if (a.valueOf() < 0) a = int.add(int.sub(a, b), 1n);
                 result = int.div(a, b);
             }
             else throw "weird types or something; can't divide?"
@@ -1897,7 +1894,7 @@ export class Runtime {
                     currentPart!.push(e);
                     last = current;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             if (currentPart) result.push(currentPart);
             this.popStackFrame();
@@ -1930,7 +1927,7 @@ export class Runtime {
     private doPercent() {
         let b = this.pop();
         if (isArray(b)) {
-            this.push(isFinite(b.length) ? int.make(b.length) : b.length);
+            this.push(isFinite(b.length) ? BigInt(b.length) : b.length);
             return;
         }
         let a = this.pop();
@@ -1952,7 +1949,7 @@ export class Runtime {
                 }
             }
             else if (isInt(a) && isInt(b)) {
-                if (int.eq(b, zero)) result = a;
+                if (int.eq(b, 0n)) result = a;
                 else {
                     result = int.mod(a, b);
                     if (result.valueOf() < 0) result = int.add(result, b);
@@ -1978,7 +1975,7 @@ export class Runtime {
         }
         else if (isInt(arg)) {
             let result = [];  // array of decimal digits
-            for (let c of int.abs(arg).toString()) result.push(int.make(c));
+            for (let c of int.abs(arg).toString()) result.push(BigInt(c));
             this.push(result);
         }
     }
@@ -2020,14 +2017,14 @@ export class Runtime {
         targetSize = Math.min(els.length, targetSize);
 
         // factoradic permutation decoder
-        let totalPerms = one, stride = one;
-        for (let i = 1; i <= els.length; i++) totalPerms = int.mul(totalPerms, int.make(i));
-        for (let i = 1; i <= els.length - targetSize; i++) stride = int.mul(stride, int.make(i));
+        let totalPerms = 1n, stride = 1n;
+        for (let i = 1; i <= els.length; i++) totalPerms = int.mul(totalPerms, BigInt(i));
+        for (let i = 1; i <= els.length - targetSize; i++) stride = int.mul(stride, BigInt(i));
         let idxs = els.map(_ => 0);
-        for (let pi = zero; int.cmp(pi, totalPerms) < 0; pi = int.add(pi, stride)) {
+        for (let pi = 0n; int.cmp(pi, totalPerms) < 0; pi = int.add(pi, stride)) {
             let n = pi;
-            for (let i = 1; i <= els.length; n = int.div(n, int.make(i++))) {
-                idxs[els.length - i] = int.floatify(int.mod(n, int.make(i)));
+            for (let i = 1; i <= els.length; n = int.div(n, BigInt(i++))) {
+                idxs[els.length - i] = int.floatify(int.mod(n, BigInt(i)));
             }
             let dupe = [...els];
             result.push(idxs.slice(0, targetSize).map(i => {
@@ -2047,7 +2044,7 @@ export class Runtime {
             return;
         }
         if (isFloat(top)) {
-            this.push(int.make(Math.floor(top)));
+            this.push(BigInt(Math.floor(top)));
             return;
         }
 
@@ -2101,12 +2098,12 @@ export class Runtime {
         const self = this;
         function *doFinalAssign (flatArr: StaxValue[], index: number) {
             if (index >= flatArr.length) {
-                flatArr.push(...Array(index + 1 - flatArr.length).fill(zero));
+                flatArr.push(...Array(index + 1 - flatArr.length).fill(0n));
             }
 
             if (element instanceof Block) {
                 self.pushStackFrame();
-                self.index = int.make(index);
+                self.index = BigInt(index);
                 self.push(self._ = flatArr[index]);
                 let cancelled = false;
                 for (let s of self.runSteps(element)) {
@@ -2141,7 +2138,7 @@ export class Runtime {
                 if (index < 0) {
                     index += result.length;
                     if (index < 0) {
-                        result.unshift(...Array(-index).fill(zero));
+                        result.unshift(...Array(-index).fill(0n));
                         index = 0;
                     }
                 }
@@ -2165,8 +2162,8 @@ export class Runtime {
         else if (isInt(a)) { // insert element at index
             let arr = this.popArray(), result = [...arr], a_ = int.floatify(a);
             if (a_ < 0) a_ += result.length;
-            if (a_ < 0) result.unshift(b, ...new Array(-a_).fill(zero));
-            else if (a_ > result.length) result.push(...new Array(a_ - result.length).fill(zero), b);
+            if (a_ < 0) result.unshift(b, ...new Array(-a_).fill(0n));
+            else if (a_ > result.length) result.push(...new Array(a_ - result.length).fill(0n), b);
             else result.splice(a_, 0, b);
             this.push(result);
         }
@@ -2179,24 +2176,24 @@ export class Runtime {
             let result = [], negative = number.valueOf() < 0;
             number = int.abs(number);
 
-            if (base.valueOf() == 1) result = new Array(number).fill(zero);
+            if (base === 1n) result = new Array(number).fill(0n);
             else do {
                 let digit = int.mod(number, base);
                 if (stringRepresentation) {
                     let d = "0123456789abcdefghijklmnopqrstuvwxyz".charCodeAt(int.floatify(digit));
-                    result.unshift(int.make(d));
+                    result.unshift(BigInt(d));
                 }
                 else { // digit mode
                     result.unshift(digit);
                 }
                 number = int.div(number, base);
             } while (number.valueOf() > 0);
-            if (negative && stringRepresentation) result.unshift(int.make("-".charCodeAt(0)));
+            if (negative && stringRepresentation) result.unshift(BigInt("-".charCodeAt(0)));
 
             this.push(result);
         }
         else if (isArray(number)) {
-            let result = zero;
+            let result = 0n;
             if (stringRepresentation) {
                 let s = A2S(number).toLowerCase();
                 let negative = s.startsWith("-");
@@ -2204,7 +2201,7 @@ export class Runtime {
                 for (let c of s) {
                     let digit = "0123456789abcdefghijklmnopqrstuvwxyz".indexOf(c);
                     if (digit < 0) digit = c.charCodeAt(0);
-                    result = int.add(int.mul(result, base), int.make(digit));
+                    result = int.add(int.mul(result, base), BigInt(digit));
                 }
                 if (negative) result = int.negate(result);
             }
@@ -2222,7 +2219,7 @@ export class Runtime {
     private doGCD() {
         let b = this.pop();
         if (isArray(b)) {
-            let result = zero;
+            let result = 0n;
             for (let e of b) result = int.gcd(result, e as StaxInt);
             this.push(result);
             return;
@@ -2248,7 +2245,7 @@ export class Runtime {
             let bval = int.floatify(b);
             if (bval < 0) bval += a.length;
             if (bval <= a.length) this.push(a.slice(a.length - bval));
-            else this.push([...Array(bval - a.length).fill(zero), ...a]);
+            else this.push([...Array(bval - a.length).fill(0n), ...a]);
         }
         else if (isArray(a) && isArray(b)) {
             if (a.length >= b.length) this.push(a.slice(a.length - b.length));
@@ -2277,7 +2274,7 @@ export class Runtime {
                     }
                     current.push(a[i]);
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
 
@@ -2297,7 +2294,7 @@ export class Runtime {
             let bval = int.floatify(b);
             if (bval < 0) bval += a.length;
             if (bval <= a.length) this.push(a.slice(0, bval));
-            else this.push([...a, ...Array(bval - a.length).fill(zero)]);
+            else this.push([...a, ...Array(bval - a.length).fill(0n)]);
         }
         else if (isArray(a) && isArray(b)) {
             if (a.length >= b.length) this.push(a.slice(0, b.length));
@@ -2323,7 +2320,7 @@ export class Runtime {
                     current.push(e);
                 }
 
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
 
@@ -2338,16 +2335,16 @@ export class Runtime {
         if (isInt(top)) {
             let data = this.pop();
             if (isArray(data)) {
-                let result = Array((int.floatify(top) - data.length) >> 1).fill(zero);
+                let result = Array((int.floatify(top) - data.length) >> 1).fill(0n);
                 result = result.concat(data);
-                result = result.concat(Array(int.floatify(top) - result.length).fill(zero));
+                result = result.concat(Array(int.floatify(top) - result.length).fill(0n));
                 this.push(result);
             }
             else if (isInt(data)) { // binomial coefficient
-                let r = top, n = data, result = one;
-                if (n.valueOf() < 0 || int.cmp(r, n) > 0) result = zero;
-                for (let i = one; int.cmp(i, r) <= 0; i = int.add(i, one)) {
-                    result = int.div(int.mul(result, int.add(int.sub(n, i), one)), i);
+                let r = top, n = data, result = 1n;
+                if (n.valueOf() < 0 || int.cmp(r, n) > 0) result = 0n;
+                for (let i = 1n; int.cmp(i, r) <= 0; i = int.add(i, 1n)) {
+                    result = int.div(int.mul(result, int.add(int.sub(n, i), 1n)), i);
                 }
                 this.push(result);
             }
@@ -2358,8 +2355,8 @@ export class Runtime {
             for (let line of top) {
                 if (!isArray(line)) throw new Error('tried to center a non-array');
                 let newLine = [...line];
-                newLine.unshift(...Array((maxLen - newLine.length) >> 1).fill(zero));
-                newLine.push(...Array(maxLen - newLine.length).fill(zero));
+                newLine.unshift(...Array((maxLen - newLine.length) >> 1).fill(0n));
+                newLine.push(...Array(maxLen - newLine.length).fill(0n));
                 result.push(newLine);
             }
             this.push(result);
@@ -2441,7 +2438,7 @@ export class Runtime {
                 }
                 result.push(listPartition);
             }
-            else result.push(partition.map(v => int.make(v)));
+            else result.push(partition.map(v => BigInt(v)));
 
             let i: number;
             for (i = n - 1; i >= 0 && partition[i] === 1; i --) ;
@@ -2473,7 +2470,7 @@ export class Runtime {
 
         if (isArray(distance)) {
             arr = materialize(distance);
-            distance = one;
+            distance = 1n;
         }
         else {
             let popped = this.pop();
@@ -2483,8 +2480,8 @@ export class Runtime {
         if (!isInt(distance)) throw new Error("bad rotation distance");
 
         if (arr.length) {
-            distance = int.mod(distance, int.make(arr.length));
-            if (distance.valueOf() < 0) distance = int.add(distance, int.make(arr.length));
+            distance = int.mod(distance, BigInt(arr.length));
+            if (distance.valueOf() < 0) distance = int.add(distance, BigInt(arr.length));
             let cutpoint = direction < 0 ? int.floatify(distance) : (arr.length - int.floatify(distance));
             let result = arr.slice(cutpoint).concat(arr.slice(0, cutpoint));
             this.push(result);
@@ -2496,11 +2493,11 @@ export class Runtime {
         let target = this.popArray(), arr = this.popArray();
         for (let i = arr.length - target.length; i >= 0; i--) {
             if (areEqual(target, arr.slice(i, i + target.length))) {
-                this.push(int.make(i));
+                this.push(BigInt(i));
                 return;
             }
         }
-        this.push(minusOne);
+        this.push(-1n);
     }
 
     private *doIndexOfOrAnd() {
@@ -2521,36 +2518,36 @@ export class Runtime {
             ++i;
             if (isArray(target)) {
                 if (i + target.length > arr.length) {
-                    this.push(minusOne);
+                    this.push(-1n);
                     return;
                 }
                 if (areEqual(target, arr.slice(i, i + target.length))) {
-                    this.push(int.make(i));
+                    this.push(BigInt(i));
                     return;
                 }
             }
             else if (target instanceof Block) {
                 this.pushStackFrame();
                 this.push(this._ = el);
-                this.index = int.make(i);
+                this.index = BigInt(i);
                 let cancelled = false;
                 for (let s of this.runSteps(target)) {
                     yield s;
                     if (cancelled = s.cancel) break;
                 }
                 if (!cancelled && isTruthy(this.pop())) {
-                    this.push(int.make(i));
+                    this.push(BigInt(i));
                     this.popStackFrame();
                     return;
                 }
                 this.popStackFrame();
             }
             else if (areEqual(target, el)) {
-                this.push(int.make(i));
+                this.push(BigInt(i));
                 return;
             }
         }
-        this.push(minusOne); // all else failed
+        this.push(-1n); // all else failed
     }
 
     private *doFindFirst(reverse = false) {
@@ -2570,7 +2567,7 @@ export class Runtime {
                 this.push(e);
                 break;
             }
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         }
         this.popStackFrame();
     }
@@ -2613,7 +2610,7 @@ export class Runtime {
             let maxlen = Math.max(...copied.map(e => (e as StaxArray).length));
 
             for (let line of copied) {
-                line.push(...Array(maxlen - line.length).fill(zero));
+                line.push(...Array(maxlen - line.length).fill(0n));
             }
 
             for (let i = 0; i < maxlen; i++) {
@@ -2643,7 +2640,7 @@ export class Runtime {
                 this.push(this._ = e);
                 for (let s of this.runSteps(top)) yield s;
                 combined.push({val: e, key: this.pop(), idx: i++});
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
 
@@ -2683,7 +2680,7 @@ export class Runtime {
                 if (areEqual(projected, extreme)) result.push(e);
             }
 
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         }
         this.popStackFrame();
 
@@ -2697,7 +2694,7 @@ export class Runtime {
         if (isArray(target)) {
             let text = A2S(arr), search = A2S(target), result = [], lastFound = -1;
             while ((lastFound = text.indexOf(search, lastFound + 1)) >= 0) {
-                result.push(int.make(lastFound));
+                result.push(BigInt(lastFound));
             }
             this.push(result);
         }
@@ -2708,7 +2705,7 @@ export class Runtime {
                 this.push(this._ = el);
                 for (let s of this.runSteps(target)) yield s;
                 if (isTruthy(this.pop())) result.push(this.index);
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
             this.push(result);
@@ -2716,7 +2713,7 @@ export class Runtime {
         else {
             let result = [], i = 0;
             for (let el of arr) {
-                if (areEqual(el, target)) result.push(int.make(i));
+                if (areEqual(el, target)) result.push(BigInt(i));
                 i++;
             }
             this.push(result);
@@ -2748,7 +2745,7 @@ export class Runtime {
                 result += A2S(isArray(replaced) ? replaced : stringFormat(replaced));
                 lastEnd = match.index! + match[0].length;
 
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
                 if (!match[0]) ss.lastIndex += 1;
             }
             result += ts.substr(lastEnd);
@@ -2762,7 +2759,7 @@ export class Runtime {
     private *doFor(rest: Block) {
         if (this.peek() instanceof Block) {
             let block = this.pop() as Block, data = this.pop();
-            if (isInt(data)) data = range(1, int.add(data, one));
+            if (isInt(data)) data = range(1, int.add(data, 1n));
             if (!isArray(data)) throw Error("block-for operates on ints and arrays, not this garbage. get out of here.");
 
             this.pushStackFrame();
@@ -2772,12 +2769,12 @@ export class Runtime {
                     if (s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
         }
         else if (isArray(this.peek()) || isInt(this.peek())) {
-            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : range(one, int.add(data, one));
+            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : range(1n, int.add(data, 1n));
 
             this.pushStackFrame();
             for (let e of arr) {
@@ -2786,7 +2783,7 @@ export class Runtime {
                     if (s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
         }
@@ -2803,7 +2800,7 @@ export class Runtime {
                 if (cancelled = s.cancel) break;
                 yield s;
             }
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         } while (!cancelled);
         this.popStackFrame();
     }
@@ -2818,7 +2815,7 @@ export class Runtime {
                 if (cancelled = s.cancel) break;
                 yield s;
             }
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         } while (!cancelled && isTruthy(this.pop()));
         this.popStackFrame();
     }
@@ -2831,7 +2828,7 @@ export class Runtime {
         else [block, arr] = [rest, top];
 
         let reduceArr: StaxArray | null = null;
-        if (isInt(arr)) reduceArr = range(one, int.add(arr, one));
+        if (isInt(arr)) reduceArr = range(1n, int.add(arr, 1n));
         else if (isArray(arr)) reduceArr = [...arr];
 
         if (reduceArr) {
@@ -2853,7 +2850,7 @@ export class Runtime {
                     }
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
 
@@ -2868,8 +2865,8 @@ export class Runtime {
             map: Block | string = shorthand ? rest : top as Block;
 
         let inner = shorthand ? top : this.pop(), outer =  this.pop();
-        if (isInt(inner)) inner = range(one, int.add(inner, one));
-        if (isInt(outer)) outer = range(one, int.add(outer, one));
+        if (isInt(inner)) inner = range(1n, int.add(inner, 1n));
+        if (isInt(outer)) outer = range(1n, int.add(outer, 1n));
         if (!isArray(outer) || !isArray(inner)) throw new Error("need arrays or integers for crossmap");
 
         let result: StaxValue[] = [];
@@ -2891,10 +2888,10 @@ export class Runtime {
                     if (shorthand) this.print([this.pop()], false);
                     else row.push(this.pop());
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
             }
             this.popStackFrame();
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
             if (shorthand) this.print("");
             else result.push(row);
         }
@@ -2908,7 +2905,7 @@ export class Runtime {
             let block = this.pop() as Block, data = this.pop(), result: StaxValue[] = [], cancelled = false;
             let arr: Iterable<StaxValue>;
             if (isArray(data)) arr = data;
-            else if (isInt(data)) arr = range(one, int.add(data, one));
+            else if (isInt(data)) arr = range(1n, int.add(data, 1n));
             else throw Error("block-filter operates on ints and arrays, not this garbage. get out of here.");
 
             this.pushStackFrame();
@@ -2918,7 +2915,7 @@ export class Runtime {
                     if (cancelled = s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
                 if (!cancelled && isTruthy(this.pop())) result.push(e);
             }
             this.popStackFrame();
@@ -2926,9 +2923,9 @@ export class Runtime {
         }
         else {
             let data = this.pop(), cancelled = false;
-            if (data === Number.POSITIVE_INFINITY) data = new IntRange(one);
+            if (data === Number.POSITIVE_INFINITY) data = new IntRange(1n);
             let arr = isArray(data) ? data
-                : isInt(data) ? range(1, int.add(data, one))
+                : isInt(data) ? range(1, int.add(data, 1n))
                 : fail("bad type for shorthand filter data")
 
             this.pushStackFrame();
@@ -2938,7 +2935,7 @@ export class Runtime {
                     if (cancelled = s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
                 if (!cancelled && isTruthy(this.pop())) this.print(e);
             }
             this.popStackFrame();
@@ -2947,10 +2944,10 @@ export class Runtime {
 
     private *doMap(rest: Block) {
         let top = this.pop();
-        if (top === Number.POSITIVE_INFINITY) top = new IntRange(one);
+        if (top === Number.POSITIVE_INFINITY) top = new IntRange(1n);
         if (top instanceof Block) {
             let block = top, data = this.pop(), result: StaxValue[] = [], cancelled = false;
-            if (isInt(data)) data = range(1, int.add(data, one));
+            if (isInt(data)) data = range(1, int.add(data, 1n));
             if (!isArray(data)) throw Error("block-map operates on ints and arrays, not this garbage. get out of here.");
 
             this.pushStackFrame();
@@ -2960,14 +2957,14 @@ export class Runtime {
                     if (cancelled = s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
                 if (!cancelled) result.push(this.pop());
             }
             this.popStackFrame();
             this.push(result);
         }
         else if (isArray(top) || isInt(top)) {
-            let data = isArray(top) ? top : range(one, int.add(top, one)), cancelled = false;
+            let data = isArray(top) ? top : range(1n, int.add(top, 1n)), cancelled = false;
 
             this.pushStackFrame();
             for (let e of data) {
@@ -2976,7 +2973,7 @@ export class Runtime {
                     if (cancelled = s.cancel) break;
                     yield s;
                 }
-                this.index = int.add(this.index, one);
+                this.index = int.add(this.index, 1n);
                 if (!cancelled) this.print(this.pop());
             }
             this.popStackFrame();
@@ -2999,7 +2996,7 @@ export class Runtime {
             this.push(this._ = e);
             for (let s of this.runSteps(reduce)) yield s;
             result.push(this.peek());
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         }
         this.popStackFrame();
         this.pop();
@@ -3117,7 +3114,7 @@ export class Runtime {
                 }
             }
             if (genComplete) break;
-            this.index = int.add(this.index, one);
+            this.index = int.add(this.index, 1n);
         }
         if (!postPop && !genComplete) {
             // Remove left-over value from pre-peek mode

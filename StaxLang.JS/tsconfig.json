@@ -4,7 +4,7 @@
         // "incremental": true, // TODO: figure out why this is giving stale errors
         "module": "commonjs",
         "moduleResolution": "node",
-        "target": "es2016",
+        "target": "es2020",
         "noImplicitAny": true,
         "sourceMap": true, // stripped by webpack for distribution, but used in debug
         "alwaysStrict": true,

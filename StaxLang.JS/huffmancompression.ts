@@ -1,8 +1,6 @@
 import englishData from './englishhuffman';
 import * as int from './integer';
 
-const _2 = int.make(2);
-
 class HuffmanNode {
     left: HuffmanNode;
     right: HuffmanNode;
@@ -81,7 +79,7 @@ export function compressLiteral(input: string): string | null {
 }
 
 function compressCore(input: string, flexcase = false): string | null {
-    let path = '', big = int.one, result = "", symlen = int.make(symbols.length);
+    let path = '', big = 1n, result = "", symlen = BigInt(symbols.length);
     
     if (flexcase) {
         let picked = '. ';
@@ -110,10 +108,10 @@ function compressCore(input: string, flexcase = false): string | null {
     }
 
     for (let i = 0; i < path.length; i++) {
-        big = int.mul(big, _2);
-        big = int.add(big, path[i] === '1' ? int.one : int.zero);
+        big = int.mul(big, 2n);
+        big = int.add(big, path[i] === '1' ? 1n : 0n);
     }
-    while (int.cmp(big, int.zero) > 0) {
+    while (int.cmp(big, 0n) > 0) {
         let [quotient, remainder] = [int.div(big, symlen), int.mod(big, symlen)];
         result += symbols[int.floatify(remainder)];
         big = quotient;
@@ -125,15 +123,15 @@ let memoizedDecompress: {[key: string]: string} = {};
 export function decompress(compressed: string): string {
     if (compressed in memoizedDecompress) return memoizedDecompress[compressed];
 
-    let big = int.zero;
+    let big = 0n;
     for (let ch of compressed.split("").reverse()) {
-        big = int.add(int.mul(big, int.make(symbols.length)), int.make(symbols.indexOf(ch)));
+        big = int.add(int.mul(big, BigInt(symbols.length)), BigInt(symbols.indexOf(ch)));
     }
 
     let path = '', result = '. ', pathIdx = 1;
     while (int.floatify(big)) {
-        path = int.bitand(big, int.one).toString() + path;
-        big = int.div(big, _2);
+        path = int.bitand(big, 1n).toString() + path;
+        big = int.div(big, 2n);
     }
 
     while (pathIdx < path.length) {

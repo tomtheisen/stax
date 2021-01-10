@@ -2,7 +2,6 @@ import { last, literalFor } from './types';
 import { isPacked } from './packer';
 import { decompress, compressLiteral } from './huffmancompression';
 import { cramSingle, uncramSingle, uncram, cram } from './crammer';
-import * as int from './integer';
 
 export class Block {
     contents: string;
@@ -101,7 +100,7 @@ export function getCodeType(program: string) : [CodeType, LiteralTypes] {
             case '5': case '6': case '7': case '8': case '9':
                 let n = parseNum(program, pos);
                 if (/^\d+$/.test(n)) {
-                    const crammed = cramSingle(int.make(n));
+                    const crammed = cramSingle(BigInt(n));
                     if (crammed.length < n.length) literals |= LiteralTypes.CompressableInt;
                     else literals |= LiteralTypes.UncompressableInt;
                 }
@@ -172,7 +171,7 @@ export function compressLiterals(program: string): string {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 let n = parseNum(program, pos);
-                result += cramSingle(int.make(n));
+                result += cramSingle(BigInt(n));
                 pos += n.length - 1;
                 break;
             case '"': {
@@ -221,7 +220,7 @@ export function compressLiterals(program: string): string {
                         .replace(/(\d+)N/g, "-$1")
                         .replace(/^z|\+$/g, "")
                         .split('+')
-                        .map(int.make);
+                        .map(e => BigInt(e));
                     result += cram(ints);
                     pos += expanded[0].length - 1;
                 }

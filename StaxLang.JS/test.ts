@@ -1,5 +1,4 @@
 import { Runtime } from './stax';
-import { usingNativeBigInt } from './integer';
 import { last } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -164,7 +163,6 @@ function allFiles(dir: string): string[] {
 let argpath = process.argv[2];
 let tests = allFiles(argpath).map(file => new TestFiles(file));
 let start = new Date;
-console.log("Integers: " + (usingNativeBigInt ? "native bigint" : "npm big-integer"));
 
 tests.forEach((test, i) => test.runCases(i, tests.length));
 
