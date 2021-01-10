@@ -1,4 +1,3 @@
-import { isInt } from './integer';
 import { StaxValue, isArray } from './types';
 import { Block } from './block';
 import { Rational } from './rational';
@@ -204,7 +203,7 @@ export function getTypeChar(o: StaxValue): string {
     if (isArray(o)) return 'a';
     if (o instanceof Block) return 'b';
     if (o instanceof Rational) return 'f';
-    if (isInt(o)) return 'i';
+    if (typeof o === 'bigint') return 'i';
     if (typeof o === 'number') return 'r';
     throw new Error('no type char for unknown type');
 }

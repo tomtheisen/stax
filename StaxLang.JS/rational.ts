@@ -49,7 +49,7 @@ export class Rational {
     }
 
     negate() {
-        return new Rational(int.negate(this.numerator), this.denominator);
+        return new Rational(-this.numerator, this.denominator);
     }
 
     abs() {
@@ -64,7 +64,7 @@ export class Rational {
     }
 
     ceiling() {
-        return int.negate(this.negate().floor());
+        return -this.negate().floor();
     }
 
     mod(other: Rational) {
@@ -74,17 +74,17 @@ export class Rational {
     }
 
     equals(other: Rational) {
-        return int.eq(this.numerator, other.numerator) && int.eq(this.denominator, other.denominator);
+        return this.numerator === other.numerator && this.denominator === other.denominator;
     }
 
     private reduce() {
-        if (int.eq(this.denominator, 0n)) throw new Error("rational divide by zero");
+        if (this.denominator === 0n) throw new Error("rational divide by zero");
         let gcd = int.gcd(this.numerator, this.denominator);
         this.numerator = int.div(this.numerator, gcd);
         this.denominator = int.div(this.denominator, gcd);
         if (int.cmp(this.denominator, 0n) < 0) {
-            this.numerator = int.negate(this.numerator);
-            this.denominator = int.negate(this.denominator);
+            this.numerator = -this.numerator;
+            this.denominator = -this.denominator;
         }
     }
 }
@@ -117,7 +117,7 @@ export function rationalize(arg: number): Rational {
             }
             else {
                 lastMove = int.div(lastMove, two);
-                if (int.eq(lastMove, 0n)) lastMove = -1n;
+                if (lastMove === 0n) lastMove = -1n;
             }
         }
         else {
@@ -127,7 +127,7 @@ export function rationalize(arg: number): Rational {
             }
             else {
                 lastMove = int.div(lastMove, two);
-                if (int.eq(lastMove, 0n)) lastMove = 1n;
+                if (lastMove === 0n) lastMove = 1n;
             }
         }
         if (Math.abs(error) < bestError) [best, bestError] = [mediant, Math.abs(error)];

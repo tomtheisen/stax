@@ -51,14 +51,14 @@ export function cram(arr: StaxInt[]): string {
 }
 
 export function cramSingle(n: StaxInt): string {
-    if (int.eq(n, -1n)) return "U";
-    if (int.cmp(n, 0n) < 0) return cramSingle(int.negate(n)) + "N";
-    if (int.eq(n, 10n)) return "A";
-    if (int.eq(n, 256n)) return "VB";
-    if (int.eq(n, 1_000n)) return "Vk";
-    if (int.eq(n, 1_000_000n)) return "VM";
+    if (n === -1n) return "U";
+    if (int.cmp(n, 0n) < 0) return cramSingle(-n) + "N";
+    if (n === 10n) return "A";
+    if (n === 256n) return "VB";
+    if (n === 1_000n) return "Vk";
+    if (n === 1_000_000n) return "VM";
 
-    const sqrt = int.floorSqrt(n), isSquare = int.eq(n, int.mul(sqrt, sqrt));
+    const sqrt = int.floorSqrt(n), isSquare = n === int.mul(sqrt, sqrt);
     if (int.cmp(n, 100n) >= 0 && isSquare) return cramSingle(sqrt) + "J";
 
     let best = n.toString();
@@ -96,7 +96,7 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
 
     let leadingZeroes = 0, anyNonZero = false;
     for (let e of arr) {
-        if (int.eq(e, 0n)) leadingZeroes += 1; 
+        if (e === 0n) leadingZeroes += 1; 
         else { 
             anyNonZero = true; 
             break; 
@@ -124,8 +124,8 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
     const all = arr.reduce((a, b) => int.add(int.mul(a, base), b));
     const part1 = cramSingle(all);
     let part2: string;
-    if (int.eq(base, 2n)) part2 = ":B";
-    else if (int.eq(base, 10n)) part2 = "E";
+    if (base === 2n) part2 = ":B";
+    else if (base === 10n) part2 = "E";
     else part2 = cramSingle(base) + "|E";
 
     let best = /\d$/.test(part1) && /^\d/.test(part2) 
@@ -144,7 +144,7 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
 
 function shortenRepeatedArray(arr: int.StaxInt[]): string | null {
     if (arr.length < 2) return null;
-    if (arr.some(e => !int.eq(e, arr[0]))) return null;
+    if (arr.some(e => e !== arr[0])) return null;
     if (int.cmp(arr[0], 32n) >= 0 && int.cmp(arr[0], 127n) < 0) {
         return "'" + String.fromCharCode(floatify(arr[0])) + cramSingle(BigInt(arr.length)) + '*';
     }

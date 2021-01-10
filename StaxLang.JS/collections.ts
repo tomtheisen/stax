@@ -1,5 +1,5 @@
 import { StaxValue, StaxArray, floatify, isFloat, isArray, S2A, areEqual } from './types';
-import { isInt, StaxInt, cmp, add } from './integer';
+import { StaxInt, cmp, add } from './integer';
 import { Rational } from './rational';
 import { Block } from './block';
 import * as int from './integer'
@@ -64,13 +64,13 @@ function getHashCode(val: StaxValue): number {
         return hash;
     }
     if (hashMemo.has(val)) return hashMemo.get(val)!;
-    if (isInt(val)) {
+    if (typeof val === 'bigint') {
         let hash = floatify(int.mod(val, HASHMAX_BIG));
         hashMemo.set(val, hash);
         return hash;
     }
     if (val instanceof Rational) {
-        if (int.eq(val.denominator, 1n)) return getHashCode(val.numerator); // can be equal to ints
+        if (val.denominator === 1n) return getHashCode(val.numerator); // can be equal to ints
         let hash = getHashCode(val.numerator) ^ getHashCode(val.denominator);
         hashMemo.set(val, hash);
         return hash;
@@ -209,11 +209,11 @@ export class IntRange {
     }
 
     get length() {
-        return isInt(this.end) ? floatify(this.end) - floatify(this.start) : Number.POSITIVE_INFINITY;
+        return typeof this.end === 'bigint' ? floatify(this.end) - floatify(this.start) : Number.POSITIVE_INFINITY;
     }
 
     includes(val: StaxValue) {
-        return isInt(val) && cmp(val, this.start) >= 0 && (this.end == null || cmp(val, this.end) < 0);
+        return typeof val === 'bigint' && cmp(val, this.start) >= 0 && (this.end == null || cmp(val, this.end) < 0);
     }
 
     *[Symbol.iterator]() {

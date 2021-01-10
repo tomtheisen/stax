@@ -1,15 +1,12 @@
 export type StaxInt = bigint;
 
-export const isInt: (n: any) => n is StaxInt = (n => typeof n === "bigint") as (n: any) => n is StaxInt;
 export const cmp: (a: StaxInt, b: StaxInt) => number = (a: bigint, b: bigint) => Number(a - b);
-export const eq: (a: StaxInt, b: StaxInt) => boolean = (a, b) => a === b;
 export const add: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a + b;
 export const sub: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a - b;
 export const mul: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a * b;
 export const div: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a / b;
 export const mod: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a % b;
 export const pow: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a ** b;
-export const negate: (n: StaxInt) => StaxInt = (n: bigint) => -n;
 export const abs: (n: StaxInt) => StaxInt = (n: bigint) => (n < 0n ? -n : n);
 export const gcd: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => {
         if (a < 0n) a = -a;
