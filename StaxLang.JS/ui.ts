@@ -120,7 +120,22 @@ function startNextInput() {
     let stdin = pendingInputs.shift()!.split(/\r?\n/);
     activeRuntime = new Runtime(
         content => {
-            outputEl.textContent += content;
+            if (/\f|\r/.exec(content)) {
+                for (let char of content) {
+                    switch (char) {
+                        case "\f":
+                            outputEl.textContent = "";
+                            break;
+                        case "\r":
+                            outputEl.textContent = outputEl.textContent?.slice(0, outputEl.textContent.lastIndexOf('\n')) ?? null;
+                            break;
+                        default:
+                            outputEl.textContent += char;
+                            break;
+                    }
+                }
+            }
+            else outputEl.textContent += content;
             copyOutputButton.hidden = false;
             newOutput = true;
         },

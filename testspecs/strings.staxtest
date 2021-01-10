@@ -13,6 +13,10 @@ df
 as"df
 	stax
 "as`"df"
+	out
+0 10 9 13 11 12
+	stax
+"`0`1`2`3`4`5"J
 	name:CharacterInterleave
 	in
 abcd

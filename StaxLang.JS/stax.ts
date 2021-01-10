@@ -3157,6 +3157,7 @@ export class Runtime {
                     case '2': unescaped += "\t"; break;
                     case '3': unescaped += "\r"; break;
                     case '4': unescaped += "\v"; break;
+                    case '5': unescaped += "\f"; break;
                     default:
                         let instruction = token[i];
                         if (instruction === ":" || instruction === "|" || instruction === "V") instruction += token[++i];

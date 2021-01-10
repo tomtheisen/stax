@@ -169,7 +169,7 @@ Strings are really just arrays of integers, but some operations are oriented tow
 op                       	|Types          	|Name              	|Description
 ---                      	|---            	|---               	|---
 `#`                      	|arr arr        	|count-substrings  	|Count non-overlapping occurrences of substring b in a.
-`"…"`                    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `01234` yield `\0 \n \t \r \v` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
+`"…"`                    	|               	|string-literal    	|String literal stored as an array of codepoints.  Unterminated string literals will be printed implicitly.  `` ` `` is the escape character for `` ` `` and `"`. The characters `012345` yield `\0 \n \t \r \v \f` respectively when escaped. All other escaped single characters will execute as stax code and then include the popped value as a template. (Space is no-op)
 `` `…` ``                	|               	|compressed-string 	|Compressed string literal encoded with contextual Huffman trees.  Not all strings can be encoded this way, but most that can will be smaller.  Unterminated compressed literals will be printed implicitly.
 `'a`                     	|               	|char-literal      	|Create a single character string literal.
 `.ab`                    	|               	|two-char-literal  	|Create a two character string literal.

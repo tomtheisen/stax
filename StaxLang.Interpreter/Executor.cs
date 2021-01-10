@@ -4181,6 +4181,9 @@ namespace StaxLang {
                         case '4':
                             result += '\v';
                             break;
+                        case '5':
+                            result += '\f';
+                            break;
                         case '`':
                         case '"':
                             result += program[ip];
