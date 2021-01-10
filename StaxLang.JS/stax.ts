@@ -1435,19 +1435,21 @@ export class Runtime {
                     let b = this.pop(), a = this.pop();
                     if (isNumber(b) && isNumber(a)) { // log with base
                         if (isInt(a) && isInt(b)) {
-                            // check for exact power
-                            let num = a, multiplicity = 0;
-                            while (int.mod(num, b).valueOf() == 0 && num.valueOf() > 1) {
-                                num = int.div(num, b);
-                                multiplicity += 1;
-                            }
-                            if (num.valueOf() == 1) {
-                                this.push(multiplicity);
-                                break;
+                            if (int.eq(a, zero)) this.push(Number.NEGATIVE_INFINITY);
+                            else if (int.cmp(b, one) <= 0) this.push(Number.POSITIVE_INFINITY);
+                            else {
+                                let n = one, result = 0, significance = int.make(Math.pow(2, 52));
+                                for (a = int.abs(a); int.cmp(n, a) < 0; result++) n = int.mul(n, b);
+                                // ensure values are finite before floatifying
+                                if (int.cmp(a, significance) > 0) {
+                                    let reduction = int.div(a, significance);
+                                    a = int.div(a, reduction);
+                                    n = int.div(n, reduction);
+                                }
+                                this.push(result + Math.log(floatify(a) / floatify(n)) / Math.log(floatify(b)));
                             }
                         }
-                        let result = Math.log(floatify(a)) / Math.log(floatify(b));
-                        this.push(result);
+                        else this.push(Math.log(floatify(a)) / Math.log(floatify(b)));
                     }
                     else if (isArray(b) && isArray(a)) {
                         // combine elements from a and b, with each occurring the max of its occurrences from a and b

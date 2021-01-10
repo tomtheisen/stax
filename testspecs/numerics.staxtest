@@ -764,6 +764,12 @@ e
 1.77124374916142
 	stax
 7 3 |L
+	in
+0 7
+	out
+-∞
+	stax
+|L
 	name:LogFloorShortcuts
 	in
 100
@@ -785,6 +791,18 @@ e
 0
 	stax
 :A
+	in
+200
+	out
+374
+	stax
+|F:A
+	in
+200
+	out
+1245
+	stax
+|F:2
 	name:CustomBase
 	in
 97
@@ -1315,3 +1333,14 @@ meB$
 12 1 1
 	stax
 :n mJ
+	name:Exp
+	in
+2
+1.5
+2/3
+	out
+7.38905609893065
+4.48168907033806
+1.94773404105468
+	stax
+me:e
