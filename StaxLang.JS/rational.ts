@@ -7,7 +7,7 @@ export class Rational {
     public denominator: StaxInt;
 
     public valueOf(): number {
-        return Number(int.floatify(this.numerator) / int.floatify(this.denominator));
+        return Number(Number(this.numerator) / Number(this.denominator));
     }
 
     public toString(): string {
@@ -26,26 +26,26 @@ export class Rational {
 
     add(other: Rational): Rational {
         return new Rational(
-            int.add(int.mul(this.numerator, other.denominator), int.mul(other.numerator, this.denominator)),
-            int.mul(this.denominator, other.denominator));
+            this.numerator * other.denominator + other.numerator * this.denominator,
+            this.denominator * other.denominator);
     }
 
     subtract(other: Rational) {
         return new Rational(
-            int.sub(int.mul(this.numerator, other.denominator), int.mul(other.numerator, this.denominator)),
-            int.mul(this.denominator, other.denominator));
+            this.numerator * other.denominator - other.numerator * this.denominator,
+            this.denominator * other.denominator);
     }
 
     multiply(other: Rational): Rational {
         return new Rational (
-            int.mul(this.numerator, other.numerator),
-            int.mul(this.denominator, other.denominator));
+            this.numerator * other.numerator,
+            this.denominator * other.denominator);
     }
 
     divide(other: Rational) {
         return new Rational (
-            int.mul(this.numerator, other.denominator),
-            int.mul(this.denominator, other.numerator));
+            this.numerator * other.denominator,
+            this.denominator * other.numerator);
     }
 
     negate() {
@@ -58,9 +58,9 @@ export class Rational {
 
     floor() {
         if (int.cmp(this.numerator, 0n) < 0) {
-            return int.div(int.add(int.sub(this.numerator, this.denominator), 1n), this.denominator);
+            return (this.numerator - this.denominator + 1n) / this.denominator;
         }
-        return int.div(this.numerator, this.denominator);
+        return this.numerator / this.denominator;
     }
 
     ceiling() {
@@ -80,8 +80,8 @@ export class Rational {
     private reduce() {
         if (this.denominator === 0n) throw new Error("rational divide by zero");
         let gcd = int.gcd(this.numerator, this.denominator);
-        this.numerator = int.div(this.numerator, gcd);
-        this.denominator = int.div(this.denominator, gcd);
+        this.numerator /= gcd;
+        this.denominator /= gcd;
         if (int.cmp(this.denominator, 0n) < 0) {
             this.numerator = -this.numerator;
             this.denominator = -this.denominator;
@@ -90,7 +90,7 @@ export class Rational {
 }
 
 export function rationalize(arg: number): Rational {
-    const significantBits = 50, two = 2n, epsilon = arg / 2 ** significantBits;;
+    const significantBits = 50, epsilon = arg / 2 ** significantBits;;
 
     if (arg < 0) return rationalize(-arg).negate();
     if (arg % 1 == 0) return new Rational(BigInt(arg), 1n);
@@ -104,8 +104,8 @@ export function rationalize(arg: number): Rational {
 
     do { // Stern-Brocot binary search
         mediant = int.cmp(lastMove, 0n) < 0
-            ? [int.sub(right[0], int.mul(lastMove, left[0])), int.sub(right[1], int.mul(lastMove, left[1]))]
-            : [int.add(left[0], int.mul(lastMove, right[0])), int.add(left[1], int.mul(lastMove, right[1]))];
+            ? [right[0] - lastMove * left[0], right[1] - lastMove * left[1]]
+            : [left[0] + lastMove * right[0], left[1] + lastMove * right[1]];
 
         let error = floatify(mediant[0]) / floatify(mediant[1]) - arg;
         if (isNaN(error)) error = 0;
@@ -113,20 +113,20 @@ export function rationalize(arg: number): Rational {
         if (error > 0) {
             if (int.cmp(lastMove, 0n) < 0) {
                 right = mediant;
-                lastMove = int.mul(lastMove, two)
+                lastMove *= 2n;
             }
             else {
-                lastMove = int.div(lastMove, two);
+                lastMove /= 2n;
                 if (lastMove === 0n) lastMove = -1n;
             }
         }
         else {
             if (int.cmp(lastMove, 0n) > 0) {
                 left = mediant;
-                lastMove = int.mul(lastMove, two)
+                lastMove *= 2n;
             }
             else {
-                lastMove = int.div(lastMove, two);
+                lastMove /= 2n;
                 if (lastMove === 0n) lastMove = 1n;
             }
         }

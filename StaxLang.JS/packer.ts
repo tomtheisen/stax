@@ -17,21 +17,21 @@ export function packBytes(asciiStax: string): number[] {
     let big = 0n;
     let result: number[] = [];
     for (let i = asciiStax.length - 1; i >= 0; i--) {
-        big = int.add(int.mul(big, 95n), BigInt(asciiStax.charCodeAt(i) - 32));
+        big = big * 95n + BigInt(asciiStax.charCodeAt(i) - 32);
     }
-    while (int.floatify(big) > 0) {
-        let b = int.mod(big, 0x100n);
+    while (Number(big) > 0) {
+        let b = big % 0x100n;
         if (big === b) {
             if (int.bitand(b, 0x80n) === 0n) {
                 b = int.bitor(b, 0x80n); // set leading bit for packing flag
             }
             else { // we need a whole nother byte to set the flag
-                result.push(int.floatify(b));
+                result.push(Number(b));
                 b = 0x80n;
             }
         }
-        result.push(int.floatify(b));
-        big = int.div(big, 0x100n);
+        result.push(Number(b));
+        big /= 0x100n;
     }
     return result;
 }
@@ -63,11 +63,11 @@ export function unpackBytes(bytes: number[] | Uint8Array): string {
     let big = 0n;
     bytes[0] &= 0x7f;
     for (let i = 0; i < bytes.length; i++) {
-        big = int.add(int.mul(big, 0x100n), BigInt(bytes[i]));
+        big = big * 0x100n + BigInt(bytes[i]);
     }
-    while (int.floatify(big) > 0) {
-        result += String.fromCharCode(int.floatify(int.mod(big, 95n)) + 32);
-        big = int.div(big, 95n);
+    while (Number(big) > 0) {
+        result += String.fromCharCode(Number(big % 95n) + 32);
+        big /= 95n;
     }
 
     // move leading spaces to end

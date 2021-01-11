@@ -20,7 +20,7 @@ export function S2A(s: string): StaxInt[] {
 export function A2S(a: StaxArray): string {
     let result = "";
     for (let e of a) {
-        if (typeof e === 'bigint') result += e === 0n ? ' ' : String.fromCodePoint(int.floatify(e));
+        if (typeof e === 'bigint') result += e === 0n ? ' ' : String.fromCodePoint(Number(e));
         else if (isArray(e)) result += A2S(e);
         else throw new Error(`can't convert ${e} to string`);
     }
@@ -59,7 +59,7 @@ export function last(arr: StaxArray): StaxValue | undefined;
 export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number | undefined {
     if (arr instanceof IntRange) {
         if (arr.end == null) return Number.POSITIVE_INFINITY;
-        return (arr.length > 0) ? int.sub(arr.end, 1n) : undefined;
+        return (arr.length > 0) ? arr.end - 1n : undefined;
     }
     return arr[arr.length - 1];
 }
@@ -75,8 +75,8 @@ export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
 export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
     if (typeof b === 'bigint') {
         if (typeof a === 'bigint') {
-            if (b.valueOf() < 0) return new Rational(1n, int.pow(a, -b));
-            else return int.pow(a, b);
+            if (b.valueOf() < 0) return new Rational(1n, a ** -b);
+            else return a ** b;
         }
         else if (a instanceof Rational) {
             if (b.valueOf() < 0) {

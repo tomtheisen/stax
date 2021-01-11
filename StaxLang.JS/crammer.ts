@@ -13,7 +13,7 @@ export function uncram(str: string): StaxInt[] {
         if (charValue < 0) throw new Error("Bad character for uncram");
         if (continuing) {
             let toAdd = (charValue >> 1) * sign;
-            result[result.length - 1] = int.add(int.mul(last(result)!, 46n), BigInt(toAdd));
+            result[result.length - 1] = last(result)! * 46n + BigInt(toAdd);
         }
         else {
             sign = charValue % 4 >= 2 ? -1 : 1;
@@ -23,7 +23,7 @@ export function uncram(str: string): StaxInt[] {
     }
 
     if (continuing) { // offset mode
-        for (let i = 1; i < result.length; i++) result[i] = int.add(result[i], result[i - 1]);
+        for (let i = 1; i < result.length; i++) result[i] = result[i] + result[i - 1];
     }
     return result;
 }
@@ -31,15 +31,15 @@ export function uncram(str: string): StaxInt[] {
 function encode(a: StaxInt[], offsetMode: boolean) {
     let result = "";
     if (offsetMode) {
-        for (let i = a.length - 1; i > 0; i--) a[i] = int.sub(a[i], a[i - 1]);
+        for (let i = a.length - 1; i > 0; i--) a[i] = a[i] - a[i - 1];
     }
     for (let i = 0; i < a.length; i++) {
-        let parts: number[] = [], signBit = int.floatify(a[i]) < 0 ? 2 : 0;
+        let parts: number[] = [], signBit = Number(a[i]) < 0 ? 2 : 0;
         let continuing = (offsetMode && i === a.length - 1) ? 1 : 0, remain = int.abs(a[i]);
-        for (; int.floatify(remain) > 22; remain = int.div(remain, 46n), continuing = 1) {
-            parts.unshift(int.floatify(int.mod(remain, 46n)) * 2 + continuing);
+        for (; Number(remain) > 22; remain = remain / 46n, continuing = 1) {
+            parts.unshift(Number(remain % 46n) * 2 + continuing);
         }
-        parts.unshift(int.floatify(remain) * 4 + signBit + continuing);
+        parts.unshift(Number(remain) * 4 + signBit + continuing);
         result += parts.map(p => Symbols[p]).join("");
     }
     return result;
@@ -58,15 +58,14 @@ export function cramSingle(n: StaxInt): string {
     if (n === 1_000n) return "Vk";
     if (n === 1_000_000n) return "VM";
 
-    const sqrt = int.floorSqrt(n), isSquare = n === int.mul(sqrt, sqrt);
+    const sqrt = int.floorSqrt(n), isSquare = n === sqrt * sqrt;
     if (int.cmp(n, 100n) >= 0 && isSquare) return cramSingle(sqrt) + "J";
 
     let best = n.toString();
     if (int.cmp(n, BigInt(1e7)) < 0) return best;
 
-    for (var scalarCrammed = ""; int.cmp(n, 0n) > 0; n = int.div(n, 93n)) {
-        n = int.sub(n, 1n);
-        scalarCrammed = Symbols[floatify(int.mod(n, 93n))] + scalarCrammed;
+    for (var scalarCrammed = ""; int.cmp(n, 0n) > 0; n /= 93n) {
+        scalarCrammed = Symbols[floatify(--n % 93n)] + scalarCrammed;
     }
     scalarCrammed = `"${scalarCrammed}"%`;
     if (scalarCrammed.length < best.length) best = scalarCrammed;
@@ -76,7 +75,7 @@ export function cramSingle(n: StaxInt): string {
 export function uncramSingle(s: string): StaxInt {
     let result = 0n;
     for (let c of s) {
-        result = int.add(int.mul(result, 93n), BigInt(Symbols.indexOf(c) + 1));
+        result = result * 93n + BigInt(Symbols.indexOf(c) + 1);
     }
     return result;
 }
@@ -120,8 +119,8 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
             return null;
     }
     
-    const base = int.add(arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a), 1n);
-    const all = arr.reduce((a, b) => int.add(int.mul(a, base), b));
+    const base = arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a) + 1n;
+    const all = arr.reduce((a, b) => a * base + b);
     const part1 = cramSingle(all);
     let part2: string;
     if (base === 2n) part2 = ":B";
@@ -134,7 +133,7 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
 
     // check for all single digits
     if (arr.every(e => int.cmp(e, 0n) >= 0 && int.cmp(e , 10n) < 0) && int.cmp(arr[0], 0n) > 0) {
-        const all = arr.reduce((a, b) => int.add(int.mul(a, 10n), b));
+        const all = arr.reduce((a, b) => a * 10n + b);
         const digited = cramSingle(all) + "E";
         if (digited.length < best.length) best = digited;
     }

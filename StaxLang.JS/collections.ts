@@ -1,8 +1,7 @@
 import { StaxValue, StaxArray, floatify, isFloat, isArray, S2A, areEqual } from './types';
-import { StaxInt, cmp, add } from './integer';
+import { StaxInt, cmp } from './integer';
 import { Rational } from './rational';
 import { Block } from './block';
-import * as int from './integer'
 
 export class Multiset {
     private entries = new StaxMap<number>();
@@ -53,7 +52,7 @@ const HASHMAX_BIG = 0x8000_0000n;
 /** returns a value hash in the signed 32-bit range */
 function getHashCode(val: StaxValue): number {
     if (typeof val === "bigint") {
-        return floatify(int.mod(val, HASHMAX_BIG));
+        return floatify(val % HASHMAX_BIG);
     }
     if (isFloat(val)) {
         if (val === 0) return 0;  // normalize -0
@@ -65,7 +64,7 @@ function getHashCode(val: StaxValue): number {
     }
     if (hashMemo.has(val)) return hashMemo.get(val)!;
     if (typeof val === 'bigint') {
-        let hash = floatify(int.mod(val, HASHMAX_BIG));
+        let hash = floatify(val % HASHMAX_BIG);
         hashMemo.set(val, hash);
         return hash;
     }
@@ -217,7 +216,7 @@ export class IntRange {
     }
 
     *[Symbol.iterator]() {
-        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; i = add(i, 1n)) {
+        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; ++i) {
             yield i;
         }
     }
@@ -267,13 +266,13 @@ export class IntRange {
         start = Math.max(start, 0);
         if (start === 0) {
             if (end == null || end >= this.length) return this;
-            return new IntRange(this.start, add(this.start, BigInt(end)));
+            return new IntRange(this.start, this.start + BigInt(end));
         }
         if (start > this.length) return [];
         if (end == null || end >= this.length) {
-            return new IntRange(add(this.start, BigInt(start)), this.end);
+            return new IntRange((this.start + BigInt(start)), this.end);
         }
-        return new IntRange(add(this.start, BigInt(start)), add(this.start, BigInt(end)));
+        return new IntRange((this.start + BigInt(start)), (this.start + BigInt(end)));
     }
 
     reverse() {

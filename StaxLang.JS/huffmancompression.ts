@@ -108,12 +108,12 @@ function compressCore(input: string, flexcase = false): string | null {
     }
 
     for (let i = 0; i < path.length; i++) {
-        big = int.mul(big, 2n);
-        big = int.add(big, path[i] === '1' ? 1n : 0n);
+        big *= 2n;
+        big = big + path[i] === '1' ? 1n : 0n;
     }
     while (int.cmp(big, 0n) > 0) {
-        let [quotient, remainder] = [int.div(big, symlen), int.mod(big, symlen)];
-        result += symbols[int.floatify(remainder)];
+        let [quotient, remainder] = [big / symlen, big % symlen];
+        result += symbols[Number(remainder)];
         big = quotient;
     }
     return result;
@@ -125,13 +125,13 @@ export function decompress(compressed: string): string {
 
     let big = 0n;
     for (let ch of compressed.split("").reverse()) {
-        big = int.add(int.mul(big, BigInt(symbols.length)), BigInt(symbols.indexOf(ch)));
+        big = big * BigInt(symbols.length) + BigInt(symbols.indexOf(ch));
     }
 
     let path = '', result = '. ', pathIdx = 1;
-    while (int.floatify(big)) {
+    while (Number(big)) {
         path = int.bitand(big, 1n).toString() + path;
-        big = int.div(big, 2n);
+        big /= 2n;
     }
 
     while (pathIdx < path.length) {
