@@ -2,11 +2,9 @@ import { StaxArray, StaxNumber, StaxValue,
     isArray, isFloat, isNumber, isTruthy, isMatrix,
     last, A2S, S2A, floatify, constants, widenNumbers, runLength,
     areEqual, indexOf, compare,
-    stringFormat, unEval, stringFormatFloat, pow, materialize } from './types';
+    stringFormat, unEval, stringFormatFloat, pow, materialize, } from './types';
 import { Block, Program, parseProgram } from './block';
 import { unpack, isPacked } from './packer';
-import * as int from './integer';
-import { StaxInt } from './integer';
 import { Rational, zero as ratZero, rationalize } from './rational';
 import IteratorPair from './iteratorpair';
 import { Multiset, StaxSet, StaxMap, IntRange } from './collections';
@@ -15,6 +13,7 @@ import { decompress } from './huffmancompression';
 import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
 import { ensureStableSort } from './stable-sort';
+import { abs, floorSqrt, gcd, nthRoot } from './integer';
 
 export class ExecutionState {
     public ip: number;
@@ -34,7 +33,7 @@ function fail(msg: string): never {
     throw new Error(msg);
 }
 
-function range(start: number | StaxInt, end: number | StaxInt): IntRange {
+function range(start: number | bigint, end: number | bigint): IntRange {
     return new IntRange(
         typeof start === "number" ? BigInt(start) : start,
         typeof end === "number" ? BigInt(end) : end);
@@ -57,7 +56,7 @@ export class Runtime {
     private warnedInstructions: string[] = [];
 
     private gotoCallDepth = 0;
-    private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: StaxInt}[] = [];
+    private callStackFrames: {_: StaxValue | IteratorPair, indexOuter: bigint}[] = [];
     private _: StaxValue | IteratorPair;
     private index = 0n;
     private indexOuter = 0n;
@@ -80,8 +79,8 @@ export class Runtime {
         if (arg.every(e => typeof e === 'bigint' && e === 0n)) {
             return '[' + Array(arg.length).fill("0").join(", ") + ']';
         }
-        if (arg.every(e => typeof e === 'bigint' && (e === 0n || e === 10n || int.cmp(e, 32n) >= 0 && int.cmp(e, 127n) < 0))) {
-            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as StaxInt)))).replace(/\\u0000/g, nul);
+        if (arg.every(e => typeof e === 'bigint' && (e === 0n || e === 10n || e >= 32n && e < 127n))) {
+            return JSON.stringify(String.fromCharCode(...arg.map(e => floatify(e as bigint)))).replace(/\\u0000/g, nul);
         }
         if (arg instanceof IntRange && arg.length >= 3) {
             return `[${ arg.start } .. ${ arg.end != null ? (arg.end - 1n) : '' }]`;
@@ -123,7 +122,7 @@ export class Runtime {
         return isArray(p) ? p : fail("expected array");
     }
 
-    private popInt(): StaxInt {
+    private popInt(): bigint {
         let p = this.pop();
         return typeof p === 'bigint' ? p : fail("expected int");
     }
@@ -487,7 +486,7 @@ export class Runtime {
                     else if (typeof this.peek() === "number") {
                         let buf = new ArrayBuffer(8), view = new DataView(buf);
                         view.setFloat64(0, this.pop() as number);
-                        let result: StaxInt[] = [];
+                        let result: bigint[] = [];
                         for (let i = 0; i < 8; i++) {
                             for (let j = 7; j >= 0; j--) {
                                 result.push(view.getUint8(i) >> j & 1 ? 1n : 0n);
@@ -529,7 +528,7 @@ export class Runtime {
                     else if (typeof this.peek() === 'bigint') { // n times do
                         let n = this.popInt();
                         this.pushStackFrame();
-                        for (this.index = 0n; int.cmp(this.index, n) < 0; ++this.index) {
+                        for (this.index = 0n; this.index < n; ++this.index) {
                             this._ = this.index + 1n;
                             for (let s of this.runSteps(getRest())) yield s;
                         }
@@ -719,7 +718,7 @@ export class Runtime {
                     else if (this.peek() instanceof Block) {
                         let block = this.pop() as Block, n = this.inputStack.pop();
                         if (typeof n === 'bigint') {
-                            for (this.pushStackFrame(); int.cmp(this.index, n) < 0; ++this.index) {
+                            for (this.pushStackFrame(); this.index < n; ++this.index) {
                                 for (let s of this.runSteps(block)) {
                                     if (!s.cancel) yield s;
                                 }
@@ -1124,7 +1123,7 @@ export class Runtime {
                 case '|/': {
                     let b = this.pop(), a = this.pop();
                     if (typeof a === 'bigint' && typeof b === 'bigint') {
-                        if (a !== 0n && int.abs(b).valueOf() > 1) {
+                        if (a !== 0n && abs(b).valueOf() > 1) {
                             while (0n === a % b && b !== 1n) a /= b;
                         }
                         this.push(a);
@@ -1261,7 +1260,7 @@ export class Runtime {
                 case '|a':
                     if (isNumber(this.peek())) { // absolute value
                         let num = this.pop();
-                        if (typeof num === 'bigint') this.push(int.abs(num));
+                        if (typeof num === 'bigint') this.push(abs(num));
                         else if (isFloat(num)) this.push(Math.abs(num));
                         else if (num instanceof Rational) this.push(num.abs());
                         else fail("number but not a number in abs");
@@ -1330,7 +1329,7 @@ export class Runtime {
                     break;
                 case '|e':
                     if (typeof this.peek() === 'bigint') {
-                        this.push(0n === (this.pop() as StaxInt) % 2n ? 1n : 0n);
+                        this.push(0n === (this.pop() as bigint) % 2n ? 1n : 0n);
                     }
                     else if (isArray(this.peek())) {
                         let to = A2S(this.pop() as StaxArray), from = A2S(this.pop() as StaxArray), original = A2S(this.pop() as StaxArray);
@@ -1425,12 +1424,12 @@ export class Runtime {
                     if (isNumber(b) && isNumber(a)) { // log with base
                         if (typeof a === 'bigint' && typeof b === 'bigint') {
                             if (a === 0n) this.push(Number.NEGATIVE_INFINITY);
-                            else if (int.cmp(b, 1n) <= 0) this.push(Number.POSITIVE_INFINITY);
+                            else if (b <= 1n) this.push(Number.POSITIVE_INFINITY);
                             else {
                                 let n = 1n, result = 0, significance = 2n ** 52n;
-                                for (a = int.abs(a); int.cmp(n, a) < 0; result++) n *= b;
+                                for (a = abs(a); n < a; result++) n *= b;
                                 // ensure values are finite before floatifying
-                                if (int.cmp(a, significance) > 0) {
+                                if (a > significance) {
                                     let reduction = a / significance;
                                     a /= reduction;
                                     n /= reduction;
@@ -1500,7 +1499,7 @@ export class Runtime {
                 }
                 case '|n':
                     if (typeof this.peek() === 'bigint') { // exponents of sequential primes in factorization
-                        let target = int.abs(this.popInt()), result: StaxValue[] = [];
+                        let target = abs(this.popInt()), result: StaxValue[] = [];
                         if (target.valueOf() > 1) for (let p of allPrimes()) {
                             let exp = 0n;
                             while (target % p === 0n) {
@@ -1510,7 +1509,7 @@ export class Runtime {
                             result.push(exp);
                             if (target.valueOf() <= 1) break;
 
-                            if (int.cmp(p * p, target) > 0) {
+                            if (p * p > target) {
                                 // only a single factor remains
                                 result = result.concat(Array(indexOfPrime(target) - result.length).fill(0n));
                                 result.push(1n);
@@ -1553,7 +1552,7 @@ export class Runtime {
                     }
                     else if (typeof this.peek() === 'bigint') {
                         let b = this.popInt(), a = this.popInt();
-                        this.push(int.nthRoot(a, b));
+                        this.push(nthRoot(a, b));
                     }
                     break;
                 case '|o': { // get indices of elements when ordered
@@ -1586,7 +1585,7 @@ export class Runtime {
                 case '|q': {
                     let b = this.pop();
                     if (typeof b === 'bigint') {
-                        this.push(int.floorSqrt(int.abs(b)));
+                        this.push(floorSqrt(abs(b)));
                     }
                     else if (isNumber(b)) {
                         this.push(BigInt(Math.floor(Math.sqrt(Math.abs(Number(b.valueOf()))))));
@@ -1625,8 +1624,8 @@ export class Runtime {
                     if (typeof this.peek() === 'bigint') { // start-end-stride with range
                         let stride = this.popInt(), end = this.popInt(), start = this.popInt();
                         let result = range(0, end - start)
-                            .map((n: StaxInt) => n * stride + start)
-                            .filter(n => int.cmp(n, end) < 0);
+                            .map((n: bigint) => n * stride + start)
+                            .filter(n => n < end);
                         this.push(result);
                     }
                     else if (isArray(this.peek())) { // RLE
@@ -1967,7 +1966,7 @@ export class Runtime {
         }
         else if (typeof arg === 'bigint') {
             let result = [];  // array of decimal digits
-            for (let c of int.abs(arg).toString()) result.push(BigInt(c));
+            for (let c of abs(arg).toString()) result.push(BigInt(c));
             this.push(result);
         }
     }
@@ -1979,7 +1978,7 @@ export class Runtime {
             else if (typeof this.peek() === 'bigint') this.push(b ^ this.popInt());
             else {
                 let len = Number(b), arr = materialize(this.popArray()), result: StaxValue[] = [];
-                let idxs = range(0, b).map(i => Number((i as StaxInt)));
+                let idxs = range(0, b).map(i => Number((i as bigint)));
                 while (len <= arr.length) {
                     result.push(idxs.map(idx => arr[idx]));
                     let i: number;
@@ -2011,7 +2010,7 @@ export class Runtime {
         for (let i = 1; i <= els.length; i++) totalPerms *= BigInt(i);
         for (let i = 1; i <= els.length - targetSize; i++) stride *= BigInt(i);
         let idxs = els.map(_ => 0);
-        for (let pi = 0n; int.cmp(pi, totalPerms) < 0; pi += stride) {
+        for (let pi = 0n; pi < totalPerms; pi += stride) {
             let n = pi;
             for (let i = 1; i <= els.length; n /= BigInt(i++)) {
                 idxs[els.length - i] = Number(n % BigInt(i));
@@ -2112,14 +2111,14 @@ export class Runtime {
                 // path to deep target element
                 let idxPath = materialize(arg), target = result, idx: number;
                 for (let i = 0; i < idxPath.length - 1; i++) {
-                    idx = floatify(idxPath[i] as StaxInt);
+                    idx = floatify(idxPath[i] as bigint);
                     while (target.length <= idx) target.push([]);
                     if (isArray(target[idx])) {
                         target = target[idx] = [...(target[idx] as StaxArray)];
                     }
                     else target = target[idx] = [ target[idx] ];
                 }
-                idx = floatify(last(idxPath) as StaxInt);
+                idx = floatify(last(idxPath) as bigint);
                 for (let s of doFinalAssign(target, idx)) yield s;
             }
             else if (typeof arg === 'bigint') {
@@ -2164,7 +2163,7 @@ export class Runtime {
 
         if (typeof number === 'bigint') {
             let result = [], negative = number.valueOf() < 0;
-            number = int.abs(number);
+            number = abs(number);
 
             if (base === 1n) result = new Array(number).fill(0n);
             else do {
@@ -2210,15 +2209,14 @@ export class Runtime {
         let b = this.pop();
         if (isArray(b)) {
             let result = 0n;
-            for (let e of b) result = int.gcd(result, e as StaxInt);
+            for (let e of b) result = gcd(result, e as bigint);
             this.push(result);
             return;
         }
 
         let a = this.pop();
         if (typeof a === 'bigint' && typeof b === 'bigint') {
-            let gcd = int.gcd(a, b);
-            this.push(gcd);
+            this.push(gcd(a, b));
             return;
         }
 
@@ -2332,8 +2330,8 @@ export class Runtime {
             }
             else if (typeof data === 'bigint') { // binomial coefficient
                 let r = top, n = data, result = 1n;
-                if (n.valueOf() < 0 || int.cmp(r, n) > 0) result = 0n;
-                for (let i = 1n; int.cmp(i, r) <= 0; ++i) {
+                if (n.valueOf() < 0 || r > n) result = 0n;
+                for (let i = 1n; i <= r; ++i) {
                     result = result * (n - i + 1n) / i;
                 }
                 this.push(result);
@@ -2762,7 +2760,7 @@ export class Runtime {
             this.popStackFrame();
         }
         else if (isArray(this.peek()) || typeof this.peek() === 'bigint') {
-            let data = this.pop() as StaxArray | StaxInt, arr = isArray(data) ? data : range(1n, data + 1n);
+            let data = this.pop() as StaxArray | bigint, arr = isArray(data) ? data : range(1n, data + 1n);
 
             this.pushStackFrame();
             for (let e of arr) {

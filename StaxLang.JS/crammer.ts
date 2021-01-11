@@ -1,11 +1,10 @@
+import { abs, floorSqrt } from './integer';
 import { last, floatify } from './types';
-import * as int from './integer';
-import { StaxInt } from './integer';
 
 const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
 
-export function uncram(str: string): StaxInt[] {
-    let result: StaxInt[] = [];
+export function uncram(str: string): bigint[] {
+    let result: bigint[] = [];
     let continuing = false, sign = 0;
 
     for (let i = 0; i < str.length; i++) {
@@ -28,14 +27,14 @@ export function uncram(str: string): StaxInt[] {
     return result;
 }
 
-function encode(a: StaxInt[], offsetMode: boolean) {
+function encode(a: bigint[], offsetMode: boolean) {
     let result = "";
     if (offsetMode) {
         for (let i = a.length - 1; i > 0; i--) a[i] = a[i] - a[i - 1];
     }
     for (let i = 0; i < a.length; i++) {
         let parts: number[] = [], signBit = Number(a[i]) < 0 ? 2 : 0;
-        let continuing = (offsetMode && i === a.length - 1) ? 1 : 0, remain = int.abs(a[i]);
+        let continuing = (offsetMode && i === a.length - 1) ? 1 : 0, remain = abs(a[i]);
         for (; Number(remain) > 22; remain = remain / 46n, continuing = 1) {
             parts.unshift(Number(remain % 46n) * 2 + continuing);
         }
@@ -45,26 +44,26 @@ function encode(a: StaxInt[], offsetMode: boolean) {
     return result;
 }
 
-export function cram(arr: StaxInt[]): string {
+export function cram(arr: bigint[]): string {
     let flat = encode(arr.slice(), false), offset = encode(arr.slice(), true);
     return `"${offset.length < flat.length ? offset : flat}"!`;
 }
 
-export function cramSingle(n: StaxInt): string {
+export function cramSingle(n: bigint): string {
     if (n === -1n) return "U";
-    if (int.cmp(n, 0n) < 0) return cramSingle(-n) + "N";
+    if (n < 0n) return cramSingle(-n) + "N";
     if (n === 10n) return "A";
     if (n === 256n) return "VB";
     if (n === 1_000n) return "Vk";
     if (n === 1_000_000n) return "VM";
 
-    const sqrt = int.floorSqrt(n), isSquare = n === sqrt * sqrt;
-    if (int.cmp(n, 100n) >= 0 && isSquare) return cramSingle(sqrt) + "J";
+    const sqrt = floorSqrt(n), isSquare = n === sqrt * sqrt;
+    if (n >= 100n && isSquare) return cramSingle(sqrt) + "J";
 
     let best = n.toString();
-    if (int.cmp(n, BigInt(1e7)) < 0) return best;
+    if (n < 10_000_000n) return best;
 
-    for (var scalarCrammed = ""; int.cmp(n, 0n) > 0; n /= 93n) {
+    for (var scalarCrammed = ""; n > 0n; n /= 93n) {
         scalarCrammed = Symbols[floatify(--n % 93n)] + scalarCrammed;
     }
     scalarCrammed = `"${scalarCrammed}"%`;
@@ -72,7 +71,7 @@ export function cramSingle(n: StaxInt): string {
     return best;
 }
 
-export function uncramSingle(s: string): StaxInt {
+export function uncramSingle(s: string): bigint {
     let result = 0n;
     for (let c of s) {
         result = result * 93n + BigInt(Symbols.indexOf(c) + 1);
@@ -80,7 +79,7 @@ export function uncramSingle(s: string): StaxInt {
     return result;
 }
 
-export function compressIntAray(ints: int.StaxInt[]): string {
+export function compressIntAray(ints: bigint[]): string {
     let best : string | undefined = undefined;
     [cram, baseArrayCrammed, shortenRepeatedArray, shortenPair, asciiShorten].forEach(strat => {
         const out = strat(ints);
@@ -89,9 +88,9 @@ export function compressIntAray(ints: int.StaxInt[]): string {
     return best!;
 }
 
-function baseArrayCrammed(arr: int.StaxInt[]): string | null {
+function baseArrayCrammed(arr: bigint[]): string | null {
     if (arr.length === 0) return "z";
-    if (arr.some(e => int.cmp(e, 0n) < 0)) return null;
+    if (arr.some(e => e < 0n)) return null;
 
     let leadingZeroes = 0, anyNonZero = false;
     for (let e of arr) {
@@ -119,7 +118,7 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
             return null;
     }
     
-    const base = arr.reduce((a, b) => int.cmp(a, b) < 0 ? b : a) + 1n;
+    const base = arr.reduce((a, b) => a < b ? b : a) + 1n;
     const all = arr.reduce((a, b) => a * base + b);
     const part1 = cramSingle(all);
     let part2: string;
@@ -132,7 +131,7 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
         : part1 + part2;
 
     // check for all single digits
-    if (arr.every(e => int.cmp(e, 0n) >= 0 && int.cmp(e , 10n) < 0) && int.cmp(arr[0], 0n) > 0) {
+    if (arr.every(e => e >= 0n && e < 10n) && arr[0] > 0n) {
         const all = arr.reduce((a, b) => a * 10n + b);
         const digited = cramSingle(all) + "E";
         if (digited.length < best.length) best = digited;
@@ -141,16 +140,16 @@ function baseArrayCrammed(arr: int.StaxInt[]): string | null {
     return best;
 }
 
-function shortenRepeatedArray(arr: int.StaxInt[]): string | null {
+function shortenRepeatedArray(arr: bigint[]): string | null {
     if (arr.length < 2) return null;
     if (arr.some(e => e !== arr[0])) return null;
-    if (int.cmp(arr[0], 32n) >= 0 && int.cmp(arr[0], 127n) < 0) {
+    if (arr[0] >= 32n && arr[0] < 127n) {
         return "'" + String.fromCharCode(floatify(arr[0])) + cramSingle(BigInt(arr.length)) + '*';
     }
     else return cramSingle(arr[0]) + ']' + cramSingle(BigInt(arr.length)) + '*';
 }
 
- function shortenPair(arr: int.StaxInt[]): string | null {
+ function shortenPair(arr: bigint[]): string | null {
     if (arr.length !== 2) return null;
     let a = cramSingle(arr[0]), b = cramSingle(arr[1]);
     if (a === b) b = 'c';
@@ -159,8 +158,8 @@ function shortenRepeatedArray(arr: int.StaxInt[]): string | null {
         : a + b + '\\';
 }
 
-function asciiShorten(arr: int.StaxInt[]): string | null {
-    if (arr.some(e => int.cmp(e, 32n) < 0 || int.cmp(e, 127n) >= 0)) return null;
+function asciiShorten(arr: bigint[]): string | null {
+    if (arr.some(e => e < 32n || e >= 127n)) return null;
     const codes = arr.map(floatify);
     const content = String.fromCharCode(...codes);
     switch (content.length) {

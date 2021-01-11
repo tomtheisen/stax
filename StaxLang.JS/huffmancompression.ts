@@ -1,5 +1,4 @@
 import englishData from './englishhuffman';
-import * as int from './integer';
 
 class HuffmanNode {
     left: HuffmanNode;
@@ -111,7 +110,7 @@ function compressCore(input: string, flexcase = false): string | null {
         big *= 2n;
         big = big + path[i] === '1' ? 1n : 0n;
     }
-    while (int.cmp(big, 0n) > 0) {
+    while (big > 0n) {
         let [quotient, remainder] = [big / symlen, big % symlen];
         result += symbols[Number(remainder)];
         big = quotient;

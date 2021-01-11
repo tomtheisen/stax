@@ -1,18 +1,16 @@
 import { Block } from './block';
-import { StaxInt } from './integer';
-import * as int from './integer'
 import { Rational, one as rationalOne } from './rational';
 import * as rat from './rational';
 import { IntRange } from './collections';
 import { codePage } from './packer';
 
-export type StaxNumber = number | Rational | StaxInt;
+export type StaxNumber = number | Rational | bigint;
 export type StaxValue = StaxNumber | Block | StaxArray;
 export interface MaterializedStaxArray extends ReadonlyArray<StaxValue> { }
 export type StaxArray = MaterializedStaxArray | IntRange;
 
-export function S2A(s: string): StaxInt[] {
-    let result: StaxInt[] = [];
+export function S2A(s: string): bigint[] {
+    let result: bigint[] = [];
     for (let c of s) result.push(BigInt(c.codePointAt(0)!));
     return result;
 }
@@ -54,9 +52,9 @@ export function materialize(arr: StaxArray): MaterializedStaxArray {
 }
 
 export function last<T>(arr: ReadonlyArray<T>): T | undefined;
-export function last(arr: IntRange): StaxInt | number | undefined;
+export function last(arr: IntRange): bigint | number | undefined;
 export function last(arr: StaxArray): StaxValue | undefined;
-export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number | undefined {
+export function last<T>(arr: ReadonlyArray<T> | IntRange): T | bigint | number | undefined {
     if (arr instanceof IntRange) {
         if (arr.end == null) return Number.POSITIVE_INFINITY;
         return (arr.length > 0) ? arr.end - 1n : undefined;
@@ -67,7 +65,7 @@ export function last<T>(arr: ReadonlyArray<T> | IntRange): T | StaxInt | number 
 export function widenNumbers(...nums: StaxNumber[]): StaxNumber[] {
     if (nums.some(isFloat)) return nums.map(floatify);
     if (nums.some(n => n instanceof Rational)) {
-        return nums.map(n => n instanceof Rational ? n : new Rational(n as StaxInt, 1n));
+        return nums.map(n => n instanceof Rational ? n : new Rational(n as bigint, 1n));
     }
     return nums;
 }
@@ -93,7 +91,7 @@ export function pow(a: StaxNumber, b: StaxNumber): StaxNumber {
 
 export function runLength(arr: StaxArray): StaxArray {
     if (arr.length === 0) return arr;
-    let result: [StaxValue, StaxInt][] = [], last: StaxValue | null = null, run = 0n;
+    let result: [StaxValue, bigint][] = [], last: StaxValue | null = null, run = 0n;
     for (let e of arr) {
         if (last != null && areEqual(e, last)) ++run;
         else {
@@ -119,7 +117,7 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
     if (isArray(b)) [b] = b;
     if (isNumber(a) && isNumber(b)) {
         [a, b] = widenNumbers(a, b);
-        if (typeof a === 'bigint') return a === (b as StaxInt);
+        if (typeof a === 'bigint') return a === (b as bigint);
         if (typeof a === "number") return a === b;
         if (a instanceof Rational) return a.equals(b as Rational);
     }
@@ -129,7 +127,7 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
 export function indexOf(arr: StaxArray, val: StaxValue): number {
     if (arr instanceof IntRange) {
         if (typeof val !== 'bigint') return -1;
-        if (int.cmp(val, arr.start) >= 0 && (arr.end == null || int.cmp(val, arr.end) < 0)) {
+        if (val >= arr.start && (arr.end == null || val < arr.end)) {
             return floatify(val) - floatify(arr.start);
         }
         else return -1;
@@ -147,7 +145,7 @@ export function compare(a: StaxValue, b: StaxValue): number {
                 return (a instanceof Rational ? a : new Rational(a, 1n))
                     .subtract(b instanceof Rational ? b : new Rational(b, 1n)).valueOf();
             }
-            return int.cmp(a, b);
+            return a == b ? 0 : a > b ? 1 : -1;
         }
         if (isArray(b)) {
             if (b.length === 0) return 1;
@@ -209,8 +207,8 @@ export function unEval(arr: StaxArray): string {
     return "[" + mapped.join(", ") + "]";
 }
 
-export function literalFor(arg: StaxInt): string {
-    if (int.cmp(arg, 0n) < 0) return literalFor(-arg) + 'N';
+export function literalFor(arg: bigint): string {
+    if (arg < 0n) return literalFor(-arg) + 'N';
     if (arg === 10n) return 'A';
     return arg.toString();
 }

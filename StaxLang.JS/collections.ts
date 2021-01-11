@@ -1,5 +1,4 @@
 import { StaxValue, StaxArray, floatify, isFloat, isArray, S2A, areEqual } from './types';
-import { StaxInt, cmp } from './integer';
 import { Rational } from './rational';
 import { Block } from './block';
 
@@ -198,11 +197,11 @@ export class StaxMap<TValue = StaxValue> {
 }
 
 export class IntRange {
-    readonly start: StaxInt;
-    readonly end?: StaxInt;
+    readonly start: bigint;
+    readonly end?: bigint;
 
-    constructor(start: StaxInt, end?: StaxInt) {
-        if (end != null && cmp(start, end) > 0) throw new Error("Attempted to create range with [start] > [end]");
+    constructor(start: bigint, end?: bigint) {
+        if (end != null && start > end) throw new Error("Attempted to create range with [start] > [end]");
         this.start = start;
         this.end = end;
     }
@@ -212,11 +211,11 @@ export class IntRange {
     }
 
     includes(val: StaxValue) {
-        return typeof val === 'bigint' && cmp(val, this.start) >= 0 && (this.end == null || cmp(val, this.end) < 0);
+        return typeof val === 'bigint' && val >= this.start && (this.end == null || val < this.end);
     }
 
     *[Symbol.iterator]() {
-        for (let i = this.start; this.end == null || cmp(i, this.end) < 0; ++i) {
+        for (let i = this.start; this.end == null || i < this.end; ++i) {
             yield i;
         }
     }

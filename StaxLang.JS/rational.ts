@@ -1,10 +1,9 @@
-import { StaxInt } from './integer'
-import * as int from './integer'
+import { abs, gcd } from './integer';
 import { floatify } from './types';
 
 export class Rational {
-    public numerator: StaxInt;
-    public denominator: StaxInt;
+    public numerator: bigint;
+    public denominator: bigint;
 
     public valueOf(): number {
         return Number(Number(this.numerator) / Number(this.denominator));
@@ -14,7 +13,7 @@ export class Rational {
         return `${this.numerator}/${this.denominator}`;
     }
 
-    constructor(num: StaxInt, den: StaxInt) {
+    constructor(num: bigint, den: bigint) {
         this.numerator = num;
         this.denominator = den;
         this.reduce();
@@ -53,11 +52,11 @@ export class Rational {
     }
 
     abs() {
-        return new Rational(int.abs(this.numerator), int.abs(this.denominator));
+        return new Rational(abs(this.numerator), abs(this.denominator));
     }
 
     floor() {
-        if (int.cmp(this.numerator, 0n) < 0) {
+        if (this.numerator < 0n) {
             return (this.numerator - this.denominator + 1n) / this.denominator;
         }
         return this.numerator / this.denominator;
@@ -79,10 +78,10 @@ export class Rational {
 
     private reduce() {
         if (this.denominator === 0n) throw new Error("rational divide by zero");
-        let gcd = int.gcd(this.numerator, this.denominator);
-        this.numerator /= gcd;
-        this.denominator /= gcd;
-        if (int.cmp(this.denominator, 0n) < 0) {
+        let divisor = gcd(this.numerator, this.denominator);
+        this.numerator /= divisor;
+        this.denominator /= divisor;
+        if (this.denominator < 0n) {
             this.numerator = -this.numerator;
             this.denominator = -this.denominator;
         }
@@ -95,7 +94,7 @@ export function rationalize(arg: number): Rational {
     if (arg < 0) return rationalize(-arg).negate();
     if (arg % 1 == 0) return new Rational(BigInt(arg), 1n);
 
-    type rat = [StaxInt, StaxInt];
+    type rat = [bigint, bigint];
     let
         left: rat = [BigInt(Math.floor(arg)), 1n],
         right: rat = [BigInt(Math.ceil(arg)), 1n],
@@ -103,7 +102,7 @@ export function rationalize(arg: number): Rational {
     let bestError = Number.POSITIVE_INFINITY, lastMove = 1n;
 
     do { // Stern-Brocot binary search
-        mediant = int.cmp(lastMove, 0n) < 0
+        mediant = lastMove < 0n
             ? [right[0] - lastMove * left[0], right[1] - lastMove * left[1]]
             : [left[0] + lastMove * right[0], left[1] + lastMove * right[1]];
 
@@ -111,7 +110,7 @@ export function rationalize(arg: number): Rational {
         if (isNaN(error)) error = 0;
 
         if (error > 0) {
-            if (int.cmp(lastMove, 0n) < 0) {
+            if (lastMove < 0n) {
                 right = mediant;
                 lastMove *= 2n;
             }
@@ -121,7 +120,7 @@ export function rationalize(arg: number): Rational {
             }
         }
         else {
-            if (int.cmp(lastMove, 0n) > 0) {
+            if (lastMove > 0n) {
                 left = mediant;
                 lastMove *= 2n;
             }
