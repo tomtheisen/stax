@@ -14,6 +14,7 @@ import { uncram, uncramSingle } from './crammer';
 import { macroTrees, getTypeChar } from './macrotree';
 import { ensureStableSort } from './stable-sort';
 import { abs, floorSqrt, gcd, nthRoot } from './integer';
+import { RandomNumberGenerator } from './prng'
 
 export class ExecutionState {
     public ip: number;
@@ -63,6 +64,7 @@ export class Runtime {
     private x: StaxValue = 0n;
     private y: StaxValue;
     private implicitEval = false;
+    private rng: RandomNumberGenerator;
 
     constructor(partialOutput: (content: string) => void, info?: (line: string) => void) {
         this.standardOut = partialOutput;
@@ -258,6 +260,7 @@ export class Runtime {
 
     public *runProgram(program: string, stdin: string[]) {
         if (isPacked(program)) program = unpack(program);
+        this.rng = new RandomNumberGenerator(program);
         this._ = S2A(stdin.join("\n"));
         stdin = [...stdin].reverse(); // copy for mutations
         while (stdin[0] === "") stdin.shift();
@@ -320,11 +323,13 @@ export class Runtime {
                 false);
 
             if (token === '|`') {
-                yield new ExecutionState(ip += 2, false, true);
+                yield new ExecutionState(ip, false, true);
+                ip += 2;
                 continue;
             }
             else if (token === '|,') {
-                yield new ExecutionState(ip += 2, false, false, true);
+                yield new ExecutionState(ip, false, false, true);
+                ip += 2;
                 continue;
             }
             // don't step on a no-op
@@ -1005,6 +1010,17 @@ export class Runtime {
                 case '|}':
                     this.push(new Multiset(this.popArray()).eq(new Multiset(this.popArray())) ? 1n : 0n);
                     break;
+                case "|'": {
+                    let top = this.pop();
+                    if (isArray(top)) {
+                        const index = this.rng.nextInt(BigInt(top.length));
+                        if (top instanceof IntRange) this.push(top.start + index);
+                        else this.push(top[Number(index)]);
+                    }
+                    else if (typeof top === 'bigint') this.push(this.rng.nextInt(top));
+                    else if (isNumber(top)) this.push(this.rng.nextFloat() * floatify(top));
+                    break;
+                }
                 case '|^':
                     if (isArray(this.peek())) {
                         this.runMacro("s b-~ s-, +"); // symmetric array difference

@@ -85,6 +85,8 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;/</code>     	|int int    	|div-all       	|                   	|Divide a by b as many times as it will go evenly.
 <code>&#124;&lt;</code>  	|int int    	|shift-left    	|a << b             	|Bitshift left.
 <code>&#124;></code>     	|int int    	|shift-right   	|a >> b             	|Bitshift right.
+<code>&#124;'</code>     	|int        	|rng           	|rand(0, a)         	|Choose an integer in [0, a).
+<code>&#124;'</code>     	|float        	|rng           	|rand(0, a)         	|Choose a floating point number in [0, a).
 <code>&#124;1</code>     	|int        	|parity-sign   	|(-1) ** a          	|Power of negative one.
 <code>&#124;2</code>     	|int        	|2-power       	|2 ** a             	|Power of two.
 <code>&#124;3</code>     	|int        	|base-36       	|                   	|Convert to base 36.
@@ -314,6 +316,7 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;]</code>	|arr                	|suffixes          	|All suffixes of array.
 <code>&#124;{</code>	|arr arr            	|setwise-equal     	|Arrays are setwise equal? e.g. `[1,2,2]`, `[2,1]` -> `1`
 <code>&#124;}</code>	|arr arr            	|multiset-equal    	|Arrays are different orderings of same elements? e.g. `[1,2,2]`, `[2,1,2]` -> `1`
+<code>&#124;'</code>	|arr                	|choice            	|Choose an element from array in a way that appears to be random, but is really actually pretty deterministic.
 <code>&#124;a</code>	|arr                	|any               	|Any elements of array are truthy?
 <code>&#124;A</code>	|arr                	|all               	|All elements of array are truthy?
 <code>&#124;b</code>	|arr arr            	|multiset-intersect	|Keep the elements from a that occur in b, no more than the number of times they occur in b.

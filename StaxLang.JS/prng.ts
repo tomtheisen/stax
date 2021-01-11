@@ -11,7 +11,8 @@ export class RandomNumberGenerator {
     constructor(...state: (number | bigint | string)[]) {
         const stateString = state.map(s => s.toString()).join('\n');
         for (let c of stateString) {
-            this.state *= BigInt(c.codePointAt(0))
+            this.state *= 37n;
+            this.state += BigInt(c.codePointAt(0))
             this.state &= maxUInt64;
         }
     }
@@ -25,6 +26,7 @@ export class RandomNumberGenerator {
     }
 
     public nextInt(bound: bigint) {
+        if (bound <= 0n) throw Error("Illegal rng bound " + bound);
         // create rejection threshold to next multiple of `bound` to avoid bias toward low end of range
         const threshold = UInt64Space / bound * bound;
         let choice: bigint;

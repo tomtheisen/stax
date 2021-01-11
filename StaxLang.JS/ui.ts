@@ -214,10 +214,9 @@ function runProgramTimeSlice() {
         finally {
             if (newOutput) window.scrollTo(0, document.body.scrollHeight);
             newOutput = false;
+            const elapsed = (performance.now() - start) / 1000;
+            statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
         }
-        
-        let elapsed = (performance.now() - start) / 1000;
-        statusEl.textContent = `${ steps } steps, ${ elapsed.toFixed(2) }s`;
     });
 }
 

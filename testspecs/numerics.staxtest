@@ -1344,3 +1344,12 @@ meB$
 1.94773404105468
 	stax
 me:e
+	name:NumericRandoms
+	in
+100
+100.0
+	out
+47
+5.48534623471953
+	stax
+me|'
