@@ -10,10 +10,6 @@ export const gcd: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) =
         while (a !== 0n) [a, b] = [b % a, a];
         return b;
     };
-export const bitand: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a & b;
-export const bitor: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a | b;
-export const bitxor: (a: StaxInt, b: StaxInt) => StaxInt = (a: bigint, b: bigint) => a ^ b;
-export const bitnot: (n: StaxInt) => StaxInt = (n: bigint) => ~n;
 
 export function nthRoot(val: StaxInt, n: StaxInt): StaxInt {
     val = abs(val);

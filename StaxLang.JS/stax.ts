@@ -936,7 +936,7 @@ export class Runtime {
                     else {
                         if (this.infoOut) this.infoOut("<code>|&</code> is deprecated for bitwise and.  Use <code>I</code> instead.");
                         if (this.totalSize() < 2) break;
-                        this.push(int.bitand(this.popInt(), this.popInt()));
+                        this.push(this.popInt() & this.popInt());
                     }
                     break;
                 case '|#':
@@ -962,7 +962,7 @@ export class Runtime {
                     if (typeof this.peek() === 'bigint') {
                         if (this.infoOut) this.infoOut("<code>||</code> is deprecated for bitwise or.  Use <code>M</code> instead.");
                         if (this.totalSize() < 2) break;
-                        this.push(int.bitor(this.popInt(), this.popInt()));
+                        this.push(this.popInt() | this.popInt());
                     }
                     else if (isArray(this.peek())) {
                         // embed grid at coords
@@ -1023,7 +1023,7 @@ export class Runtime {
                         }
                         else if (typeof a === 'bigint') { // xor
                             if (this.infoOut) this.infoOut("<code>|^</code> is deprecated for bitwise xor.  Use <code>S</code> instead.");
-                            this.push(int.bitxor(a, b));
+                            this.push(a ^ b);
                         }
                     }
                     break;
@@ -1976,9 +1976,7 @@ export class Runtime {
         let b = this.pop();
         if (typeof b === 'bigint') {
             if (this.totalSize() === 0) this.push(b);
-            else if (typeof this.peek() === 'bigint') {
-                this.push(int.bitxor(b, this.popInt()));
-            }
+            else if (typeof this.peek() === 'bigint') this.push(b ^ this.popInt());
             else {
                 let len = Number(b), arr = materialize(this.popArray()), result: StaxValue[] = [];
                 let idxs = range(0, b).map(i => Number((i as StaxInt)));
@@ -2499,7 +2497,7 @@ export class Runtime {
         }
         let target = this.pop(), arr = this.pop();
         if (typeof target === 'bigint' && typeof arr === 'bigint') {
-            this.push(int.bitand(target, arr));
+            this.push(target & arr);
             return;
         }
         if (!isArray(arr)) [arr, target] = [target, arr];
@@ -2579,9 +2577,7 @@ export class Runtime {
             if (this.totalSize() === 0) {
                 this.push(top);
             }
-            if (typeof this.peek() === 'bigint') {
-                this.push(int.bitor(top, this.popInt()));
-            }
+            if (typeof this.peek() === 'bigint') this.push(top | this.popInt());
             else {
                 let chunks = Number(top), consumed = 0, arr = this.popArray(), result: StaxValue[] = [];
 

@@ -130,7 +130,7 @@ export function decompress(compressed: string): string {
 
     let path = '', result = '. ', pathIdx = 1;
     while (Number(big)) {
-        path = int.bitand(big, 1n).toString() + path;
+        path = (big & 1n).toString() + path;
         big /= 2n;
     }
 
