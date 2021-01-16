@@ -95,10 +95,11 @@ function resetRuntime() {
 
     if (blankSplitEl.checked) {
         // split on \n\n+ *unless* some block starts with triple quote
-        const pattern = /^(?!"""$).(?:.+\n?)+|^"""$(?:.|\n)*?(?:^"""$|(?!.|\n))/gm;
+        const pattern = /^"""$(?:.|\n)+?^"""$|(?:.+\n?)+/gm;
         pendingInputs = [];
         let match: ReturnType<typeof pattern.exec>;
         while (match = pattern.exec(inputArea.value)) pendingInputs.push(match[0]);
+        if (pendingInputs.length === 0) pendingInputs.push("");
     }
     else if (lineSplitEl.checked) pendingInputs = inputArea.value.split(/\r?\n/);
     else pendingInputs = [inputArea.value];

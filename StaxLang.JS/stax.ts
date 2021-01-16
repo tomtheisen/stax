@@ -698,6 +698,10 @@ export class Runtime {
                         for (let i = 0; i < a.valueOf(); i++) result.unshift(this.pop());
                         this.push(result);
                     }
+                    else if (isArray(a)) {
+                        console.log("macro", A2S(a))
+                        this.runMacro(A2S(a));
+                    }
                     else throw new Error("bad types for l");
                     break;
                 }

@@ -18,22 +18,23 @@ op                  	|Description
 ## Stack
 op                  	|Example           	|Name         	|Description
 ---                 	|----              	|----         	|--------------
-`a`                 	|… a b c -> … b c a	|alter-stack  	|Moves the third element in the stack to the top.
-`b`                 	|… a b -> … a b a b	|both-copy    	|Copies the top two stack elements
-`c`                 	|… a -> … a a      	|copy         	|Copy the top stack element
-`d`                 	|… a b -> … a      	|discard      	|Pop and discard top stack element
-`n`                 	|… a b -> … a b a  	|next         	|Copy second element to top of stack
-`[`                 	|… a b -> … a a b  	|under        	|Copy second element in-place
+`a`                 	|… a b c → … b c a	|alter-stack  	|Moves the third element in the stack to the top.
+`b`                 	|… a b → … a b a b	|both-copy    	|Copies the top two stack elements
+`c`                 	|… a → … a a      	|copy         	|Copy the top stack element
+`d`                 	|… a b → … a      	|discard      	|Pop and discard top stack element
+`l`                 	|                  	|eval         	|Pop and execute array as string of stax code. e.g. `"3R"` → `[1, 2, 3]`
+`n`                 	|… a b → … a b a  	|next         	|Copy second element to top of stack
+`[`                 	|… a b → … a a b  	|under        	|Copy second element in-place
 `~`                 	|                  	|input-push   	|Pop top item, and push it to input stack.
 `;`                 	|                  	|input-peek   	|Peek from input stack, and push to main stack.
 `,`                 	|                  	|input-pop    	|Pop from input stack, and push to main stack.
 `e`                 	|arr               	|eval         	|Parse string as data to be pushed on the stack. e.g. [12, 3.4, 0x7fff, 0b110011, [5/6, "a string"]]  Multiple top level values in the same string will be pushed separately. `\"`, `\\`, `\n`, and `\x41` are escapes.
 `E`                 	|arr               	|explode      	|Push all elements from array onto stack.
-`L`                 	|… -> […]          	|listify-stack	|Clear both stacks, and put all items in an array back on stack.
+`L`                 	|… → […]          	|listify-stack	|Clear both stacks, and put all items in an array back on stack.
 `l`                 	|int               	|listify-n    	|Pop n items, and put them in an array on top of the stack.
-`O`                 	|… a -> … 1 a      	|tuck-1       	|Push the value 1 under the top element of the stack.
-`s`                 	|… a b -> … b a    	|swap         	|Swap top two stack elements.
-`Z`                 	|… a -> … 0 a      	|tuck-0       	|Push the value 0 under the top element of the stack.
+`O`                 	|… a → … 1 a      	|tuck-1       	|Push the value 1 under the top element of the stack.
+`s`                 	|… a b → … b a    	|swap         	|Swap top two stack elements.
+`Z`                 	|… a → … 0 a      	|tuck-0       	|Push the value 0 under the top element of the stack.
 <code>&#124;d</code>	|                  	|main-depth   	|Size of main stack.
 <code>&#124;D</code>	|                  	|input-depth  	|Size of input stack.
 
@@ -71,7 +72,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `j`                      	|float      	|round         	|round(a)           	|Round to nearest integer.
 `j`                      	|frac       	|round         	|round(a)           	|Round to nearest integer.
 `J`                      	|num        	|square        	|a ** 2             	|Square number.
-`l`                      	|frac       	|listify-frac  	|a/b -> [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
+`l`                      	|frac       	|listify-frac  	|a/b → [a b]       	|Turn a fraction into a 2-array of numerator and denominator.
 `N`                      	|number     	|negate        	|-a                 	|Negate a number.
 `r`                      	|frac       	|numerator     	|numerator(a)       	|Get the numerator.
 `R`                      	|frac       	|denom         	|denom(a)           	|Get the denominator.
@@ -114,7 +115,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 <code>&#124;j</code>     	|num        	|rationalize   	|                   	|Convert any number to a rational with minimal loss of precision.  Stax attempts to minimize the denominator.
 <code>&#124;l</code>     	|int int    	|lcm           	|                   	|Least common multiple.
 <code>&#124;L</code>     	|num num    	|log-n         	|log(a, b)          	|Logarithm in base b of a.
-<code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` -> `[2 0 1]`)
+<code>&#124;n</code>     	|int        	|prime-exps    	|                   	|Exponents of sequential primes in factorization. (e.g. `20` → `[2 0 1]`)
 <code>&#124;N</code>     	|int int    	|int-nth-root  	|floor(pow(a, 1/b)) 	|Nth root of an integer, rounded down.  This doesn't use floats internally, and is accurate for large integers.
 <code>&#124;p</code>     	|int        	|is-prime      	|                   	|Is prime?
 <code>&#124;q</code>     	|num        	|int-sqrt      	|floor(sqrt(abs(a)))	|Integer square root of absolute value.
@@ -135,7 +136,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:_`                     	|num num    	|float-div     	|1.0 * a / b        	|Float division.
 `:1`                     	|int        	|popcount      	|                   	|Count of set bits.
 `:2`                     	|num        	|floor-log-2   	|floor(log(a, 2))   	|Floor of log base 2.
-`:a`                     	|int int    	|fixed-binary  	|zfill(bin(a), b)   	|Binary representation of a zero-padded to b digits. (e.g. `11`, `6` -> `"001011"`)
+`:a`                     	|int int    	|fixed-binary  	|zfill(bin(a), b)   	|Binary representation of a zero-padded to b digits. (e.g. `11`, `6` → `"001011"`)
 `:A`                     	|num        	|floor-log-10  	|floor(log(a, 10))  	|Floor of log base 10.
 `:b`                     	|num int int	|between       	|b <= a < c         	|Value is in range?
 `:b`                     	|arr        	|binary-decode 	|                   	|Produce a number given as an array of bits (binary digits).
@@ -149,7 +150,7 @@ op                       	|Types      	|Name          	|Pseudo-code        	|Des
 `:F`                     	|int        	|dist-factors  	|                   	|Distinct prime factors.
 `:g`                     	|int        	|low-bit       	|                   	|Unset all but the low set bit.
 `:G`                     	|int        	|high-bit      	|                   	|Unset all but the high set bit.
-`:h`                     	|int int    	|fixed-hex     	|zfill(hex(a), b)   	|Hexadecimal representation of a zero-padded to b digits. (e.g. `258`, `4` -> `"0102"`)
+`:h`                     	|int int    	|fixed-hex     	|zfill(hex(a), b)   	|Hexadecimal representation of a zero-padded to b digits. (e.g. `258`, `4` → `"0102"`)
 `:J`                     	|num num    	|square-two    	|a\*\*2, b\*\*2     	|Square top two elements; useful for hypotenuse and things.
 `:m`                     	|int int    	|next-multiple 	|                   	|If necessary, increase a until it is a multiple of b.
 `:n`                     	|int int    	|n-factorize   	|                   	|Get all n-part factorizations. (e.g. `4`, `3` => `[[1,1,4],[1,2,2],[1,4,1],[2,1,2],[2,2,1],[4,1,1]]`)
@@ -232,7 +233,7 @@ op                       	|Types          	|Name              	|Description
 `:t`                     	|arr arr        	|ring-translate    	|Map matching elements to the subsequent element in the translation ring.  The ring wraps around.
 `:w`                     	|arr            	|brace-palindromize	|Concatenate all but the last character reversed.  Braces and slashes are individually reversed also.
 `:W`                     	|arr            	|brace-mirror      	|Concatenate the string reversed.  Braces and slashes are individually reversed also.
-`:x`                     	|arr            	|regex-escape      	|Escape regex special characters.  (e.g. `"c:\foo.txt"` -> `"c:\\foo\.txt"`)
+`:x`                     	|arr            	|regex-escape      	|Escape regex special characters.  (e.g. `"c:\foo.txt"` → `"c:\\foo\.txt"`)
 
 ## Array
 op                  	|Types              	|Name              	|Description
@@ -314,8 +315,8 @@ op                  	|Types              	|Name              	|Description
 <code>&#124;(</code>	|arr int            	|rotate-left-n     	|Shift array n places to the right, rotating the front to the end.
 <code>&#124;[</code>	|arr                	|prefixes          	|All prefixes of array.
 <code>&#124;]</code>	|arr                	|suffixes          	|All suffixes of array.
-<code>&#124;{</code>	|arr arr            	|setwise-equal     	|Arrays are setwise equal? e.g. `[1,2,2]`, `[2,1]` -> `1`
-<code>&#124;}</code>	|arr arr            	|multiset-equal    	|Arrays are different orderings of same elements? e.g. `[1,2,2]`, `[2,1,2]` -> `1`
+<code>&#124;{</code>	|arr arr            	|setwise-equal     	|Arrays are setwise equal? e.g. `[1,2,2]`, `[2,1]` → `1`
+<code>&#124;}</code>	|arr arr            	|multiset-equal    	|Arrays are different orderings of same elements? e.g. `[1,2,2]`, `[2,1,2]` → `1`
 <code>&#124;'</code>	|arr                	|choice            	|Choose an element from array in a way that appears to be random, but is really actually pretty deterministic.
 <code>&#124;a</code>	|arr                	|any               	|Any elements of array are truthy?
 <code>&#124;A</code>	|arr                	|all               	|All elements of array are truthy?
@@ -354,8 +355,8 @@ op                  	|Types              	|Name              	|Description
 `:!`                	|arr                	|all-partitions    	|Get all the ways of splitting array into pieces.
 `:@`                	|arr                	|truthy-count      	|Count the number of truthy elements in the array.
 `:@`                	|arr int            	|pop-at            	|Remove element at specified index from array.  Push what's left of the array, and the element removed separately.
-`:$`                	|arr int            	|cartesian-power   	|Cartesian power of array. e.g. `"ab"`, `3` -> `["aaa","aab","aba","abb","baa","bab","bba","bbb"]`
-`:$`                	|arr                	|cartesian-product 	|Cartesian product of subarray. e.g. `["ab", "xy"]` -> `["ax","ay","bx","by"]`
+`:$`                	|arr int            	|cartesian-power   	|Cartesian power of array. e.g. `"ab"`, `3` → `["aaa","aab","aba","abb","baa","bab","bba","bbb"]`
+`:$`                	|arr                	|cartesian-product 	|Cartesian product of subarray. e.g. `["ab", "xy"]` → `["ax","ay","bx","by"]`
 `:,`                	|arr arr            	|zip-end           	|Zip arrays producing pairs.  The longer array has its prefix dropped, so that the ends of the arrays align.
 `:(`                	|arr                	|left-rotations    	|All left rotations, starting from original.
 `:)`                	|arr                	|right-rotations   	|All right rotations, starting from original.
@@ -363,16 +364,16 @@ op                  	|Types              	|Name              	|Description
 `:v`                	|arr                	|non-ascending     	|Is array non-ascending? (has no adjacent pair of ascending elements)
 `:a`                	|arr                	|minima-indices    	|Get indices of array minima.
 `:A`                	|arr                	|maxima-indices    	|Get indices of array maxima.
-`:B`                	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` -> `"bcceff"`
+`:B`                	|arr arr            	|element-repeats   	|Repeat element in a by corresponding integer in b, wrapped.  e.g. `"abcdef"`, `[0,1,2]` → `"bcceff"`
 `:c`                	|arr                	|coalesce          	|Get first truthy element of array.
-`:C`                	|arr                	|columns           	|Gets the columns of an array of arrays without rectangularizing.  Similar to transpose, but doesn't use a fill element.  Instead, collapse the gaps.  e.g. `[[1,2],[],[3],[4,5,6]]` -> `[[1,3,4],[2,5],[6]]`
+`:C`                	|arr                	|columns           	|Gets the columns of an array of arrays without rectangularizing.  Similar to transpose, but doesn't use a fill element.  Instead, collapse the gaps.  e.g. `[[1,2],[],[3],[4,5,6]]` → `[[1,3,4],[2,5],[6]]`
 `:d`                	|arr                	|median            	|Get the median of array.  Integers produce a rational result.  Floats produce a float.
-`:E`                	|arr                	|first-last         |Get the first and last element of an array. e.g. `[1,2,3,4]` -> `[1, 4]`
-`:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` -> `[3,4,5,[6]]`
+`:E`                	|arr                	|first-last         |Get the first and last element of an array. e.g. `[1,2,3,4]` → `[1, 4]`
+`:f`                	|arr                	|flatten           	|Flatten array; for each element of the array unwrap it if it's an array.  e.g. `[3,4,[5,[6]]]` → `[3,4,5,[6]]`
 `:F`                	|arr                	|falsy-indices     	|~~Get all indices of falsy elements.~~ Deprecated.  Use `:0` instead.
 `:g`                	|arr                	|run-elements      	|Remove adjacent duplicate elements from array.
 `:G`                	|arr                	|run-lengths       	|Get the lengths of runs of duplicate elements.
-`:i`                	|arr                	|interleave        	|Distribute elements from array of arrays in a round-robin fashion.  e.g. `[[1,2],[],[3],[4,5,6]]` -> `[1,3,4,2,5,6]`
+`:i`                	|arr                	|interleave        	|Distribute elements from array of arrays in a round-robin fashion.  e.g. `[[1,2],[],[3],[4,5,6]]` → `[1,3,4,2,5,6]`
 `:I`                	|arr arr            	|find-index-all    	|For each element in b, find the index of the first occurrence in a.
 `:J`                	|arr                	|squarify          	|Wrap array into smallest fitting square, filling any extra spaces with 0.
 `:m`                	|arr int            	|repeat-to         	|Repeat array until it is exactly length n.
@@ -489,7 +490,7 @@ op   	|Value
 `V;`  	|"https://"
 `V0` 	|rational 0/1
 `V2` 	|0.5
-`V3` 	|semitone ratio in equal temperment (pow(2, 1/12))
+`V3` 	|semitone ratio in equal temperament (pow(2, 1/12))
 `V6` 	|Base-64 symbol alphabet
 `V/` 	|pi/3
 `V%` 	|[0, 0]
