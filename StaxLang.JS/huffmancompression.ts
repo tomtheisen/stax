@@ -108,7 +108,7 @@ function compressCore(input: string, flexcase = false): string | null {
 
     for (let i = 0; i < path.length; i++) {
         big *= 2n;
-        big = big + path[i] === '1' ? 1n : 0n;
+        big = big + (path[i] === '1' ? 1n : 0n);
     }
     while (big > 0n) {
         let [quotient, remainder] = [big / symlen, big % symlen];
