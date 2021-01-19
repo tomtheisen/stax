@@ -16,6 +16,7 @@ html {
     --link-fg: #44e;
     --run-bg: #2c3;
     --run-bg-hover: #3d4;
+    --run-bg-disabled: #2a3;
     --warning-bg: #ee7;
     --well-bg: #ccc;
     --quickref-code-fg: #fbc;
@@ -45,6 +46,7 @@ html.theme-dark {
     --link-fg: #99e;
     --run-bg: #2a3;
     --run-bg-hover: #3b4;
+    --run-bg-disabled: #162;
     --warning-bg: #412;
     --well-bg: #333;
     --quickref-code-fg: #713;
@@ -121,6 +123,9 @@ button:hover, .btn:hover {
 }
 #run:hover {
     background-color: var(--run-bg-hover);
+}
+#run:disabled {
+    background-color: var(--run-bg-disabled);
 }
 
 button:disabled {

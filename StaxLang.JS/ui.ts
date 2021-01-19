@@ -151,7 +151,7 @@ function startNextInput() {
 // mark program finished
 function cleanupRuntime() {
     activeRuntime = activeStateIterator = null;
-    upButton.disabled = codeArea.disabled = inputArea.disabled = false;
+    runButton.disabled = upButton.disabled = codeArea.disabled = inputArea.disabled = false;
     stopButton.disabled = true;
     root.classList.remove("debugging");
     updateStats();
@@ -172,6 +172,7 @@ function showError(err: Error) {
 }
 
 function runProgramTimeSlice() {
+    runButton.disabled = true;
     pendWork(function work() {
         if (!activeStateIterator || pendingBreak) {
             pendingBreak = false;
@@ -298,7 +299,7 @@ function showDebugInfo(ip: number, steps: number) {
     if (!activeRuntime) return;
     root.classList.add("debugging");
 
-    stopButton.disabled = false;
+    runButton.disabled = stopButton.disabled = false;
     statusEl.textContent = `${ steps } steps, paused`;
 
     const debugPreEl = document.getElementById("debugCodePre")!,
