@@ -108,9 +108,7 @@ export function areEqual(a: StaxValue, b: StaxValue): boolean {
         if (a.length != b.length) return false;
         b = materialize(b);
         let i = 0;
-        for (let e of a) {
-            if (!areEqual(e, b[i++])) return false;
-        }
+        for (let e of a) if (!areEqual(e, b[i++])) return false;
         return true;
     }
     if (isArray(a)) [a] = a;

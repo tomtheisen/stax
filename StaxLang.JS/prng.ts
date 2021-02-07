@@ -1,7 +1,3 @@
-// struct xorshift64_state {
-//   uint64_t a;
-// };
-
 const UInt64Space = 1n << 64n;
 const maxUInt64 = UInt64Space - 1n;
 

@@ -58,8 +58,7 @@ function getHashCode(val: StaxValue): number {
         if (isNaN(val)) val = Number.NaN; // normalize exotic nans
         if (val % 1 === 0) return Math.abs(val) % 0x8000_0000; // can be equal to ints
         floatView[0] = val;
-        let hash = intView[0] ^ intView[1];
-        return hash;
+        return intView[0] ^ intView[1];
     }
     if (hashMemo.has(val)) return hashMemo.get(val)!;
     if (typeof val === 'bigint') {
@@ -87,7 +86,7 @@ function getHashCode(val: StaxValue): number {
         hashMemo.set(val, hash);
         return hash;
     }
-    else throw new Error("Can't compute hash for " + val);
+    throw new Error("Can't compute hash for " + val);
 }
 
 export class StaxSet {
@@ -247,9 +246,7 @@ export class IntRange {
                 filtered = [...this.slice(0, i)];
                 allPass = false;
             }
-            else if (!allPass && pass) {
-                filtered.push(e);
-            }
+            else if (!allPass && pass) filtered.push(e);
             i++;
         }
         return allPass ? this : filtered;

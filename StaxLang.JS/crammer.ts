@@ -4,8 +4,7 @@ import { last, floatify } from './types';
 const Symbols = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
 
 export function uncram(str: string): bigint[] {
-    let result: bigint[] = [];
-    let continuing = false, sign = 0;
+    let result: bigint[] = [], continuing = false, sign = 0;
 
     for (let i = 0; i < str.length; i++) {
         let charValue = Symbols.indexOf(str[i]);
@@ -73,9 +72,7 @@ export function cramSingle(n: bigint): string {
 
 export function uncramSingle(s: string): bigint {
     let result = 0n;
-    for (let c of s) {
-        result = result * 93n + BigInt(Symbols.indexOf(c) + 1);
-    }
+    for (let c of s) result = result * 93n + BigInt(Symbols.indexOf(c) + 1);
     return result;
 }
 

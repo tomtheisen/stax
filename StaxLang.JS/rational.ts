@@ -56,10 +56,8 @@ export class Rational {
     }
 
     floor() {
-        if (this.numerator < 0n) {
-            return (this.numerator - this.denominator + 1n) / this.denominator;
-        }
-        return this.numerator / this.denominator;
+        if (this.numerator >= 0n) return this.numerator / this.denominator;
+        return (this.numerator - this.denominator + 1n) / this.denominator;
     }
 
     ceiling() {

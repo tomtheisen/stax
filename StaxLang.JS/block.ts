@@ -430,9 +430,7 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
                     pushToken("}");
                     gotoTargets.push({ offset: programOffset + ++pos, tokens: []});
                 }
-                else {
-                    return new Block(program.substr(0, ++pos), blockTokens, firstInstruction, true);
-                }
+                else return new Block(program.substr(0, ++pos), blockTokens, firstInstruction, true);
                 break;
 
             default:
@@ -441,11 +439,10 @@ function parseCore(program: string, programOffset: number, wholeProgram: boolean
         }
     }
 
-    if (wholeProgram) {
-        let targets = gotoTargets.map(ts => new Block(null, ts.tokens, ts.offset));
-        return new Program(program, blockTokens, targets);
-    }
-    return new Block(program, blockTokens, programOffset);
+    if (!wholeProgram) return new Block(program, blockTokens, programOffset);
+
+    let targets = gotoTargets.map(ts => new Block(null, ts.tokens, ts.offset));
+    return new Program(program, blockTokens, targets);
 }
 
 function parseNum(program: string, pos: number): string {
