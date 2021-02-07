@@ -12,12 +12,11 @@ export function packBytes(asciiStax: string): number[] {
     // move trailing spaces to front
     asciiStax = asciiStax.replace(/^(.+?)( +)$/, "$2$1");
 
-    let big = 0n;
-    let result: number[] = [];
+    let big = 0n, result: number[] = [];
     for (let i = asciiStax.length - 1; i >= 0; i--) {
         big = big * 95n + BigInt(asciiStax.charCodeAt(i) - 32);
     }
-    while (Number(big) > 0) {
+    for (; big > 0n; big /= 0x100n) {
         let b = big % 0x100n;
         if (big === b) {
             if ((b & 0x80n) === 0n) {
@@ -29,7 +28,6 @@ export function packBytes(asciiStax: string): number[] {
             }
         }
         result.push(Number(b));
-        big /= 0x100n;
     }
     return result;
 }
@@ -57,20 +55,17 @@ export function unpack(packedStax: string): string {
 }
 
 export function unpackBytes(bytes: number[] | Uint8Array): string {
-    let result = "";
-    let big = 0n;
+    let result = "", big = 0n;
     bytes[0] &= 0x7f;
     for (let i = 0; i < bytes.length; i++) {
         big = big * 0x100n + BigInt(bytes[i]);
     }
-    while (Number(big) > 0) {
+    for (; big > 0n; big /= 95n) {
         result += String.fromCharCode(Number(big % 95n) + 32);
-        big /= 95n;
     }
 
     // move leading spaces to end
-    result = result.replace(/^( +)(.+)$/, "$2$1");
-    return result;
+    return result.replace(/^( +)(.+)$/, "$2$1");
 }
 
 export function isPacked(stax: string | number[] | Uint8Array): boolean {
