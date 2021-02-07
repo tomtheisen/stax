@@ -213,7 +213,7 @@ export function compressLiterals(program: string): string {
                 break;
             }
             case 'z': {
-                const expanded = program.slice(pos).match(/^z(?:(?:A|(?!10\+)[1-9]\d*)N?\+){2,}/);
+                const expanded = program.slice(pos).match(/^z(?:(?:0|A|(?!10\+)[1-9]\d*)N?\+){2,}/);
                 if (expanded) {
                    const ints = expanded[0]
                         .replace(/A/g, "10")
