@@ -731,3 +731,10 @@ thx Razetime
 101
 	stax
 {{}{}F
+	name:FindAllEmpty
+	in
+"bb" ""
+	out
+0 1 2
+	stax
+|IJ

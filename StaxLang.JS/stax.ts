@@ -2699,6 +2699,7 @@ export class Runtime {
 
         if (isArray(target)) {
             let text = A2S(arr), search = A2S(target), result = [], lastFound = -1;
+            if (search === "") return this.push(range(0, text.length + 1));
             while ((lastFound = text.indexOf(search, lastFound + 1)) >= 0) {
                 result.push(BigInt(lastFound));
             }
