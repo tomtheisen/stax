@@ -1672,7 +1672,7 @@ export class Runtime {
                     this.doPermutations();
                     break;
                 case '|u':
-                    this.push(S2A(unEval(this.popArray())));
+                    this.push(S2A(unEval(this.pop())));
                     break;
                 case '|V':
                     this.push([]); // command line args

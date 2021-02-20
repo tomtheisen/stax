@@ -200,8 +200,9 @@ export function stringFormat(arg: StaxValue): StaxArray {
     throw new Error("bad type for stringFormat");
 }
 
-export function unEval(arr: StaxArray): string {
-    let mapped = arr.map(e => isArray(e) ? unEval(e) : e.toString());
+export function unEval(val: StaxValue): string {
+    if (!isArray(val)) return val.toString();
+    let mapped = val.map(unEval);
     return "[" + mapped.join(", ") + "]";
 }
 
