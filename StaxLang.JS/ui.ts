@@ -503,16 +503,17 @@ inputArea.addEventListener("input", pendUpdate);
 postLink.disabled = location.href.startsWith("file:");
 postLink.addEventListener("click", ev => {
     let template = "# [Stax](https://github.com/tomtheisen/stax), ";
+    const bytes = codeBytes === 1 ? "byte" : "bytes";
     switch (codeType) {
         case CodeType.LooseAscii:
         case CodeType.TightAscii:
-            template += `${ codeBytes } bytes`;
+            template += `${ codeBytes } ${ bytes }`;
             break;
         case CodeType.Packed:
-            template += `${ codeBytes } [bytes](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)`;
+            template += `${ codeBytes } [${ bytes }](https://github.com/tomtheisen/stax/blob/master/docs/packed.md#packed-stax)`;
             break;
         case CodeType.UnpackedTightNonAscii:
-            template += `${ codeBytes } bytes, (${ codeChars } chars, UTF-8)`;
+            template += `${ codeBytes } ${ bytes }, (${ codeChars } chars, UTF-8)`;
             break;
     }
     template += "\n\n";
