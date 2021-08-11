@@ -243,6 +243,7 @@ export const constants: {[key: string]: StaxValue} = {
     'D': Math.sqrt(2),
     'e': Math.E,
     'E': Math.sqrt(3),
+    'G': (1 + Math.sqrt(5)) / 2,
     'h': S2A("0123456789abcdef"),
     'H': S2A("0123456789ABCDEF"),
     'i': Number.NEGATIVE_INFINITY,

@@ -504,6 +504,7 @@ op   	|Value
 `VD` 	|sqrt(2)
 `Ve` 	|natural log base (e)
 `VE` 	|sqrt(3)
+`VG` 	|golden ratio
 `Vh` 	|"0123456789abcdef"
 `VH` 	|"0123456789ABCDEF"
 `Vi` 	|negative infinity
