@@ -133,7 +133,7 @@ function setup() {
         { alias: "c", types: "a", code: "{[?k"},
         { alias: "C", types: "a", code: "{{f|cc{Dms{hmgC" },
         { alias: "C", types: "i", code: "~;H;|C,^/"},
-        { alias: "d", types: "i", code: "c|a{[%!fsd"},
+        { alias: "d", types: "i", code: "|ac{|fS{:*muO+}z?o"},
         { alias: "d", types: "a", code: "oc%vh~;t,Tc|+s%u*"},
         { alias: "D", types: "ai", code: "~;|w,|W"},
         { alias: "D", types: "aa", code: "~;|w,|W"},
