@@ -2,7 +2,15 @@ export const abs: (n: bigint) => bigint = (n: bigint) => (n < 0n ? -n : n);
 export function gcd(a: bigint, b: bigint): bigint {
     if (a < 0n) a = -a;
     if (b < 0n) b = -b;
-    if (b > a) [a, b] = [b, a];
+    // Strip powers of two when either operand is even
+    if (a !== 0n && b !== 0n &&
+        ((a & 1n) === 0n || (b & 1n) === 0n)) {
+        const aTwos = a & -a, bTwos = b & -b;
+        a /= aTwos;
+        b /= bTwos;
+        while (a !== 0n) [a, b] = [b % a, a];
+        return b * (aTwos < bTwos ? aTwos : bTwos);
+    }
     while (a !== 0n) [a, b] = [b % a, a];
     return b;
 }
