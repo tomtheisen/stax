@@ -382,7 +382,7 @@ op                  	|Types              	|Name              	|Description
 `:o`                	|arr arr            	|overlay           	|Keep the maximum element respective element from two arrays.
 `:p`                	|arr                	|shortest-suffixes 	|Keep suffixes of arrays only as long as shortest array.
 `:P`                	|arr                	|shortest-prefixes 	|Keep prefixes of arrays only as long as shortest array.
-`:r`                	|arr arr            	|replace-all       	|Replace all substring occurrences.
+`:r`                	|arr arr arr         	|replace-all       	|Replace all substring occurrences.
 `:r`                	|int                	|centered-range    	|Make range [-n .. n] centered around 0.
 `:s`                	|arr                	|span              	|Get the span of an array. (maximum minus minimum)
 `:S`                	|arr arr            	|is-superset-of    	|Is a a (non-strict) superset of b?
