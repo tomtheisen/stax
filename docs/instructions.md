@@ -194,7 +194,7 @@ op                       	|Types          	|Name              	|Description
 `j`                      	|arr            	|space-split       	|String split by space.
 `J`                      	|arr            	|space-join        	|Join strings by space.
 `R`                      	|arr arr arr    	|regex-replace     	|Regex replace using ECMA regex.
-`R`                      	|arr arr block    |regex-replace      |Regex replace using ECMA regex. Each match is passed into the block and the output is the replacement. Block output is converted to a string if necessary.
+`R`                      	|arr arr block  	|regex-replace     	|Regex replace using ECMA regex. Each match is passed into the block and the output is the replacement. Block output is converted to a string if necessary.
 `t`                      	|arr            	|trim-left         	|Trim whitespace from left of string.
 `T`                      	|arr            	|trim-right        	|Trim whitespace from right of string.
 <code>&#124;~</code>     	|arr arr        	|last-index-of     	|Get the index of the last occurrence of the substring.
